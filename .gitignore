@@ -1,0 +1,7 @@
+Release/
+Debug/
+.vs/
+VisualGDBCache/
+Makefile.old
+debug.mak.old
+release.mak.old
