@@ -39,7 +39,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeIncludeSearchPath>.;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\arm-eabi\thumb\cortex_m4;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\backward;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include-fixed;c:\sysgcc\arm-eabi\arm-eabi\sys-include;c:\sysgcc\arm-eabi\arm-eabi\include;os/common/ext/CMSIS/include;os/common/ext/CMSIS/ST/STM32F4xx;os/common/oslib/include;os/common/ports/ARMCMx;os/common/ports/ARMCMx/compilers/GCC;os/common/startup/ARMCMx/devices/STM32F4xx;os/license;os/rt/include;os/hal/include;os/hal/osal/rt;os/hal/ports/STM32/STM32F4xx;os\hal\ports\STM32\LLD\ADCv2;os\hal\ports\STM32\LLD\CANv1;os\hal\ports\STM32\LLD\DACv1;os\hal\ports\STM32\LLD\DMAv2;os\hal\ports\STM32\LLD\EXTIv1;os\hal\ports\STM32\LLD\GPIOv2;os\hal\ports\STM32\LLD\I2Cv1;os\hal\ports\STM32\LLD\MACv1;os\hal\ports\STM32\LLD\OTGv1;os\hal\ports\STM32\LLD\QUADSPIv1;os\hal\ports\STM32\LLD\RTCv2;os\hal\ports\STM32\LLD\SDIOv1;os\hal\ports\STM32\LLD\SPIv1;os\hal\ports\STM32\LLD\TIMv1;os\hal\ports\STM32\LLD\USARTv1;os\hal\ports\STM32\LLD\xWDGv1;os\hal\ports\common\ARMCMx;os/test/lib;os/test/rt/source/test;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>os/common/ext/CMSIS/include;os/common/ext/CMSIS/ST/STM32F4xx;os/common/oslib/include;os/common/ports/ARMCMx;os/common/ports/ARMCMx/compilers/GCC;os/common/startup/ARMCMx/devices/STM32F4xx;os/license;os/rt/include;os/hal/include;os/hal/osal/rt;os/hal/ports/STM32/STM32F4xx;os\hal\ports\STM32\LLD\ADCv2;os\hal\ports\STM32\LLD\CANv1;os\hal\ports\STM32\LLD\DACv1;os\hal\ports\STM32\LLD\DMAv2;os\hal\ports\STM32\LLD\EXTIv1;os\hal\ports\STM32\LLD\GPIOv2;os\hal\ports\STM32\LLD\I2Cv1;os\hal\ports\STM32\LLD\MACv1;os\hal\ports\STM32\LLD\OTGv1;os\hal\ports\STM32\LLD\QUADSPIv1;os\hal\ports\STM32\LLD\RTCv2;os\hal\ports\STM32\LLD\SDIOv1;os\hal\ports\STM32\LLD\SPIv1;os\hal\ports\STM32\LLD\TIMv1;os\hal\ports\STM32\LLD\USARTv1;os\hal\ports\STM32\LLD\xWDGv1;os\hal\ports\common\ARMCMx;os/test/lib;os/test/rt/source/test;ext/fatfs/src;os/various;os/hal/lib/streams;.;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\arm-eabi\thumb\cortex_m4;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\backward;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include-fixed;c:\sysgcc\arm-eabi\arm-eabi\sys-include;c:\sysgcc\arm-eabi\arm-eabi\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>$(ProjectDir)\gcc_Debug.h;$(VISUALGDB_DIR)\gcc_compat.h;$(LOCALAPPDATA)\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\stm32_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
     <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
@@ -51,7 +51,7 @@
     <NMakePreprocessorDefinitions>__VisualGDB_CFG_Debug;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <NMakeIncludeSearchPath>.;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\arm-eabi\thumb\fpu\cortex_m4;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\backward;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include-fixed;c:\sysgcc\arm-eabi\arm-eabi\sys-include;c:\sysgcc\arm-eabi\arm-eabi\include;os/common/ext/CMSIS/include;os/common/ext/CMSIS/ST/STM32F4xx;os/common/oslib/include;os/common/ports/ARMCMx;os/common/ports/ARMCMx/compilers/GCC;os/common/startup/ARMCMx/devices/STM32F4xx;os/license;os/rt/include;os/hal/include;os/hal/osal/rt;os/hal/ports/STM32/STM32F4xx;os\hal\ports\STM32\LLD\ADCv2;os\hal\ports\STM32\LLD\CANv1;os\hal\ports\STM32\LLD\DACv1;os\hal\ports\STM32\LLD\DMAv2;os\hal\ports\STM32\LLD\EXTIv1;os\hal\ports\STM32\LLD\GPIOv2;os\hal\ports\STM32\LLD\I2Cv1;os\hal\ports\STM32\LLD\MACv1;os\hal\ports\STM32\LLD\OTGv1;os\hal\ports\STM32\LLD\QUADSPIv1;os\hal\ports\STM32\LLD\RTCv2;os\hal\ports\STM32\LLD\SDIOv1;os\hal\ports\STM32\LLD\SPIv1;os\hal\ports\STM32\LLD\TIMv1;os\hal\ports\STM32\LLD\USARTv1;os\hal\ports\STM32\LLD\xWDGv1;os\hal\ports\common\ARMCMx;os/test/lib;os/test/rt/source/test;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>os/common/ext/CMSIS/include;os/common/ext/CMSIS/ST/STM32F4xx;os/common/oslib/include;os/common/ports/ARMCMx;os/common/ports/ARMCMx/compilers/GCC;os/common/startup/ARMCMx/devices/STM32F4xx;os/license;os/rt/include;os/hal/include;os/hal/osal/rt;os/hal/ports/STM32/STM32F4xx;os\hal\ports\STM32\LLD\ADCv2;os\hal\ports\STM32\LLD\CANv1;os\hal\ports\STM32\LLD\DACv1;os\hal\ports\STM32\LLD\DMAv2;os\hal\ports\STM32\LLD\EXTIv1;os\hal\ports\STM32\LLD\GPIOv2;os\hal\ports\STM32\LLD\I2Cv1;os\hal\ports\STM32\LLD\MACv1;os\hal\ports\STM32\LLD\OTGv1;os\hal\ports\STM32\LLD\QUADSPIv1;os\hal\ports\STM32\LLD\RTCv2;os\hal\ports\STM32\LLD\SDIOv1;os\hal\ports\STM32\LLD\SPIv1;os\hal\ports\STM32\LLD\TIMv1;os\hal\ports\STM32\LLD\USARTv1;os\hal\ports\STM32\LLD\xWDGv1;os\hal\ports\common\ARMCMx;os/test/lib;os/test/rt/source/test;ext/fatfs/src;os/various;os/hal/lib/streams;.;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\arm-eabi\thumb\cortex_m4;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\backward;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include-fixed;c:\sysgcc\arm-eabi\arm-eabi\sys-include;c:\sysgcc\arm-eabi\arm-eabi\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>$(ProjectDir)\gcc_Release.h;$(VISUALGDB_DIR)\gcc_compat.h;$(LOCALAPPDATA)\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\stm32_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
     <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
@@ -81,7 +81,9 @@
   </ImportGroup>
   <ItemGroup>
     <ClCompile Include="board.c" />
-    <ClCompile Include="main.c" />
+    <ClCompile Include="ext\fatfs\src\ff.c" />
+    <ClCompile Include="ext\fatfs\src\ffunicode.c" />
+    <ClCompile Include="fatfs_example.c" />
     <ClCompile Include="os\common\ext\CMSIS\generic\readme.txt" />
     <ClCompile Include="os\common\oslib\src\chheap.c" />
     <ClCompile Include="os\common\oslib\src\chmboxes.c" />
@@ -93,6 +95,9 @@
     <ClCompile Include="os\common\startup\ARMCMx\compilers\GCC\crt0_v7m.S" />
     <ClCompile Include="os\common\startup\ARMCMx\compilers\GCC\crt1.c" />
     <ClCompile Include="os\common\startup\ARMCMx\compilers\GCC\vectors.c" />
+    <ClCompile Include="os\hal\lib\streams\chprintf.c" />
+    <ClCompile Include="os\hal\lib\streams\memstreams.c" />
+    <ClCompile Include="os\hal\lib\streams\nullstreams.c" />
     <ClCompile Include="os\hal\osal\rt\osal.c" />
     <ClCompile Include="os\hal\ports\common\ARMCMx\nvic.c" />
     <ClCompile Include="os\hal\ports\STM32\LLD\ADCv2\hal_adc_lld.c" />
@@ -178,10 +183,18 @@
     <ClCompile Include="os\test\rt\source\test\test_sequence_011.c" />
     <ClCompile Include="os\test\rt\source\test\test_sequence_012.c" />
     <ClCompile Include="os\test\rt\source\test\test_sequence_013.c" />
+    <ClCompile Include="os\various\evtimer.c" />
+    <ClCompile Include="os\various\fatfs_bindings\fatfs_diskio.c" />
+    <ClCompile Include="os\various\fatfs_bindings\fatfs_syscall.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="board.h" />
     <ClInclude Include="chconf.h" />
+    <ClInclude Include="ext\fatfs\src\diskio.h" />
+    <ClInclude Include="ext\fatfs\src\ff.h" />
+    <ClInclude Include="ext\fatfs\src\integer.h" />
+    <ClInclude Include="ext\fatfs\src\_ffconf.h" />
+    <ClInclude Include="ffconf.h" />
     <ClInclude Include="halconf.h" />
     <ClInclude Include="mcuconf.h" />
     <ClInclude Include="os\common\ext\CMSIS\generic\generic_cm0.h" />
@@ -269,6 +282,9 @@
     <ClInclude Include="os\hal\include\hal_usb.h" />
     <ClInclude Include="os\hal\include\hal_usb_cdc.h" />
     <ClInclude Include="os\hal\include\hal_wdg.h" />
+    <ClInclude Include="os\hal\lib\streams\chprintf.h" />
+    <ClInclude Include="os\hal\lib\streams\memstreams.h" />
+    <ClInclude Include="os\hal\lib\streams\nullstreams.h" />
     <ClInclude Include="os\hal\osal\rt\osal.h" />
     <ClInclude Include="os\hal\ports\common\ARMCMx\nvic.h" />
     <ClInclude Include="os\hal\ports\STM32\LLD\ADCv2\hal_adc_lld.h" />
@@ -336,5 +352,6 @@
     <ClInclude Include="os\test\rt\source\test\test_sequence_011.h" />
     <ClInclude Include="os\test\rt\source\test\test_sequence_012.h" />
     <ClInclude Include="os\test\rt\source\test\test_sequence_013.h" />
+    <ClInclude Include="os\various\evtimer.h" />
   </ItemGroup>
 </Project>

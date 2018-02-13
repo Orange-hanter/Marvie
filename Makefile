@@ -35,7 +35,7 @@ error:
 	$(error Invalid configuration, please check your inputs)
 endif
 
-SOURCEFILES := board.c main.c os/common/oslib/src/chheap.c os/common/oslib/src/chmboxes.c os/common/oslib/src/chmemcore.c os/common/oslib/src/chmempools.c os/common/ports/ARMCMx/chcore.c os/common/ports/ARMCMx/chcore_v7m.c os/common/ports/ARMCMx/compilers/GCC/chcoreasm_v7m.S os/common/startup/ARMCMx/compilers/GCC/crt0_v7m.S os/common/startup/ARMCMx/compilers/GCC/crt1.c os/common/startup/ARMCMx/compilers/GCC/vectors.c os/hal/osal/rt/osal.c os/hal/ports/common/ARMCMx/nvic.c os/hal/ports/STM32/LLD/ADCv2/hal_adc_lld.c os/hal/ports/STM32/LLD/CANv1/hal_can_lld.c os/hal/ports/STM32/LLD/DACv1/hal_dac_lld.c os/hal/ports/STM32/LLD/DMAv2/stm32_dma.c os/hal/ports/STM32/LLD/EXTIv1/hal_ext_lld.c os/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.c os/hal/ports/STM32/LLD/I2Cv1/hal_i2c_lld.c os/hal/ports/STM32/LLD/MACv1/hal_mac_lld.c os/hal/ports/STM32/LLD/OTGv1/hal_usb_lld.c os/hal/ports/STM32/LLD/QUADSPIv1/hal_qspi_lld.c os/hal/ports/STM32/LLD/RTCv2/hal_rtc_lld.c os/hal/ports/STM32/LLD/SDIOv1/hal_sdc_lld.c os/hal/ports/STM32/LLD/SPIv1/hal_i2s_lld.c os/hal/ports/STM32/LLD/SPIv1/hal_spi_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_icu_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_pwm_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_st_lld.c os/hal/ports/STM32/LLD/USARTv1/hal_serial_lld.c os/hal/ports/STM32/LLD/USARTv1/hal_uart_lld.c os/hal/ports/STM32/LLD/xWDGv1/hal_wdg_lld.c os/hal/ports/STM32/STM32F4xx/hal_ext_lld_isr.c os/hal/ports/STM32/STM32F4xx/hal_lld.c os/hal/src/hal.c os/hal/src/hal_adc.c os/hal/src/hal_buffers.c os/hal/src/hal_can.c os/hal/src/hal_dac.c os/hal/src/hal_ext.c os/hal/src/hal_gpt.c os/hal/src/hal_i2c.c os/hal/src/hal_i2s.c os/hal/src/hal_icu.c os/hal/src/hal_mac.c os/hal/src/hal_mmcsd.c os/hal/src/hal_mmc_spi.c os/hal/src/hal_pal.c os/hal/src/hal_pwm.c os/hal/src/hal_qspi.c os/hal/src/hal_queues.c os/hal/src/hal_rtc.c os/hal/src/hal_sdc.c os/hal/src/hal_serial.c os/hal/src/hal_serial_usb.c os/hal/src/hal_spi.c os/hal/src/hal_st.c os/hal/src/hal_uart.c os/hal/src/hal_usb.c os/hal/src/hal_wdg.c os/rt/src/chcond.c os/rt/src/chdebug.c os/rt/src/chdynamic.c os/rt/src/chevents.c os/rt/src/chmsg.c os/rt/src/chmtx.c os/rt/src/chregistry.c os/rt/src/chschd.c os/rt/src/chsem.c os/rt/src/chstats.c os/rt/src/chsys.c os/rt/src/chthreads.c os/rt/src/chtm.c os/rt/src/chtrace.c os/rt/src/chvt.c os/test/lib/ch_test.c os/test/rt/source/test/test_root.c os/test/rt/source/test/test_sequence_001.c os/test/rt/source/test/test_sequence_002.c os/test/rt/source/test/test_sequence_003.c os/test/rt/source/test/test_sequence_004.c os/test/rt/source/test/test_sequence_005.c os/test/rt/source/test/test_sequence_006.c os/test/rt/source/test/test_sequence_007.c os/test/rt/source/test/test_sequence_008.c os/test/rt/source/test/test_sequence_009.c os/test/rt/source/test/test_sequence_010.c os/test/rt/source/test/test_sequence_011.c os/test/rt/source/test/test_sequence_012.c os/test/rt/source/test/test_sequence_013.c
+SOURCEFILES := board.c ext/fatfs/src/ff.c ext/fatfs/src/ffunicode.c fatfs_example.c os/common/oslib/src/chheap.c os/common/oslib/src/chmboxes.c os/common/oslib/src/chmemcore.c os/common/oslib/src/chmempools.c os/common/ports/ARMCMx/chcore.c os/common/ports/ARMCMx/chcore_v7m.c os/common/ports/ARMCMx/compilers/GCC/chcoreasm_v7m.S os/common/startup/ARMCMx/compilers/GCC/crt0_v7m.S os/common/startup/ARMCMx/compilers/GCC/crt1.c os/common/startup/ARMCMx/compilers/GCC/vectors.c os/hal/lib/streams/chprintf.c os/hal/lib/streams/memstreams.c os/hal/lib/streams/nullstreams.c os/hal/osal/rt/osal.c os/hal/ports/common/ARMCMx/nvic.c os/hal/ports/STM32/LLD/ADCv2/hal_adc_lld.c os/hal/ports/STM32/LLD/CANv1/hal_can_lld.c os/hal/ports/STM32/LLD/DACv1/hal_dac_lld.c os/hal/ports/STM32/LLD/DMAv2/stm32_dma.c os/hal/ports/STM32/LLD/EXTIv1/hal_ext_lld.c os/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.c os/hal/ports/STM32/LLD/I2Cv1/hal_i2c_lld.c os/hal/ports/STM32/LLD/MACv1/hal_mac_lld.c os/hal/ports/STM32/LLD/OTGv1/hal_usb_lld.c os/hal/ports/STM32/LLD/QUADSPIv1/hal_qspi_lld.c os/hal/ports/STM32/LLD/RTCv2/hal_rtc_lld.c os/hal/ports/STM32/LLD/SDIOv1/hal_sdc_lld.c os/hal/ports/STM32/LLD/SPIv1/hal_i2s_lld.c os/hal/ports/STM32/LLD/SPIv1/hal_spi_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_icu_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_pwm_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_st_lld.c os/hal/ports/STM32/LLD/USARTv1/hal_serial_lld.c os/hal/ports/STM32/LLD/USARTv1/hal_uart_lld.c os/hal/ports/STM32/LLD/xWDGv1/hal_wdg_lld.c os/hal/ports/STM32/STM32F4xx/hal_ext_lld_isr.c os/hal/ports/STM32/STM32F4xx/hal_lld.c os/hal/src/hal.c os/hal/src/hal_adc.c os/hal/src/hal_buffers.c os/hal/src/hal_can.c os/hal/src/hal_dac.c os/hal/src/hal_ext.c os/hal/src/hal_gpt.c os/hal/src/hal_i2c.c os/hal/src/hal_i2s.c os/hal/src/hal_icu.c os/hal/src/hal_mac.c os/hal/src/hal_mmcsd.c os/hal/src/hal_mmc_spi.c os/hal/src/hal_pal.c os/hal/src/hal_pwm.c os/hal/src/hal_qspi.c os/hal/src/hal_queues.c os/hal/src/hal_rtc.c os/hal/src/hal_sdc.c os/hal/src/hal_serial.c os/hal/src/hal_serial_usb.c os/hal/src/hal_spi.c os/hal/src/hal_st.c os/hal/src/hal_uart.c os/hal/src/hal_usb.c os/hal/src/hal_wdg.c os/rt/src/chcond.c os/rt/src/chdebug.c os/rt/src/chdynamic.c os/rt/src/chevents.c os/rt/src/chmsg.c os/rt/src/chmtx.c os/rt/src/chregistry.c os/rt/src/chschd.c os/rt/src/chsem.c os/rt/src/chstats.c os/rt/src/chsys.c os/rt/src/chthreads.c os/rt/src/chtm.c os/rt/src/chtrace.c os/rt/src/chvt.c os/test/lib/ch_test.c os/test/rt/source/test/test_root.c os/test/rt/source/test/test_sequence_001.c os/test/rt/source/test/test_sequence_002.c os/test/rt/source/test/test_sequence_003.c os/test/rt/source/test/test_sequence_004.c os/test/rt/source/test/test_sequence_005.c os/test/rt/source/test/test_sequence_006.c os/test/rt/source/test/test_sequence_007.c os/test/rt/source/test/test_sequence_008.c os/test/rt/source/test/test_sequence_009.c os/test/rt/source/test/test_sequence_010.c os/test/rt/source/test/test_sequence_011.c os/test/rt/source/test/test_sequence_012.c os/test/rt/source/test/test_sequence_013.c os/various/evtimer.c os/various/fatfs_bindings/fatfs_diskio.c os/various/fatfs_bindings/fatfs_syscall.c
 EXTERNAL_LIBS := 
 EXTERNAL_LIBS_COPIED := $(foreach lib, $(EXTERNAL_LIBS),$(BINARYDIR)/$(notdir $(lib)))
 
@@ -181,6 +181,14 @@ $(BINARYDIR)/%.o : %.cxx $(all_make_files) |$(BINARYDIR)
 #VisualGDB: GeneratedRules				#<--- All lines below are auto-generated. Remove this line to suppress auto-generation of file rules.
 
 
+$(BINARYDIR)/ff.o : ext/fatfs/src/ff.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ffunicode.o : ext/fatfs/src/ffunicode.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
 $(BINARYDIR)/chheap.o : os/common/oslib/src/chheap.c $(all_make_files) |$(BINARYDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
@@ -218,6 +226,18 @@ $(BINARYDIR)/crt1.o : os/common/startup/ARMCMx/compilers/GCC/crt1.c $(all_make_f
 
 
 $(BINARYDIR)/vectors.o : os/common/startup/ARMCMx/compilers/GCC/vectors.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chprintf.o : os/hal/lib/streams/chprintf.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/memstreams.o : os/hal/lib/streams/memstreams.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/nullstreams.o : os/hal/lib/streams/nullstreams.c $(all_make_files) |$(BINARYDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
@@ -542,5 +562,17 @@ $(BINARYDIR)/test_sequence_012.o : os/test/rt/source/test/test_sequence_012.c $(
 
 
 $(BINARYDIR)/test_sequence_013.o : os/test/rt/source/test/test_sequence_013.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/evtimer.o : os/various/evtimer.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/fatfs_diskio.o : os/various/fatfs_bindings/fatfs_diskio.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/fatfs_syscall.o : os/various/fatfs_bindings/fatfs_syscall.c $(all_make_files) |$(BINARYDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 

@@ -206,9 +206,6 @@
 #ifndef __UFRACT_FBIT__
 #define __UFRACT_FBIT__ 16
 #endif
-#ifndef __ARM_FP
-#define __ARM_FP 4
-#endif
 #ifndef __UFRACT_MIN__
 #define __UFRACT_MIN__ 0.0UR
 #endif
@@ -389,9 +386,6 @@
 #ifndef RELEASE
 #define RELEASE 1
 #endif
-#ifndef __ARM_PCS_VFP
-#define __ARM_PCS_VFP 1
-#endif
 #ifndef __LDBL_HAS_QUIET_NAN__
 #define __LDBL_HAS_QUIET_NAN__ 1
 #endif
@@ -499,6 +493,9 @@
 #ifndef __INT_LEAST32_MAX__
 #define __INT_LEAST32_MAX__ 0x7fffffffL
 #endif
+#ifndef __ARM_PCS
+#define __ARM_PCS 1
+#endif
 #ifndef __DEC32_MIN__
 #define __DEC32_MIN__ 1E-95DF
 #endif
@@ -592,6 +589,9 @@
 #ifndef __UTA_FBIT__
 #define __UTA_FBIT__ 64
 #endif
+#ifndef __SOFTFP__
+#define __SOFTFP__ 1
+#endif
 #ifndef __FLT_MIN_EXP__
 #define __FLT_MIN_EXP__ (-125)
 #endif
@@ -609,9 +609,6 @@
 #endif
 #ifndef __INT_FAST64_TYPE__
 #define __INT_FAST64_TYPE__ long long int
-#endif
-#ifndef __FP_FAST_FMAF
-#define __FP_FAST_FMAF 1
 #endif
 #ifndef __FLT64_DENORM_MIN__
 #define __FLT64_DENORM_MIN__ 4.9406564584124654e-324F64
@@ -1372,14 +1369,6 @@
 #endif
 
 // --- Include directories begin --- //
-//.
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0/arm-eabi/thumb/fpu/cortex_m4
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0/backward
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/include
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/include-fixed
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/sys-include
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include
 //os/common/ext/CMSIS/include
 //os/common/ext/CMSIS/ST/STM32F4xx
 //os/common/oslib/include
@@ -1410,12 +1399,23 @@
 //os\hal\ports\common\ARMCMx
 //os/test/lib
 //os/test/rt/source/test
+//ext/fatfs/src
+//os/various
+//os/hal/lib/streams
+//.
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0/arm-eabi/thumb/cortex_m4
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0/backward
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/include
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/include-fixed
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/sys-include
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include
 // --- Include directories end --- //
 
 
 // --- Library directories begin --- //
-//c:/sysgcc/arm-eabi/bin/../lib/gcc/arm-eabi/7.2.0/thumb/fpu/cortex_m4/
-//c:/sysgcc/arm-eabi/bin/../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/lib/thumb/fpu/cortex_m4/
+//c:/sysgcc/arm-eabi/bin/../lib/gcc/arm-eabi/7.2.0/thumb/cortex_m4/
+//c:/sysgcc/arm-eabi/bin/../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/lib/thumb/cortex_m4/
 //c:/sysgcc/arm-eabi/bin/../lib/gcc/arm-eabi/7.2.0/
 //c:/sysgcc/arm-eabi/bin/../lib/gcc/
 //c:/sysgcc/arm-eabi/bin/../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/lib/

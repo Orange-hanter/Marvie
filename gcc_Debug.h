@@ -1366,14 +1366,6 @@
 #endif
 
 // --- Include directories begin --- //
-//.
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0/arm-eabi/thumb/cortex_m4
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0/backward
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/include
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/include-fixed
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/sys-include
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include
 //os/common/ext/CMSIS/include
 //os/common/ext/CMSIS/ST/STM32F4xx
 //os/common/oslib/include
@@ -1404,6 +1396,17 @@
 //os\hal\ports\common\ARMCMx
 //os/test/lib
 //os/test/rt/source/test
+//ext/fatfs/src
+//os/various
+//os/hal/lib/streams
+//.
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0/arm-eabi/thumb/cortex_m4
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0/backward
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/include
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/include-fixed
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/sys-include
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include
 // --- Include directories end --- //
 
 
