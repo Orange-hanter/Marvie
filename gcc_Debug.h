@@ -1366,8 +1366,16 @@
 #endif
 
 // --- Include directories begin --- //
-//os/common/ext/CMSIS/include
-//os/common/ext/CMSIS/ST/STM32F4xx
+//.
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0/arm-eabi/thumb/cortex_m4
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0/backward
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/include
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/include-fixed
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/sys-include
+//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include
+//os/common/ext/ARM/CMSIS/Core/Include
+//os/common/ext/ST/STM32F4xx
 //os/common/oslib/include
 //os/common/ports/ARMCMx
 //os/common/ports/ARMCMx/compilers/GCC
@@ -1377,36 +1385,29 @@
 //os/hal/include
 //os/hal/osal/rt
 //os/hal/ports/STM32/STM32F4xx
-//os\hal\ports\STM32\LLD\ADCv2
-//os\hal\ports\STM32\LLD\CANv1
-//os\hal\ports\STM32\LLD\DACv1
-//os\hal\ports\STM32\LLD\DMAv2
-//os\hal\ports\STM32\LLD\EXTIv1
-//os\hal\ports\STM32\LLD\GPIOv2
-//os\hal\ports\STM32\LLD\I2Cv1
-//os\hal\ports\STM32\LLD\MACv1
-//os\hal\ports\STM32\LLD\OTGv1
-//os\hal\ports\STM32\LLD\QUADSPIv1
-//os\hal\ports\STM32\LLD\RTCv2
-//os\hal\ports\STM32\LLD\SDIOv1
-//os\hal\ports\STM32\LLD\SPIv1
-//os\hal\ports\STM32\LLD\TIMv1
-//os\hal\ports\STM32\LLD\USARTv1
-//os\hal\ports\STM32\LLD\xWDGv1
-//os\hal\ports\common\ARMCMx
+//os/hal/ports/STM32/LLD/ADCv2
+//os/hal/ports/STM32/LLD/CANv1
+//os/hal/ports/STM32/LLD/DACv1
+//os/hal/ports/STM32/LLD/DMAv2
+//os/hal/ports/STM32/LLD/EXTIv1
+//os/hal/ports/STM32/LLD/GPIOv2
+//os/hal/ports/STM32/LLD/I2Cv1
+//os/hal/ports/STM32/LLD/MACv1
+//os/hal/ports/STM32/LLD/OTGv1
+//os/hal/ports/STM32/LLD/QUADSPIv1
+//os/hal/ports/STM32/LLD/RTCv2
+//os/hal/ports/STM32/LLD/SDIOv1
+//os/hal/ports/STM32/LLD/SPIv1
+//os/hal/ports/STM32/LLD/TIMv1
+//os/hal/ports/STM32/LLD/USARTv1
+//os/hal/ports/STM32/LLD/xWDGv1
+//os/hal/ports/common/ARMCMx
 //os/test/lib
 //os/test/rt/source/test
+//os/test/oslib/source/test
 //ext/fatfs/src
 //os/various
 //os/hal/lib/streams
-//.
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0/arm-eabi/thumb/cortex_m4
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include/c++/7.2.0/backward
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/include
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/include-fixed
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/sys-include
-//c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/include
 // --- Include directories end --- //
 
 

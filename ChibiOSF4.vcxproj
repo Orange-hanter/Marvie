@@ -39,7 +39,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeIncludeSearchPath>os/common/ext/CMSIS/include;os/common/ext/CMSIS/ST/STM32F4xx;os/common/oslib/include;os/common/ports/ARMCMx;os/common/ports/ARMCMx/compilers/GCC;os/common/startup/ARMCMx/devices/STM32F4xx;os/license;os/rt/include;os/hal/include;os/hal/osal/rt;os/hal/ports/STM32/STM32F4xx;os\hal\ports\STM32\LLD\ADCv2;os\hal\ports\STM32\LLD\CANv1;os\hal\ports\STM32\LLD\DACv1;os\hal\ports\STM32\LLD\DMAv2;os\hal\ports\STM32\LLD\EXTIv1;os\hal\ports\STM32\LLD\GPIOv2;os\hal\ports\STM32\LLD\I2Cv1;os\hal\ports\STM32\LLD\MACv1;os\hal\ports\STM32\LLD\OTGv1;os\hal\ports\STM32\LLD\QUADSPIv1;os\hal\ports\STM32\LLD\RTCv2;os\hal\ports\STM32\LLD\SDIOv1;os\hal\ports\STM32\LLD\SPIv1;os\hal\ports\STM32\LLD\TIMv1;os\hal\ports\STM32\LLD\USARTv1;os\hal\ports\STM32\LLD\xWDGv1;os\hal\ports\common\ARMCMx;os/test/lib;os/test/rt/source/test;ext/fatfs/src;os/various;os/hal/lib/streams;.;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\arm-eabi\thumb\cortex_m4;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\backward;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include-fixed;c:\sysgcc\arm-eabi\arm-eabi\sys-include;c:\sysgcc\arm-eabi\arm-eabi\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>.;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\arm-eabi\thumb\cortex_m4;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\backward;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include-fixed;c:\sysgcc\arm-eabi\arm-eabi\sys-include;c:\sysgcc\arm-eabi\arm-eabi\include;os/common/ext/ARM/CMSIS/Core/Include;os/common/ext/ST/STM32F4xx;os/common/oslib/include;os/common/ports/ARMCMx;os/common/ports/ARMCMx/compilers/GCC;os/common/startup/ARMCMx/devices/STM32F4xx;os/license;os/rt/include;os/hal/include;os/hal/osal/rt;os/hal/ports/STM32/STM32F4xx;os/hal/ports/STM32/LLD/ADCv2;os/hal/ports/STM32/LLD/CANv1;os/hal/ports/STM32/LLD/DACv1;os/hal/ports/STM32/LLD/DMAv2;os/hal/ports/STM32/LLD/EXTIv1;os/hal/ports/STM32/LLD/GPIOv2;os/hal/ports/STM32/LLD/I2Cv1;os/hal/ports/STM32/LLD/MACv1;os/hal/ports/STM32/LLD/OTGv1;os/hal/ports/STM32/LLD/QUADSPIv1;os/hal/ports/STM32/LLD/RTCv2;os/hal/ports/STM32/LLD/SDIOv1;os/hal/ports/STM32/LLD/SPIv1;os/hal/ports/STM32/LLD/TIMv1;os/hal/ports/STM32/LLD/USARTv1;os/hal/ports/STM32/LLD/xWDGv1;os/hal/ports/common/ARMCMx;os/test/lib;os/test/rt/source/test;os/test/oslib/source/test;ext/fatfs/src;os/various;os/hal/lib/streams;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>$(ProjectDir)\gcc_Debug.h;$(VISUALGDB_DIR)\gcc_compat.h;$(LOCALAPPDATA)\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\stm32_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
     <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
@@ -51,7 +51,7 @@
     <NMakePreprocessorDefinitions>__VisualGDB_CFG_Debug;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <NMakeIncludeSearchPath>os/common/ext/CMSIS/include;os/common/ext/CMSIS/ST/STM32F4xx;os/common/oslib/include;os/common/ports/ARMCMx;os/common/ports/ARMCMx/compilers/GCC;os/common/startup/ARMCMx/devices/STM32F4xx;os/license;os/rt/include;os/hal/include;os/hal/osal/rt;os/hal/ports/STM32/STM32F4xx;os\hal\ports\STM32\LLD\ADCv2;os\hal\ports\STM32\LLD\CANv1;os\hal\ports\STM32\LLD\DACv1;os\hal\ports\STM32\LLD\DMAv2;os\hal\ports\STM32\LLD\EXTIv1;os\hal\ports\STM32\LLD\GPIOv2;os\hal\ports\STM32\LLD\I2Cv1;os\hal\ports\STM32\LLD\MACv1;os\hal\ports\STM32\LLD\OTGv1;os\hal\ports\STM32\LLD\QUADSPIv1;os\hal\ports\STM32\LLD\RTCv2;os\hal\ports\STM32\LLD\SDIOv1;os\hal\ports\STM32\LLD\SPIv1;os\hal\ports\STM32\LLD\TIMv1;os\hal\ports\STM32\LLD\USARTv1;os\hal\ports\STM32\LLD\xWDGv1;os\hal\ports\common\ARMCMx;os/test/lib;os/test/rt/source/test;ext/fatfs/src;os/various;os/hal/lib/streams;.;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\arm-eabi\thumb\cortex_m4;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\backward;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include-fixed;c:\sysgcc\arm-eabi\arm-eabi\sys-include;c:\sysgcc\arm-eabi\arm-eabi\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>.;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\arm-eabi\thumb\cortex_m4;c:\sysgcc\arm-eabi\arm-eabi\include\c++\7.2.0\backward;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\7.2.0\include-fixed;c:\sysgcc\arm-eabi\arm-eabi\sys-include;c:\sysgcc\arm-eabi\arm-eabi\include;os/common/ext/ARM/CMSIS/Core/Include;os/common/ext/ST/STM32F4xx;os/common/oslib/include;os/common/ports/ARMCMx;os/common/ports/ARMCMx/compilers/GCC;os/common/startup/ARMCMx/devices/STM32F4xx;os/license;os/rt/include;os/hal/include;os/hal/osal/rt;os/hal/ports/STM32/STM32F4xx;os/hal/ports/STM32/LLD/ADCv2;os/hal/ports/STM32/LLD/CANv1;os/hal/ports/STM32/LLD/DACv1;os/hal/ports/STM32/LLD/DMAv2;os/hal/ports/STM32/LLD/EXTIv1;os/hal/ports/STM32/LLD/GPIOv2;os/hal/ports/STM32/LLD/I2Cv1;os/hal/ports/STM32/LLD/MACv1;os/hal/ports/STM32/LLD/OTGv1;os/hal/ports/STM32/LLD/QUADSPIv1;os/hal/ports/STM32/LLD/RTCv2;os/hal/ports/STM32/LLD/SDIOv1;os/hal/ports/STM32/LLD/SPIv1;os/hal/ports/STM32/LLD/TIMv1;os/hal/ports/STM32/LLD/USARTv1;os/hal/ports/STM32/LLD/xWDGv1;os/hal/ports/common/ARMCMx;os/test/lib;os/test/rt/source/test;os/test/oslib/source/test;ext/fatfs/src;os/various;os/hal/lib/streams;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>$(ProjectDir)\gcc_Release.h;$(VISUALGDB_DIR)\gcc_compat.h;$(LOCALAPPDATA)\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\stm32_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
     <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
@@ -83,8 +83,7 @@
     <ClCompile Include="board.c" />
     <ClCompile Include="ext\fatfs\src\ff.c" />
     <ClCompile Include="ext\fatfs\src\ffunicode.c" />
-    <ClCompile Include="fatfs_example.c" />
-    <ClCompile Include="os\common\ext\CMSIS\generic\readme.txt" />
+    <ClCompile Include="os\common\oslib\src\chfactory.c" />
     <ClCompile Include="os\common\oslib\src\chheap.c" />
     <ClCompile Include="os\common\oslib\src\chmboxes.c" />
     <ClCompile Include="os\common\oslib\src\chmemcore.c" />
@@ -94,24 +93,22 @@
     <ClCompile Include="os\common\ports\ARMCMx\compilers\GCC\chcoreasm_v7m.S" />
     <ClCompile Include="os\common\startup\ARMCMx\compilers\GCC\crt0_v7m.S" />
     <ClCompile Include="os\common\startup\ARMCMx\compilers\GCC\crt1.c" />
-    <ClCompile Include="os\common\startup\ARMCMx\compilers\GCC\vectors.c" />
+    <ClCompile Include="os\common\startup\ARMCMx\compilers\GCC\vectors.S" />
     <ClCompile Include="os\hal\lib\streams\chprintf.c" />
     <ClCompile Include="os\hal\lib\streams\memstreams.c" />
     <ClCompile Include="os\hal\lib\streams\nullstreams.c" />
     <ClCompile Include="os\hal\osal\rt\osal.c" />
     <ClCompile Include="os\hal\ports\common\ARMCMx\nvic.c" />
     <ClCompile Include="os\hal\ports\STM32\LLD\ADCv2\hal_adc_lld.c" />
-    <ClCompile Include="os\hal\ports\STM32\LLD\ADCv2\notes.txt" />
     <ClCompile Include="os\hal\ports\STM32\LLD\CANv1\hal_can_lld.c" />
     <ClCompile Include="os\hal\ports\STM32\LLD\DACv1\hal_dac_lld.c" />
-    <ClCompile Include="os\hal\ports\STM32\LLD\DMAv2\notes.txt" />
     <ClCompile Include="os\hal\ports\STM32\LLD\DMAv2\stm32_dma.c" />
     <ClCompile Include="os\hal\ports\STM32\LLD\EXTIv1\hal_ext_lld.c" />
-    <ClCompile Include="os\hal\ports\STM32\LLD\EXTIv1\notes.txt" />
     <ClCompile Include="os\hal\ports\STM32\LLD\GPIOv2\hal_pal_lld.c" />
     <ClCompile Include="os\hal\ports\STM32\LLD\I2Cv1\hal_i2c_lld.c" />
     <ClCompile Include="os\hal\ports\STM32\LLD\MACv1\hal_mac_lld.c" />
     <ClCompile Include="os\hal\ports\STM32\LLD\OTGv1\hal_usb_lld.c" />
+    <ClCompile Include="os\hal\ports\STM32\LLD\OTGv1\hal_usb_lld_alt.c" />
     <ClCompile Include="os\hal\ports\STM32\LLD\QUADSPIv1\hal_qspi_lld.c" />
     <ClCompile Include="os\hal\ports\STM32\LLD\RTCv2\hal_rtc_lld.c" />
     <ClCompile Include="os\hal\ports\STM32\LLD\SDIOv1\hal_sdc_lld.c" />
@@ -121,16 +118,16 @@
     <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\hal_icu_lld.c" />
     <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\hal_pwm_lld.c" />
     <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\hal_st_lld.c" />
-    <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\tim_irq_mapping.txt" />
     <ClCompile Include="os\hal\ports\STM32\LLD\USARTv1\hal_serial_lld.c" />
     <ClCompile Include="os\hal\ports\STM32\LLD\USARTv1\hal_uart_lld.c" />
     <ClCompile Include="os\hal\ports\STM32\LLD\xWDGv1\hal_wdg_lld.c" />
-    <ClCompile Include="os\hal\ports\STM32\STM32F4xx\hal_ext_lld_isr.c" />
     <ClCompile Include="os\hal\ports\STM32\STM32F4xx\hal_lld.c" />
+    <ClCompile Include="os\hal\ports\STM32\STM32F4xx\stm32_isr.c" />
     <ClCompile Include="os\hal\src\hal.c" />
     <ClCompile Include="os\hal\src\hal_adc.c" />
     <ClCompile Include="os\hal\src\hal_buffers.c" />
     <ClCompile Include="os\hal\src\hal_can.c" />
+    <ClCompile Include="os\hal\src\hal_crypto.c" />
     <ClCompile Include="os\hal\src\hal_dac.c" />
     <ClCompile Include="os\hal\src\hal_ext.c" />
     <ClCompile Include="os\hal\src\hal_gpt.c" />
@@ -169,23 +166,26 @@
     <ClCompile Include="os\rt\src\chtrace.c" />
     <ClCompile Include="os\rt\src\chvt.c" />
     <ClCompile Include="os\test\lib\ch_test.c" />
-    <ClCompile Include="os\test\rt\source\test\test_root.c" />
-    <ClCompile Include="os\test\rt\source\test\test_sequence_001.c" />
-    <ClCompile Include="os\test\rt\source\test\test_sequence_002.c" />
-    <ClCompile Include="os\test\rt\source\test\test_sequence_003.c" />
-    <ClCompile Include="os\test\rt\source\test\test_sequence_004.c" />
-    <ClCompile Include="os\test\rt\source\test\test_sequence_005.c" />
-    <ClCompile Include="os\test\rt\source\test\test_sequence_006.c" />
-    <ClCompile Include="os\test\rt\source\test\test_sequence_007.c" />
-    <ClCompile Include="os\test\rt\source\test\test_sequence_008.c" />
-    <ClCompile Include="os\test\rt\source\test\test_sequence_009.c" />
-    <ClCompile Include="os\test\rt\source\test\test_sequence_010.c" />
-    <ClCompile Include="os\test\rt\source\test\test_sequence_011.c" />
-    <ClCompile Include="os\test\rt\source\test\test_sequence_012.c" />
-    <ClCompile Include="os\test\rt\source\test\test_sequence_013.c" />
+    <ClCompile Include="os\test\oslib\source\test\oslib_test_root.c" />
+    <ClCompile Include="os\test\oslib\source\test\oslib_test_sequence_001.c" />
+    <ClCompile Include="os\test\oslib\source\test\oslib_test_sequence_002.c" />
+    <ClCompile Include="os\test\oslib\source\test\oslib_test_sequence_003.c" />
+    <ClCompile Include="os\test\oslib\source\test\oslib_test_sequence_004.c" />
+    <ClCompile Include="os\test\rt\source\test\rt_test_root.c" />
+    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_001.c" />
+    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_002.c" />
+    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_003.c" />
+    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_004.c" />
+    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_005.c" />
+    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_006.c" />
+    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_007.c" />
+    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_008.c" />
+    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_009.c" />
+    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_010.c" />
     <ClCompile Include="os\various\evtimer.c" />
     <ClCompile Include="os\various\fatfs_bindings\fatfs_diskio.c" />
     <ClCompile Include="os\various\fatfs_bindings\fatfs_syscall.c" />
+    <ClCompile Include="testmain.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="board.h" />
@@ -197,64 +197,69 @@
     <ClInclude Include="ffconf.h" />
     <ClInclude Include="halconf.h" />
     <ClInclude Include="mcuconf.h" />
-    <ClInclude Include="os\common\ext\CMSIS\generic\generic_cm0.h" />
-    <ClInclude Include="os\common\ext\CMSIS\generic\system_generic.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\arm_common_tables.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\arm_const_structs.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\arm_math.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\cmsis_armcc.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\cmsis_armcc_V6.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\cmsis_gcc.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\core_cm0.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\core_cm0plus.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\core_cm3.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\core_cm4.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\core_cm7.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\core_cmFunc.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\core_cmInstr.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\core_cmSimd.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\core_sc000.h" />
-    <ClInclude Include="os\common\ext\CMSIS\include\core_sc300.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f401xc.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f401xe.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f405xx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f407xx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f410cx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f410rx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f410tx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f411xe.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f412cx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f412rx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f412vx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f412zx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f415xx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f417xx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f427xx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f429xx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f437xx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f439xx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f446xx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f469xx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f479xx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\stm32f4xx.h" />
-    <ClInclude Include="os\common\ext\CMSIS\ST\STM32F4xx\system_stm32f4xx.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\cmsis_armcc.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\cmsis_armclang.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\cmsis_compiler.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\cmsis_gcc.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\cmsis_version.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_armv8mbl.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_armv8mml.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_cm0.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_cm0plus.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_cm23.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_cm3.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_cm33.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_cm4.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_cm7.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_sc000.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_sc300.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\mpu_armv7.h" />
+    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\tz_context.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f401xc.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f401xe.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f405xx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f407xx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f410cx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f410rx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f410tx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f411xe.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f412cx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f412rx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f412vx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f412zx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f413xx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f415xx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f417xx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f423xx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f427xx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f429xx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f437xx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f439xx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f446xx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f469xx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f479xx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f4xx.h" />
+    <ClInclude Include="os\common\ext\ST\STM32F4xx\system_stm32f4xx.h" />
     <ClInclude Include="os\common\oslib\include\chbsem.h" />
+    <ClInclude Include="os\common\oslib\include\chfactory.h" />
+    <ClInclude Include="os\common\oslib\include\chfifo.h" />
     <ClInclude Include="os\common\oslib\include\chheap.h" />
     <ClInclude Include="os\common\oslib\include\chmboxes.h" />
     <ClInclude Include="os\common\oslib\include\chmemcore.h" />
     <ClInclude Include="os\common\oslib\include\chmempools.h" />
+    <ClInclude Include="os\common\portability\GCC\ccportab.h" />
     <ClInclude Include="os\common\ports\ARMCMx\chcore.h" />
     <ClInclude Include="os\common\ports\ARMCMx\chcore_timer.h" />
     <ClInclude Include="os\common\ports\ARMCMx\chcore_v7m.h" />
     <ClInclude Include="os\common\ports\ARMCMx\mpu.h" />
     <ClInclude Include="os\common\ports\ARMCMx\compilers\GCC\chtypes.h" />
-    <ClInclude Include="os\common\startup\ARMCMx\compilers\GCC\vectors.h" />
     <ClInclude Include="os\common\startup\ARMCMx\devices\STM32F4xx\cmparams.h" />
     <ClInclude Include="os\hal\include\hal.h" />
     <ClInclude Include="os\hal\include\hal_adc.h" />
     <ClInclude Include="os\hal\include\hal_buffers.h" />
     <ClInclude Include="os\hal\include\hal_can.h" />
     <ClInclude Include="os\hal\include\hal_channels.h" />
+    <ClInclude Include="os\hal\include\hal_crypto.h" />
     <ClInclude Include="os\hal\include\hal_dac.h" />
     <ClInclude Include="os\hal\include\hal_ext.h" />
     <ClInclude Include="os\hal\include\hal_files.h" />
@@ -286,6 +291,8 @@
     <ClInclude Include="os\hal\lib\streams\memstreams.h" />
     <ClInclude Include="os\hal\lib\streams\nullstreams.h" />
     <ClInclude Include="os\hal\osal\rt\osal.h" />
+    <ClInclude Include="os\hal\ports\common\ARMCMx\cache.h" />
+    <ClInclude Include="os\hal\ports\common\ARMCMx\mpu_v7m.h" />
     <ClInclude Include="os\hal\ports\common\ARMCMx\nvic.h" />
     <ClInclude Include="os\hal\ports\STM32\LLD\ADCv2\hal_adc_lld.h" />
     <ClInclude Include="os\hal\ports\STM32\LLD\CANv1\hal_can_lld.h" />
@@ -293,9 +300,11 @@
     <ClInclude Include="os\hal\ports\STM32\LLD\DMAv2\stm32_dma.h" />
     <ClInclude Include="os\hal\ports\STM32\LLD\EXTIv1\hal_ext_lld.h" />
     <ClInclude Include="os\hal\ports\STM32\LLD\GPIOv2\hal_pal_lld.h" />
+    <ClInclude Include="os\hal\ports\STM32\LLD\GPIOv2\stm32_gpio.h" />
     <ClInclude Include="os\hal\ports\STM32\LLD\I2Cv1\hal_i2c_lld.h" />
     <ClInclude Include="os\hal\ports\STM32\LLD\MACv1\hal_mac_lld.h" />
     <ClInclude Include="os\hal\ports\STM32\LLD\OTGv1\hal_usb_lld.h" />
+    <ClInclude Include="os\hal\ports\STM32\LLD\OTGv1\hal_usb_lld_alt.h" />
     <ClInclude Include="os\hal\ports\STM32\LLD\OTGv1\stm32_otg.h" />
     <ClInclude Include="os\hal\ports\STM32\LLD\QUADSPIv1\hal_qspi_lld.h" />
     <ClInclude Include="os\hal\ports\STM32\LLD\RTCv2\hal_rtc_lld.h" />
@@ -310,7 +319,6 @@
     <ClInclude Include="os\hal\ports\STM32\LLD\USARTv1\hal_serial_lld.h" />
     <ClInclude Include="os\hal\ports\STM32\LLD\USARTv1\hal_uart_lld.h" />
     <ClInclude Include="os\hal\ports\STM32\LLD\xWDGv1\hal_wdg_lld.h" />
-    <ClInclude Include="os\hal\ports\STM32\STM32F4xx\hal_ext_lld_isr.h" />
     <ClInclude Include="os\hal\ports\STM32\STM32F4xx\hal_lld.h" />
     <ClInclude Include="os\hal\ports\STM32\STM32F4xx\stm32_isr.h" />
     <ClInclude Include="os\hal\ports\STM32\STM32F4xx\stm32_rcc.h" />
@@ -328,30 +336,34 @@
     <ClInclude Include="os\rt\include\chmsg.h" />
     <ClInclude Include="os\rt\include\chmtx.h" />
     <ClInclude Include="os\rt\include\chregistry.h" />
+    <ClInclude Include="os\rt\include\chrestrictions.h" />
     <ClInclude Include="os\rt\include\chschd.h" />
     <ClInclude Include="os\rt\include\chsem.h" />
     <ClInclude Include="os\rt\include\chstats.h" />
     <ClInclude Include="os\rt\include\chsys.h" />
     <ClInclude Include="os\rt\include\chsystypes.h" />
     <ClInclude Include="os\rt\include\chthreads.h" />
+    <ClInclude Include="os\rt\include\chtime.h" />
     <ClInclude Include="os\rt\include\chtm.h" />
     <ClInclude Include="os\rt\include\chtrace.h" />
     <ClInclude Include="os\rt\include\chvt.h" />
     <ClInclude Include="os\test\lib\ch_test.h" />
-    <ClInclude Include="os\test\rt\source\test\test_root.h" />
-    <ClInclude Include="os\test\rt\source\test\test_sequence_001.h" />
-    <ClInclude Include="os\test\rt\source\test\test_sequence_002.h" />
-    <ClInclude Include="os\test\rt\source\test\test_sequence_003.h" />
-    <ClInclude Include="os\test\rt\source\test\test_sequence_004.h" />
-    <ClInclude Include="os\test\rt\source\test\test_sequence_005.h" />
-    <ClInclude Include="os\test\rt\source\test\test_sequence_006.h" />
-    <ClInclude Include="os\test\rt\source\test\test_sequence_007.h" />
-    <ClInclude Include="os\test\rt\source\test\test_sequence_008.h" />
-    <ClInclude Include="os\test\rt\source\test\test_sequence_009.h" />
-    <ClInclude Include="os\test\rt\source\test\test_sequence_010.h" />
-    <ClInclude Include="os\test\rt\source\test\test_sequence_011.h" />
-    <ClInclude Include="os\test\rt\source\test\test_sequence_012.h" />
-    <ClInclude Include="os\test\rt\source\test\test_sequence_013.h" />
+    <ClInclude Include="os\test\oslib\source\test\oslib_test_root.h" />
+    <ClInclude Include="os\test\oslib\source\test\oslib_test_sequence_001.h" />
+    <ClInclude Include="os\test\oslib\source\test\oslib_test_sequence_002.h" />
+    <ClInclude Include="os\test\oslib\source\test\oslib_test_sequence_003.h" />
+    <ClInclude Include="os\test\oslib\source\test\oslib_test_sequence_004.h" />
+    <ClInclude Include="os\test\rt\source\test\rt_test_root.h" />
+    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_001.h" />
+    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_002.h" />
+    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_003.h" />
+    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_004.h" />
+    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_005.h" />
+    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_006.h" />
+    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_007.h" />
+    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_008.h" />
+    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_009.h" />
+    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_010.h" />
     <ClInclude Include="os\various\evtimer.h" />
   </ItemGroup>
 </Project>

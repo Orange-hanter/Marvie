@@ -16,7 +16,8 @@
 
 #include "ch.h"
 #include "hal.h"
-#include "ch_test.h"
+#include "rt_test_root.h"
+#include "oslib_test_root.h"
 
 /*
  * This is a periodic thread that does absolutely nothing except flashing
@@ -67,6 +68,7 @@ int main( void ) {
 	 * Normal main() thread activity, in this demo it does nothing except
 	 * sleeping in a loop and check the button state.
 	 */
-	test_execute( ( BaseSequentialStream * )&SD6 );
+	test_execute( ( BaseSequentialStream * )&SD6, &rt_test_suite );
+	test_execute( ( BaseSequentialStream * )&SD6, &oslib_test_suite );
 	chThdSleepS( TIME_INFINITE );
 }

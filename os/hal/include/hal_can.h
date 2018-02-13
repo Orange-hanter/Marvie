@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2016 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@
 /**
  * @brief   Special mailbox identifier.
  */
-#define CAN_ANY_MAILBOX             0
+#define CAN_ANY_MAILBOX             0U
 
 /*===========================================================================*/
 /* Driver pre-compile time settings.                                         */
@@ -132,6 +132,81 @@ typedef enum {
   canReceiveTimeout(canp, mailbox, crfp, timeout)
 /** @} */
 
+/**
+ * @name    Low level driver helper macros
+ * @{
+ */
+#if !defined(CAN_ENFORCE_USE_CALLBACKS)
+/**
+ * @brief   TX mailbox empty event.
+ */
+#define _can_tx_empty_isr(canp, flags) {                                    \
+  osalSysLockFromISR();                                                     \
+  osalThreadDequeueAllI(&(canp)->txqueue, MSG_OK);                          \
+  osalEventBroadcastFlagsI(&(canp)->txempty_event, flags);                  \
+  osalSysUnlockFromISR();                                                   \
+}
+
+/**
+ * @brief   RX mailbox empty full event.
+ */
+#define _can_rx_full_isr(canp, flags) {                                     \
+  osalSysLockFromISR();                                                     \
+  osalThreadDequeueAllI(&(canp)->rxqueue, MSG_OK);                          \
+  osalEventBroadcastFlagsI(&(canp)->rxfull_event, flags);                   \
+  osalSysUnlockFromISR();                                                   \
+}
+
+/**
+ * @brief   Error event.
+ */
+#define _can_wakeup_isr(canp) {                                             \
+  osalSysLockFromISR();                                                     \
+  osalEventBroadcastFlagsI(&(canp)->wakeup_event, 0U);                      \
+  osalSysUnlockFromISR();                                                   \
+}
+
+/**
+ * @brief   Error event.
+ */
+#define _can_error_isr(canp, flags) {                                       \
+  osalSysLockFromISR();                                                     \
+  osalEventBroadcastFlagsI(&(canp)->error_event, flags);                    \
+  osalSysUnlockFromISR();                                                   \
+}
+#else /* defined(CAN_ENFORCE_USE_CALLBACKS) */
+#define _can_tx_empty_isr(canp, flags) {                                    \
+  if ((canp)->txempty_cb != NULL) {                                         \
+    (canp)->txempty_cb(canp, flags);                                        \
+  }                                                                         \
+  osalSysLockFromISR();                                                     \
+  osalThreadDequeueAllI(&(canp)->txqueue, MSG_OK);                          \
+  osalSysUnlockFromISR();                                                   \
+}
+
+#define _can_rx_full_isr(canp, flags) {                                     \
+  if ((canp)->rxfull_cb != NULL) {                                          \
+    (canp)->rxfull_cb(canp, flags);                                         \
+  }                                                                         \
+  osalSysLockFromISR();                                                     \
+  osalThreadDequeueAllI(&(canp)->rxqueue, MSG_OK);                          \
+  osalSysUnlockFromISR();                                                   \
+}
+
+#define _can_wakeup_isr(canp) {                                             \
+  if ((canp)->wakeup_cb != NULL) {                                          \
+    (canp)->wakeup_cb(canp, 0U);                                            \
+  }                                                                         \
+}
+
+#define _can_error_isr(canp, flags) {                                       \
+  if ((canp)->error_cb != NULL) {                                           \
+    (canp)->error_cb(canp, flags);                                          \
+  }                                                                         \
+}
+#endif /* defined(CAN_ENFORCE_USE_CALLBACKS) */
+/** @} */
+
 /*===========================================================================*/
 /* External declarations.                                                    */
 /*===========================================================================*/
@@ -152,11 +227,11 @@ extern "C" {
   msg_t canTransmitTimeout(CANDriver *canp,
                            canmbx_t mailbox,
                            const CANTxFrame *ctfp,
-                           systime_t timeout);
+                           sysinterval_t timeout);
   msg_t canReceiveTimeout(CANDriver *canp,
                           canmbx_t mailbox,
                           CANRxFrame *crfp,
-                          systime_t timeout);
+                          sysinterval_t timeout);
 #if CAN_USE_SLEEP_MODE
   void canSleep(CANDriver *canp);
   void canWakeup(CANDriver *canp);

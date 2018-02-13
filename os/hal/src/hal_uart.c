@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2016 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -367,7 +367,7 @@ size_t uartStopReceiveI(UARTDriver *uartp) {
  * @api
  */
 msg_t uartSendTimeout(UARTDriver *uartp, size_t *np,
-                      const void *txbuf, systime_t timeout) {
+                      const void *txbuf, sysinterval_t timeout) {
   msg_t msg;
 
   osalDbgCheck((uartp != NULL) && (*np > 0U) && (txbuf != NULL));
@@ -412,7 +412,7 @@ msg_t uartSendTimeout(UARTDriver *uartp, size_t *np,
  * @api
  */
 msg_t uartSendFullTimeout(UARTDriver *uartp, size_t *np,
-                          const void *txbuf, systime_t timeout) {
+                          const void *txbuf, sysinterval_t timeout) {
   msg_t msg;
 
   osalDbgCheck((uartp != NULL) && (*np > 0U) && (txbuf != NULL));
@@ -459,7 +459,7 @@ msg_t uartSendFullTimeout(UARTDriver *uartp, size_t *np,
  * @api
  */
 msg_t uartReceiveTimeout(UARTDriver *uartp, size_t *np,
-                         void *rxbuf, systime_t timeout) {
+                         void *rxbuf, sysinterval_t timeout) {
   msg_t msg;
 
   osalDbgCheck((uartp != NULL) && (*np > 0U) && (rxbuf != NULL));

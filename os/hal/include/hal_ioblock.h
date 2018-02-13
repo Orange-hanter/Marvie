@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2016 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -127,8 +127,8 @@ typedef struct {
  * @param[in] ip        pointer to a @p BaseBlockDevice or derived class
  *
  * @return              The driver state.
- * @retval FALSE        the device is not transferring data.
- * @retval TRUE         the device not transferring data.
+ * @retval false        the device is not transferring data.
+ * @retval true         the device not transferring data.
  *
  * @special
  */
@@ -147,8 +147,8 @@ typedef struct {
  * @param[in] ip        pointer to a @p BaseBlockDevice or derived class
  *
  * @return              The media state.
- * @retval FALSE        media not inserted.
- * @retval TRUE         media inserted.
+ * @retval false        media not inserted.
+ * @retval true         media inserted.
  *
  * @api
  */
@@ -160,8 +160,8 @@ typedef struct {
  * @param[in] ip        pointer to a @p BaseBlockDevice or derived class
  *
  * @return              The media state.
- * @retval FALSE        writable media.
- * @retval TRUE         non writable media.
+ * @retval false        writable media.
+ * @retval true         non writable media.
  *
  * @api
  */

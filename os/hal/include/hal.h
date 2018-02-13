@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2016 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -40,6 +40,10 @@
 
 #if !defined(HAL_USE_CAN)
 #define HAL_USE_CAN                         FALSE
+#endif
+
+#if !defined(HAL_USE_CRY)
+#define HAL_USE_CRY                         FALSE
 #endif
 
 #if !defined(HAL_USE_DAC)
@@ -124,6 +128,7 @@
 #include "hal_pal.h"
 #include "hal_adc.h"
 #include "hal_can.h"
+#include "hal_crypto.h"
 #include "hal_dac.h"
 #include "hal_ext.h"
 #include "hal_gpt.h"
@@ -181,22 +186,22 @@
 /**
  * @brief   HAL version string.
  */
-#define HAL_VERSION             "5.1.2"
+#define HAL_VERSION             "6.0.0"
 
 /**
  * @brief   HAL version major number.
  */
-#define CH_HAL_MAJOR            5
+#define CH_HAL_MAJOR            6
 
 /**
  * @brief   HAL version minor number.
  */
-#define CH_HAL_MINOR            1
+#define CH_HAL_MINOR            0
 
 /**
  * @brief   HAL version patch number.
  */
-#define CH_HAL_PATCH            2
+#define CH_HAL_PATCH            0
 /** @} */
 
 /**
