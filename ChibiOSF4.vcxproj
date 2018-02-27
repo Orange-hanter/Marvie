@@ -67,6 +67,7 @@
   <ItemGroup>
     <None Include="ChibiOSF4-Debug.vgdbsettings" />
     <None Include="ChibiOSF4-Release.vgdbsettings" />
+    <None Include="ClassDiagram.cd" />
     <None Include="debug.mak" />
     <None Include="Makefile" />
     <None Include="os\common\startup\ARMCMx\compilers\GCC\ld\STM32F407xE.ld" />
@@ -81,6 +82,8 @@
   </ImportGroup>
   <ItemGroup>
     <ClCompile Include="board.c" />
+    <ClCompile Include="Core\NewDelete.cpp" />
+    <ClCompile Include="Drivers\Interfaces\Usart.cpp" />
     <ClCompile Include="ext\fatfs\src\ff.c" />
     <ClCompile Include="ext\fatfs\src\ffunicode.c" />
     <ClCompile Include="os\common\oslib\src\chfactory.c" />
@@ -182,14 +185,21 @@
     <ClCompile Include="os\test\rt\source\test\rt_test_sequence_008.c" />
     <ClCompile Include="os\test\rt\source\test\rt_test_sequence_009.c" />
     <ClCompile Include="os\test\rt\source\test\rt_test_sequence_010.c" />
+    <ClCompile Include="os\various\cpp_wrappers\ch.cpp" />
     <ClCompile Include="os\various\evtimer.c" />
     <ClCompile Include="os\various\fatfs_bindings\fatfs_diskio.c" />
     <ClCompile Include="os\various\fatfs_bindings\fatfs_syscall.c" />
-    <ClCompile Include="testmain.c" />
+    <ClCompile Include="Tests\UsartTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="board.h" />
     <ClInclude Include="chconf.h" />
+    <ClInclude Include="Core\AbstractByteRingBuffer.h" />
+    <ClInclude Include="Core\IODevice.h" />
+    <ClInclude Include="Core\ReverseRingIterator.h" />
+    <ClInclude Include="Core\RingIterator.h" />
+    <ClInclude Include="Drivers\Interfaces\Usart.h" />
+    <ClInclude Include="Drivers\Interfaces\UsartBasedDevice.h" />
     <ClInclude Include="ext\fatfs\src\diskio.h" />
     <ClInclude Include="ext\fatfs\src\ff.h" />
     <ClInclude Include="ext\fatfs\src\integer.h" />
@@ -364,6 +374,7 @@
     <ClInclude Include="os\test\rt\source\test\rt_test_sequence_008.h" />
     <ClInclude Include="os\test\rt\source\test\rt_test_sequence_009.h" />
     <ClInclude Include="os\test\rt\source\test\rt_test_sequence_010.h" />
+    <ClInclude Include="os\various\cpp_wrappers\ch.hpp" />
     <ClInclude Include="os\various\evtimer.h" />
   </ItemGroup>
 </Project>

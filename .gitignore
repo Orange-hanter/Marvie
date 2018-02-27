@@ -5,3 +5,5 @@ VisualGDBCache/
 Makefile.old
 debug.mak.old
 release.mak.old
+ChibiOSF4-Release.vgdbsettings.User.user
+ChibiOSF4-Debug.vgdbsettings.User.user

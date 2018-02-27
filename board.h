@@ -289,6 +289,18 @@
 #define PIN_AFIO_AF(n, v)           ((v) << (((n) % 8U) * 4U))
 
 /*
+ * 
+*/
+#define GPIO_AF_USART1        ((uint8_t)0x07)  /* USART1 Alternate Function mapping  */
+#define GPIO_AF_USART2        ((uint8_t)0x07)  /* USART2 Alternate Function mapping  */
+#define GPIO_AF_USART3        ((uint8_t)0x07)  /* USART3 Alternate Function mapping  */
+#define GPIO_AF_UART4         ((uint8_t)0x08)  /* UART4 Alternate Function mapping  */
+#define GPIO_AF_UART5         ((uint8_t)0x08)  /* UART5 Alternate Function mapping  */
+#define GPIO_AF_USART6        ((uint8_t)0x08)  /* USART6 Alternate Function mapping */
+#define GPIO_AF_UART7         ((uint8_t)0x08)  /* UART7 Alternate Function mapping  */
+#define GPIO_AF_UART8         ((uint8_t)0x08)  /* UART8 Alternate Function mapping  */
+
+/*
  * GPIOA setup:
  *
  * PA0  - BUTTON                    (input floating).
