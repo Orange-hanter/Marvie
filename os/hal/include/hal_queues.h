@@ -74,7 +74,8 @@ typedef void (*qnotify_t)(io_queue_t *qp);
  */
 struct io_queue {
   threads_queue_t       q_waiting;  /**< @brief Queue of waiting threads.   */
-  volatile size_t       q_counter;  /**< @brief Resources counter.          */
+  volatile size_t       q_size;     /**< @brief Queue size.                 */
+  volatile size_t       q_counter;  /**< @brief Resources counter.          */  
   uint8_t               *q_buffer;  /**< @brief Pointer to the queue buffer.*/
   uint8_t               *q_top;     /**< @brief Pointer to the first
                                          location after the buffer.         */
@@ -124,11 +125,8 @@ typedef io_queue_t output_queue_t;
  *
  * @xclass
  */
-#define qSizeX(qp)                                                          \
-  /*lint -save -e9033 [10.8] The cast is safe.*/                            \
-  ((size_t)((qp)->q_top - (qp)->q_buffer))                                  \
-  /*lint -restore*/
-
+#define qSizeX(qp) ((qp)->q_size)
+ 
 /**
  * @brief   Queue space.
  * @details Returns the used space if used on an input queue or the empty
@@ -198,7 +196,7 @@ typedef io_queue_t output_queue_t;
  */
 #define iqIsFullI(iqp)                                                      \
   /*lint -save -e9007 [13.5] No side effects, a pointer is passed.*/        \
-  ((bool)(((iqp)->q_wrptr == (iqp)->q_rdptr) && ((iqp)->q_counter != 0U)))  \
+  ((bool)((iqp)->q_counter == (iqp)->q_size))                               \
   /*lint -restore*/
 
 /**
@@ -249,7 +247,7 @@ typedef io_queue_t output_queue_t;
  */
 #define oqIsEmptyI(oqp)                                                     \
   /*lint -save -e9007 [13.5] No side effects, a pointer is passed.*/        \
-  ((bool)(((oqp)->q_wrptr == (oqp)->q_rdptr) && ((oqp)->q_counter != 0U)))  \
+  ((bool)((oqp)->q_counter == (oqp)->q_size))                               \
   /*lint -restore*/
 
 /**
@@ -291,6 +289,8 @@ extern "C" {
 #endif
   void iqObjectInit(input_queue_t *iqp, uint8_t *bp, size_t size,
                     qnotify_t infy, void *link);
+  void iqObjectInit2(input_queue_t *iqp, uint8_t *bp_begin, uint8_t *bp_end, size_t size,
+                     qnotify_t infy, void *link);
   void iqResetI(input_queue_t *iqp);
   msg_t iqPutI(input_queue_t *iqp, uint8_t b);
   msg_t iqGetI(input_queue_t *iqp);
@@ -301,6 +301,8 @@ extern "C" {
 
   void oqObjectInit(output_queue_t *oqp, uint8_t *bp, size_t size,
                     qnotify_t onfy, void *link);
+  void oqObjectInit2(output_queue_t *oqp, uint8_t *bp_begin, uint8_t *bp_end, size_t size,
+                     qnotify_t onfy, void *link);
   void oqResetI(output_queue_t *oqp);
   msg_t oqPutI(output_queue_t *oqp, uint8_t b);
   msg_t oqPutTimeout(output_queue_t *oqp, uint8_t b, sysinterval_t timeout);

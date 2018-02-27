@@ -71,20 +71,33 @@ static size_t iq_read(input_queue_t *iqp, uint8_t *bp, size_t n) {
   /*lint -save -e9033 [10.8] Checked to be safe.*/
   s1 = (size_t)(iqp->q_top - iqp->q_rdptr);
   /*lint -restore*/
-  if (n < s1) {
-    memcpy((void *)bp, (void *)iqp->q_rdptr, n);
-    iqp->q_rdptr += n;
+  if (bp == NULL) {
+    if (n < s1) {		  
+      iqp->q_rdptr += n;
+    }
+    else if (n > s1) {	  
+      iqp->q_rdptr = iqp->q_buffer + n - s1;
+    }
+	else { /* n == s1 */
+      iqp->q_rdptr = iqp->q_buffer;
+    }
   }
-  else if (n > s1) {
-    memcpy((void *)bp, (void *)iqp->q_rdptr, s1);
-    bp += s1;
-    s2 = n - s1;
-    memcpy((void *)bp, (void *)iqp->q_buffer, s2);
-    iqp->q_rdptr = iqp->q_buffer + s2;
-  }
-  else { /* n == s1 */
-    memcpy((void *)bp, (void *)iqp->q_rdptr, n);
-    iqp->q_rdptr = iqp->q_buffer;
+  else {
+    if (n < s1) {
+  	  memcpy((void *)bp, (void *)iqp->q_rdptr, n);
+  	  iqp->q_rdptr += n;
+    }
+    else if (n > s1) {
+  	  memcpy((void *)bp, (void *)iqp->q_rdptr, s1);
+  	  bp += s1;
+  	  s2 = n - s1;
+  	  memcpy((void *)bp, (void *)iqp->q_buffer, s2);
+  	  iqp->q_rdptr = iqp->q_buffer + s2;
+    }
+    else { /* n == s1 */
+  	  memcpy((void *)bp, (void *)iqp->q_rdptr, n);
+  	  iqp->q_rdptr = iqp->q_buffer;
+    }
   }
 
   iqp->q_counter -= n;
@@ -178,13 +191,28 @@ void iqObjectInit(input_queue_t *iqp, uint8_t *bp, size_t size,
                   qnotify_t infy, void *link) {
 
   osalThreadQueueObjectInit(&iqp->q_waiting);
+  iqp->q_size      = size;
+  iqp->q_counter   = 0; 
+  iqp->q_buffer    = bp;
+  iqp->q_rdptr     = bp;
+  iqp->q_wrptr     = bp;
+  iqp->q_top       = bp + size;
+  iqp->q_notify    = infy;
+  iqp->q_link      = link;
+}
+
+void iqObjectInit2(input_queue_t *iqp, uint8_t *bp_begin, uint8_t *bp_end, size_t size,
+                   qnotify_t infy, void *link) {
+	
+  osalThreadQueueObjectInit(&iqp->q_waiting);
+  iqp->q_size = size;
   iqp->q_counter = 0;
-  iqp->q_buffer  = bp;
-  iqp->q_rdptr   = bp;
-  iqp->q_wrptr   = bp;
-  iqp->q_top     = bp + size;
-  iqp->q_notify  = infy;
-  iqp->q_link    = link;
+  iqp->q_buffer = bp_begin;
+  iqp->q_rdptr = bp_begin;
+  iqp->q_wrptr = bp_begin;
+  iqp->q_top = bp_end;
+  iqp->q_notify = infy;
+  iqp->q_link = link;
 }
 
 /**
@@ -447,6 +475,7 @@ void oqObjectInit(output_queue_t *oqp, uint8_t *bp, size_t size,
                   qnotify_t onfy, void *link) {
 
   osalThreadQueueObjectInit(&oqp->q_waiting);
+  oqp->q_size    = size;
   oqp->q_counter = size;
   oqp->q_buffer  = bp;
   oqp->q_rdptr   = bp;
@@ -454,6 +483,20 @@ void oqObjectInit(output_queue_t *oqp, uint8_t *bp, size_t size,
   oqp->q_top     = bp + size;
   oqp->q_notify  = onfy;
   oqp->q_link    = link;
+}
+
+void oqObjectInit2(output_queue_t *oqp, uint8_t *bp_begin, uint8_t *bp_end, 
+                   size_t size, qnotify_t onfy, void *link) {
+	
+  osalThreadQueueObjectInit(&oqp->q_waiting);
+  oqp->q_size = size;
+  oqp->q_counter = size;
+  oqp->q_buffer = bp_begin;
+  oqp->q_rdptr = bp_begin;
+  oqp->q_wrptr = bp_begin;
+  oqp->q_top = bp_end;
+  oqp->q_notify = onfy;
+  oqp->q_link = link;
 }
 
 /**

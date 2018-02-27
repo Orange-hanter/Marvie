@@ -241,7 +241,7 @@ void sdIncomingDataI(SerialDriver *sdp, uint8_t b) {
   osalDbgCheckClassI();
   osalDbgCheck(sdp != NULL);
 
-  if (iqIsEmptyI(&sdp->iqueue))
+  //if (iqIsEmptyI(&sdp->iqueue))
     chnAddFlagsI(sdp, CHN_INPUT_AVAILABLE);
   if (iqPutI(&sdp->iqueue, b) < MSG_OK)
     chnAddFlagsI(sdp, SD_QUEUE_FULL_ERROR);
