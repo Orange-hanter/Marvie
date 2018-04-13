@@ -2,9 +2,14 @@
 
 #include <stdint.h>
 
+template< typename Type > class RingIterator;
+template< typename Type > void ringToLinearArrays( const RingIterator< Type >&, uint32_t, Type**, uint32_t*, Type**, uint32_t* );
+
 template< typename Type >
 class RingIterator
 {
+	friend void ringToLinearArrays<>( const RingIterator&, uint32_t, Type**, uint32_t*, Type**, uint32_t* );
+
 public:
 	RingIterator();
 	RingIterator( Type* begin, Type* current, uint32_t size );
@@ -183,4 +188,28 @@ template< typename Type >
 bool RingIterator<Type>::isValid() const
 {
 	return begin != nullptr;
+}
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+template< typename Type >
+void ringToLinearArrays( const RingIterator< Type >& begin, uint32_t size, Type** ppDataA, uint32_t* pSizeA, Type** ppDataB, uint32_t* pSizeB )
+{
+	uint32_t h = begin.begin + begin.size + 1 - begin.pos;
+	if( size > h )
+	{
+		*ppDataA = begin.pos;
+		*pSizeA = h;
+		*ppDataB = begin.begin;
+		*pSizeB = size - h;
+	}
+	else // size < h || size == h
+	{
+		*ppDataA = begin.pos;
+		*pSizeA = size;
+		*ppDataB = nullptr;
+		*pSizeB = 0;
+	}
 }

@@ -35,6 +35,7 @@ int usartId( SerialDriver* sd )
 	if( sd == &SD8 )
 		return 7;
 #endif
+	return -1;
 }
 
 Usart::Usart( SerialDriver* sd )
@@ -139,7 +140,7 @@ bool Usart::open( uint32_t baudRate, DataFormat dataFormat /*= B8N*/, StopBits s
 	this->dataFormat = dataFormat;
 	this->stopBits = stopBits;
 	this->mode = mode;
-	this->hardwareFlowControl;
+	this->hardwareFlowControl = hardwareFlowControl;
 
 	return open();
 }
@@ -156,7 +157,7 @@ void Usart::setBaudRate( uint32_t baudRate )
 #if STM32_HAS_USART6
 	if( ( u == USART1 ) || ( u == USART6 ) )
 #else
-	if( sdp->usart == USART1 )
+	if( u == USART1 )
 #endif
 		u->BRR = STM32_PCLK2 / baudRate;
 	else
@@ -201,6 +202,15 @@ bool Usart::isOpen() const
 	return sd->state == sdstate_t::SD_READY;
 }
 
+void Usart::reset()
+{
+	chSysLock();
+	listener.flags &= ~( SD_QUEUE_FULL_ERROR | SD_OVERRUN_ERROR );
+	iqResetI( &sd->iqueue );
+	oqResetI( &sd->oqueue );
+	chSysUnlock();
+}
+
 void Usart::close()
 {
 	sdStop( sd );
@@ -211,19 +221,49 @@ USART_TypeDef* Usart::base()
 	return sd->usart;
 }
 
-int Usart::write( uint8_t* data, uint32_t len, sysinterval_t timeout /*= TIME_IMMEDIATE */ )
+int Usart::write( const uint8_t* data, uint32_t size, sysinterval_t timeout /*= TIME_IMMEDIATE */ )
 {
-	return oqWriteTimeout( &sd->oqueue, data, len, timeout );
+	return oqWriteTimeout( &sd->oqueue, data, size, timeout );
 }
 
-int Usart::read( uint8_t* data, uint32_t len, sysinterval_t timeout /*= TIME_IMMEDIATE */ )
+int Usart::read( uint8_t* data, uint32_t size, sysinterval_t timeout /*= TIME_IMMEDIATE */ )
 {
-	return iqReadTimeout( &sd->iqueue, data, len, timeout );
+	return iqReadTimeout( &sd->iqueue, data, size, timeout );
 }
 
-int Usart::bytesAvailable() const
+int Usart::readAvailable() const
 {
 	return iqGetFullI( &sd->iqueue );
+}
+
+bool Usart::waitForReadAvailable( uint32_t size, sysinterval_t timeout )
+{
+	if( readAvailable() >= size )
+		return true;
+
+	EvtSource innerEventSource;
+	virtual_timer_t timer;
+	chVTObjectInit( &timer );
+	chVTSet( &timer, timeout, timerCallback, &innerEventSource );
+
+	EvtListener usartListener, innerEventListener;
+	enum Event : eventmask_t { UsartEvent = EVENT_MASK( 0 ), InnerEvent = EVENT_MASK( 1 ) };
+	eventSource()->registerMaskWithFlags( &usartListener, UsartEvent, CHN_INPUT_AVAILABLE );
+	innerEventSource.registerMaskWithFlags( &innerEventListener, InnerEvent, 1 );
+	while( readAvailable() < size )
+	{
+		eventmask_t em = chEvtWaitAny( UsartEvent | InnerEvent );
+		if( em & InnerEvent )
+			break;
+		if( em & UsartEvent )
+			usartListener.getAndClearFlags();
+	}
+
+	eventSource()->unregister( &usartListener );
+	innerEventSource.unregister( &innerEventListener );
+	chVTReset( &timer );
+
+	return readAvailable() >= size;
 }
 
 bool Usart::setInputBuffer( uint8_t* bp, uint32_t size )
@@ -280,24 +320,24 @@ bool Usart::setOutputBuffer( uint8_t* bp, uint32_t size )
 	return true;
 }
 
-AbstractByteRingBuffer* Usart::inputBuffer()
+AbstractReadable* Usart::inputBuffer()
 {
 	return &inBuffer;
 }
 
-AbstractByteRingBuffer* Usart::outputBuffer()
+AbstractWritable* Usart::outputBuffer()
 {
-	return nullptr;
+	return &outBuffer;
 }
 
-bool Usart::isInputBufferOverflowed()
+bool Usart::isInputBufferOverflowed() const
 {
-	return listener.flags & SD_QUEUE_FULL_ERROR;
+	return listener.flags & SD_QUEUE_FULL_ERROR || listener.flags & SD_OVERRUN_ERROR;
 }
 
 void Usart::resetInputBufferOverflowFlag()
 {
-	listener.flags &= ~SD_QUEUE_FULL_ERROR;
+	listener.flags &= ~( SD_QUEUE_FULL_ERROR | SD_OVERRUN_ERROR );
 }
 
 EvtSource* Usart::eventSource()
@@ -305,14 +345,11 @@ EvtSource* Usart::eventSource()
 	return reinterpret_cast< EvtSource* >( &sd->event );
 }
 
-uint32_t Usart::InputBuffer::write( uint8_t* data, uint32_t len )
+void Usart::timerCallback( void* p )
 {
-	return 0;
-}
-
-uint32_t Usart::InputBuffer::write( Iterator begin, Iterator end )
-{
-	return 0;
+	chSysLockFromISR();
+	reinterpret_cast< EvtSource* >( p )->broadcastFlagsI( 1 );
+	chSysUnlockFromISR();
 }
 
 uint32_t Usart::InputBuffer::read( uint8_t* data, uint32_t len )
@@ -324,27 +361,17 @@ uint32_t Usart::InputBuffer::read( uint8_t* data, uint32_t len )
 	return len;
 }
 
-uint32_t Usart::InputBuffer::writeAvailable()
-{
-	return 0;
-}
-
-uint32_t Usart::InputBuffer::readAvailable()
+uint32_t Usart::InputBuffer::readAvailable() const
 {
 	return iqGetFullI( &usart->sd->iqueue );
 }
 
-uint32_t Usart::InputBuffer::size()
-{
-	return qSizeX( &usart->sd->iqueue );
-}
-
-bool Usart::InputBuffer::isBufferOverflowed()
+bool Usart::InputBuffer::isOverflowed() const
 {
 	return usart->listener.flags & SD_QUEUE_FULL_ERROR;
 }
 
-void Usart::InputBuffer::resetBufferOverflowFlag()
+void Usart::InputBuffer::resetOverflowFlag()
 {
 	usart->listener.flags &= ~SD_QUEUE_FULL_ERROR;
 }
@@ -381,26 +408,58 @@ void Usart::InputBuffer::clear()
 	chSysUnlock();
 }
 
-AbstractByteRingBuffer::Iterator Usart::InputBuffer::begin()
+AbstractReadable::Iterator Usart::InputBuffer::begin()
 {
 	input_queue_t& iq = usart->sd->iqueue;
 	return Iterator( iq.q_buffer, iq.q_rdptr, iq.q_size );
 }
 
-AbstractByteRingBuffer::Iterator Usart::InputBuffer::end()
+AbstractReadable::Iterator Usart::InputBuffer::end()
 {
 	input_queue_t& iq = usart->sd->iqueue;
 	return Iterator( iq.q_buffer, iq.q_wrptr, iq.q_size );
 }
 
-AbstractByteRingBuffer::ReverseIterator Usart::InputBuffer::rbegin()
+AbstractReadable::ReverseIterator Usart::InputBuffer::rbegin()
 {
 	input_queue_t& iq = usart->sd->iqueue;
 	return ++ReverseIterator( iq.q_buffer, iq.q_wrptr, iq.q_size );
 }
 
-AbstractByteRingBuffer::ReverseIterator Usart::InputBuffer::rend()
+AbstractReadable::ReverseIterator Usart::InputBuffer::rend()
 {
 	input_queue_t& iq = usart->sd->iqueue;
 	return ++ReverseIterator( iq.q_buffer, iq.q_rdptr, iq.q_size );
+}
+
+uint32_t Usart::OutputBuffer::write( const uint8_t* data, uint32_t len )
+{
+	chSysLock();
+	len = oqWriteI( &usart->sd->oqueue, data, len );
+	chSysUnlock();
+
+	return len;
+}
+
+uint32_t Usart::OutputBuffer::write( Iterator begin, Iterator end )
+{
+	return write( begin, end - begin );
+}
+
+uint32_t Usart::OutputBuffer::write( Iterator begin, uint32_t size )
+{
+	uint32_t done;
+	uint8_t* data[2];
+	uint32_t dataSize[2];
+	ringToLinearArrays( begin, size, data, dataSize, data + 1, dataSize + 1 );
+	if( ( done = write( data[0], dataSize[0] ) ) != dataSize[0] )
+		return done;
+	done += write( data[1], dataSize[1] );
+
+	return done;
+}
+
+uint32_t Usart::OutputBuffer::writeAvailable() const
+{
+	return oqGetEmptyI( &usart->sd->oqueue );
 }
