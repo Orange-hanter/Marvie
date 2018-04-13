@@ -446,8 +446,9 @@ size_t iqReadTimeout(input_queue_t *iqp, uint8_t *bp,
       osalSysUnlock();
 
       rd += done;
-      bp += done;
-
+	  if (bp != NULL) {
+        bp += done;
+	  }
       osalSysLock();
     }
   }
