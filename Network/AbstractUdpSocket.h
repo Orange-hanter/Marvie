@@ -2,6 +2,13 @@
 
 #include "AbstractSocket.h"
 
+struct UdpPacketHeader
+{
+	IpAddress remoteAddress;
+	uint16_t remotePort;
+	uint16_t datagramSize;
+};
+
 class AbstractUdpSocket : public AbstractSocket
 {
 public:

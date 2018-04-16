@@ -47,6 +47,7 @@ Usart::Usart( SerialDriver* sd )
 	hardwareFlowControl = FlowControl::None;
 	this->sd = sd;
 	inBuffer.usart = this;
+	outBuffer.usart = this;
 
 	sdStop( sd );
 	--sd->iqueue.q_size;

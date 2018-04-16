@@ -376,7 +376,6 @@ uint32_t BaseRingBuffer< Type >::_read( Type* data, uint32_t size )
 
 	counter -= size;
 	chThdDequeueAllI( &writeWaitingQueue, MSG_OK );
-	chSchRescheduleS();
 	return size;
 }
 
@@ -405,5 +404,4 @@ void BaseRingBuffer< Type >::_write( const Type* data, uint32_t size )
 
 	counter += size;
 	chThdDequeueNextI( &readWaitingQueue, MSG_OK );
-	chSchRescheduleS();
 }

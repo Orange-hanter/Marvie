@@ -27,12 +27,14 @@ public:
 		Iterator();
 
 		Iterator& operator++();
+		Iterator& operator++( int );
 		Iterator& operator--();
+		Iterator& operator--( int );
 		bool operator ==( Iterator ) const;
 		bool operator !=( Iterator ) const;
-		T& operator*();		
+		T& operator*();
 	};
-		
+
 	NanoList();
 	~NanoList();
 
@@ -184,10 +186,26 @@ typename NanoList< T >::Iterator& NanoList< T >::Iterator::operator++()
 }
 
 template< typename T >
+typename NanoList< T >::Iterator& NanoList< T >::Iterator::operator++( int )
+{
+	Iterator tmp( *this );
+	operator ++();
+	return tmp;
+}
+
+template< typename T >
 typename NanoList< T >::Iterator& NanoList< T >::Iterator::operator--()
 {
 	node = node->prev;
 	return *this;
+}
+
+template< typename T >
+typename NanoList< T >::Iterator& NanoList< T >::Iterator::operator--( int )
+{
+	Iterator tmp( *this );
+	operator --();
+	return tmp;
 }
 
 template< typename T >
