@@ -20,7 +20,7 @@ public:
 	virtual ModemError modemError() = 0;
 	virtual IpAddress networkAddress() = 0;
 
-	virtual AbstactTcpServer* tcpServer( uint32_t index ) = 0;
+	virtual AbstractTcpServer* tcpServer( uint32_t index ) = 0;
 
 	virtual AbstractUdpSocket* createUdpSocket() = 0;
 	virtual AbstractUdpSocket* createUdpSocket( uint32_t inputBufferSize, uint32_t outputBufferSize ) = 0;

@@ -20,7 +20,7 @@ class SimGsmTcpServer;
 class SimGsmUdpSocket;
 class SimGsmTcpSocket;
 
-class SimGsm : private BaseStaticThread< 1024 >, public AbstractGsmModem
+class SimGsm : private BaseStaticThread< 1280 >, public AbstractGsmModem
 {
 	friend class SimGsmSocketBase;
 	friend class SimGsmUdpSocket;
@@ -42,7 +42,7 @@ public:
 	ModemError modemError() final override;
 	IpAddress networkAddress() final override;
 
-	AbstactTcpServer* tcpServer( uint32_t index ) final override;
+	AbstractTcpServer* tcpServer( uint32_t index ) final override;
 
 	AbstractUdpSocket* createUdpSocket() final override; // reentrant 
 	AbstractUdpSocket* createUdpSocket( uint32_t inputBufferSize, uint32_t outputBufferSize ) final override; // reentrant 

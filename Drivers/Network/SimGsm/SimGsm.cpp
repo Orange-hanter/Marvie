@@ -226,7 +226,7 @@ IpAddress SimGsm::networkAddress()
 	return netAddress;
 }
 
-AbstactTcpServer* SimGsm::tcpServer( uint32_t index )
+AbstractTcpServer* SimGsm::tcpServer( uint32_t index )
 {
 	if( index != 0 )
 		return nullptr;
@@ -405,6 +405,8 @@ GsmReinit:
 		if( executeSetting( CPIN_ANALYZER_STATE, str ) != 0 )
 			return InitResult::PinCodeIncorrect;
 	}
+	else if( cpinStatus == CPinParsingResult::Status::Unknown )
+		return InitResult::Fail;
 	else if( cpinStatus != CPinParsingResult::Status::Ready )
 		return InitResult::PinCodeIncorrect;
 
@@ -417,9 +419,9 @@ GsmReinit:
 	if( mStatus != ModemStatus::Initializing || executeSetting( CSTT_ANALYZER_STATE, str, 1500, 3 ) != 0 )
 		return InitResult::Fail;
 
-	chThdSleepMilliseconds( 1800 );
+	chThdSleepMilliseconds( 2000 );
 
-	if( mStatus != ModemStatus::Initializing || executeSetting( CIICR_ANALYZER_STATE, "AT+CIICR\r\n", 1500, 3, TIME_S2I( 10 ) ) != 0 )
+	if( mStatus != ModemStatus::Initializing || executeSetting( CIICR_ANALYZER_STATE, "AT+CIICR\r\n", 0, 1, TIME_S2I( 10 ) ) != 0 )
 		return InitResult::Fail;
 
 	if( mStatus != ModemStatus::Initializing || executeSetting( CIFSR_ANALYZER_STATE, "AT+CIFSR\r\n" ) != 0 )
@@ -606,6 +608,7 @@ void SimGsm::lexicalAnalyzerCallback( LexicalAnalyzer::ParsingResult* res )
 	case SimGsmATResponseParsers::RemoteIp:
 	{
 		SimGsmATResponseParsers::RemoteIpParsingResult* rres = static_cast< SimGsmATResponseParsers::RemoteIpParsingResult* >( res );
+		assert( rres->linkId < SIMGSM_SOCKET_LIMIT );
 		assert( linkDesc[rres->linkId].socket == nullptr );
 		SimGsmTcpSocket* socket = static_cast< SimGsmTcpSocket* >( createTcpSocket( server->inputBufferSize, server->outputBufferSize ) );
 		chSysLock();
@@ -842,13 +845,22 @@ void SimGsm::startRequestHandler( LexicalAnalyzer::ParsingResult* res )
 		nextRequest();
 		break;
 	}
-	case SimGsmATResponseParsers::Error: // CLPORT response	
 	case SimGsmATResponseParsers::ConnectFail:
+		dereserveLink( sreq->linkId );
+		chSysLock();
+		static_cast< SimGsmUdpSocket* >( sreq->socket )->sError = SocketError::ConnectionRefusedError;
+		sreq->socket->eventSource()->broadcastFlagsI( ( eventflags_t )SocketEventFlag::Error );
+		chBSemSignalI( &sreq->semaphore );
+		chSchRescheduleS();
+		chSysUnlock();
+		nextRequest();
+		break;
+	case SimGsmATResponseParsers::Error: // CLPORT response	
 	case SimGsmATResponseParsers::CMEError:
 	{
 		dereserveLink( sreq->linkId );
-		static_cast< SimGsmUdpSocket* >( sreq->socket )->sError = SocketError::NetworkError;
 		chSysLock();
+		static_cast< SimGsmUdpSocket* >( sreq->socket )->sError = SocketError::NetworkError;
 		sreq->socket->eventSource()->broadcastFlagsI( ( eventflags_t )SocketEventFlag::Error );
 		chBSemSignalI( &sreq->semaphore );
 		chSchRescheduleS();

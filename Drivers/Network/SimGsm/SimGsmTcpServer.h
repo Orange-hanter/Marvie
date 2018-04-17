@@ -5,7 +5,7 @@
 
 class SimGsm;
 
-class SimGsmTcpServer : public AbstactTcpServer
+class SimGsmTcpServer : public AbstractTcpServer
 {
 	friend class SimGsm;
 	SimGsmTcpServer( SimGsm* );

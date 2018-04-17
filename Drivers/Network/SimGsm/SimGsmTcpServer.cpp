@@ -5,6 +5,7 @@ SimGsmTcpServer::SimGsmTcpServer( SimGsm* gsm )
 	this->gsm = gsm;
 	sError = SocketError::NoError;
 	listening = false;
+	inputBufferSize = 16, outputBufferSize = 0;
 	root = nullptr;
 	chThdQueueObjectInit( &waitingQueue );
 }

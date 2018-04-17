@@ -4,10 +4,10 @@
 
 enum class TcpServerEventFlag { Error = 1, NewConnection = 2 };
 
-class AbstactTcpServer
+class AbstractTcpServer
 {
 public:
-	virtual ~AbstactTcpServer() {};
+	virtual ~AbstractTcpServer() {};
 
 	virtual bool isListening() const = 0;
 	virtual bool listen( uint16_t port ) = 0;
