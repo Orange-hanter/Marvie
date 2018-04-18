@@ -497,7 +497,7 @@ int SimGsm::executeSetting( uint32_t lexicalAnalyzerState, const char* cmd, uint
 
 			req.status = GeneralRequest::Status::Executing;
 			req.errCode = -1;
-			usart->write( ( const uint8_t* )cmd, strlen( cmd ), TIME_INFINITE );			
+			usart->write( ( const uint8_t* )cmd, strlen( cmd ), TIME_INFINITE );
 
 			chVTSet( &timer, timeout, timeoutCallback, this );
 			innerEventListener.getAndClearFlags();
@@ -623,8 +623,8 @@ void SimGsm::lexicalAnalyzerCallback( LexicalAnalyzer::ParsingResult* res )
 	{
 		SimGsmATResponseParsers::ClosedParsingResult* cres = static_cast< SimGsmATResponseParsers::ClosedParsingResult* >( res );
 		if( currentRequest &&
-			( currentRequest->value->type == Request::Type::Close && static_cast< SimGsmUdpSocket* >( static_cast< CloseRequest* >( currentRequest->value )->socket )->linkId == cres->linkId ||
-			  currentRequest->value->type == Request::Type::Send && static_cast< SimGsmUdpSocket* >( static_cast< SendRequest* >( currentRequest->value )->socket )->linkId == cres->linkId ) &&
+			( ( currentRequest->value->type == Request::Type::Close && static_cast< SimGsmUdpSocket* >( static_cast< CloseRequest* >( currentRequest->value )->socket )->linkId == cres->linkId ) ||
+			( currentRequest->value->type == Request::Type::Send && static_cast< SimGsmUdpSocket* >( static_cast< SendRequest* >( currentRequest->value )->socket )->linkId == cres->linkId ) ) &&
 			cres->linkId != sendErrorLinkId )
 			crash();
 		else
@@ -1034,7 +1034,7 @@ Next:
 		else
 		{
 			lexicalAnalyzer.setState( CIPSTART_ANALYZER_STATE );
-			sendCommand( printCIPSTART( sreq->linkId, SocketType::Tcp, sreq->remoteAddress, sreq->remotePort ) );
+			sendCommand( printCIPSTART( sreq->linkId, SocketType::Tcp, sreq->remoteAddress, sreq->remotePort ), TIME_S2I( 6 ) );
 		}
 		break;
 	}

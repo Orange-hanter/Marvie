@@ -8,8 +8,8 @@
 
 SimGsmUdpSocket::SimGsmUdpSocket( SimGsm* simGsm, uint32_t inputBufferSize, uint32_t outputBufferSize ) : SimGsmSocketBase( simGsm, inputBufferSize, outputBufferSize )
 {
-	rAddr = IpAddress( 0, 0, 0, 0 );
-	rPort = 0;
+	cAddr = rAddr = IpAddress( 0, 0, 0, 0 );
+	cPort = rPort = 0;
 }
 
 SimGsmUdpSocket::~SimGsmUdpSocket()

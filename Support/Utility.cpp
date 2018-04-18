@@ -37,7 +37,9 @@ namespace Utility
 		if( width < 1 )
 			return str;
 		char* end = str + width;
-		bool ngv = ( value < 0 ) ? true, value = -value : false;
+		bool ngv = false;
+		if( value < 0 )
+			ngv = true, value = -value;
 		while( value >= 10 && width )
 		{
 			int nv = value / 10;

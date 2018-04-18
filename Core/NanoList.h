@@ -27,9 +27,9 @@ public:
 		Iterator();
 
 		Iterator& operator++();
-		Iterator& operator++( int );
+		Iterator operator++( int );
 		Iterator& operator--();
-		Iterator& operator--( int );
+		Iterator operator--( int );
 		bool operator ==( Iterator ) const;
 		bool operator !=( Iterator ) const;
 		T& operator*();
@@ -186,7 +186,7 @@ typename NanoList< T >::Iterator& NanoList< T >::Iterator::operator++()
 }
 
 template< typename T >
-typename NanoList< T >::Iterator& NanoList< T >::Iterator::operator++( int )
+typename NanoList< T >::Iterator NanoList< T >::Iterator::operator++( int )
 {
 	Iterator tmp( *this );
 	operator ++();
@@ -201,7 +201,7 @@ typename NanoList< T >::Iterator& NanoList< T >::Iterator::operator--()
 }
 
 template< typename T >
-typename NanoList< T >::Iterator& NanoList< T >::Iterator::operator--( int )
+typename NanoList< T >::Iterator NanoList< T >::Iterator::operator--( int )
 {
 	Iterator tmp( *this );
 	operator --();

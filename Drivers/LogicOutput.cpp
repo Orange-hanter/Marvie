@@ -9,7 +9,11 @@ void LogicOutput::attach( IOPort port, bool inverse /*= false */ )
 		palSetPad( port.gpio, port.pinNum );
 	else
 		palClearPad( port.gpio, port.pinNum );
+#ifdef STM32F1
+	palSetPadMode( port.gpio, port.pinNum, PAL_MODE_OUTPUT_PUSHPULL );
+#else
 	palSetPadMode( port.gpio, port.pinNum, PAL_MODE_OUTPUT_PUSHPULL | PAL_STM32_OSPEED_HIGHEST );
+#endif
 }
 
 void LogicOutput::on()

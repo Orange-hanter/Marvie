@@ -12,8 +12,8 @@
 #include "SimGsmTcpServer.h"
 #include "SimGsmATResponseParsers.h"
 
-#define SIMGSM_SOCKET_LIMIT            6
-#define SIMGSM_ENABLE_LEVEL            Level::Low
+#define SIMGSM_SOCKET_LIMIT      6
+#define SIMGSM_ENABLE_LEVEL      Level::Low
 #define SIMGSM_USE_PWRKEY_PIN
 
 class SimGsmTcpServer;
@@ -89,9 +89,9 @@ private:
 	void send( const uint8_t* dataFirst, uint32_t sizeFirst, const uint8_t* dataSecond, uint32_t sizeSecond );
 	inline void nextSend();
 
-	void closeAllS(); // rename?
-	void crash(); // rename?
-	void shutdown(); // rename
+	void closeAllS();
+	void crash();
+	void shutdown();
 
 	static void timeoutCallback( void* );
 	static void modemPingCallback( void* );
@@ -164,7 +164,7 @@ private:
 	struct GeneralRequest : public Request
 	{
 		GeneralRequest() : Request( Type::General ), status( Status::Executing ), errCode( -1 ) {}
-		enum class Status { Executing, Ok, Error } status;		
+		enum class Status { Executing, Ok, Error } status;
 		int errCode;
 	};
 	struct AtRequest : public Request
