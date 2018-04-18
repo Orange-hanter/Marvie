@@ -79,8 +79,8 @@ private:
 
 	bool openUdpSocket( AbstractUdpSocket* socket, uint16_t bindPort );
 	bool openTcpSocket( AbstractTcpSocket* socket, IpAddress remoteAddress, uint16_t remotePort );
-	int sendSocketData( AbstractUdpSocket* socket, const uint8_t* data, uint16_t size, IpAddress remoteAddress, uint16_t remotePort );
-	int sendSocketData( AbstractTcpSocket* socket, const uint8_t* data, uint16_t size );
+	uint32_t sendSocketData( AbstractUdpSocket* socket, const uint8_t* data, uint16_t size, IpAddress remoteAddress, uint16_t remotePort );
+	uint32_t sendSocketData( AbstractTcpSocket* socket, const uint8_t* data, uint16_t size );
 	void closeSocket( AbstractSocket* socket );
 	bool serverStart( uint16_t port );
 	void serverStop();

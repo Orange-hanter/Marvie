@@ -19,7 +19,7 @@ public:
 	ReverseRingIterator operator++( int );
 	ReverseRingIterator operator+( uint32_t ) const;
 	void operator+=( uint32_t );
-	int operator-( const ReverseRingIterator& ) const;
+	uint32_t operator-( const ReverseRingIterator& ) const;
 
 	bool operator==( const ReverseRingIterator& ) const;
 	bool operator!=( const ReverseRingIterator& ) const;
@@ -152,7 +152,7 @@ void ReverseRingIterator<Type>::operator+=( uint32_t v )
 }
 
 template< typename Type >
-int ReverseRingIterator<Type>::operator-( const ReverseRingIterator& i ) const
+uint32_t ReverseRingIterator<Type>::operator-( const ReverseRingIterator& i ) const
 {
 	int v = i.pos - pos;
 	if( v >= 0 )

@@ -22,9 +22,9 @@ public:
 	void close() final override;
 	USART_TypeDef* base() final override;
 
-	int write( const uint8_t* data, uint32_t size, sysinterval_t timeout = TIME_IMMEDIATE ) final override;
-	int read( uint8_t* data, uint32_t size, sysinterval_t timeout = TIME_IMMEDIATE ) final override;
-	int readAvailable() const final override;
+	uint32_t write( const uint8_t* data, uint32_t size, sysinterval_t timeout ) override;
+	uint32_t read( uint8_t* data, uint32_t size, sysinterval_t timeout ) override;
+	uint32_t readAvailable() const override;
 	bool waitForReadAvailable( uint32_t size, sysinterval_t timeout ) final override;
 
 	bool setInputBuffer( uint8_t* buffer, uint32_t size );

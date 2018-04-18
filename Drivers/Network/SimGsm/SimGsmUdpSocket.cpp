@@ -37,21 +37,21 @@ void SimGsmUdpSocket::close()
 	gsm->closeSocket( this );
 }
 
-int SimGsmUdpSocket::write( const uint8_t* data, uint32_t size, sysinterval_t timeout )
+uint32_t SimGsmUdpSocket::write( const uint8_t* data, uint32_t size, sysinterval_t timeout )
 {
 	assert( timeout == TIME_INFINITE );
 
 	return writeDatagram( data, size );
 }
 
-int SimGsmUdpSocket::read( uint8_t* data, uint32_t size, sysinterval_t timeout )
+uint32_t SimGsmUdpSocket::read( uint8_t* data, uint32_t size, sysinterval_t timeout )
 {
 	assert( timeout == TIME_INFINITE );
 
 	return readDatagram( data, size, nullptr, nullptr );
 }
 
-int SimGsmUdpSocket::readAvailable() const
+uint32_t SimGsmUdpSocket::readAvailable() const
 {
 	if( hasPendingDatagrams() )
 		return pendingDatagramSize();
@@ -186,12 +186,12 @@ uint32_t SimGsmUdpSocket::readDatagram( uint8_t* data, uint32_t maxSize, IpAddre
 	return header.datagramSize;
 }
 
-int SimGsmUdpSocket::writeDatagram( const uint8_t* data, uint32_t size, IpAddress address, uint16_t port )
+uint32_t SimGsmUdpSocket::writeDatagram( const uint8_t* data, uint32_t size, IpAddress address, uint16_t port )
 {
 	return gsm->sendSocketData( this, data, size, address, port );
 }
 
-int SimGsmUdpSocket::writeDatagram( const uint8_t* data, uint32_t size )
+uint32_t SimGsmUdpSocket::writeDatagram( const uint8_t* data, uint32_t size )
 {
 	if( rPort )
 		return gsm->sendSocketData( this, data, size, rAddr, rPort );

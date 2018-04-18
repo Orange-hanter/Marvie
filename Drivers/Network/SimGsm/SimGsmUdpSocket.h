@@ -15,9 +15,9 @@ public:
 	void reset() final override; // not supported
 	void close() final override;
 
-	int write( const uint8_t* data, uint32_t size, sysinterval_t timeout ) final override;
-	int read( uint8_t* data, uint32_t size, sysinterval_t timeout ) final override;
-	int readAvailable() const final override;
+	uint32_t write( const uint8_t* data, uint32_t size, sysinterval_t timeout ) override;
+	uint32_t read( uint8_t* data, uint32_t size, sysinterval_t timeout ) override;
+	uint32_t readAvailable() const override;
 	bool waitForReadAvailable( uint32_t size, sysinterval_t timeout ) final override; // not supported, use waitDatagram() instead
 
 	AbstractReadable* inputBuffer() final override;
@@ -38,8 +38,8 @@ public:
 	uint32_t pendingDatagramSize() const final override;
 	uint32_t readDatagram( uint8_t* data, uint32_t maxSize, IpAddress* address = nullptr, uint16_t* port = nullptr ) final override;
 
-	int writeDatagram( const uint8_t* data, uint32_t size, IpAddress address, uint16_t port ) final override;
-	int writeDatagram( const uint8_t* data, uint32_t size ) final override;
+	uint32_t writeDatagram( const uint8_t* data, uint32_t size, IpAddress address, uint16_t port ) final override;
+	uint32_t writeDatagram( const uint8_t* data, uint32_t size ) final override;
 
 private:	
 	IpAddress rAddr, cAddr;

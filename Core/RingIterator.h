@@ -24,7 +24,7 @@ public:
 	RingIterator operator--( int );
 	RingIterator operator-( uint32_t ) const;
 	void operator-=( uint32_t );
-	int operator-( const RingIterator& ) const;
+	uint32_t operator-( const RingIterator& ) const;
 
 	bool operator==( const RingIterator& ) const;
 	bool operator!=( const RingIterator& ) const;
@@ -157,7 +157,7 @@ void RingIterator<Type>::operator-=( uint32_t v )
 }
 
 template< typename Type >
-int RingIterator<Type>::operator-( const RingIterator& i ) const
+uint32_t RingIterator<Type>::operator-( const RingIterator& i ) const
 {
 	int v = pos - i.pos;
 	if( v >= 0 )

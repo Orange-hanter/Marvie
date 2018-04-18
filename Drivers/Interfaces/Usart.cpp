@@ -222,17 +222,17 @@ USART_TypeDef* Usart::base()
 	return sd->usart;
 }
 
-int Usart::write( const uint8_t* data, uint32_t size, sysinterval_t timeout /*= TIME_IMMEDIATE */ )
+uint32_t Usart::write( const uint8_t* data, uint32_t size, sysinterval_t timeout )
 {
 	return oqWriteTimeout( &sd->oqueue, data, size, timeout );
 }
 
-int Usart::read( uint8_t* data, uint32_t size, sysinterval_t timeout /*= TIME_IMMEDIATE */ )
+uint32_t Usart::read( uint8_t* data, uint32_t size, sysinterval_t timeout )
 {
 	return iqReadTimeout( &sd->iqueue, data, size, timeout );
 }
 
-int Usart::readAvailable() const
+uint32_t Usart::readAvailable() const
 {
 	return iqGetFullI( &sd->iqueue );
 }

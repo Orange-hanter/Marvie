@@ -16,9 +16,9 @@ public:
 	virtual void reset() = 0;
 	virtual void close() = 0;
 
-	virtual int write( const uint8_t* data, uint32_t size, sysinterval_t timeout ) = 0;
-	virtual int read( uint8_t* data, uint32_t size, sysinterval_t timeout ) = 0;
-	virtual int readAvailable() const = 0;
+	virtual uint32_t write( const uint8_t* data, uint32_t size, sysinterval_t timeout ) = 0;
+	virtual uint32_t read( uint8_t* data, uint32_t size, sysinterval_t timeout ) = 0;
+	virtual uint32_t readAvailable() const = 0;
 	virtual bool waitForReadAvailable( uint32_t size, sysinterval_t timeout ) = 0;
 
 	virtual AbstractReadable* inputBuffer() = 0;

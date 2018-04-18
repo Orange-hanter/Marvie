@@ -1178,7 +1178,7 @@ bool SimGsm::openTcpSocket( AbstractTcpSocket* socket, IpAddress remoteAddress, 
 	return socket->isOpen();
 }
 
-int SimGsm::sendSocketData( AbstractUdpSocket* socket, const uint8_t* data, uint16_t size, IpAddress remoteAddress, uint16_t remotePort )
+uint32_t SimGsm::sendSocketData( AbstractUdpSocket* socket, const uint8_t* data, uint16_t size, IpAddress remoteAddress, uint16_t remotePort )
 {
 	if( size > MAX_UDP_PACKET_SIZE || size == 0 )
 		return 0;
@@ -1239,7 +1239,7 @@ int SimGsm::sendSocketData( AbstractUdpSocket* socket, const uint8_t* data, uint
 	return bs;
 }
 
-int SimGsm::sendSocketData( AbstractTcpSocket* socket, const uint8_t* data, uint16_t size )
+uint32_t SimGsm::sendSocketData( AbstractTcpSocket* socket, const uint8_t* data, uint16_t size )
 {
 	if( size == 0 )
 		return 0;

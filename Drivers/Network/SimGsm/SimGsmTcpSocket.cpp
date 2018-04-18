@@ -31,19 +31,19 @@ void SimGsmTcpSocket::close()
 	gsm->closeSocket( this );
 }
 
-int SimGsmTcpSocket::write( const uint8_t* data, uint32_t size, sysinterval_t timeout )
+uint32_t SimGsmTcpSocket::write( const uint8_t* data, uint32_t size, sysinterval_t timeout )
 {
 	assert( timeout == TIME_INFINITE );
 
 	return gsm->sendSocketData( this, data, size );
 }
 
-int SimGsmTcpSocket::read( uint8_t* data, uint32_t size, sysinterval_t timeout )
+uint32_t SimGsmTcpSocket::read( uint8_t* data, uint32_t size, sysinterval_t timeout )
 {
 	return inBuffer.read( data, size, timeout );
 }
 
-int SimGsmTcpSocket::readAvailable() const
+uint32_t SimGsmTcpSocket::readAvailable() const
 {
 	return inBuffer.readAvailable();
 }
