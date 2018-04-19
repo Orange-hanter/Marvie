@@ -15,7 +15,7 @@ public:
 	virtual void close() = 0;
 
 	virtual AbstractTcpSocket* nextPendingConnection() = 0;
-	virtual bool waitForNewConnection( sysinterval_t timeout ) = 0;
+	virtual bool waitForNewConnection( sysinterval_t timeout = TIME_INFINITE ) = 0;
 	virtual void setNewConnectionsBufferSize( uint32_t inputBufferSize, uint32_t outputBufferSize ) = 0;
 
 	virtual EvtSource* eventSource() = 0;

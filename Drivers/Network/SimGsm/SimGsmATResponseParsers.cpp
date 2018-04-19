@@ -76,11 +76,11 @@ bool SimGsmATResponseParsers::ReceiveParser::parse( const ByteRingIterator& begi
 				i = begin;
 				++i; res.linkId = parseInt();
 				++i; dataSize = parseInt();
-				++i; res.addr[3] = ( uint8_t )parseInt();
-				++i; res.addr[2] = ( uint8_t )parseInt();
-				++i; res.addr[1] = ( uint8_t )parseInt();
-				++i; res.addr[0] = ( uint8_t )parseInt();
-				++i; res.port = ( uint8_t )parseInt();
+				++i; res.addr[3] = parseInt();
+				++i; res.addr[2] = parseInt();
+				++i; res.addr[1] = parseInt();
+				++i; res.addr[0] = parseInt();
+				++i; res.port = parseInt();
 				++i; ++i;
 				state = State::WaitingData;
 				break;

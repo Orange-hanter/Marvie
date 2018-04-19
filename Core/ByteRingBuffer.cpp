@@ -33,7 +33,8 @@ uint32_t BaseByteRingBuffer::write( Iterator begin, uint32_t size )
 	ringToLinearArrays( begin, size, data, dataSize, data + 1, dataSize + 1 );
 	if( ( done = buffer.write( data[0], dataSize[0] ) ) != dataSize[0] )
 		return done;
-	done += buffer.write( data[1], dataSize[1] );
+	if( dataSize[1] )
+		done += buffer.write( data[1], dataSize[1] );
 
 	return done;
 }

@@ -95,3 +95,11 @@ void SimGsmTcpServer::addSocketS( AbstractTcpSocket* socket )
 	root = socket;
 	chThdDequeueNextI( &waitingQueue, MSG_OK );
 }
+
+void SimGsmTcpServer::closeHelpS( SocketError error )
+{
+	listening = false;
+	sError = error;
+	if( sError != SocketError::NoError )
+		eSource.broadcastFlagsI( ( eventflags_t )TcpServerEventFlag::Error );
+}

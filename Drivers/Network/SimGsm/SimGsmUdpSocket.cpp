@@ -126,7 +126,7 @@ bool SimGsmUdpSocket::waitDatagram( sysinterval_t timeout )
 		if( inBuffer.waitForReadAvailable( sizeof( Header ), timeout ) )
 		{
 			Header header;
-			Utility::copy( reinterpret_cast< uint8_t* >( &header ), outBuffer->begin(), sizeof( header ) );
+			Utility::copy( reinterpret_cast< uint8_t* >( &header ), inBuffer.begin(), sizeof( header ) );
 			return inBuffer.waitForReadAvailable( sizeof( Header ) + header.datagramSize, timeout );
 		}
 		return false;
@@ -142,7 +142,7 @@ bool SimGsmUdpSocket::waitDatagram( sysinterval_t timeout )
 			return false;
 
 		Header header;
-		Utility::copy( reinterpret_cast< uint8_t* >( &header ), outBuffer->begin(), sizeof( header ) );
+		Utility::copy( reinterpret_cast< uint8_t* >( &header ), inBuffer.begin(), sizeof( header ) );
 		return inBuffer.waitForReadAvailable( sizeof( Header ) + header.datagramSize, nextTimeout );
 	}
 }
@@ -152,7 +152,7 @@ bool SimGsmUdpSocket::hasPendingDatagrams() const
 	if( inBuffer.readAvailable() <= sizeof( Header ) )
 		return false;
 	Header header;
-	Utility::copy( reinterpret_cast< uint8_t* >( &header ), outBuffer->begin(), sizeof( header ) );
+	Utility::copy( reinterpret_cast< uint8_t* >( &header ), const_cast< DynamicByteRingBuffer* >( &inBuffer )->begin(), sizeof( header ) );
 
 	return inBuffer.readAvailable() >= sizeof( header ) + header.datagramSize;
 }
@@ -160,7 +160,7 @@ bool SimGsmUdpSocket::hasPendingDatagrams() const
 uint32_t SimGsmUdpSocket::pendingDatagramSize() const
 {
 	Header header;
-	Utility::copy( reinterpret_cast< uint8_t* >( &header ), outBuffer->begin(), sizeof( header ) );
+	Utility::copy( reinterpret_cast< uint8_t* >( &header ), const_cast< DynamicByteRingBuffer* >( &inBuffer )->begin(), sizeof( header ) );
 
 	return header.datagramSize;
 }

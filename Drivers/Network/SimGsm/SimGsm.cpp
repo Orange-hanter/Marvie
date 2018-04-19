@@ -883,6 +883,7 @@ void SimGsm::closeRequestHandler( LexicalAnalyzer::ParsingResult* res )
 	case SimGsmATResponseParsers::CloseOk:
 	{
 		chSysLock();
+		linkDesc[static_cast< SimGsmUdpSocket* >( creq->socket )->linkId].socket = nullptr;
 		static_cast< SimGsmUdpSocket* >( creq->socket )->closeHelpS( SocketError::NoError );
 		chBSemSignalI( &creq->semaphore );
 		chSchRescheduleS();
@@ -1431,6 +1432,9 @@ void SimGsm::closeAllS()
 			linkDesc[i].socket = nullptr;
 		}
 	}
+
+	if( server && server->listening )
+		server->closeHelpS( SocketError::NetworkError );
 
 	chVTResetI( &responseTimer );
 	chVTResetI( &modemPingTimer );

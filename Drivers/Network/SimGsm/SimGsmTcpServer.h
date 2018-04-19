@@ -25,6 +25,7 @@ public:
 
 private:
 	void addSocketS( AbstractTcpSocket* );
+	void closeHelpS( SocketError error );
 
 private:
 	SimGsm * gsm;	
