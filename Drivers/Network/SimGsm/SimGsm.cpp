@@ -50,7 +50,9 @@ SimGsm::SimGsm( IOPort port ) : lexicalAnalyzer( 21, 10 )
 	apn = nullptr;
 	pwrDown = crashFlag = callReady = smsReady = false;
 	cpinStatus = CPinParsingResult::Status::Unknown;
-	sendErrorLinkId = -1;
+	sendReqErrorLinkId = -1;
+	sendReqState = SendRequestState::SetRemoteAddress;
+	sendReqDataTime = 0;
 
 	for( int i = 0; i < SIMGSM_SOCKET_LIMIT; ++i )
 	{
@@ -60,7 +62,6 @@ SimGsm::SimGsm( IOPort port ) : lexicalAnalyzer( 21, 10 )
 	server = nullptr;
 
 	currentRequest = nullptr;
-	sendReqState = SendRequestState::SetRemoteAddress;
 	atReqNode.value = &atReq;
 	dataSend[0] = dataSend[1] = nullptr;
 	dataSendSize[0] = dataSendSize[1] = 0;
@@ -302,7 +303,7 @@ Start:
 	innerEventSource.registerMask( &innerListener, InnerEvent );
 	lexicalAnalyzer.setUniversumStateEnabled( true );
 	crashFlag = false;
-	sendErrorLinkId = -1;
+	sendReqErrorLinkId = -1;
 	dataSend[0] = dataSend[1] = nullptr;
 	dataSendSize[0] = dataSendSize[1] = 0;
 
@@ -624,15 +625,16 @@ void SimGsm::lexicalAnalyzerCallback( LexicalAnalyzer::ParsingResult* res )
 		SimGsmATResponseParsers::ClosedParsingResult* cres = static_cast< SimGsmATResponseParsers::ClosedParsingResult* >( res );
 		if( currentRequest &&
 			( ( currentRequest->value->type == Request::Type::Close && static_cast< SimGsmUdpSocket* >( static_cast< CloseRequest* >( currentRequest->value )->socket )->linkId == cres->linkId ) ||
-			( currentRequest->value->type == Request::Type::Send && static_cast< SimGsmUdpSocket* >( static_cast< SendRequest* >( currentRequest->value )->socket )->linkId == cres->linkId ) ) &&
-			cres->linkId != sendErrorLinkId )
+			( currentRequest->value->type == Request::Type::Send && static_cast< SimGsmUdpSocket* >( static_cast< SendRequest* >( currentRequest->value )->socket )->linkId == cres->linkId  &&
+			  cres->linkId != sendReqErrorLinkId && sendReqState == SendRequestState::SendData && chVTIsSystemTimeWithinX( sendReqDataTime, sendReqDataTime + TIME_S2I( 2 ) ) ) ) )
 			crash();
 		else
 		{
+			volatile bool needNext = false;
 			SimGsmUdpSocket* socket = static_cast< SimGsmUdpSocket* >( linkDesc[cres->linkId].socket );
 			chSysLock();
-			if( cres->linkId == sendErrorLinkId )
-				requestList.pushFront( currentRequest );
+			if( currentRequest && currentRequest->value->type == Request::Type::Send && static_cast< SendRequest* >( currentRequest->value )->socket == socket )
+				requestList.pushFront( currentRequest ), needNext = true;
 			// remove requests to closed socket
 			for( auto i = requestList.begin(); i != requestList.end(); )
 			{
@@ -657,11 +659,14 @@ void SimGsm::lexicalAnalyzerCallback( LexicalAnalyzer::ParsingResult* res )
 			chSchRescheduleS();
 			chSysUnlock();
 
-			if( cres->linkId == sendErrorLinkId )
+			if( cres->linkId == sendReqErrorLinkId )
 			{
-				sendErrorLinkId = -1;
+				sendReqErrorLinkId = -1;
+				chVTReset( &responseTimer );
 				nextRequest();
 			}
+			else if( needNext )
+				nextRequest();
 		}
 		break;
 	}
@@ -761,6 +766,7 @@ void SimGsm::sendRequestHandler( LexicalAnalyzer::ParsingResult* res )
 	case SimGsmATResponseParsers::SendInitOk:
 	{
 		sendReqState = SendRequestState::SendData;
+		sendReqDataTime = chVTGetSystemTimeX();
 		lexicalAnalyzer.setState( DATA_ANALYZER_STATE );
 		chVTSet( &responseTimer, TIME_S2I( 10 ), timeoutCallback, this );
 		send( req->data[0], req->dataSize[0], req->data[1], req->dataSize[1] );
@@ -791,7 +797,10 @@ void SimGsm::sendRequestHandler( LexicalAnalyzer::ParsingResult* res )
 			nextRequest();
 		}
 		else
-			sendErrorLinkId = static_cast< SimGsmTcpSocket* >( req->socket )->linkId;
+		{
+			sendReqErrorLinkId = static_cast< SimGsmTcpSocket* >( req->socket )->linkId;
+			chVTSet( &responseTimer, TIME_S2I( 10 ), timeoutCallback, this );
+		}
 		break;
 	}
 	case SimGsmATResponseParsers::CMEError:

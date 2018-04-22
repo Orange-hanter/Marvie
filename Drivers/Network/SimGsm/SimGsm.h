@@ -130,7 +130,9 @@ private:
 	IpAddress ip;
 	volatile bool pwrDown, crashFlag, callReady, smsReady; // rename?
 	SimGsmATResponseParsers::CPinParsingResult::Status cpinStatus;
-	int sendErrorLinkId;
+	int sendReqErrorLinkId;
+	SendRequestState sendReqState;
+	systime_t sendReqDataTime;
 
 	struct LinkDesc
 	{
@@ -225,7 +227,6 @@ private:
 	};
 	NanoList< Request* > requestList;
 	RequestNode* currentRequest;
-	SendRequestState sendReqState;
 	AtRequest atReq;
 	RequestNode atReqNode;
 
