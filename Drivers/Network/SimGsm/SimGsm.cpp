@@ -181,6 +181,7 @@ void SimGsm::startModem( tprio_t prio )
 	if( mStatus != ModemStatus::Stopped || !usart )
 		return;
 
+	mError = ModemError::NoError;
 	mStatus = ModemStatus::Initializing;
 	extEventSource.broadcastFlags( ( eventflags_t )ModemEvent::StatusChanged );
 	start( prio );
@@ -296,7 +297,6 @@ Start:
 		}
 	}
 
-	chVTSet( &modemPingTimer, PING_DELAY, modemPingCallback, this );
 	EvtListener usartListener, innerListener;
 	enum Event { UsartEvent = EVENT_MASK( 0 ), InnerEvent = EVENT_MASK( 1 ) };
 	usart->eventSource()->registerMaskWithFlags( &usartListener, UsartEvent, CHN_INPUT_AVAILABLE | CHN_OUTPUT_EMPTY );
@@ -306,6 +306,8 @@ Start:
 	sendReqErrorLinkId = -1;
 	dataSend[0] = dataSend[1] = nullptr;
 	dataSendSize[0] = dataSendSize[1] = 0;
+	chVTSet( &modemPingTimer, PING_DELAY, modemPingCallback, this );
+	innerEventSource.broadcastFlags( InnerEventFlag::NewRequestEventFlag ); // because the listener registration function is called after the status change
 
 	while( mStatus == ModemStatus::Working )
 	{
@@ -357,11 +359,9 @@ Reinit:
 	innerEventSource.unregister( &innerListener );
 	usart->eventSource()->unregister( &usartListener );
 
-	chSysLock();
-	closeAllS();
-	chSysUnlock();
 	shutdown();
 	chSysLock();
+	closeAllS();
 	mStatus = ModemStatus::Stopped;
 	extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::StatusChanged );
 	chThdDequeueNextI( &waitingQueue, MSG_OK );
@@ -1461,6 +1461,9 @@ void SimGsm::shutdown()
 {
 	ip = IpAddress();
 #ifdef SIMGSM_USE_PWRKEY_PIN
+	RequestNode* tmp = currentRequest;
+	currentRequest = nullptr;
+	lexicalAnalyzer.setUniversumStateEnabled( false );
 	do
 	{
 		if( !enablePin.state() )
@@ -1475,8 +1478,10 @@ void SimGsm::shutdown()
 		enablePin.on();
 		waitForCPinOrPwrDown();
 	} while( !pwrDown );
+	currentRequest = tmp;
 #else
 	enablePin.off();
+	chThdSleepMilliseconds( 10 );
 #endif
 }
 

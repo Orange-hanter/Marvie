@@ -15,7 +15,7 @@ uint32_t crc32Stm( uint32_t crc, uint32_t* data, uint32_t size )
 		0x2608EDB8, 0x22C9F00F, 0x2F8AD6D6, 0x2B4BCB61,
 		0x350C9B64, 0x31CD86D3, 0x3C8EA00A, 0x384FBDBD };
 
-	for( int w = 0; w < size; w++ )
+	for( uint32_t w = 0; w < size; w++ )
 	{
 		crc ^= data[w];
 		crc = ( crc << 4 ) ^ table[crc >> 28];
