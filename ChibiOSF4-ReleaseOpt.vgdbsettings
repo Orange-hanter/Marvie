@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <VisualGDBProjectSettings2 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <ConfigurationName>Debug</ConfigurationName>
+  <ConfigurationName>ReleaseOpt</ConfigurationName>
   <Project xsi:type="com.visualgdb.project.embedded">
     <CustomSourceDirectories>
       <Directories />
@@ -10,8 +10,13 @@
     <EmbeddedProfileFile>stm32.xml</EmbeddedProfileFile>
   </Project>
   <Build xsi:type="com.visualgdb.build.embedded">
+    <ToolchainID>
+      <Version>
+        <Revision>0</Revision>
+      </Version>
+    </ToolchainID>
     <MakeFilePathRelativeToSourceDir>Makefile</MakeFilePathRelativeToSourceDir>
-    <MakeConfigurationName>Debug</MakeConfigurationName>
+    <MakeConfigurationName>ReleaseOpt</MakeConfigurationName>
     <AdditionalMakeArguments>$(LocalMultiThreadedBuildFlags)</AdditionalMakeArguments>
     <MakeCommandTemplate>
       <SkipWhenRunningCommandList>false</SkipWhenRunningCommandList>
@@ -69,9 +74,11 @@
       <DisableSignals>false</DisableSignals>
       <EnableAsyncExecutionMode>false</EnableAsyncExecutionMode>
       <EnableNonStopMode>false</EnableNonStopMode>
+      <MaxBreakpointLimit>0</MaxBreakpointLimit>
     </AdditionalGDBSettings>
-    <DebugMethodID>jlink-jtag</DebugMethodID>
-    <DebugMethodProperties>
+    <DebugMethod>
+      <ID>jlink-jtag</ID>
+      <Configuration>
       <Entries>
         <KeyValue>
           <Key>com.sysprogs.jlink.root</Key>
@@ -79,7 +86,7 @@
         </KeyValue>
         <KeyValue>
           <Key>com.sysprogs.jlink.connection</Key>
-          <Value>IP=localhost</Value>
+          <Value>IP=127.0.0.1</Value>
         </KeyValue>
         <KeyValue>
           <Key>com.sysprogs.jlink.targetdevice</Key>
@@ -130,15 +137,18 @@
           <Value>1</Value>
         </KeyValue>
       </Entries>
-    </DebugMethodProperties>
+    </Configuration>
+    </DebugMethod>
     <AutoDetectRTOS>true</AutoDetectRTOS>
-    <SemihostingSupport>Auto</SemihostingSupport>
+    <SemihostingSupport>Disabled</SemihostingSupport>
     <StepIntoEntryPoint>false</StepIntoEntryPoint>
     <ReloadFirmwareOnReset>false</ReloadFirmwareOnReset>
     <ValidateEndOfStackAddress>true</ValidateEndOfStackAddress>
     <StopAtEntryPoint>false</StopAtEntryPoint>
+    <CheckInterfaceDrivers>true</CheckInterfaceDrivers>
     <DynamicAnalysisSettings />
     <EndOfStackSymbol>_estack</EndOfStackSymbol>
+    <TimestampProviderTicksPerSecond>0</TimestampProviderTicksPerSecond>
   </Debug>
   <CustomBuild>
     <PreSyncActions />
@@ -166,6 +176,7 @@
     <ExternalSourceFileList />
     <ExtraSettings>
       <HideErrorsInSystemHeaders>true</HideErrorsInSystemHeaders>
+      <SupportLightweightReferenceAnalysis>false</SupportLightweightReferenceAnalysis>
       <DiscoverySettings>
         <Mode>Enabled</Mode>
         <SearchInProjectDir>true</SearchInProjectDir>
@@ -175,5 +186,9 @@
         <IgnoredHeaders />
       </DiscoverySettings>
     </ExtraSettings>
+    <CodeAnalyzerSettings>
+      <Enabled>false</Enabled>
+    </CodeAnalyzerSettings>
   </CodeSense>
+  <ProgramArgumentsSuggestions />
 </VisualGDBProjectSettings2>

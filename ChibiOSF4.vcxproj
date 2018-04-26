@@ -5,6 +5,10 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseOpt|Win32">
+      <Configuration>ReleaseOpt</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -26,6 +30,17 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='ReleaseOpt|Win32'">
+    <ConfigurationType>Makefile</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Label="VisualGDBPackageDefinitions">
+    <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
+    <BSP_ID>com.sysprogs.arm.stm32</BSP_ID>
+    <BSP_VERSION>4.6R3</BSP_VERSION>
+  </PropertyGroup>
+  <ImportGroup Label="VisualGDBFindComponents">
+    <Import Project="$(LOCALAPPDATA)\VisualGDB\FindComponents.props" />
+  </ImportGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -62,16 +77,27 @@
     <LibraryPath />
     <NMakePreprocessorDefinitions>__VisualGDB_CFG_Release;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOpt|Win32'">
+    <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /rebuild "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
+    <NMakeOutput>$(ProjectDir)ChibiOSF4-ReleaseOpt.vgdbsettings</NMakeOutput>
+    <NMakeIncludeSearchPath>.;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0\arm-eabi\thumb\cortex_m4;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0\backward;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\7.2.0\include;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\7.2.0\include-fixed;$(TOOLCHAIN_ROOT)\arm-eabi\sys-include;$(TOOLCHAIN_ROOT)\arm-eabi\include;os/common/ext/ARM/CMSIS/Core/Include;os/common/ext/ST/STM32F4xx;os/common/oslib/include;os/common/ports/ARMCMx;os/common/ports/ARMCMx/compilers/GCC;os/common/startup/ARMCMx/devices/STM32F4xx;os/license;os/rt/include;os/hal/include;os/hal/osal/rt;os/hal/ports/STM32/STM32F4xx;os/hal/ports/STM32/LLD/ADCv2;os/hal/ports/STM32/LLD/CANv1;os/hal/ports/STM32/LLD/DACv1;os/hal/ports/STM32/LLD/DMAv2;os/hal/ports/STM32/LLD/EXTIv1;os/hal/ports/STM32/LLD/GPIOv2;os/hal/ports/STM32/LLD/I2Cv1;os/hal/ports/STM32/LLD/MACv1;os/hal/ports/STM32/LLD/OTGv1;os/hal/ports/STM32/LLD/QUADSPIv1;os/hal/ports/STM32/LLD/RTCv2;os/hal/ports/STM32/LLD/SDIOv1;os/hal/ports/STM32/LLD/SPIv1;os/hal/ports/STM32/LLD/TIMv1;os/hal/ports/STM32/LLD/USARTv1;os/hal/ports/STM32/LLD/xWDGv1;os/hal/ports/common/ARMCMx;os/test/lib;os/test/rt/source/test;os/test/oslib/source/test;ext/fatfs/src;os/various;os/hal/lib/streams;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeForcedIncludes>$(ProjectDir)\gcc_ReleaseOpt.h;$(VISUALGDB_DIR)\gcc_compat.h;$(BSP_ROOT)\stm32_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
+    <NMakePreprocessorDefinitions>__VisualGDB_CFG_ReleaseOpt;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="ChibiOSF4-Debug.vgdbsettings" />
     <None Include="ChibiOSF4-Release.vgdbsettings" />
     <None Include="ClassDiagram.cd" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="debug.mak" />
     <None Include="Makefile" />
     <None Include="os\common\startup\ARMCMx\compilers\GCC\ld\STM32F407xE.ld" />
     <None Include="release.mak" />
+    <None Include="releaseopt.mak" />
     <None Include="stm32.mak" />
   </ItemGroup>
   <ItemGroup>
@@ -82,10 +108,24 @@
   </ImportGroup>
   <ItemGroup>
     <ClCompile Include="board.c" />
+    <ClCompile Include="Core\ByteRingBuffer.cpp" />
+    <ClCompile Include="Core\DataTimeService.cpp" />
     <ClCompile Include="Core\NewDelete.cpp" />
     <ClCompile Include="Drivers\Interfaces\Usart.cpp" />
+    <ClCompile Include="Drivers\LogicOutput.cpp" />
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsm.cpp" />
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsmATResponseParsers.cpp" />
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsmSocketBase.cpp" />
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsmTcpServer.cpp" />
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsmTcpSocket.cpp" />
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsmUdpSocket.cpp" />
+    <ClCompile Include="Drivers\Sensors\AbstractSensor.cpp" />
+    <ClCompile Include="Drivers\Sensors\CE301.cpp" />
     <ClCompile Include="ext\fatfs\src\ff.c" />
     <ClCompile Include="ext\fatfs\src\ffunicode.c" />
+    <ClCompile Include="Network\AbstractTcpSocket.cpp" />
+    <ClCompile Include="Network\AbstractUdpSocket.cpp" />
+    <ClCompile Include="Network\IpAddress.cpp" />
     <ClCompile Include="os\common\oslib\src\chfactory.c" />
     <ClCompile Include="os\common\oslib\src\chheap.c" />
     <ClCompile Include="os\common\oslib\src\chmboxes.c" />
@@ -189,17 +229,40 @@
     <ClCompile Include="os\various\evtimer.c" />
     <ClCompile Include="os\various\fatfs_bindings\fatfs_diskio.c" />
     <ClCompile Include="os\various\fatfs_bindings\fatfs_syscall.c" />
-    <ClCompile Include="Tests\UsartTest.cpp" />
+    <ClCompile Include="SingleBRSensorReader.cpp" />
+    <ClCompile Include="BRSensorReader.cpp" />
+    <ClCompile Include="MultipleBRSensorsReader.cpp" />
+    <ClCompile Include="Support\LexicalAnalyzer.cpp" />
+    <ClCompile Include="Support\Utility.cpp" />
+    <ClCompile Include="Tests\MultipleBRSensorsReaderTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="board.h" />
     <ClInclude Include="chconf.h" />
     <ClInclude Include="Core\AbstractByteRingBuffer.h" />
+    <ClInclude Include="Core\AbstractReadable.h" />
+    <ClInclude Include="Core\AbstractWritable.h" />
+    <ClInclude Include="Core\Assert.h" />
+    <ClInclude Include="Core\ByteRingBuffer.h" />
+    <ClInclude Include="Core\DataTimeService.h" />
     <ClInclude Include="Core\IODevice.h" />
+    <ClInclude Include="Core\IOPort.h" />
+    <ClInclude Include="Core\NanoList.h" />
     <ClInclude Include="Core\ReverseRingIterator.h" />
+    <ClInclude Include="Core\RingBuffer.h" />
     <ClInclude Include="Core\RingIterator.h" />
+    <ClInclude Include="Core\DataTime.h" />
     <ClInclude Include="Drivers\Interfaces\Usart.h" />
     <ClInclude Include="Drivers\Interfaces\UsartBasedDevice.h" />
+    <ClInclude Include="Drivers\LogicOutput.h" />
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsm.h" />
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsmATResponseParsers.h" />
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsmSocketBase.h" />
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsmTcpServer.h" />
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsmTcpSocket.h" />
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsmUdpSocket.h" />
+    <ClInclude Include="Drivers\Sensors\AbstractSensor.h" />
+    <ClInclude Include="Drivers\Sensors\CE301.h" />
     <ClInclude Include="ext\fatfs\src\diskio.h" />
     <ClInclude Include="ext\fatfs\src\ff.h" />
     <ClInclude Include="ext\fatfs\src\integer.h" />
@@ -207,6 +270,13 @@
     <ClInclude Include="ffconf.h" />
     <ClInclude Include="halconf.h" />
     <ClInclude Include="mcuconf.h" />
+    <ClInclude Include="Network\AbstractGsmModem.h" />
+    <ClInclude Include="Network\AbstractModem.h" />
+    <ClInclude Include="Network\AbstractSocket.h" />
+    <ClInclude Include="Network\AbstractTcpServer.h" />
+    <ClInclude Include="Network\AbstractTcpSocket.h" />
+    <ClInclude Include="Network\AbstractUdpSocket.h" />
+    <ClInclude Include="Network\IpAddress.h" />
     <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\cmsis_armcc.h" />
     <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\cmsis_armclang.h" />
     <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\cmsis_compiler.h" />
@@ -376,5 +446,10 @@
     <ClInclude Include="os\test\rt\source\test\rt_test_sequence_010.h" />
     <ClInclude Include="os\various\cpp_wrappers\ch.hpp" />
     <ClInclude Include="os\various\evtimer.h" />
+    <ClInclude Include="SingleBRSensorReader.h" />
+    <ClInclude Include="BRSensorReader.h" />
+    <ClInclude Include="MultipleBRSensorsReader.h" />
+    <ClInclude Include="Support\LexicalAnalyzer.h" />
+    <ClInclude Include="Support\Utility.h" />
   </ItemGroup>
 </Project>

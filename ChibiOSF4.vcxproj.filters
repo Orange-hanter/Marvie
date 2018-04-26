@@ -408,6 +408,42 @@
     <Filter Include="Header files\os\various\cpp_wrappers">
       <UniqueIdentifier>{6f1ddc2c-09a8-4c0b-870d-b94c1ae6b1d1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header files\Drivers\Network">
+      <UniqueIdentifier>{5e80b321-e5ef-4cfa-bdb3-fed4d46febea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Drivers\Network\SimGsm">
+      <UniqueIdentifier>{e6417890-ecf7-4bf4-99de-2206f3b57149}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Drivers\Network">
+      <UniqueIdentifier>{b5f48e1d-8026-4d24-906c-baeb40b1a293}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Drivers\Network\SimGsm">
+      <UniqueIdentifier>{b17d1934-0b3f-408b-be2d-5c1e7702f1f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Network">
+      <UniqueIdentifier>{b935b11f-860a-48ec-bb16-3620cfa035c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Network">
+      <UniqueIdentifier>{5c8619e5-9aef-4032-8537-b0cbbe4ebcff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Support">
+      <UniqueIdentifier>{2c171023-9beb-4c55-ba81-1f993ce3df88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Support">
+      <UniqueIdentifier>{983c80e8-b4e0-4764-8931-dd6a621cbd48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Tests">
+      <UniqueIdentifier>{26d00dc2-d4c0-405f-9f41-5251874a7719}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Drivers\Sensors">
+      <UniqueIdentifier>{fa238286-1c61-40c9-8cea-873189f906aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Drivers\Sensors">
+      <UniqueIdentifier>{65ba4164-a3ee-48a4-80d7-eb2ed74bbcd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Tests">
+      <UniqueIdentifier>{8b49fed3-fbb0-410a-8bf8-931711593a14}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
@@ -426,10 +462,14 @@
     <None Include="os\common\startup\ARMCMx\compilers\GCC\ld\STM32F407xE.ld">
       <Filter>Make files</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="stm32.mak">
       <Filter>Source files\Device-specific files</Filter>
     </None>
-    <None Include="ClassDiagram.cd" />
+    <None Include="releaseopt.mak">
+      <Filter>Make files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="stm32.xml">
@@ -1190,14 +1230,71 @@
     <ClCompile Include="Drivers\Interfaces\Usart.cpp">
       <Filter>Source files\Drivers\Interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="Tests\UsartTest.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="Core\NewDelete.cpp">
       <Filter>Source files\Core</Filter>
     </ClCompile>
     <ClCompile Include="os\various\cpp_wrappers\ch.cpp">
       <Filter>Source files\os\various\cpp_wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\IpAddress.cpp">
+      <Filter>Source files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\AbstractUdpSocket.cpp">
+      <Filter>Source files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\AbstractTcpSocket.cpp">
+      <Filter>Source files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsmATResponseParsers.cpp">
+      <Filter>Source files\Drivers\Network\SimGsm</Filter>
+    </ClCompile>
+    <ClCompile Include="Support\Utility.cpp">
+      <Filter>Source files\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="Support\LexicalAnalyzer.cpp">
+      <Filter>Source files\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsm.cpp">
+      <Filter>Source files\Drivers\Network\SimGsm</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsmUdpSocket.cpp">
+      <Filter>Source files\Drivers\Network\SimGsm</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsmTcpSocket.cpp">
+      <Filter>Source files\Drivers\Network\SimGsm</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsmTcpServer.cpp">
+      <Filter>Source files\Drivers\Network\SimGsm</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ByteRingBuffer.cpp">
+      <Filter>Source files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsmSocketBase.cpp">
+      <Filter>Source files\Drivers\Network\SimGsm</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Sensors\CE301.cpp">
+      <Filter>Source files\Drivers\Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\DataTimeService.cpp">
+      <Filter>Source files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Sensors\AbstractSensor.cpp">
+      <Filter>Source files\Drivers\Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\LogicOutput.cpp">
+      <Filter>Source files\Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="BRSensorReader.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="SingleBRSensorReader.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="MultipleBRSensorsReader.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\MultipleBRSensorsReaderTest.cpp">
+      <Filter>Source files\Tests</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2319,6 +2416,96 @@
     </ClInclude>
     <ClInclude Include="os\various\cpp_wrappers\ch.hpp">
       <Filter>Header files\os\various\cpp_wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\AbstractModem.h">
+      <Filter>Header files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\AbstractSocket.h">
+      <Filter>Header files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\AbstractTcpSocket.h">
+      <Filter>Header files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\AbstractUdpSocket.h">
+      <Filter>Header files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\IpAddress.h">
+      <Filter>Header files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\AbstractTcpServer.h">
+      <Filter>Header files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\AbstractReadable.h">
+      <Filter>Header files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\AbstractWritable.h">
+      <Filter>Header files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\AbstractGsmModem.h">
+      <Filter>Header files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsmATResponseParsers.h">
+      <Filter>Header files\Drivers\Network\SimGsm</Filter>
+    </ClInclude>
+    <ClInclude Include="Support\Utility.h">
+      <Filter>Header files\Support</Filter>
+    </ClInclude>
+    <ClInclude Include="Support\LexicalAnalyzer.h">
+      <Filter>Header files\Support</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsmTcpServer.h">
+      <Filter>Header files\Drivers\Network\SimGsm</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsmTcpSocket.h">
+      <Filter>Header files\Drivers\Network\SimGsm</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsmUdpSocket.h">
+      <Filter>Header files\Drivers\Network\SimGsm</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsm.h">
+      <Filter>Header files\Drivers\Network\SimGsm</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\NanoList.h">
+      <Filter>Header files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\RingBuffer.h">
+      <Filter>Header files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ByteRingBuffer.h">
+      <Filter>Header files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\IOPort.h">
+      <Filter>Header files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Assert.h">
+      <Filter>Header files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsmSocketBase.h">
+      <Filter>Header files\Drivers\Network\SimGsm</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Sensors\AbstractSensor.h">
+      <Filter>Header files\Drivers\Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\DataTime.h">
+      <Filter>Header files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Sensors\CE301.h">
+      <Filter>Header files\Drivers\Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\DataTimeService.h">
+      <Filter>Header files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\LogicOutput.h">
+      <Filter>Header files\Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="BRSensorReader.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleBRSensorReader.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="MultipleBRSensorsReader.h">
+      <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

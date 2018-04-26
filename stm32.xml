@@ -1,8 +1,11 @@
 <?xml version="1.0"?>
 <EmbeddedProfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
+  <ToolchainVersion>
+    <Revision>0</Revision>
+  </ToolchainVersion>
   <BspID>com.sysprogs.arm.stm32</BspID>
-  <BspVersion>4.5R3</BspVersion>
+  <BspVersion>4.6R3</BspVersion>
   <McuID>STM32F407VE</McuID>
   <MCUDefinitionFile>STM32F4xxxx/DeviceDefinitions/stm32f407xx.xml</MCUDefinitionFile>
   <MCUProperties>
@@ -16,12 +19,16 @@
         <Value>-mfloat-abi=soft</Value>
       </KeyValue>
       <KeyValue>
+        <Key>com.sysprogs.mcuoptions.ignore_startup_file</Key>
+        <Value>1</Value>
+      </KeyValue>
+      <KeyValue>
         <Key>com.sysprogs.toolchainoptions.arm.libctype</Key>
-        <Value />
+        <Value>--specs=nano.specs</Value>
       </KeyValue>
       <KeyValue>
         <Key>com.sysprogs.toolchainoptions.arm.libnosys</Key>
-        <Value>--specs=rdimon.specs</Value>
+        <Value>--specs=nosys.specs</Value>
       </KeyValue>
     </Entries>
   </MCUProperties>

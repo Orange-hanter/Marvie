@@ -35,7 +35,7 @@ error:
 	$(error Invalid configuration, please check your inputs)
 endif
 
-SOURCEFILES := board.c Core/NewDelete.cpp Drivers/Interfaces/Usart.cpp ext/fatfs/src/ff.c ext/fatfs/src/ffunicode.c os/common/oslib/src/chfactory.c os/common/oslib/src/chheap.c os/common/oslib/src/chmboxes.c os/common/oslib/src/chmemcore.c os/common/oslib/src/chmempools.c os/common/ports/ARMCMx/chcore.c os/common/ports/ARMCMx/chcore_v7m.c os/common/ports/ARMCMx/compilers/GCC/chcoreasm_v7m.S os/common/startup/ARMCMx/compilers/GCC/crt0_v7m.S os/common/startup/ARMCMx/compilers/GCC/crt1.c os/common/startup/ARMCMx/compilers/GCC/vectors.S os/hal/lib/streams/chprintf.c os/hal/lib/streams/memstreams.c os/hal/lib/streams/nullstreams.c os/hal/osal/rt/osal.c os/hal/ports/common/ARMCMx/nvic.c os/hal/ports/STM32/LLD/ADCv2/hal_adc_lld.c os/hal/ports/STM32/LLD/CANv1/hal_can_lld.c os/hal/ports/STM32/LLD/DACv1/hal_dac_lld.c os/hal/ports/STM32/LLD/DMAv2/stm32_dma.c os/hal/ports/STM32/LLD/EXTIv1/hal_ext_lld.c os/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.c os/hal/ports/STM32/LLD/I2Cv1/hal_i2c_lld.c os/hal/ports/STM32/LLD/MACv1/hal_mac_lld.c os/hal/ports/STM32/LLD/OTGv1/hal_usb_lld.c os/hal/ports/STM32/LLD/OTGv1/hal_usb_lld_alt.c os/hal/ports/STM32/LLD/QUADSPIv1/hal_qspi_lld.c os/hal/ports/STM32/LLD/RTCv2/hal_rtc_lld.c os/hal/ports/STM32/LLD/SDIOv1/hal_sdc_lld.c os/hal/ports/STM32/LLD/SPIv1/hal_i2s_lld.c os/hal/ports/STM32/LLD/SPIv1/hal_spi_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_icu_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_pwm_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_st_lld.c os/hal/ports/STM32/LLD/USARTv1/hal_serial_lld.c os/hal/ports/STM32/LLD/USARTv1/hal_uart_lld.c os/hal/ports/STM32/LLD/xWDGv1/hal_wdg_lld.c os/hal/ports/STM32/STM32F4xx/hal_lld.c os/hal/ports/STM32/STM32F4xx/stm32_isr.c os/hal/src/hal.c os/hal/src/hal_adc.c os/hal/src/hal_buffers.c os/hal/src/hal_can.c os/hal/src/hal_crypto.c os/hal/src/hal_dac.c os/hal/src/hal_ext.c os/hal/src/hal_gpt.c os/hal/src/hal_i2c.c os/hal/src/hal_i2s.c os/hal/src/hal_icu.c os/hal/src/hal_mac.c os/hal/src/hal_mmcsd.c os/hal/src/hal_mmc_spi.c os/hal/src/hal_pal.c os/hal/src/hal_pwm.c os/hal/src/hal_qspi.c os/hal/src/hal_queues.c os/hal/src/hal_rtc.c os/hal/src/hal_sdc.c os/hal/src/hal_serial.c os/hal/src/hal_serial_usb.c os/hal/src/hal_spi.c os/hal/src/hal_st.c os/hal/src/hal_uart.c os/hal/src/hal_usb.c os/hal/src/hal_wdg.c os/rt/src/chcond.c os/rt/src/chdebug.c os/rt/src/chdynamic.c os/rt/src/chevents.c os/rt/src/chmsg.c os/rt/src/chmtx.c os/rt/src/chregistry.c os/rt/src/chschd.c os/rt/src/chsem.c os/rt/src/chstats.c os/rt/src/chsys.c os/rt/src/chthreads.c os/rt/src/chtm.c os/rt/src/chtrace.c os/rt/src/chvt.c os/test/lib/ch_test.c os/test/oslib/source/test/oslib_test_root.c os/test/oslib/source/test/oslib_test_sequence_001.c os/test/oslib/source/test/oslib_test_sequence_002.c os/test/oslib/source/test/oslib_test_sequence_003.c os/test/oslib/source/test/oslib_test_sequence_004.c os/test/rt/source/test/rt_test_root.c os/test/rt/source/test/rt_test_sequence_001.c os/test/rt/source/test/rt_test_sequence_002.c os/test/rt/source/test/rt_test_sequence_003.c os/test/rt/source/test/rt_test_sequence_004.c os/test/rt/source/test/rt_test_sequence_005.c os/test/rt/source/test/rt_test_sequence_006.c os/test/rt/source/test/rt_test_sequence_007.c os/test/rt/source/test/rt_test_sequence_008.c os/test/rt/source/test/rt_test_sequence_009.c os/test/rt/source/test/rt_test_sequence_010.c os/various/cpp_wrappers/ch.cpp os/various/evtimer.c os/various/fatfs_bindings/fatfs_diskio.c os/various/fatfs_bindings/fatfs_syscall.c Tests/UsartTest.cpp
+SOURCEFILES := board.c Core/ByteRingBuffer.cpp Core/DataTimeService.cpp Core/NewDelete.cpp Drivers/Interfaces/Usart.cpp Drivers/LogicOutput.cpp Drivers/Network/SimGsm/SimGsm.cpp Drivers/Network/SimGsm/SimGsmATResponseParsers.cpp Drivers/Network/SimGsm/SimGsmSocketBase.cpp Drivers/Network/SimGsm/SimGsmTcpServer.cpp Drivers/Network/SimGsm/SimGsmTcpSocket.cpp Drivers/Network/SimGsm/SimGsmUdpSocket.cpp Drivers/Sensors/AbstractSensor.cpp Drivers/Sensors/CE301.cpp ext/fatfs/src/ff.c ext/fatfs/src/ffunicode.c Network/AbstractTcpSocket.cpp Network/AbstractUdpSocket.cpp Network/IpAddress.cpp os/common/oslib/src/chfactory.c os/common/oslib/src/chheap.c os/common/oslib/src/chmboxes.c os/common/oslib/src/chmemcore.c os/common/oslib/src/chmempools.c os/common/ports/ARMCMx/chcore.c os/common/ports/ARMCMx/chcore_v7m.c os/common/ports/ARMCMx/compilers/GCC/chcoreasm_v7m.S os/common/startup/ARMCMx/compilers/GCC/crt0_v7m.S os/common/startup/ARMCMx/compilers/GCC/crt1.c os/common/startup/ARMCMx/compilers/GCC/vectors.S os/hal/lib/streams/chprintf.c os/hal/lib/streams/memstreams.c os/hal/lib/streams/nullstreams.c os/hal/osal/rt/osal.c os/hal/ports/common/ARMCMx/nvic.c os/hal/ports/STM32/LLD/ADCv2/hal_adc_lld.c os/hal/ports/STM32/LLD/CANv1/hal_can_lld.c os/hal/ports/STM32/LLD/DACv1/hal_dac_lld.c os/hal/ports/STM32/LLD/DMAv2/stm32_dma.c os/hal/ports/STM32/LLD/EXTIv1/hal_ext_lld.c os/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.c os/hal/ports/STM32/LLD/I2Cv1/hal_i2c_lld.c os/hal/ports/STM32/LLD/MACv1/hal_mac_lld.c os/hal/ports/STM32/LLD/OTGv1/hal_usb_lld.c os/hal/ports/STM32/LLD/OTGv1/hal_usb_lld_alt.c os/hal/ports/STM32/LLD/QUADSPIv1/hal_qspi_lld.c os/hal/ports/STM32/LLD/RTCv2/hal_rtc_lld.c os/hal/ports/STM32/LLD/SDIOv1/hal_sdc_lld.c os/hal/ports/STM32/LLD/SPIv1/hal_i2s_lld.c os/hal/ports/STM32/LLD/SPIv1/hal_spi_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_icu_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_pwm_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_st_lld.c os/hal/ports/STM32/LLD/USARTv1/hal_serial_lld.c os/hal/ports/STM32/LLD/USARTv1/hal_uart_lld.c os/hal/ports/STM32/LLD/xWDGv1/hal_wdg_lld.c os/hal/ports/STM32/STM32F4xx/hal_lld.c os/hal/ports/STM32/STM32F4xx/stm32_isr.c os/hal/src/hal.c os/hal/src/hal_adc.c os/hal/src/hal_buffers.c os/hal/src/hal_can.c os/hal/src/hal_crypto.c os/hal/src/hal_dac.c os/hal/src/hal_ext.c os/hal/src/hal_gpt.c os/hal/src/hal_i2c.c os/hal/src/hal_i2s.c os/hal/src/hal_icu.c os/hal/src/hal_mac.c os/hal/src/hal_mmcsd.c os/hal/src/hal_mmc_spi.c os/hal/src/hal_pal.c os/hal/src/hal_pwm.c os/hal/src/hal_qspi.c os/hal/src/hal_queues.c os/hal/src/hal_rtc.c os/hal/src/hal_sdc.c os/hal/src/hal_serial.c os/hal/src/hal_serial_usb.c os/hal/src/hal_spi.c os/hal/src/hal_st.c os/hal/src/hal_uart.c os/hal/src/hal_usb.c os/hal/src/hal_wdg.c os/rt/src/chcond.c os/rt/src/chdebug.c os/rt/src/chdynamic.c os/rt/src/chevents.c os/rt/src/chmsg.c os/rt/src/chmtx.c os/rt/src/chregistry.c os/rt/src/chschd.c os/rt/src/chsem.c os/rt/src/chstats.c os/rt/src/chsys.c os/rt/src/chthreads.c os/rt/src/chtm.c os/rt/src/chtrace.c os/rt/src/chvt.c os/test/lib/ch_test.c os/test/oslib/source/test/oslib_test_root.c os/test/oslib/source/test/oslib_test_sequence_001.c os/test/oslib/source/test/oslib_test_sequence_002.c os/test/oslib/source/test/oslib_test_sequence_003.c os/test/oslib/source/test/oslib_test_sequence_004.c os/test/rt/source/test/rt_test_root.c os/test/rt/source/test/rt_test_sequence_001.c os/test/rt/source/test/rt_test_sequence_002.c os/test/rt/source/test/rt_test_sequence_003.c os/test/rt/source/test/rt_test_sequence_004.c os/test/rt/source/test/rt_test_sequence_005.c os/test/rt/source/test/rt_test_sequence_006.c os/test/rt/source/test/rt_test_sequence_007.c os/test/rt/source/test/rt_test_sequence_008.c os/test/rt/source/test/rt_test_sequence_009.c os/test/rt/source/test/rt_test_sequence_010.c os/various/cpp_wrappers/ch.cpp os/various/evtimer.c os/various/fatfs_bindings/fatfs_diskio.c os/various/fatfs_bindings/fatfs_syscall.c SingleBRSensorReader.cpp BRSensorReader.cpp MultipleBRSensorsReader.cpp Support/LexicalAnalyzer.cpp Support/Utility.cpp Tests/MultipleBRSensorsReaderTest.cpp
 EXTERNAL_LIBS := 
 EXTERNAL_LIBS_COPIED := $(foreach lib, $(EXTERNAL_LIBS),$(BINARYDIR)/$(notdir $(lib)))
 
@@ -181,11 +181,55 @@ $(BINARYDIR)/%.o : %.cxx $(all_make_files) |$(BINARYDIR)
 #VisualGDB: GeneratedRules				#<--- All lines below are auto-generated. Remove this line to suppress auto-generation of file rules.
 
 
+$(BINARYDIR)/ByteRingBuffer.o : Core/ByteRingBuffer.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/DataTimeService.o : Core/DataTimeService.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
 $(BINARYDIR)/NewDelete.o : Core/NewDelete.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
 $(BINARYDIR)/Usart.o : Drivers/Interfaces/Usart.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/LogicOutput.o : Drivers/LogicOutput.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/SimGsm.o : Drivers/Network/SimGsm/SimGsm.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/SimGsmATResponseParsers.o : Drivers/Network/SimGsm/SimGsmATResponseParsers.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/SimGsmSocketBase.o : Drivers/Network/SimGsm/SimGsmSocketBase.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/SimGsmTcpServer.o : Drivers/Network/SimGsm/SimGsmTcpServer.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/SimGsmTcpSocket.o : Drivers/Network/SimGsm/SimGsmTcpSocket.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/SimGsmUdpSocket.o : Drivers/Network/SimGsm/SimGsmUdpSocket.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/AbstractSensor.o : Drivers/Sensors/AbstractSensor.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/CE301.o : Drivers/Sensors/CE301.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
@@ -195,6 +239,18 @@ $(BINARYDIR)/ff.o : ext/fatfs/src/ff.c $(all_make_files) |$(BINARYDIR)
 
 $(BINARYDIR)/ffunicode.o : ext/fatfs/src/ffunicode.c $(all_make_files) |$(BINARYDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/AbstractTcpSocket.o : Network/AbstractTcpSocket.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/AbstractUdpSocket.o : Network/AbstractUdpSocket.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/IpAddress.o : Network/IpAddress.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
 $(BINARYDIR)/chfactory.o : os/common/oslib/src/chfactory.c $(all_make_files) |$(BINARYDIR)
@@ -609,6 +665,14 @@ $(BINARYDIR)/fatfs_syscall.o : os/various/fatfs_bindings/fatfs_syscall.c $(all_m
 	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
-$(BINARYDIR)/UsartTest.o : Tests/UsartTest.cpp $(all_make_files) |$(BINARYDIR)
+$(BINARYDIR)/LexicalAnalyzer.o : Support/LexicalAnalyzer.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/Utility.o : Support/Utility.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/MultipleBRSensorsReaderTest.o : Tests/MultipleBRSensorsReaderTest.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
