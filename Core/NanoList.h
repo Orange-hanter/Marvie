@@ -15,7 +15,7 @@ public:
 
 		T value;
 	};
-	
+
 	class Iterator
 	{
 		friend class NanoList< T >;
@@ -26,13 +26,14 @@ public:
 	public:
 		Iterator();
 
-		Iterator& operator++();
-		Iterator operator++( int );
-		Iterator& operator--();
-		Iterator operator--( int );
-		bool operator ==( Iterator ) const;
-		bool operator !=( Iterator ) const;
-		T& operator*();
+		inline Iterator& operator++();
+		inline Iterator operator++( int );
+		inline Iterator& operator--();
+		inline Iterator operator--( int );
+		inline bool operator ==( Iterator ) const;
+		inline bool operator !=( Iterator ) const;
+		inline T& operator*();
+		inline operator Node*();
 	};
 
 	NanoList();
@@ -224,4 +225,10 @@ template< typename T >
 T& NanoList< T >::Iterator::operator*()
 {
 	return node->value;
+}
+
+template< typename T >
+NanoList< T >::Iterator::operator Node*()
+{
+	return node;
 }

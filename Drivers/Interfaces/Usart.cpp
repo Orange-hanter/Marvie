@@ -242,15 +242,15 @@ bool Usart::waitForReadAvailable( uint32_t size, sysinterval_t timeout )
 	if( readAvailable() >= size )
 		return true;
 
-	EvtSource innerEventSource;
+	enum Event : eventmask_t { UsartEvent = EVENT_MASK( 0 ), InnerEvent = EVENT_MASK( 1 ) };
+	eventmask_t prevEmask = chEvtGetAndClearEvents( UsartEvent | InnerEvent );
+
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
-	chVTSet( &timer, timeout, timerCallback, &innerEventSource );
+	chVTSet( &timer, timeout, timerCallback, chThdGetSelfX() );
 
-	EvtListener usartListener, innerEventListener;
-	enum Event : eventmask_t { UsartEvent = EVENT_MASK( 0 ), InnerEvent = EVENT_MASK( 1 ) };
+	EvtListener usartListener;
 	eventSource()->registerMaskWithFlags( &usartListener, UsartEvent, CHN_INPUT_AVAILABLE );
-	innerEventSource.registerMaskWithFlags( &innerEventListener, InnerEvent, 1 );
 	while( readAvailable() < size )
 	{
 		eventmask_t em = chEvtWaitAny( UsartEvent | InnerEvent );
@@ -261,9 +261,9 @@ bool Usart::waitForReadAvailable( uint32_t size, sysinterval_t timeout )
 	}
 
 	eventSource()->unregister( &usartListener );
-	innerEventSource.unregister( &innerEventListener );
 	chVTReset( &timer );
 
+	chEvtAddEvents( prevEmask );
 	return readAvailable() >= size;
 }
 
@@ -349,7 +349,7 @@ EvtSource* Usart::eventSource()
 void Usart::timerCallback( void* p )
 {
 	chSysLockFromISR();
-	reinterpret_cast< EvtSource* >( p )->broadcastFlagsI( 1 );
+	chEvtSignalI( reinterpret_cast< thread_t* >( p ), EVENT_MASK( 1 ) ); // InnerEvent
 	chSysUnlockFromISR();
 }
 
