@@ -1,5 +1,4 @@
 #include "MultipleBRSensorsReader.h"
-#include "Drivers/Sensors/CE301.h"
 #include "Core/Assert.h"
 #include "hal.h"
 #include <math.h>

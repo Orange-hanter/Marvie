@@ -2,12 +2,12 @@
 
 #include "AbstractSensor.h"
 
-class CE301 : public AbstractBRSensor
+class CE301Sensor : public AbstractBRSensor
 {
 public:
 	class Data : public SensorData
 	{
-		friend class CE301;
+		friend class CE301Sensor;
 	public:
 		Data()
 		{
@@ -17,8 +17,8 @@ public:
 		double tariffs[6];
 	};
 
-	explicit CE301();
-	virtual ~CE301();
+	explicit CE301Sensor();
+	virtual ~CE301Sensor();
 
 	const char* name() const final override;
 	void setAddress( uint8_t address );

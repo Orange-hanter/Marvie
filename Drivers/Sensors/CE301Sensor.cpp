@@ -1,43 +1,43 @@
-#include "CE301.h"
+#include "CE301Sensor.h"
 #include "Core/DataTimeService.h"
 #include "Support/Utility.h"
 
-const uint8_t CE301::deviceAddressRequestUnion[5] = { '/', '?', '!', '\r', '\n' };
-const uint8_t CE301::programModeRequest[6] = { ACK, 0x30, 0x35, 0x31, '\r', '\n' };
-const uint8_t CE301::tariffsDataRequest[13] = { SOH, 'R', '1', STX, 'E', 'T', '0', 'P', 'E', '(', ')', ETX, 0x37 };
+const uint8_t CE301Sensor::deviceAddressRequestUnion[5] = { '/', '?', '!', '\r', '\n' };
+const uint8_t CE301Sensor::programModeRequest[6] = { ACK, 0x30, 0x35, 0x31, '\r', '\n' };
+const uint8_t CE301Sensor::tariffsDataRequest[13] = { SOH, 'R', '1', STX, 'E', 'T', '0', 'P', 'E', '(', ')', ETX, 0x37 };
 
-CE301::CE301()
+CE301Sensor::CE301Sensor()
 {
 	io = nullptr;
 	address = 0;
 }
 
-CE301::~CE301()
+CE301Sensor::~CE301Sensor()
 {
 
 }
 
-const char* CE301::name() const
+const char* CE301Sensor::name() const
 {
 	return "CE301";
 }
 
-void CE301::setAddress( uint8_t address )
+void CE301Sensor::setAddress( uint8_t address )
 {
 	this->address = address;
 }
 
-void CE301::setIODevice( IODevice* io )
+void CE301Sensor::setIODevice( IODevice* io )
 {
 	this->io = io;
 }
 
-IODevice* CE301::ioDevice()
+IODevice* CE301Sensor::ioDevice()
 {
 	return io;
 }
 
-CE301::Data* CE301::readData()
+CE301Sensor::Data* CE301Sensor::readData()
 {
 #define returnInvalid() { data.valid = false; return &data; }
 
@@ -88,12 +88,12 @@ CE301::Data* CE301::readData()
 	return &data;
 }
 
-CE301::Data* CE301::sensorData()
+CE301Sensor::Data* CE301Sensor::sensorData()
 {
 	return &data;
 }
 
-bool CE301::isValidChecksum( ByteRingIterator begin, ByteRingIterator end ) const
+bool CE301Sensor::isValidChecksum( ByteRingIterator begin, ByteRingIterator end ) const
 {
 	uint8_t sum = 0;
 	while( begin != end )

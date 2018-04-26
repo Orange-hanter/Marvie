@@ -1272,9 +1272,6 @@
     <ClCompile Include="Drivers\Network\SimGsm\SimGsmSocketBase.cpp">
       <Filter>Source files\Drivers\Network\SimGsm</Filter>
     </ClCompile>
-    <ClCompile Include="Drivers\Sensors\CE301.cpp">
-      <Filter>Source files\Drivers\Sensors</Filter>
-    </ClCompile>
     <ClCompile Include="Core\DataTimeService.cpp">
       <Filter>Source files\Core</Filter>
     </ClCompile>
@@ -1295,6 +1292,9 @@
     </ClCompile>
     <ClCompile Include="Tests\MultipleBRSensorsReaderTest.cpp">
       <Filter>Source files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Sensors\CE301Sensor.cpp">
+      <Filter>Source files\Drivers\Sensors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2489,9 +2489,6 @@
     <ClInclude Include="Core\DataTime.h">
       <Filter>Header files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Drivers\Sensors\CE301.h">
-      <Filter>Header files\Drivers\Sensors</Filter>
-    </ClInclude>
     <ClInclude Include="Core\DataTimeService.h">
       <Filter>Header files\Core</Filter>
     </ClInclude>
@@ -2506,6 +2503,9 @@
     </ClInclude>
     <ClInclude Include="MultipleBRSensorsReader.h">
       <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Sensors\CE301Sensor.h">
+      <Filter>Header files\Drivers\Sensors</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

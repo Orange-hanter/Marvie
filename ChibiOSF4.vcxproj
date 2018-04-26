@@ -120,7 +120,7 @@
     <ClCompile Include="Drivers\Network\SimGsm\SimGsmTcpSocket.cpp" />
     <ClCompile Include="Drivers\Network\SimGsm\SimGsmUdpSocket.cpp" />
     <ClCompile Include="Drivers\Sensors\AbstractSensor.cpp" />
-    <ClCompile Include="Drivers\Sensors\CE301.cpp" />
+    <ClCompile Include="Drivers\Sensors\CE301Sensor.cpp" />
     <ClCompile Include="ext\fatfs\src\ff.c" />
     <ClCompile Include="ext\fatfs\src\ffunicode.c" />
     <ClCompile Include="Network\AbstractTcpSocket.cpp" />
@@ -262,7 +262,7 @@
     <ClInclude Include="Drivers\Network\SimGsm\SimGsmTcpSocket.h" />
     <ClInclude Include="Drivers\Network\SimGsm\SimGsmUdpSocket.h" />
     <ClInclude Include="Drivers\Sensors\AbstractSensor.h" />
-    <ClInclude Include="Drivers\Sensors\CE301.h" />
+    <ClInclude Include="Drivers\Sensors\CE301Sensor.h" />
     <ClInclude Include="ext\fatfs\src\diskio.h" />
     <ClInclude Include="ext\fatfs\src\ff.h" />
     <ClInclude Include="ext\fatfs\src\integer.h" />
