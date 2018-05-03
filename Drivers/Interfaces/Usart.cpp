@@ -243,7 +243,7 @@ bool Usart::waitForReadAvailable( uint32_t size, sysinterval_t timeout )
 		return true;
 
 	enum Event : eventmask_t { UsartEvent = EVENT_MASK( 0 ), InnerEvent = EVENT_MASK( 1 ) };
-	eventmask_t prevEmask = chEvtGetAndClearEvents( UsartEvent | InnerEvent );
+	chEvtGetAndClearEvents( UsartEvent | InnerEvent );
 
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
@@ -263,7 +263,7 @@ bool Usart::waitForReadAvailable( uint32_t size, sysinterval_t timeout )
 	eventSource()->unregister( &usartListener );
 	chVTReset( &timer );
 
-	chEvtAddEvents( prevEmask );
+	// chEvtGetAndClearEvents( UsartEvent | InnerEvent );
 	return readAvailable() >= size;
 }
 

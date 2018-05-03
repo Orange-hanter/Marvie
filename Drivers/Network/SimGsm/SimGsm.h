@@ -132,7 +132,7 @@ private:
 	SimGsmATResponseParsers::CPinParsingResult::Status cpinStatus;
 	int sendReqErrorLinkId;
 	SendRequestState sendReqState;
-	systime_t sendReqDataTime;
+	systime_t tcpSocketReqTime;
 
 	struct LinkDesc
 	{
