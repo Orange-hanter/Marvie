@@ -34,6 +34,7 @@ bool SimGsmTcpServer::listen( uint16_t port )
 {
 	if( listening )
 		return false;
+	sError = SocketError::NoError;
 	return gsm->serverStart( port );
 }
 

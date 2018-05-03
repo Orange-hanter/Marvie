@@ -128,7 +128,7 @@ private:
 	uint32_t pinCode;
 	const char* apn;
 	IpAddress ip;
-	volatile bool pwrDown, crashFlag, callReady, smsReady; // rename?
+	volatile bool pwrDown, crashFlag, callReady, smsReady;
 	SimGsmATResponseParsers::CPinParsingResult::Status cpinStatus;
 	int sendReqErrorLinkId;
 	SendRequestState sendReqState;

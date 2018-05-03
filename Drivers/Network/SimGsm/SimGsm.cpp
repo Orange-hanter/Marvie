@@ -634,8 +634,8 @@ void SimGsm::lexicalAnalyzerCallback( LexicalAnalyzer::ParsingResult* res )
 			volatile bool needNext = false;
 			SimGsmUdpSocket* socket = static_cast< SimGsmUdpSocket* >( linkDesc[cres->linkId].socket );
 			chSysLock();
-			if( currentRequest && ( currentRequest->value->type == Request::Type::Close && static_cast< CloseRequest* >( currentRequest->value )->socket == socket ||
-									currentRequest->value->type == Request::Type::Send && static_cast< SendRequest* >( currentRequest->value )->socket == socket ) )
+			if( currentRequest && ( ( currentRequest->value->type == Request::Type::Send && static_cast< SendRequest* >( currentRequest->value )->socket == socket ) ||
+									( currentRequest->value->type == Request::Type::Close && static_cast< CloseRequest* >( currentRequest->value )->socket == socket ) ) )
 				requestList.pushFront( currentRequest ), needNext = true;
 			// remove requests to closed socket
 			for( auto i = requestList.begin(); i != requestList.end(); )
@@ -644,6 +644,7 @@ void SimGsm::lexicalAnalyzerCallback( LexicalAnalyzer::ParsingResult* res )
 				if( req->type == Request::Type::Close && static_cast< CloseRequest* >( req )->socket == socket )
 				{
 					chBSemResetI( &static_cast< CloseRequest* >( req )->semaphore, false );
+					requestList.remove( i );
 					break;
 				}
 				if( req->type == Request::Type::Send && static_cast< SendRequest* >( req )->socket == socket )
@@ -897,6 +898,7 @@ void SimGsm::closeRequestHandler( LexicalAnalyzer::ParsingResult* res )
 	case SimGsmATResponseParsers::CloseOk:
 	{
 		chSysLock();
+		assert( linkDesc[static_cast< SimGsmUdpSocket* >( creq->socket )->linkId].socket != nullptr );
 		linkDesc[static_cast< SimGsmUdpSocket* >( creq->socket )->linkId].socket = nullptr;
 		static_cast< SimGsmUdpSocket* >( creq->socket )->closeHelpS( SocketError::NoError );
 		chBSemSignalI( &creq->semaphore );
@@ -977,6 +979,7 @@ bool SimGsm::addRequest( RequestNode* requestNode )
 
 bool SimGsm::addRequestS( RequestNode* requestNode )
 {
+	chDbgCheckClassS();
 	if( mStatus == ModemStatus::Initializing || mStatus == ModemStatus::Stopped )
 		return false;
 	requestList.pushBack( requestNode );
