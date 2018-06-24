@@ -552,6 +552,7 @@
  */
 #define CH_CFG_IDLE_ENTER_HOOK() {                                          \
   /* Idle-enter code here.*/                                                \
+  cpuUsageMonitorIdleEnterHook();                                           \
 }
 
 /**
@@ -562,6 +563,7 @@
  */
 #define CH_CFG_IDLE_LEAVE_HOOK() {                                          \
   /* Idle-leave code here.*/                                                \
+  cpuUsageMonitorIdleLeaveHook();                                           \
 }
 
 /**

@@ -26,6 +26,7 @@ int main()
 
 	assert( list.remove( ++list.begin() )->value == 2 );
 	list.remove( --list.end() );
+	assert( list.size() == 2 );
 	int ansB[2] = { 3, 0 };
 	h = 0;
 	for( auto i = list.begin(); i != list.end(); ++i )

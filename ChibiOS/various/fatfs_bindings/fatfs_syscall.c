@@ -52,7 +52,7 @@ int ff_del_syncobj(FF_SYNC_t sobj) {
 /*------------------------------------------------------------------------*/
 int ff_req_grant(FF_SYNC_t sobj) {
 
-  msg_t msg = chSemWaitTimeout(sobj, (systime_t)FF_FS_TIMEOUT);
+  msg_t msg = chSemWaitTimeout(sobj, (sysinterval_t)FF_FS_TIMEOUT);
   return msg == MSG_OK;
 }
 

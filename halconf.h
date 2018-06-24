@@ -29,6 +29,9 @@
 #define HALCONF_H
 
 #include "mcuconf.h"
+#include "halconf_community.h"
+
+#define HAL_USE_COMMUNITY           TRUE
 
 /**
  * @brief   Enables the PAL subsystem.

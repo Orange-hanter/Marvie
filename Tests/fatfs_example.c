@@ -192,10 +192,10 @@ static void cmd_tree( BaseSequentialStream *chp, int argc, char *argv[] )
 
 // SD I/O Thread
 thread_t* sdThread = 0;
-static THD_WORKING_AREA( sdThreadArea, 128 );
+static THD_WORKING_AREA( sdThreadArea, 8192 );
 static THD_FUNCTION( SDThread, arg )
 {
-	scan_files( &SD6, "/" );
+	scan_files( &SD4, "/" );
 	/*FRESULT res;
 	cmd_tree( &SD6, 0, 0 );
 	FIL file;
@@ -270,9 +270,9 @@ int main( void )
 	 * Activates the serial driver 6 and SDC driver 1 using default
 	 * configuration.
 	 */
-	palSetPadMode( GPIOC, 6, PAL_MODE_ALTERNATE( 8 ) );
-	palSetPadMode( GPIOC, 7, PAL_MODE_ALTERNATE( 8 ) );
-	sdStart( &SD6, NULL );
+	sdStart( &SD4, NULL );
+	palSetPadMode( GPIOA, 0, PAL_MODE_ALTERNATE( GPIO_AF_UART4 ) );
+	palSetPadMode( GPIOA, 1, PAL_MODE_ALTERNATE( GPIO_AF_UART4 ) );
 
 	palSetPadMode( GPIOC, 8, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
 	palSetPadMode( GPIOC, 9, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );

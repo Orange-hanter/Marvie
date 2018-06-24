@@ -9,10 +9,6 @@
       <UniqueIdentifier>{f9719e84-054b-4d28-962d-d24d10475492}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource files">
-      <UniqueIdentifier>{01c65481-7375-4095-98ee-641c6738e875}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
-    </Filter>
     <Filter Include="Make files">
       <UniqueIdentifier>{b1d49aaa-42fd-4740-afa6-fcb526cb50ae}</UniqueIdentifier>
       <Extensions>*.mak</Extensions>
@@ -26,363 +22,6 @@
     </Filter>
     <Filter Include="Header files\Device-specific files">
       <UniqueIdentifier>{ef9b827f-365e-4bca-a4b6-e1e8ec592555}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\ext">
-      <UniqueIdentifier>{a5a1d2a4-7169-4aed-83d1-edf82dbcd72f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\ext">
-      <UniqueIdentifier>{737b2097-7b49-4638-bb6e-6a866fa5f2cc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\ext\fatfs">
-      <UniqueIdentifier>{df134bce-389e-4190-8520-e3f87e12068b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\ext\fatfs">
-      <UniqueIdentifier>{41bf228e-9884-4800-a9fb-9bb74bc87e27}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\ext\fatfs\src">
-      <UniqueIdentifier>{2028a20c-2988-43b3-bbf8-55f51a6871ca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\ext\fatfs\src">
-      <UniqueIdentifier>{053cf248-74f9-4cf7-b0c7-4bcb4268ba66}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os">
-      <UniqueIdentifier>{ec3ac664-dced-4723-bc00-ee923c0bdc2e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common">
-      <UniqueIdentifier>{f1dd873b-73a5-4c30-bb39-ba6660323688}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\ext">
-      <UniqueIdentifier>{e36d3ee3-24d4-461b-b39c-778694eb3425}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\ext\ARM">
-      <UniqueIdentifier>{7900dc10-0312-4055-8950-5424678b505d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\ext\ARM\CMSIS">
-      <UniqueIdentifier>{2580b35d-a3e0-45fc-9ee3-d6e802ffceb9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\ext\ARM\CMSIS\Core">
-      <UniqueIdentifier>{c6dd1099-90fc-4a7a-b923-ec5a715a7149}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\ext\ARM\CMSIS\Core\Include">
-      <UniqueIdentifier>{6b46195e-6bbc-41a6-ad84-28cbaf05cdc5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\ext\ST">
-      <UniqueIdentifier>{71944e6a-a211-4830-af06-875d1ebbd36e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\ext\ST\STM32F4xx">
-      <UniqueIdentifier>{f2330e35-9380-4a44-9f7b-e16265352277}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\oslib">
-      <UniqueIdentifier>{9b7674e4-6e50-4dae-8bba-873eb3d34037}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\oslib\include">
-      <UniqueIdentifier>{5e8015ae-eb07-453f-8b03-72a89b502e12}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os">
-      <UniqueIdentifier>{aa3e3455-0c98-4185-a902-76e40fec71de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\common">
-      <UniqueIdentifier>{dd27a9a0-fbe9-49d4-90ae-03eba7493baa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\common\oslib">
-      <UniqueIdentifier>{322c97e2-f977-40a4-a384-1b1b1ce140af}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\common\oslib\src">
-      <UniqueIdentifier>{fcadb3e1-8e08-46bd-98c6-ad424c34d745}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\portability">
-      <UniqueIdentifier>{fd4a4a1a-56df-4a7a-a5e1-54e9e72b2929}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\portability\GCC">
-      <UniqueIdentifier>{1a4f5c21-9c5f-4dba-a6a4-4941b68a7255}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\common\ports">
-      <UniqueIdentifier>{a0a83f91-44d3-42f6-a846-1351156814fc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\common\ports\ARMCMx">
-      <UniqueIdentifier>{09997348-b2e1-4e45-9d2e-882e8b749791}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\ports">
-      <UniqueIdentifier>{f286aa81-1f01-4e28-9771-4c809de98a18}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\ports\ARMCMx">
-      <UniqueIdentifier>{35c1ec2a-e8bf-4fde-a828-ed4be0b45ebd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\common\ports\ARMCMx\compilers">
-      <UniqueIdentifier>{d6a99763-c617-4efd-8644-de80f0f328a1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\common\ports\ARMCMx\compilers\GCC">
-      <UniqueIdentifier>{4c6b8a1a-22ba-4cb3-ad94-8fa3e5a2a116}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\ports\ARMCMx\compilers">
-      <UniqueIdentifier>{7c27716e-a519-40ca-a0ff-81ef7e27b0fd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\ports\ARMCMx\compilers\GCC">
-      <UniqueIdentifier>{e7db640e-aded-4cd8-b302-7a0cb512ae21}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\common\startup">
-      <UniqueIdentifier>{a76b052c-e600-4577-bea0-46126578698a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\common\startup\ARMCMx">
-      <UniqueIdentifier>{60b32d37-22da-4a59-8898-10557f766baf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\common\startup\ARMCMx\compilers">
-      <UniqueIdentifier>{762d328f-b1c5-47f9-b186-b14af61dd80b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\common\startup\ARMCMx\compilers\GCC">
-      <UniqueIdentifier>{88e54700-8814-4691-8938-90921f20563e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\startup">
-      <UniqueIdentifier>{fa00c44f-95ee-4599-aa66-20604f11563b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\startup\ARMCMx">
-      <UniqueIdentifier>{a0415286-3195-4c65-bf6d-d9f3a195b407}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\startup\ARMCMx\devices">
-      <UniqueIdentifier>{f35b1c86-70df-42ed-9ee7-b7daf777cb7c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\common\startup\ARMCMx\devices\STM32F4xx">
-      <UniqueIdentifier>{948f3a93-5635-4772-bed1-a96c92e3ebbf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal">
-      <UniqueIdentifier>{345a445f-f268-4406-98e2-d85a47937616}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\include">
-      <UniqueIdentifier>{fe3960ef-c747-47b5-aec8-3127653b6261}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal">
-      <UniqueIdentifier>{0c49ddbe-7611-47b9-ad78-a823688a85c1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\lib">
-      <UniqueIdentifier>{86820466-d252-4d73-87e4-cf84c21ca130}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\lib\streams">
-      <UniqueIdentifier>{72cd5f03-0265-4705-ba67-b4e4aca423c8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\lib">
-      <UniqueIdentifier>{130d2534-7ecf-4b42-8f67-c61d94f37e81}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\lib\streams">
-      <UniqueIdentifier>{5a744b8f-94b9-4d5d-b9fd-1035386abfa9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\osal">
-      <UniqueIdentifier>{ab43ab9c-4c38-46b3-8de2-9fcdcd7ce69c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\osal\rt">
-      <UniqueIdentifier>{27d8d4d9-81c1-4038-b6e3-69c83a490c5f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\osal">
-      <UniqueIdentifier>{b03f61f6-7f30-4fde-a297-720093848a86}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\osal\rt">
-      <UniqueIdentifier>{def232a1-657c-4d18-9930-f9400dd6b785}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports">
-      <UniqueIdentifier>{dfafb07b-5934-4542-97ae-3fd5e8278cb2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\common">
-      <UniqueIdentifier>{0a7998a4-24d8-4380-8b3b-7df263a5edd3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\common\ARMCMx">
-      <UniqueIdentifier>{50d47163-6008-49e0-b90d-d26964243704}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports">
-      <UniqueIdentifier>{e81fcdf6-6649-4b9d-8246-40e60a940930}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\common">
-      <UniqueIdentifier>{007d1ddb-f69f-4109-8cf1-304c5f7736ff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\common\ARMCMx">
-      <UniqueIdentifier>{6e221b17-a8f5-4f64-864f-9aef7dc86c70}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32">
-      <UniqueIdentifier>{13f198d0-df17-432b-b67c-2b382cad1da4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD">
-      <UniqueIdentifier>{91a4a5f5-df6b-4354-aaad-1c03ec76b465}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\ADCv2">
-      <UniqueIdentifier>{38478bb6-128f-419e-9cc3-89eabdb6ffcb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32">
-      <UniqueIdentifier>{f73818e9-ae74-4fd0-ac7c-52c88f3cf2db}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD">
-      <UniqueIdentifier>{f92a2b4e-7c17-482e-8b0c-d9fe73c3e51f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\ADCv2">
-      <UniqueIdentifier>{9150f94d-27af-43da-9fa4-67f66dc49103}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\CANv1">
-      <UniqueIdentifier>{b84c6bdb-ade5-4b8a-82b1-d5c86a81f593}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\CANv1">
-      <UniqueIdentifier>{4146b680-d6e9-4b20-b6b9-06c5784ef062}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\DACv1">
-      <UniqueIdentifier>{f2f8db4c-08bb-4425-af1d-aa510a64804c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\DACv1">
-      <UniqueIdentifier>{d512efa1-e074-43f6-8987-353d23e60548}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\DMAv2">
-      <UniqueIdentifier>{0ff5da2a-fe23-4221-80bc-f93e587e9af0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\DMAv2">
-      <UniqueIdentifier>{7476fe01-99f7-44d7-9bf4-87d2f3feda99}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\EXTIv1">
-      <UniqueIdentifier>{5184e417-8193-4c3e-9b4b-42fed3d5a683}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\EXTIv1">
-      <UniqueIdentifier>{1737f5e0-6072-4979-bb8f-61cccf9a2cfc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\GPIOv2">
-      <UniqueIdentifier>{3286a965-6e63-4ccf-bdcf-45f863719f69}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\GPIOv2">
-      <UniqueIdentifier>{6ab81d4e-8c28-498a-8ad2-c8ce7efbcf49}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\I2Cv1">
-      <UniqueIdentifier>{cde4231a-d09b-4369-bf31-1e557a4f24ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\I2Cv1">
-      <UniqueIdentifier>{dab93e1b-bbed-4358-a9e4-8b607a7a21d4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\MACv1">
-      <UniqueIdentifier>{ff399bae-393f-4edf-95f2-dd24074d745b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\MACv1">
-      <UniqueIdentifier>{86039b09-2fae-4f4d-9dfc-ba8c80bec19c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\OTGv1">
-      <UniqueIdentifier>{97257469-dac6-4437-802e-0dbf00c11965}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\OTGv1">
-      <UniqueIdentifier>{2dae3b58-1400-4bc1-b78e-7a4bc8e6944e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\QUADSPIv1">
-      <UniqueIdentifier>{381eb4a1-9c1d-4919-ad77-2dc44554cd8b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\QUADSPIv1">
-      <UniqueIdentifier>{da575dba-c609-4b88-bcd0-001d6a8b35d8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\RTCv2">
-      <UniqueIdentifier>{5bb83ec5-0d45-488d-b84c-e4fc201c8c81}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\RTCv2">
-      <UniqueIdentifier>{a480ff20-c4d0-4bb2-80e1-f59f8bdac798}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\SDIOv1">
-      <UniqueIdentifier>{89b014fd-e7d0-4576-b059-2211ed42471d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\SDIOv1">
-      <UniqueIdentifier>{1d62d0a0-6a16-45b4-a54d-e5e9b7a4f89c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\SPIv1">
-      <UniqueIdentifier>{f857bb65-5001-48be-b853-4e382ea625ac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\SPIv1">
-      <UniqueIdentifier>{47efe0dd-7d62-459b-b6a4-98e1259346c8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\TIMv1">
-      <UniqueIdentifier>{7145dbff-172b-4a67-a383-8be1b21a91c9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\TIMv1">
-      <UniqueIdentifier>{4db8237f-e0ba-4ffe-9174-29b32de98015}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\USARTv1">
-      <UniqueIdentifier>{4cb7239e-4a69-453f-aeb1-ae9fbcebddbf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\USARTv1">
-      <UniqueIdentifier>{81441b86-b536-4045-8ff6-91366e4d8a79}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\LLD\xWDGv1">
-      <UniqueIdentifier>{27257611-2b9f-42ab-8258-d0322e65b56c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\LLD\xWDGv1">
-      <UniqueIdentifier>{536b7b74-6507-42ec-914b-bd2b3166c2bf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\ports\STM32\STM32F4xx">
-      <UniqueIdentifier>{0b648e21-e4e7-40b6-a36b-694d61f3381b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\hal\ports\STM32\STM32F4xx">
-      <UniqueIdentifier>{2140e55f-2b71-4993-a7be-9a8f712a4c62}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\hal\src">
-      <UniqueIdentifier>{5cbf5242-3750-4ba8-a7af-7e5d5955315f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\license">
-      <UniqueIdentifier>{598a9dc0-253c-4263-b93f-2111140cf45d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\rt">
-      <UniqueIdentifier>{efb8c102-6c93-4c2f-907e-6c0f6c28376c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\rt\include">
-      <UniqueIdentifier>{88a28181-3917-41c6-8b9a-78e2201df4fb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\rt">
-      <UniqueIdentifier>{92767b74-584c-4217-8ced-a2765a7fe8bb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\rt\src">
-      <UniqueIdentifier>{2ae2cb49-8039-4c0a-9544-1660b0354359}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\test">
-      <UniqueIdentifier>{a4a68521-31c4-40ad-9379-f90eb45740a0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\test\lib">
-      <UniqueIdentifier>{fdac169c-d1a5-478d-ab65-4c68e464efec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\test">
-      <UniqueIdentifier>{737c14f8-5bd1-4bbe-9e8e-ce234620aa44}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\test\lib">
-      <UniqueIdentifier>{2d39144f-8be9-407b-bec3-0f710293cc14}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\test\oslib">
-      <UniqueIdentifier>{9304b303-95a6-4be3-aaeb-30d401818ebe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\test\oslib\source">
-      <UniqueIdentifier>{434c9123-2134-4a6a-9f21-c450055a4d39}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\test\oslib\source\test">
-      <UniqueIdentifier>{4d846b58-2962-46a9-8759-617112d92e76}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\test\oslib">
-      <UniqueIdentifier>{e407e089-c6f8-4814-8564-555035d3c401}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\test\oslib\source">
-      <UniqueIdentifier>{434c3871-6856-45f1-af6b-bae562737a8f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\test\oslib\source\test">
-      <UniqueIdentifier>{351255a4-d996-4f39-a7af-e47c3d1085b1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\test\rt">
-      <UniqueIdentifier>{56ef9856-6c55-4097-8c6b-af5fca40a873}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\test\rt\source">
-      <UniqueIdentifier>{11118cc3-9805-4cac-afae-6ce9d778926c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\test\rt\source\test">
-      <UniqueIdentifier>{0c64fbe6-e2cf-4e80-a6b7-cebbdee41d82}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\test\rt">
-      <UniqueIdentifier>{1f47c579-a86b-464c-a20f-b3dfd671826d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\test\rt\source">
-      <UniqueIdentifier>{337be4b9-f2e1-4e12-b64b-9435eef4e0ae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\test\rt\source\test">
-      <UniqueIdentifier>{94f9b02b-89af-421e-a18b-8dd217901c0f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\various">
-      <UniqueIdentifier>{f4f0db35-0181-42db-b99b-6be7202f8dd4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\various">
-      <UniqueIdentifier>{d5c7ae58-11fe-47d1-8f84-fda3298eade2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\various\fatfs_bindings">
-      <UniqueIdentifier>{1b542ee2-b72b-4584-be73-c80375d24625}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header files\Drivers">
       <UniqueIdentifier>{afb4876d-94bf-453d-b41a-50dbde84eff3}</UniqueIdentifier>
@@ -401,12 +40,6 @@
     </Filter>
     <Filter Include="Source files\Core">
       <UniqueIdentifier>{17f858c9-b950-4c01-8c0e-21a3c343e0da}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\os\various\cpp_wrappers">
-      <UniqueIdentifier>{35ae1be1-c444-45cb-8244-1445d3fa7dfe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header files\os\various\cpp_wrappers">
-      <UniqueIdentifier>{6f1ddc2c-09a8-4c0b-870d-b94c1ae6b1d1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header files\Drivers\Network">
       <UniqueIdentifier>{5e80b321-e5ef-4cfa-bdb3-fed4d46febea}</UniqueIdentifier>
@@ -444,6 +77,456 @@
     <Filter Include="Source files\Tests">
       <UniqueIdentifier>{8b49fed3-fbb0-410a-8bf8-931711593a14}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Xml">
+      <UniqueIdentifier>{75386e5d-d1b6-40cb-99b0-4c5c3ea03ac3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Xml\schemas">
+      <UniqueIdentifier>{50849cb9-aa03-4dd6-a922-a60b98dbcc11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS">
+      <UniqueIdentifier>{448a0cc9-2d5d-431f-bf11-1123a63a7745}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common">
+      <UniqueIdentifier>{f86f756e-466e-4648-8d30-19e94251a874}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\ext">
+      <UniqueIdentifier>{3f96b4bf-2bb4-4b80-818d-d71e76786e93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\ext\ARM">
+      <UniqueIdentifier>{20908223-7f0d-4bda-8846-fba702fec950}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\ext\ARM\CMSIS">
+      <UniqueIdentifier>{76f6e66e-d409-431b-b6c3-e5edc0c3febb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\ext\ARM\CMSIS\Core">
+      <UniqueIdentifier>{67283650-7e71-42c7-9f48-a4b05e9d1d50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\ext\ARM\CMSIS\Core\Include">
+      <UniqueIdentifier>{1720ce9e-ce11-4db7-a062-ddc78eba1007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\ext\ST">
+      <UniqueIdentifier>{cc5bdc68-b03a-4109-a1ac-f3453f35c0c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\ext\ST\STM32F4xx">
+      <UniqueIdentifier>{9b39211c-6416-4d8f-92db-c532fe6a8461}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\oslib">
+      <UniqueIdentifier>{dc053088-8be3-424d-9db4-6f048f2ae937}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\oslib\include">
+      <UniqueIdentifier>{348eccc8-d981-4ce1-ab77-cb4a3ddf462e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\oslib\src">
+      <UniqueIdentifier>{2cc39fc1-1b68-466e-8d8e-d69342c6ecfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\portability">
+      <UniqueIdentifier>{4e339904-0a16-4848-9b03-b80d852bddcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\portability\GCC">
+      <UniqueIdentifier>{0114e884-d347-40fa-b09f-6faf7e410053}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\ports">
+      <UniqueIdentifier>{864c6567-3980-4231-91c2-799d12bb3f60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\ports\ARMCMx">
+      <UniqueIdentifier>{e13672d1-e1b9-4d6b-813a-1b0b30c24acd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\ports\ARMCMx\compilers">
+      <UniqueIdentifier>{996d9f1f-78f0-445c-a8f2-d30875d0dac2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\ports\ARMCMx\compilers\GCC">
+      <UniqueIdentifier>{b1a58af1-6c78-47ae-a3d7-b7db40ce15c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\startup">
+      <UniqueIdentifier>{9680fcb8-17a5-4a02-951d-ad47614767d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\startup\ARMCMx">
+      <UniqueIdentifier>{abde4b44-f818-4fe3-915d-51e841df9170}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\startup\ARMCMx\compilers">
+      <UniqueIdentifier>{f98820fd-8a32-4041-b6b9-1c2b9b760bfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\startup\ARMCMx\compilers\GCC">
+      <UniqueIdentifier>{61c47392-5acf-4a56-b170-74dc0cb3e1fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\startup\ARMCMx\devices">
+      <UniqueIdentifier>{3c7a69e1-e698-4e43-b8f6-dc822d981ad0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\common\startup\ARMCMx\devices\STM32F4xx">
+      <UniqueIdentifier>{35984857-3533-478a-bd03-0fa8ff79fe1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal">
+      <UniqueIdentifier>{908f62de-3b5e-4421-88fa-1a10f5b4e773}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\include">
+      <UniqueIdentifier>{1a0a5099-3f5c-4276-afbe-998c4d4d9a67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\lib">
+      <UniqueIdentifier>{4da1a882-1aed-4191-8b23-6111b46ee0ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\lib\streams">
+      <UniqueIdentifier>{ddd2b660-0ccf-4a1a-a48b-78f059166290}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\osal">
+      <UniqueIdentifier>{f84df013-50f4-4574-98a9-be212fbbbf90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\osal\rt">
+      <UniqueIdentifier>{0031e76e-b922-4999-9f96-c5111b9539de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports">
+      <UniqueIdentifier>{fe27c582-9ec4-4f20-92c1-5b445db0a662}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\common">
+      <UniqueIdentifier>{20b36b7f-e092-4db5-8e9d-bfc0768b3406}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\common\ARMCMx">
+      <UniqueIdentifier>{ee1536a2-dc23-426c-8e74-73eb966f6e13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32">
+      <UniqueIdentifier>{d6e08410-8945-4dc7-b100-57e11a3e5bd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD">
+      <UniqueIdentifier>{a44da743-24b3-4042-b570-9f9f43b06156}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\ADCv2">
+      <UniqueIdentifier>{48791c4f-652c-4aa6-8bf8-716465288d67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\CANv1">
+      <UniqueIdentifier>{ac7e8e39-01ea-4668-9d85-ffb2315fa7fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\DACv1">
+      <UniqueIdentifier>{2986c191-240d-4073-9c76-b2ddda101c02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\DMAv2">
+      <UniqueIdentifier>{f6e27238-863c-4cbf-995c-fc80481130ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\EXTIv1">
+      <UniqueIdentifier>{b29553ff-dcc1-4631-9fa9-75ed7da5ce5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\GPIOv2">
+      <UniqueIdentifier>{a59f2325-8bd0-43ff-ae2a-da7ce4a91514}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\I2Cv1">
+      <UniqueIdentifier>{a7f637e4-8e03-41f2-9d85-9765dc31c123}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\MACv1">
+      <UniqueIdentifier>{28cdc504-907f-4654-ac47-d7ac28046a47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\OTGv1">
+      <UniqueIdentifier>{f4be4f25-a87a-4f38-bed3-6305876f3a23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\QUADSPIv1">
+      <UniqueIdentifier>{c089a3be-a27c-418f-9a89-efdb3e307ef6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\RTCv2">
+      <UniqueIdentifier>{b2c388f4-fbb3-4364-ae82-e6b0cf1ebc22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\SDIOv1">
+      <UniqueIdentifier>{4ed642d6-9983-4326-a4a3-75037098e953}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\SPIv1">
+      <UniqueIdentifier>{eddb5c35-bd09-4231-a07b-d903cb621963}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\TIMv1">
+      <UniqueIdentifier>{30396bf2-dbb8-4f6a-9265-1ee2d197eb0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\USARTv1">
+      <UniqueIdentifier>{8c6b9fb2-d421-4f5c-bada-8134f3aed5ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\xWDGv1">
+      <UniqueIdentifier>{8d6e96de-3f37-4bfe-b51c-755c5b91e6f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\STM32F4xx">
+      <UniqueIdentifier>{c5740df6-d193-48cc-92ab-14b33d541f84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\src">
+      <UniqueIdentifier>{2ed1015b-7efd-4000-ab05-96be5d416f40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\license">
+      <UniqueIdentifier>{8638cc66-d5e2-40cc-86fd-5b00d38af9fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\rt">
+      <UniqueIdentifier>{892ea5b0-29db-49b3-b504-480c0f4962e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\rt\include">
+      <UniqueIdentifier>{d01b52dc-93a7-4cf4-9d72-6cdb4445ddef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\rt\src">
+      <UniqueIdentifier>{e331f497-4aac-4ea4-91f8-a706f4fad144}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\test">
+      <UniqueIdentifier>{02d9d17e-8947-49d4-8dff-447083a5c6f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\test\lib">
+      <UniqueIdentifier>{4de0a8b0-a1e0-4e13-8d49-a9cee1d34951}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\test\oslib">
+      <UniqueIdentifier>{a35bb43a-1354-4b16-9a79-89095ad6520d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\test\oslib\source">
+      <UniqueIdentifier>{1796a0df-c70a-4696-97e5-b24a4881f0a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\test\oslib\source\test">
+      <UniqueIdentifier>{14fc74d4-24d3-4da1-89fb-64091292b500}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\test\rt">
+      <UniqueIdentifier>{77fbe6b2-57d5-4250-9cc5-e7bdfc30211d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\test\rt\source">
+      <UniqueIdentifier>{304aef52-c456-4d78-9e4c-d85e4e7bf39a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\test\rt\source\test">
+      <UniqueIdentifier>{a90f8078-e603-4f7d-8ea7-e2db3cd61974}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\various">
+      <UniqueIdentifier>{43198668-ee36-429b-9f40-42ff51d0c461}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\various\cpp_wrappers">
+      <UniqueIdentifier>{61de9ddb-fa95-4498-b6be-cc5f7087b48d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\various\fatfs_bindings">
+      <UniqueIdentifier>{0909c1f2-a1b8-4bac-b1e2-33c9d678be3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS">
+      <UniqueIdentifier>{264d7032-c161-42a7-bbc1-079fd354884e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common">
+      <UniqueIdentifier>{95324559-f11d-4d0d-b4c6-ef5ba7b80a16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\ext">
+      <UniqueIdentifier>{74c0ccf6-39f6-4d23-ae39-1e7139998d3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\ext\ARM">
+      <UniqueIdentifier>{10f9a598-5d0f-4a7a-b4d0-f2b33ba50d0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\ext\ARM\CMSIS">
+      <UniqueIdentifier>{9e406765-aaa1-4479-b870-e9eebc791077}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\ext\ARM\CMSIS\Core">
+      <UniqueIdentifier>{59c73b24-91d9-4bad-be5a-17fd2edc7f65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include">
+      <UniqueIdentifier>{b3a79052-95a8-4ee2-8cbd-f7666c30dcea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\ext\ST">
+      <UniqueIdentifier>{4f03aa6a-ac11-4ee8-a690-16521f1ea2be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\ext\ST\STM32F4xx">
+      <UniqueIdentifier>{ac0efed9-c338-4fa8-8185-25db3c813313}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\oslib">
+      <UniqueIdentifier>{4c1d282c-da30-4497-b4ee-8e0f58b16f97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\oslib\include">
+      <UniqueIdentifier>{12a57977-6407-431d-9c2c-71c489fb6abc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\oslib\src">
+      <UniqueIdentifier>{b5950c51-4292-4e66-aef0-22e93bd5ccf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\portability">
+      <UniqueIdentifier>{a64d1e71-1bd0-4068-8a3a-39ba11ee2515}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\portability\GCC">
+      <UniqueIdentifier>{ca730159-c95a-4788-a0ce-ab5bae6bccbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\ports">
+      <UniqueIdentifier>{1393fd87-bbd2-4b8f-a53e-7f1071a625a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\ports\ARMCMx">
+      <UniqueIdentifier>{04e896d5-9e20-43ea-af1f-b5568f04e67b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\ports\ARMCMx\compilers">
+      <UniqueIdentifier>{48e5b52d-6a2e-4820-928f-02f90c8eaff5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\ports\ARMCMx\compilers\GCC">
+      <UniqueIdentifier>{a9e545d7-ed13-42f1-b22e-7615d6d68d3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\startup">
+      <UniqueIdentifier>{c1ef4f47-e1e8-40c1-9ae0-5f8f0168d2c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\startup\ARMCMx">
+      <UniqueIdentifier>{8c9e488a-cebf-495b-9711-1ce3ba4020c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\startup\ARMCMx\compilers">
+      <UniqueIdentifier>{cdd0e227-205c-4511-8558-d9a8a31c00ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\startup\ARMCMx\compilers\GCC">
+      <UniqueIdentifier>{2e7590fb-f3cf-4c47-9355-e71480ad3bd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\startup\ARMCMx\devices">
+      <UniqueIdentifier>{8833c848-99a7-40a1-8e09-16caefd9bc03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\common\startup\ARMCMx\devices\STM32F4xx">
+      <UniqueIdentifier>{c20a9cd7-7b1d-4be8-b919-78612fc18429}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal">
+      <UniqueIdentifier>{a8a98dd0-e8a4-4730-bbe2-42b71aa8bb39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\include">
+      <UniqueIdentifier>{b8b42d76-80d7-4fe4-b9af-0c3d07efa6af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\lib">
+      <UniqueIdentifier>{20b5d987-d253-48aa-8694-0a3f1e11ed62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\lib\streams">
+      <UniqueIdentifier>{6130e154-bf60-4cd5-aa0a-4de9ff090bd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\osal">
+      <UniqueIdentifier>{5ae7539b-d12f-46b4-b323-d212884bab5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\osal\rt">
+      <UniqueIdentifier>{bab7f075-44b4-4e2f-81eb-225bd905fa1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports">
+      <UniqueIdentifier>{ab8625b7-2c34-4856-9411-198837d521b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\common">
+      <UniqueIdentifier>{9af2debd-c033-41b8-bdf0-7171cbbd1007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\common\ARMCMx">
+      <UniqueIdentifier>{e71efc13-4b73-4f4d-9920-342153b06677}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32">
+      <UniqueIdentifier>{b813c013-de93-41cc-a906-8e7207353da0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD">
+      <UniqueIdentifier>{bef954d2-0cd5-43da-b95e-ea5c7aca519c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\ADCv2">
+      <UniqueIdentifier>{bd2b8195-71fc-48a8-aca2-1f112f151e44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\CANv1">
+      <UniqueIdentifier>{6b6dd5f9-0db7-430f-8e73-7397e5ed01b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\DACv1">
+      <UniqueIdentifier>{7ac51f39-f5dd-487c-90e4-b79decdff112}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\DMAv2">
+      <UniqueIdentifier>{d7169889-a19e-4582-9a5f-1f260f096f0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\EXTIv1">
+      <UniqueIdentifier>{e8565c48-1685-4b7e-8283-60726ca0c429}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\GPIOv2">
+      <UniqueIdentifier>{7867aceb-a5ec-4f1d-98c7-f0f714fc1a6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\I2Cv1">
+      <UniqueIdentifier>{d1bd830c-d1c6-4fbb-8cd3-53eb221a25e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\MACv1">
+      <UniqueIdentifier>{73d2b62f-3c90-43ea-9b67-407cbe124b24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\OTGv1">
+      <UniqueIdentifier>{370ada6d-bfc9-4cf5-8b05-46d0ed3c41b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\QUADSPIv1">
+      <UniqueIdentifier>{ae4b512d-91bb-4f3c-98fb-1291b186b99e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\RTCv2">
+      <UniqueIdentifier>{8c63369f-b433-4e54-8c3e-14c359966d16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\SDIOv1">
+      <UniqueIdentifier>{3e026856-570f-4a25-b91b-8c53424476ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\SPIv1">
+      <UniqueIdentifier>{028f6c0a-0964-4d02-b2e0-5bd0251d2986}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\TIMv1">
+      <UniqueIdentifier>{5b7e5228-2edf-4f75-8435-1314d307c1a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\USARTv1">
+      <UniqueIdentifier>{c4bf7223-cbb9-4ad8-8c4d-d9bfd1ecaff7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\xWDGv1">
+      <UniqueIdentifier>{5c4422e9-dc20-49b5-997d-db112f884eb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\STM32F4xx">
+      <UniqueIdentifier>{7afc751c-ba5c-45c0-9307-84934f5ec100}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\src">
+      <UniqueIdentifier>{ba82904a-0228-4591-9449-963d5bb155dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\license">
+      <UniqueIdentifier>{e2ce2878-7c0b-4ef1-9a71-4da9ca6a53ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\rt">
+      <UniqueIdentifier>{6d34bc72-64e9-415f-98a6-450bbbfff7cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\rt\include">
+      <UniqueIdentifier>{2a4c4fd6-baf1-469d-b224-43cd60ce123d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\rt\src">
+      <UniqueIdentifier>{21ae9f79-3d48-4426-b5ca-3eb75240cdc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\test">
+      <UniqueIdentifier>{d1d140ec-faa0-4b4c-a91f-d30bbd6a7612}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\test\lib">
+      <UniqueIdentifier>{42b66a54-9fa7-4ed1-8110-685da6489ae5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\test\oslib">
+      <UniqueIdentifier>{70f91675-6342-40a2-8679-3d57c8fc15af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\test\oslib\source">
+      <UniqueIdentifier>{8a651e3a-2c69-45d6-ad58-87c3dc9e0153}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\test\oslib\source\test">
+      <UniqueIdentifier>{42079630-0e52-4938-a76b-5b38b7968e01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\test\rt">
+      <UniqueIdentifier>{d5de17a8-35d0-43f1-9261-b9eda79dab1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\test\rt\source">
+      <UniqueIdentifier>{eac9186d-a517-48a5-82e7-16688bd75c9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\test\rt\source\test">
+      <UniqueIdentifier>{f79e1778-5382-400d-acc8-ad7b996ed79f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\various">
+      <UniqueIdentifier>{2e7b54e5-392e-4437-8bb8-ec372229ca67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\various\cpp_wrappers">
+      <UniqueIdentifier>{a246b940-dd47-4d04-a2f8-48ea0454327c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\various\fatfs_bindings">
+      <UniqueIdentifier>{7e3274e3-b249-41ca-a588-c76915396c71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Lib">
+      <UniqueIdentifier>{737b2097-7b49-4638-bb6e-6a866fa5f2cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Lib\fatfs">
+      <UniqueIdentifier>{41bf228e-9884-4800-a9fb-9bb74bc87e27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Lib\fatfs\src">
+      <UniqueIdentifier>{053cf248-74f9-4cf7-b0c7-4bcb4268ba66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Lib">
+      <UniqueIdentifier>{a5a1d2a4-7169-4aed-83d1-edf82dbcd72f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Lib\fatfs">
+      <UniqueIdentifier>{df134bce-389e-4190-8520-e3f87e12068b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Lib\fatfs\src">
+      <UniqueIdentifier>{2028a20c-2988-43b3-bbf8-55f51a6871ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Lib\tinyxml2">
+      <UniqueIdentifier>{ef028b8a-4c93-41cb-b98d-ffd38b0b769f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Lib\tinyxml2">
+      <UniqueIdentifier>{28d364ec-39e4-45f6-8d38-11f690799b2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\SensorService">
+      <UniqueIdentifier>{e8243997-0a2e-4e7f-8929-f0c0b71fbc8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\SensorService">
+      <UniqueIdentifier>{31f9489c-e958-42a3-b300-103920e656e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ChibiOS\hal\ports\STM32\LLD\CRCv1">
+      <UniqueIdentifier>{31d1d3d3-28f9-4d5d-89ee-064715596eda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ChibiOS\hal\ports\STM32\LLD\CRCv1">
+      <UniqueIdentifier>{71c121b5-760a-4077-b98c-db1bb6e8febc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
@@ -459,9 +542,6 @@
     <None Include="ChibiOSF4-Release.vgdbsettings">
       <Filter>VisualGDB settings</Filter>
     </None>
-    <None Include="os\common\startup\ARMCMx\compilers\GCC\ld\STM32F407xE.ld">
-      <Filter>Make files</Filter>
-    </None>
     <None Include="ClassDiagram.cd" />
     <None Include="ClassDiagram1.cd" />
     <None Include="stm32.mak">
@@ -470,771 +550,843 @@
     <None Include="releaseopt.mak">
       <Filter>Make files</Filter>
     </None>
+    <ClCompile Include="ChibiOS\common\oslib\src\chfactory.c">
+      <Filter>Source files\ChibiOS\common\oslib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\common\oslib\src\chheap.c">
+      <Filter>Source files\ChibiOS\common\oslib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\common\oslib\src\chmboxes.c">
+      <Filter>Source files\ChibiOS\common\oslib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\common\oslib\src\chmemcore.c">
+      <Filter>Source files\ChibiOS\common\oslib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\common\oslib\src\chmempools.c">
+      <Filter>Source files\ChibiOS\common\oslib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\common\ports\ARMCMx\chcore.c">
+      <Filter>Source files\ChibiOS\common\ports\ARMCMx</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\common\ports\ARMCMx\chcore_v7m.c">
+      <Filter>Source files\ChibiOS\common\ports\ARMCMx</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\common\ports\ARMCMx\compilers\GCC\chcoreasm_v7m.S">
+      <Filter>Source files\ChibiOS\common\ports\ARMCMx\compilers\GCC</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\common\startup\ARMCMx\compilers\GCC\crt0_v7m.S">
+      <Filter>Source files\ChibiOS\common\startup\ARMCMx\compilers\GCC</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\common\startup\ARMCMx\compilers\GCC\crt1.c">
+      <Filter>Source files\ChibiOS\common\startup\ARMCMx\compilers\GCC</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\common\startup\ARMCMx\compilers\GCC\vectors.S">
+      <Filter>Source files\ChibiOS\common\startup\ARMCMx\compilers\GCC</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\lib\streams\chprintf.c">
+      <Filter>Source files\ChibiOS\hal\lib\streams</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\lib\streams\memstreams.c">
+      <Filter>Source files\ChibiOS\hal\lib\streams</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\lib\streams\nullstreams.c">
+      <Filter>Source files\ChibiOS\hal\lib\streams</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\osal\rt\osal.c">
+      <Filter>Source files\ChibiOS\hal\osal\rt</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\common\ARMCMx\nvic.c">
+      <Filter>Source files\ChibiOS\hal\ports\common\ARMCMx</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\ADCv2\hal_adc_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\ADCv2</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\CANv1\hal_can_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\CANv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\DACv1\hal_dac_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\DACv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\DMAv2\stm32_dma.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\DMAv2</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\EXTIv1\hal_ext_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\EXTIv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\GPIOv2\hal_pal_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\GPIOv2</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\I2Cv1\hal_i2c_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\I2Cv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\MACv1\hal_mac_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\MACv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\OTGv1\hal_usb_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\OTGv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\OTGv1\hal_usb_lld_alt.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\OTGv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\QUADSPIv1\hal_qspi_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\QUADSPIv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\RTCv2\hal_rtc_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\RTCv2</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\SDIOv1\hal_sdc_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\SDIOv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\SPIv1\hal_i2s_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\SPIv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\SPIv1\hal_spi_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\SPIv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\TIMv1\hal_gpt_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\TIMv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\TIMv1\hal_icu_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\TIMv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\TIMv1\hal_pwm_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\TIMv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\TIMv1\hal_st_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\TIMv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\USARTv1\hal_serial_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\USARTv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\USARTv1\hal_uart_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\USARTv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\xWDGv1\hal_wdg_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\xWDGv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\STM32F4xx\hal_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\STM32F4xx</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\STM32F4xx\stm32_isr.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\STM32F4xx</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_adc.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_buffers.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_can.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_crypto.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_dac.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_ext.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_gpt.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_i2c.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_i2s.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_icu.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_mac.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_mmcsd.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_mmc_spi.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_pal.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_pwm.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_qspi.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_queues.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_rtc.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_sdc.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_serial.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_serial_usb.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_spi.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_st.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_uart.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_usb.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_wdg.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\rt\src\chcond.c">
+      <Filter>Source files\ChibiOS\rt\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\rt\src\chdebug.c">
+      <Filter>Source files\ChibiOS\rt\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\rt\src\chdynamic.c">
+      <Filter>Source files\ChibiOS\rt\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\rt\src\chevents.c">
+      <Filter>Source files\ChibiOS\rt\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\rt\src\chmsg.c">
+      <Filter>Source files\ChibiOS\rt\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\rt\src\chmtx.c">
+      <Filter>Source files\ChibiOS\rt\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\rt\src\chregistry.c">
+      <Filter>Source files\ChibiOS\rt\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\rt\src\chschd.c">
+      <Filter>Source files\ChibiOS\rt\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\rt\src\chsem.c">
+      <Filter>Source files\ChibiOS\rt\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\rt\src\chstats.c">
+      <Filter>Source files\ChibiOS\rt\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\rt\src\chsys.c">
+      <Filter>Source files\ChibiOS\rt\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\rt\src\chthreads.c">
+      <Filter>Source files\ChibiOS\rt\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\rt\src\chtm.c">
+      <Filter>Source files\ChibiOS\rt\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\rt\src\chtrace.c">
+      <Filter>Source files\ChibiOS\rt\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\rt\src\chvt.c">
+      <Filter>Source files\ChibiOS\rt\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\lib\ch_test.c">
+      <Filter>Source files\ChibiOS\test\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\oslib\source\test\oslib_test_root.c">
+      <Filter>Source files\ChibiOS\test\oslib\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\oslib\source\test\oslib_test_sequence_001.c">
+      <Filter>Source files\ChibiOS\test\oslib\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\oslib\source\test\oslib_test_sequence_002.c">
+      <Filter>Source files\ChibiOS\test\oslib\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\oslib\source\test\oslib_test_sequence_003.c">
+      <Filter>Source files\ChibiOS\test\oslib\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\oslib\source\test\oslib_test_sequence_004.c">
+      <Filter>Source files\ChibiOS\test\oslib\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\rt\source\test\rt_test_root.c">
+      <Filter>Source files\ChibiOS\test\rt\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\rt\source\test\rt_test_sequence_001.c">
+      <Filter>Source files\ChibiOS\test\rt\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\rt\source\test\rt_test_sequence_002.c">
+      <Filter>Source files\ChibiOS\test\rt\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\rt\source\test\rt_test_sequence_003.c">
+      <Filter>Source files\ChibiOS\test\rt\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\rt\source\test\rt_test_sequence_004.c">
+      <Filter>Source files\ChibiOS\test\rt\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\rt\source\test\rt_test_sequence_005.c">
+      <Filter>Source files\ChibiOS\test\rt\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\rt\source\test\rt_test_sequence_006.c">
+      <Filter>Source files\ChibiOS\test\rt\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\rt\source\test\rt_test_sequence_007.c">
+      <Filter>Source files\ChibiOS\test\rt\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\rt\source\test\rt_test_sequence_008.c">
+      <Filter>Source files\ChibiOS\test\rt\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\rt\source\test\rt_test_sequence_009.c">
+      <Filter>Source files\ChibiOS\test\rt\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\test\rt\source\test\rt_test_sequence_010.c">
+      <Filter>Source files\ChibiOS\test\rt\source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\various\evtimer.c">
+      <Filter>Source files\ChibiOS\various</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\various\cpp_wrappers\ch.cpp">
+      <Filter>Source files\ChibiOS\various\cpp_wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\various\fatfs_bindings\fatfs_diskio.c">
+      <Filter>Source files\ChibiOS\various\fatfs_bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\various\fatfs_bindings\fatfs_syscall.c">
+      <Filter>Source files\ChibiOS\various\fatfs_bindings</Filter>
+    </ClCompile>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\cmsis_armcc.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\cmsis_armclang.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\cmsis_compiler.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\cmsis_gcc.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\cmsis_version.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\core_armv8mbl.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\core_armv8mml.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\core_cm0.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\core_cm0plus.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\core_cm23.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\core_cm3.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\core_cm33.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\core_cm4.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\core_cm7.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\core_sc000.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\core_sc300.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\mpu_armv7.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\tz_context.h">
+      <Filter>Header files\ChibiOS\common\ext\ARM\CMSIS\Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f401xc.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f401xe.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f405xx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f407xx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f410cx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f410rx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f410tx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f411xe.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f412cx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f412rx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f412vx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f412zx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f413xx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f415xx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f417xx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f423xx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f427xx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f429xx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f437xx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f439xx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f446xx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f469xx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f479xx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\stm32f4xx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ext\ST\STM32F4xx\system_stm32f4xx.h">
+      <Filter>Header files\ChibiOS\common\ext\ST\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\oslib\include\chbsem.h">
+      <Filter>Header files\ChibiOS\common\oslib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\oslib\include\chfactory.h">
+      <Filter>Header files\ChibiOS\common\oslib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\oslib\include\chfifo.h">
+      <Filter>Header files\ChibiOS\common\oslib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\oslib\include\chheap.h">
+      <Filter>Header files\ChibiOS\common\oslib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\oslib\include\chmboxes.h">
+      <Filter>Header files\ChibiOS\common\oslib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\oslib\include\chmemcore.h">
+      <Filter>Header files\ChibiOS\common\oslib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\oslib\include\chmempools.h">
+      <Filter>Header files\ChibiOS\common\oslib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\portability\GCC\ccportab.h">
+      <Filter>Header files\ChibiOS\common\portability\GCC</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ports\ARMCMx\chcore.h">
+      <Filter>Header files\ChibiOS\common\ports\ARMCMx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ports\ARMCMx\chcore_timer.h">
+      <Filter>Header files\ChibiOS\common\ports\ARMCMx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ports\ARMCMx\chcore_v7m.h">
+      <Filter>Header files\ChibiOS\common\ports\ARMCMx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ports\ARMCMx\mpu.h">
+      <Filter>Header files\ChibiOS\common\ports\ARMCMx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\ports\ARMCMx\compilers\GCC\chtypes.h">
+      <Filter>Header files\ChibiOS\common\ports\ARMCMx\compilers\GCC</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\common\startup\ARMCMx\devices\STM32F4xx\cmparams.h">
+      <Filter>Header files\ChibiOS\common\startup\ARMCMx\devices\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_adc.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_buffers.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_can.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_channels.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_crypto.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_dac.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_ext.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_files.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_gpt.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_i2c.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_i2s.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_icu.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_ioblock.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_mac.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_mii.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_mmcsd.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_mmc_spi.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_pal.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_pwm.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_qspi.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_queues.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_rtc.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_sdc.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_serial.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_serial_usb.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_spi.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_st.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_streams.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_uart.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_usb.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_usb_cdc.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_wdg.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\lib\streams\chprintf.h">
+      <Filter>Header files\ChibiOS\hal\lib\streams</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\lib\streams\memstreams.h">
+      <Filter>Header files\ChibiOS\hal\lib\streams</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\lib\streams\nullstreams.h">
+      <Filter>Header files\ChibiOS\hal\lib\streams</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\osal\rt\osal.h">
+      <Filter>Header files\ChibiOS\hal\osal\rt</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\common\ARMCMx\cache.h">
+      <Filter>Header files\ChibiOS\hal\ports\common\ARMCMx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\common\ARMCMx\mpu_v7m.h">
+      <Filter>Header files\ChibiOS\hal\ports\common\ARMCMx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\common\ARMCMx\nvic.h">
+      <Filter>Header files\ChibiOS\hal\ports\common\ARMCMx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\ADCv2\hal_adc_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\ADCv2</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\CANv1\hal_can_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\CANv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\DACv1\hal_dac_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\DACv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\DMAv2\stm32_dma.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\DMAv2</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\EXTIv1\hal_ext_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\EXTIv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\GPIOv2\hal_pal_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\GPIOv2</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\GPIOv2\stm32_gpio.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\GPIOv2</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\I2Cv1\hal_i2c_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\I2Cv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\MACv1\hal_mac_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\MACv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\OTGv1\hal_usb_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\OTGv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\OTGv1\hal_usb_lld_alt.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\OTGv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\OTGv1\stm32_otg.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\OTGv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\QUADSPIv1\hal_qspi_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\QUADSPIv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\RTCv2\hal_rtc_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\RTCv2</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\SDIOv1\hal_sdc_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\SDIOv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\SPIv1\hal_i2s_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\SPIv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\SPIv1\hal_spi_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\SPIv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\TIMv1\hal_gpt_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\TIMv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\TIMv1\hal_icu_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\TIMv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\TIMv1\hal_pwm_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\TIMv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\TIMv1\hal_st_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\TIMv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\TIMv1\stm32_tim.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\TIMv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\USARTv1\hal_serial_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\USARTv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\USARTv1\hal_uart_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\USARTv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\xWDGv1\hal_wdg_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\xWDGv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\STM32F4xx\hal_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\STM32F4xx\stm32_isr.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\STM32F4xx\stm32_rcc.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\STM32F4xx\stm32_registry.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\STM32F4xx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\license\chcustomer.h">
+      <Filter>Header files\ChibiOS\license</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\license\chlicense.h">
+      <Filter>Header files\ChibiOS\license</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\license\chversion.h">
+      <Filter>Header files\ChibiOS\license</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\ch.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chalign.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chchecks.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chcond.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chdebug.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chdynamic.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chevents.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chmsg.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chmtx.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chregistry.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chrestrictions.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chschd.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chsem.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chstats.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chsys.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chsystypes.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chthreads.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chtime.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chtm.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chtrace.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\rt\include\chvt.h">
+      <Filter>Header files\ChibiOS\rt\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\lib\ch_test.h">
+      <Filter>Header files\ChibiOS\test\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\oslib\source\test\oslib_test_root.h">
+      <Filter>Header files\ChibiOS\test\oslib\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\oslib\source\test\oslib_test_sequence_001.h">
+      <Filter>Header files\ChibiOS\test\oslib\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\oslib\source\test\oslib_test_sequence_002.h">
+      <Filter>Header files\ChibiOS\test\oslib\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\oslib\source\test\oslib_test_sequence_003.h">
+      <Filter>Header files\ChibiOS\test\oslib\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\oslib\source\test\oslib_test_sequence_004.h">
+      <Filter>Header files\ChibiOS\test\oslib\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\rt\source\test\rt_test_root.h">
+      <Filter>Header files\ChibiOS\test\rt\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\rt\source\test\rt_test_sequence_001.h">
+      <Filter>Header files\ChibiOS\test\rt\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\rt\source\test\rt_test_sequence_002.h">
+      <Filter>Header files\ChibiOS\test\rt\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\rt\source\test\rt_test_sequence_003.h">
+      <Filter>Header files\ChibiOS\test\rt\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\rt\source\test\rt_test_sequence_004.h">
+      <Filter>Header files\ChibiOS\test\rt\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\rt\source\test\rt_test_sequence_005.h">
+      <Filter>Header files\ChibiOS\test\rt\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\rt\source\test\rt_test_sequence_006.h">
+      <Filter>Header files\ChibiOS\test\rt\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\rt\source\test\rt_test_sequence_007.h">
+      <Filter>Header files\ChibiOS\test\rt\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\rt\source\test\rt_test_sequence_008.h">
+      <Filter>Header files\ChibiOS\test\rt\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\rt\source\test\rt_test_sequence_009.h">
+      <Filter>Header files\ChibiOS\test\rt\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\test\rt\source\test\rt_test_sequence_010.h">
+      <Filter>Header files\ChibiOS\test\rt\source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\various\evtimer.h">
+      <Filter>Header files\ChibiOS\various</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\various\cpp_wrappers\ch.hpp">
+      <Filter>Header files\ChibiOS\various\cpp_wrappers</Filter>
+    </ClInclude>
+    <None Include="ChibiOS\common\startup\ARMCMx\compilers\GCC\ld\STM32F407xE.ld">
+      <Filter>Make files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="stm32.xml">
       <Filter>VisualGDB settings</Filter>
+    </Xml>
+    <Xml Include="Xml\config.xml">
+      <Filter>Xml</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="board.c">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="os\common\oslib\src\chheap.c">
-      <Filter>Source files\os\common\oslib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\oslib\src\chmboxes.c">
-      <Filter>Source files\os\common\oslib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\oslib\src\chmemcore.c">
-      <Filter>Source files\os\common\oslib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\oslib\src\chmempools.c">
-      <Filter>Source files\os\common\oslib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\ports\ARMCMx\chcore.c">
-      <Filter>Source files\os\common\ports\ARMCMx</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\ports\ARMCMx\chcore_v7m.c">
-      <Filter>Source files\os\common\ports\ARMCMx</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\startup\ARMCMx\compilers\GCC\crt1.c">
-      <Filter>Source files\os\common\startup\ARMCMx\compilers\GCC</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\osal\rt\osal.c">
-      <Filter>Source files\os\hal\osal\rt</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\common\ARMCMx\nvic.c">
-      <Filter>Source files\os\hal\ports\common\ARMCMx</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\ADCv2\hal_adc_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\ADCv2</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\CANv1\hal_can_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\CANv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\DACv1\hal_dac_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\DACv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\DMAv2\stm32_dma.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\DMAv2</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\EXTIv1\hal_ext_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\EXTIv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\GPIOv2\hal_pal_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\GPIOv2</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\I2Cv1\hal_i2c_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\I2Cv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\MACv1\hal_mac_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\MACv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\OTGv1\hal_usb_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\OTGv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\QUADSPIv1\hal_qspi_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\QUADSPIv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\RTCv2\hal_rtc_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\RTCv2</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\SDIOv1\hal_sdc_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\SDIOv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\SPIv1\hal_i2s_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\SPIv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\SPIv1\hal_spi_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\SPIv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\hal_gpt_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\hal_icu_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\hal_pwm_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\hal_st_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\USARTv1\hal_serial_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\USARTv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\USARTv1\hal_uart_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\USARTv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\xWDGv1\hal_wdg_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\xWDGv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\STM32F4xx\hal_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\STM32F4xx</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_adc.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_buffers.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_can.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_dac.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_ext.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_gpt.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_i2c.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_i2s.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_icu.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_mac.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_mmcsd.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_mmc_spi.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_pal.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_pwm.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_qspi.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_queues.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_rtc.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_sdc.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_serial.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_serial_usb.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_spi.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_st.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_uart.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_usb.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_wdg.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chcond.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chdebug.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chdynamic.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chevents.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chmsg.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chmtx.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chregistry.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chschd.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chsem.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chstats.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chsys.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chthreads.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chtm.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chtrace.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chvt.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\oslib\src\chheap.c">
-      <Filter>Source files\common\oslib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\oslib\src\chmboxes.c">
-      <Filter>Source files\common\oslib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\oslib\src\chmemcore.c">
-      <Filter>Source files\common\oslib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\oslib\src\chmempools.c">
-      <Filter>Source files\common\oslib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\ports\ARMCMx\chcore.c">
-      <Filter>Source files\common\ports\ARMCMx</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\ports\ARMCMx\chcore_v7m.c">
-      <Filter>Source files\common\ports\ARMCMx</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\startup\ARMCMx\compilers\GCC\crt1.c">
-      <Filter>Source files\common\startup\ARMCMx\compilers\GCC</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\osal\rt\osal.c">
-      <Filter>Source files\hal\osal\rt</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\common\ARMCMx\nvic.c">
-      <Filter>Source files\hal\ports\common\ARMCMx</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\ADCv2\hal_adc_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\ADCv2</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\CANv1\hal_can_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\CANv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\DACv1\hal_dac_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\DACv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\DMAv2\stm32_dma.c">
-      <Filter>Source files\hal\ports\STM32\LLD\DMAv2</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\EXTIv1\hal_ext_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\EXTIv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\GPIOv2\hal_pal_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\GPIOv2</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\I2Cv1\hal_i2c_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\I2Cv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\MACv1\hal_mac_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\MACv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\OTGv1\hal_usb_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\OTGv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\QUADSPIv1\hal_qspi_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\QUADSPIv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\RTCv2\hal_rtc_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\RTCv2</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\SDIOv1\hal_sdc_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\SDIOv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\SPIv1\hal_i2s_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\SPIv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\SPIv1\hal_spi_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\SPIv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\hal_gpt_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\hal_icu_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\hal_pwm_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\hal_st_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\USARTv1\hal_serial_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\USARTv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\USARTv1\hal_uart_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\USARTv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\xWDGv1\hal_wdg_lld.c">
-      <Filter>Source files\hal\ports\STM32\LLD\xWDGv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\STM32F4xx\hal_lld.c">
-      <Filter>Source files\hal\ports\STM32\STM32F4xx</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_adc.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_buffers.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_can.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_dac.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_ext.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_gpt.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_i2c.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_i2s.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_icu.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_mac.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_mmcsd.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_mmc_spi.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_pal.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_pwm.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_qspi.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_queues.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_rtc.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_sdc.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_serial.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_serial_usb.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_spi.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_st.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_uart.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_usb.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_wdg.c">
-      <Filter>Source files\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chcond.c">
-      <Filter>Source files\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chdebug.c">
-      <Filter>Source files\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chdynamic.c">
-      <Filter>Source files\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chevents.c">
-      <Filter>Source files\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chmsg.c">
-      <Filter>Source files\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chmtx.c">
-      <Filter>Source files\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chregistry.c">
-      <Filter>Source files\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chschd.c">
-      <Filter>Source files\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chsem.c">
-      <Filter>Source files\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chstats.c">
-      <Filter>Source files\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chsys.c">
-      <Filter>Source files\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chthreads.c">
-      <Filter>Source files\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chtm.c">
-      <Filter>Source files\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chtrace.c">
-      <Filter>Source files\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chvt.c">
-      <Filter>Source files\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="ext\fatfs\src\ff.c">
-      <Filter>Source files\ext\fatfs\src</Filter>
-    </ClCompile>
-    <ClCompile Include="ext\fatfs\src\ffunicode.c">
-      <Filter>Source files\ext\fatfs\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\oslib\src\chfactory.c">
-      <Filter>Source files\os\common\oslib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\oslib\src\chheap.c">
-      <Filter>Source files\os\common\oslib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\oslib\src\chmboxes.c">
-      <Filter>Source files\os\common\oslib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\oslib\src\chmemcore.c">
-      <Filter>Source files\os\common\oslib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\oslib\src\chmempools.c">
-      <Filter>Source files\os\common\oslib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\ports\ARMCMx\chcore.c">
-      <Filter>Source files\os\common\ports\ARMCMx</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\ports\ARMCMx\chcore_v7m.c">
-      <Filter>Source files\os\common\ports\ARMCMx</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\ports\ARMCMx\compilers\GCC\chcoreasm_v7m.S">
-      <Filter>Source files\os\common\ports\ARMCMx\compilers\GCC</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\startup\ARMCMx\compilers\GCC\crt0_v7m.S">
-      <Filter>Source files\os\common\startup\ARMCMx\compilers\GCC</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\startup\ARMCMx\compilers\GCC\crt1.c">
-      <Filter>Source files\os\common\startup\ARMCMx\compilers\GCC</Filter>
-    </ClCompile>
-    <ClCompile Include="os\common\startup\ARMCMx\compilers\GCC\vectors.S">
-      <Filter>Source files\os\common\startup\ARMCMx\compilers\GCC</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\lib\streams\chprintf.c">
-      <Filter>Source files\os\hal\lib\streams</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\lib\streams\memstreams.c">
-      <Filter>Source files\os\hal\lib\streams</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\lib\streams\nullstreams.c">
-      <Filter>Source files\os\hal\lib\streams</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\osal\rt\osal.c">
-      <Filter>Source files\os\hal\osal\rt</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\common\ARMCMx\nvic.c">
-      <Filter>Source files\os\hal\ports\common\ARMCMx</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\ADCv2\hal_adc_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\ADCv2</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\CANv1\hal_can_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\CANv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\DACv1\hal_dac_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\DACv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\DMAv2\stm32_dma.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\DMAv2</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\EXTIv1\hal_ext_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\EXTIv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\GPIOv2\hal_pal_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\GPIOv2</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\I2Cv1\hal_i2c_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\I2Cv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\MACv1\hal_mac_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\MACv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\OTGv1\hal_usb_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\OTGv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\OTGv1\hal_usb_lld_alt.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\OTGv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\QUADSPIv1\hal_qspi_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\QUADSPIv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\RTCv2\hal_rtc_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\RTCv2</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\SDIOv1\hal_sdc_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\SDIOv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\SPIv1\hal_i2s_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\SPIv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\SPIv1\hal_spi_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\SPIv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\hal_gpt_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\hal_icu_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\hal_pwm_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\TIMv1\hal_st_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\USARTv1\hal_serial_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\USARTv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\USARTv1\hal_uart_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\USARTv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\LLD\xWDGv1\hal_wdg_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\LLD\xWDGv1</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\STM32F4xx\hal_lld.c">
-      <Filter>Source files\os\hal\ports\STM32\STM32F4xx</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\ports\STM32\STM32F4xx\stm32_isr.c">
-      <Filter>Source files\os\hal\ports\STM32\STM32F4xx</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_adc.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_buffers.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_can.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_crypto.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_dac.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_ext.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_gpt.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_i2c.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_i2s.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_icu.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_mac.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_mmcsd.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_mmc_spi.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_pal.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_pwm.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_qspi.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_queues.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_rtc.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_sdc.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_serial.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_serial_usb.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_spi.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_st.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_uart.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_usb.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\hal\src\hal_wdg.c">
-      <Filter>Source files\os\hal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chcond.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chdebug.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chdynamic.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chevents.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chmsg.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chmtx.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chregistry.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chschd.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chsem.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chstats.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chsys.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chthreads.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chtm.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chtrace.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\rt\src\chvt.c">
-      <Filter>Source files\os\rt\src</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\lib\ch_test.c">
-      <Filter>Source files\os\test\lib</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\oslib\source\test\oslib_test_root.c">
-      <Filter>Source files\os\test\oslib\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\oslib\source\test\oslib_test_sequence_001.c">
-      <Filter>Source files\os\test\oslib\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\oslib\source\test\oslib_test_sequence_002.c">
-      <Filter>Source files\os\test\oslib\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\oslib\source\test\oslib_test_sequence_003.c">
-      <Filter>Source files\os\test\oslib\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\oslib\source\test\oslib_test_sequence_004.c">
-      <Filter>Source files\os\test\oslib\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\rt\source\test\rt_test_root.c">
-      <Filter>Source files\os\test\rt\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_001.c">
-      <Filter>Source files\os\test\rt\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_002.c">
-      <Filter>Source files\os\test\rt\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_003.c">
-      <Filter>Source files\os\test\rt\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_004.c">
-      <Filter>Source files\os\test\rt\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_005.c">
-      <Filter>Source files\os\test\rt\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_006.c">
-      <Filter>Source files\os\test\rt\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_007.c">
-      <Filter>Source files\os\test\rt\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_008.c">
-      <Filter>Source files\os\test\rt\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_009.c">
-      <Filter>Source files\os\test\rt\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\rt\source\test\rt_test_sequence_010.c">
-      <Filter>Source files\os\test\rt\source\test</Filter>
-    </ClCompile>
-    <ClCompile Include="os\various\evtimer.c">
-      <Filter>Source files\os\various</Filter>
-    </ClCompile>
-    <ClCompile Include="os\various\fatfs_bindings\fatfs_diskio.c">
-      <Filter>Source files\os\various\fatfs_bindings</Filter>
-    </ClCompile>
-    <ClCompile Include="os\various\fatfs_bindings\fatfs_syscall.c">
-      <Filter>Source files\os\various\fatfs_bindings</Filter>
-    </ClCompile>
-    <ClCompile Include="os\test\lib\ch_test.c">
-      <Filter>Source files\os\test\lib</Filter>
-    </ClCompile>
     <ClCompile Include="Drivers\Interfaces\Usart.cpp">
       <Filter>Source files\Drivers\Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="Core\NewDelete.cpp">
       <Filter>Source files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="os\various\cpp_wrappers\ch.cpp">
-      <Filter>Source files\os\various\cpp_wrappers</Filter>
     </ClCompile>
     <ClCompile Include="Network\IpAddress.cpp">
       <Filter>Source files\Network</Filter>
@@ -1296,6 +1448,60 @@
     <ClCompile Include="Drivers\Sensors\CE301Sensor.cpp">
       <Filter>Source files\Drivers\Sensors</Filter>
     </ClCompile>
+    <ClCompile Include="Lib\fatfs\src\ffunicode.c">
+      <Filter>Source files\Lib\fatfs\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\fatfs\src\ff.c">
+      <Filter>Source files\Lib\fatfs\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\XmlParserTest.cpp">
+      <Filter>Source files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\tinyxml2\tinyxml2.cpp">
+      <Filter>Source files\Lib\tinyxml2</Filter>
+    </ClCompile>
+    <ClCompile Include="SensorService\SensorService.cpp">
+      <Filter>Source files\SensorService</Filter>
+    </ClCompile>
+    <ClCompile Include="SensorService\CE301Type.cpp">
+      <Filter>Source files\SensorService</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Sensors\SimpleSensor.cpp">
+      <Filter>Source files\Drivers\Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="SensorService\SimpleSensorType.cpp">
+      <Filter>Source files\SensorService</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\SimGsmTcpEcho.cpp">
+      <Filter>Source files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_crc.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\CRCv1\hal_crc_lld.c">
+      <Filter>Source files\ChibiOS\hal\ports\STM32\LLD\CRCv1</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\various\crcsw.c">
+      <Filter>Source files\ChibiOS\various</Filter>
+    </ClCompile>
+    <ClCompile Include="ChibiOS\hal\src\hal_community.c">
+      <Filter>Source files\ChibiOS\hal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Crc32HW.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\MLinkTest.cpp">
+      <Filter>Source files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ObjectMemoryUtilizer.cpp">
+      <Filter>Source files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\CpuUsageMonitor.cpp">
+      <Filter>Source files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="MLinkServer.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mcuconf.h">
@@ -1310,1091 +1516,8 @@
     <ClInclude Include="halconf.h">
       <Filter>Header files</Filter>
     </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chbsem.h">
-      <Filter>Header files\os\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chheap.h">
-      <Filter>Header files\os\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chmboxes.h">
-      <Filter>Header files\os\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chmemcore.h">
-      <Filter>Header files\os\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chmempools.h">
-      <Filter>Header files\os\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ports\ARMCMx\chcore.h">
-      <Filter>Header files\os\common\ports\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ports\ARMCMx\chcore_timer.h">
-      <Filter>Header files\os\common\ports\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ports\ARMCMx\chcore_v7m.h">
-      <Filter>Header files\os\common\ports\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ports\ARMCMx\mpu.h">
-      <Filter>Header files\os\common\ports\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ports\ARMCMx\compilers\GCC\chtypes.h">
-      <Filter>Header files\os\common\ports\ARMCMx\compilers\GCC</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\startup\ARMCMx\devices\STM32F4xx\cmparams.h">
-      <Filter>Header files\os\common\startup\ARMCMx\devices\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_adc.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_buffers.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_can.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_channels.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_dac.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_ext.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_files.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_gpt.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_i2c.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_i2s.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_icu.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_ioblock.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_mac.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_mii.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_mmcsd.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_mmc_spi.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_pal.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_pwm.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_qspi.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_queues.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_rtc.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_sdc.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_serial.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_serial_usb.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_spi.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_st.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_streams.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_uart.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_usb.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_usb_cdc.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_wdg.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\osal\rt\osal.h">
-      <Filter>Header files\os\hal\osal\rt</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\common\ARMCMx\nvic.h">
-      <Filter>Header files\os\hal\ports\common\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\ADCv2\hal_adc_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\ADCv2</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\CANv1\hal_can_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\CANv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\DACv1\hal_dac_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\DACv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\DMAv2\stm32_dma.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\DMAv2</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\EXTIv1\hal_ext_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\EXTIv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\GPIOv2\hal_pal_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\GPIOv2</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\I2Cv1\hal_i2c_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\I2Cv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\MACv1\hal_mac_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\MACv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\OTGv1\hal_usb_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\OTGv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\OTGv1\stm32_otg.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\OTGv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\QUADSPIv1\hal_qspi_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\QUADSPIv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\RTCv2\hal_rtc_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\RTCv2</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\SDIOv1\hal_sdc_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\SDIOv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\SPIv1\hal_i2s_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\SPIv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\SPIv1\hal_spi_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\SPIv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\TIMv1\hal_gpt_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\TIMv1\hal_icu_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\TIMv1\hal_pwm_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\TIMv1\hal_st_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\TIMv1\stm32_tim.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\USARTv1\hal_serial_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\USARTv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\USARTv1\hal_uart_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\USARTv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\xWDGv1\hal_wdg_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\xWDGv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\STM32F4xx\hal_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\STM32F4xx\stm32_isr.h">
-      <Filter>Header files\os\hal\ports\STM32\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\STM32F4xx\stm32_rcc.h">
-      <Filter>Header files\os\hal\ports\STM32\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\STM32F4xx\stm32_registry.h">
-      <Filter>Header files\os\hal\ports\STM32\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\license\chcustomer.h">
-      <Filter>Header files\os\license</Filter>
-    </ClInclude>
-    <ClInclude Include="os\license\chlicense.h">
-      <Filter>Header files\os\license</Filter>
-    </ClInclude>
-    <ClInclude Include="os\license\chversion.h">
-      <Filter>Header files\os\license</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\ch.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chalign.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chchecks.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chcond.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chdebug.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chdynamic.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chevents.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chmsg.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chmtx.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chregistry.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chschd.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chsem.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chstats.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chsys.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chsystypes.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chthreads.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chtm.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chtrace.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chvt.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chbsem.h">
-      <Filter>Header files\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chheap.h">
-      <Filter>Header files\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chmboxes.h">
-      <Filter>Header files\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chmemcore.h">
-      <Filter>Header files\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chmempools.h">
-      <Filter>Header files\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ports\ARMCMx\chcore.h">
-      <Filter>Header files\common\ports\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ports\ARMCMx\chcore_timer.h">
-      <Filter>Header files\common\ports\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ports\ARMCMx\chcore_v7m.h">
-      <Filter>Header files\common\ports\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ports\ARMCMx\mpu.h">
-      <Filter>Header files\common\ports\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ports\ARMCMx\compilers\GCC\chtypes.h">
-      <Filter>Header files\common\ports\ARMCMx\compilers\GCC</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\startup\ARMCMx\devices\STM32F4xx\cmparams.h">
-      <Filter>Header files\common\startup\ARMCMx\devices\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_adc.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_buffers.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_can.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_channels.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_dac.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_ext.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_files.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_gpt.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_i2c.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_i2s.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_icu.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_ioblock.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_mac.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_mii.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_mmcsd.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_mmc_spi.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_pal.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_pwm.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_qspi.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_queues.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_rtc.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_sdc.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_serial.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_serial_usb.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_spi.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_st.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_streams.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_uart.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_usb.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_usb_cdc.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_wdg.h">
-      <Filter>Header files\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\osal\rt\osal.h">
-      <Filter>Header files\hal\osal\rt</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\common\ARMCMx\nvic.h">
-      <Filter>Header files\hal\ports\common\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\ADCv2\hal_adc_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\ADCv2</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\CANv1\hal_can_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\CANv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\DACv1\hal_dac_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\DACv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\DMAv2\stm32_dma.h">
-      <Filter>Header files\hal\ports\STM32\LLD\DMAv2</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\EXTIv1\hal_ext_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\EXTIv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\GPIOv2\hal_pal_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\GPIOv2</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\I2Cv1\hal_i2c_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\I2Cv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\MACv1\hal_mac_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\MACv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\OTGv1\hal_usb_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\OTGv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\OTGv1\stm32_otg.h">
-      <Filter>Header files\hal\ports\STM32\LLD\OTGv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\QUADSPIv1\hal_qspi_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\QUADSPIv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\RTCv2\hal_rtc_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\RTCv2</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\SDIOv1\hal_sdc_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\SDIOv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\SPIv1\hal_i2s_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\SPIv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\SPIv1\hal_spi_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\SPIv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\TIMv1\hal_gpt_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\TIMv1\hal_icu_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\TIMv1\hal_pwm_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\TIMv1\hal_st_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\TIMv1\stm32_tim.h">
-      <Filter>Header files\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\USARTv1\hal_serial_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\USARTv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\USARTv1\hal_uart_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\USARTv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\xWDGv1\hal_wdg_lld.h">
-      <Filter>Header files\hal\ports\STM32\LLD\xWDGv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\STM32F4xx\hal_lld.h">
-      <Filter>Header files\hal\ports\STM32\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\STM32F4xx\stm32_isr.h">
-      <Filter>Header files\hal\ports\STM32\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\STM32F4xx\stm32_rcc.h">
-      <Filter>Header files\hal\ports\STM32\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\STM32F4xx\stm32_registry.h">
-      <Filter>Header files\hal\ports\STM32\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\license\chcustomer.h">
-      <Filter>Header files\license</Filter>
-    </ClInclude>
-    <ClInclude Include="os\license\chlicense.h">
-      <Filter>Header files\license</Filter>
-    </ClInclude>
-    <ClInclude Include="os\license\chversion.h">
-      <Filter>Header files\license</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\ch.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chalign.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chchecks.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chcond.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chdebug.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chdynamic.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chevents.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chmsg.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chmtx.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chregistry.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chschd.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chsem.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chstats.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chsys.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chsystypes.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chthreads.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chtm.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chtrace.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chvt.h">
-      <Filter>Header files\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="ext\fatfs\src\diskio.h">
-      <Filter>Header files\ext\fatfs\src</Filter>
-    </ClInclude>
-    <ClInclude Include="ext\fatfs\src\ff.h">
-      <Filter>Header files\ext\fatfs\src</Filter>
-    </ClInclude>
-    <ClInclude Include="ext\fatfs\src\integer.h">
-      <Filter>Header files\ext\fatfs\src</Filter>
-    </ClInclude>
-    <ClInclude Include="ext\fatfs\src\_ffconf.h">
-      <Filter>Header files\ext\fatfs\src</Filter>
-    </ClInclude>
     <ClInclude Include="ffconf.h">
       <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\cmsis_armcc.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\cmsis_armclang.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\cmsis_compiler.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\cmsis_gcc.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\cmsis_version.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_armv8mbl.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_armv8mml.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_cm0.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_cm0plus.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_cm23.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_cm3.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_cm33.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_cm4.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_cm7.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_sc000.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\core_sc300.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\mpu_armv7.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ARM\CMSIS\Core\Include\tz_context.h">
-      <Filter>Header files\os\common\ext\ARM\CMSIS\Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f401xc.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f401xe.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f405xx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f407xx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f410cx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f410rx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f410tx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f411xe.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f412cx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f412rx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f412vx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f412zx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f413xx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f415xx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f417xx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f423xx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f427xx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f429xx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f437xx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f439xx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f446xx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f469xx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f479xx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\stm32f4xx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ext\ST\STM32F4xx\system_stm32f4xx.h">
-      <Filter>Header files\os\common\ext\ST\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chbsem.h">
-      <Filter>Header files\os\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chfactory.h">
-      <Filter>Header files\os\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chfifo.h">
-      <Filter>Header files\os\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chheap.h">
-      <Filter>Header files\os\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chmboxes.h">
-      <Filter>Header files\os\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chmemcore.h">
-      <Filter>Header files\os\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\oslib\include\chmempools.h">
-      <Filter>Header files\os\common\oslib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\portability\GCC\ccportab.h">
-      <Filter>Header files\os\common\portability\GCC</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ports\ARMCMx\chcore.h">
-      <Filter>Header files\os\common\ports\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ports\ARMCMx\chcore_timer.h">
-      <Filter>Header files\os\common\ports\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ports\ARMCMx\chcore_v7m.h">
-      <Filter>Header files\os\common\ports\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ports\ARMCMx\mpu.h">
-      <Filter>Header files\os\common\ports\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\ports\ARMCMx\compilers\GCC\chtypes.h">
-      <Filter>Header files\os\common\ports\ARMCMx\compilers\GCC</Filter>
-    </ClInclude>
-    <ClInclude Include="os\common\startup\ARMCMx\devices\STM32F4xx\cmparams.h">
-      <Filter>Header files\os\common\startup\ARMCMx\devices\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_adc.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_buffers.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_can.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_channels.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_crypto.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_dac.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_ext.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_files.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_gpt.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_i2c.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_i2s.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_icu.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_ioblock.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_mac.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_mii.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_mmcsd.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_mmc_spi.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_pal.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_pwm.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_qspi.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_queues.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_rtc.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_sdc.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_serial.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_serial_usb.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_spi.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_st.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_streams.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_uart.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_usb.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_usb_cdc.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\include\hal_wdg.h">
-      <Filter>Header files\os\hal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\lib\streams\chprintf.h">
-      <Filter>Header files\os\hal\lib\streams</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\lib\streams\memstreams.h">
-      <Filter>Header files\os\hal\lib\streams</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\lib\streams\nullstreams.h">
-      <Filter>Header files\os\hal\lib\streams</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\osal\rt\osal.h">
-      <Filter>Header files\os\hal\osal\rt</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\common\ARMCMx\cache.h">
-      <Filter>Header files\os\hal\ports\common\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\common\ARMCMx\mpu_v7m.h">
-      <Filter>Header files\os\hal\ports\common\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\common\ARMCMx\nvic.h">
-      <Filter>Header files\os\hal\ports\common\ARMCMx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\ADCv2\hal_adc_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\ADCv2</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\CANv1\hal_can_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\CANv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\DACv1\hal_dac_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\DACv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\DMAv2\stm32_dma.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\DMAv2</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\EXTIv1\hal_ext_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\EXTIv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\GPIOv2\hal_pal_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\GPIOv2</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\GPIOv2\stm32_gpio.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\GPIOv2</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\I2Cv1\hal_i2c_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\I2Cv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\MACv1\hal_mac_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\MACv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\OTGv1\hal_usb_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\OTGv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\OTGv1\hal_usb_lld_alt.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\OTGv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\OTGv1\stm32_otg.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\OTGv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\QUADSPIv1\hal_qspi_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\QUADSPIv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\RTCv2\hal_rtc_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\RTCv2</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\SDIOv1\hal_sdc_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\SDIOv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\SPIv1\hal_i2s_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\SPIv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\SPIv1\hal_spi_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\SPIv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\TIMv1\hal_gpt_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\TIMv1\hal_icu_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\TIMv1\hal_pwm_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\TIMv1\hal_st_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\TIMv1\stm32_tim.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\TIMv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\USARTv1\hal_serial_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\USARTv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\USARTv1\hal_uart_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\USARTv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\LLD\xWDGv1\hal_wdg_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\LLD\xWDGv1</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\STM32F4xx\hal_lld.h">
-      <Filter>Header files\os\hal\ports\STM32\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\STM32F4xx\stm32_isr.h">
-      <Filter>Header files\os\hal\ports\STM32\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\STM32F4xx\stm32_rcc.h">
-      <Filter>Header files\os\hal\ports\STM32\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\hal\ports\STM32\STM32F4xx\stm32_registry.h">
-      <Filter>Header files\os\hal\ports\STM32\STM32F4xx</Filter>
-    </ClInclude>
-    <ClInclude Include="os\license\chcustomer.h">
-      <Filter>Header files\os\license</Filter>
-    </ClInclude>
-    <ClInclude Include="os\license\chlicense.h">
-      <Filter>Header files\os\license</Filter>
-    </ClInclude>
-    <ClInclude Include="os\license\chversion.h">
-      <Filter>Header files\os\license</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\ch.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chalign.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chchecks.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chcond.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chdebug.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chdynamic.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chevents.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chmsg.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chmtx.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chregistry.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chrestrictions.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chschd.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chsem.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chstats.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chsys.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chsystypes.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chthreads.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chtime.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chtm.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chtrace.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\rt\include\chvt.h">
-      <Filter>Header files\os\rt\include</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\lib\ch_test.h">
-      <Filter>Header files\os\test\lib</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\oslib\source\test\oslib_test_root.h">
-      <Filter>Header files\os\test\oslib\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\oslib\source\test\oslib_test_sequence_001.h">
-      <Filter>Header files\os\test\oslib\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\oslib\source\test\oslib_test_sequence_002.h">
-      <Filter>Header files\os\test\oslib\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\oslib\source\test\oslib_test_sequence_003.h">
-      <Filter>Header files\os\test\oslib\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\oslib\source\test\oslib_test_sequence_004.h">
-      <Filter>Header files\os\test\oslib\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\rt\source\test\rt_test_root.h">
-      <Filter>Header files\os\test\rt\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_001.h">
-      <Filter>Header files\os\test\rt\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_002.h">
-      <Filter>Header files\os\test\rt\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_003.h">
-      <Filter>Header files\os\test\rt\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_004.h">
-      <Filter>Header files\os\test\rt\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_005.h">
-      <Filter>Header files\os\test\rt\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_006.h">
-      <Filter>Header files\os\test\rt\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_007.h">
-      <Filter>Header files\os\test\rt\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_008.h">
-      <Filter>Header files\os\test\rt\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_009.h">
-      <Filter>Header files\os\test\rt\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\rt\source\test\rt_test_sequence_010.h">
-      <Filter>Header files\os\test\rt\source\test</Filter>
-    </ClInclude>
-    <ClInclude Include="os\various\evtimer.h">
-      <Filter>Header files\os\various</Filter>
-    </ClInclude>
-    <ClInclude Include="os\test\lib\ch_test.h">
-      <Filter>Header files\os\test\lib</Filter>
     </ClInclude>
     <ClInclude Include="Drivers\Interfaces\Usart.h">
       <Filter>Header files\Drivers\Interfaces</Filter>
@@ -2413,9 +1536,6 @@
     </ClInclude>
     <ClInclude Include="Drivers\Interfaces\UsartBasedDevice.h">
       <Filter>Header files\Drivers\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="os\various\cpp_wrappers\ch.hpp">
-      <Filter>Header files\os\various\cpp_wrappers</Filter>
     </ClInclude>
     <ClInclude Include="Network\AbstractModem.h">
       <Filter>Header files\Network</Filter>
@@ -2507,5 +1627,76 @@
     <ClInclude Include="Drivers\Sensors\CE301Sensor.h">
       <Filter>Header files\Drivers\Sensors</Filter>
     </ClInclude>
+    <ClInclude Include="BRSensorBase.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="BRSensors.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="MarvyConfig.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\fatfs\src\integer.h">
+      <Filter>Header files\Lib\fatfs\src</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\fatfs\src\_ffconf.h">
+      <Filter>Header files\Lib\fatfs\src</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\fatfs\src\diskio.h">
+      <Filter>Header files\Lib\fatfs\src</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\fatfs\src\ff.h">
+      <Filter>Header files\Lib\fatfs\src</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\tinyxml2\tinyxml2.h">
+      <Filter>Header files\Lib\tinyxml2</Filter>
+    </ClInclude>
+    <ClInclude Include="SensorService\SensorService.h">
+      <Filter>Header files\SensorService</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Sensors\SimpleSensor.h">
+      <Filter>Header files\Drivers\Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_crc.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\ports\STM32\LLD\CRCv1\hal_crc_lld.h">
+      <Filter>Header files\ChibiOS\hal\ports\STM32\LLD\CRCv1</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\various\crcsw.h">
+      <Filter>Header files\ChibiOS\various</Filter>
+    </ClInclude>
+    <ClInclude Include="mcuconf_community.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="halconf_community.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChibiOS\hal\include\hal_community.h">
+      <Filter>Header files\ChibiOS\hal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="Crc32HW.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ObjectMemoryUtilizer.h">
+      <Filter>Header files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CpuUsageMonitor.h">
+      <Filter>Header files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="MLinkServer.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="Xml\schemas\BRSensorBase.xsd">
+      <Filter>Xml\schemas</Filter>
+    </Xsd>
+    <Xsd Include="Xml\schemas\BRSensors.xsd">
+      <Filter>Xml\schemas</Filter>
+    </Xsd>
+    <Xsd Include="Xml\schemas\MarvieConfig.xsd">
+      <Filter>Xml\schemas</Filter>
+    </Xsd>
   </ItemGroup>
 </Project>

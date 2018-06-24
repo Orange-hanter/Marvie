@@ -1,0 +1,5 @@
+Release/
+Debug/
+.vs/
+GeneratedFiles/
+x64/

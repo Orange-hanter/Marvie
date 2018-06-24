@@ -35,7 +35,7 @@ error:
 	$(error Invalid configuration, please check your inputs)
 endif
 
-SOURCEFILES := board.c Core/ByteRingBuffer.cpp Core/DataTimeService.cpp Core/NewDelete.cpp Drivers/Interfaces/Usart.cpp Drivers/LogicOutput.cpp Drivers/Network/SimGsm/SimGsm.cpp Drivers/Network/SimGsm/SimGsmATResponseParsers.cpp Drivers/Network/SimGsm/SimGsmSocketBase.cpp Drivers/Network/SimGsm/SimGsmTcpServer.cpp Drivers/Network/SimGsm/SimGsmTcpSocket.cpp Drivers/Network/SimGsm/SimGsmUdpSocket.cpp Drivers/Sensors/AbstractSensor.cpp Drivers/Sensors/CE301.cpp ext/fatfs/src/ff.c ext/fatfs/src/ffunicode.c Network/AbstractTcpSocket.cpp Network/AbstractUdpSocket.cpp Network/IpAddress.cpp os/common/oslib/src/chfactory.c os/common/oslib/src/chheap.c os/common/oslib/src/chmboxes.c os/common/oslib/src/chmemcore.c os/common/oslib/src/chmempools.c os/common/ports/ARMCMx/chcore.c os/common/ports/ARMCMx/chcore_v7m.c os/common/ports/ARMCMx/compilers/GCC/chcoreasm_v7m.S os/common/startup/ARMCMx/compilers/GCC/crt0_v7m.S os/common/startup/ARMCMx/compilers/GCC/crt1.c os/common/startup/ARMCMx/compilers/GCC/vectors.S os/hal/lib/streams/chprintf.c os/hal/lib/streams/memstreams.c os/hal/lib/streams/nullstreams.c os/hal/osal/rt/osal.c os/hal/ports/common/ARMCMx/nvic.c os/hal/ports/STM32/LLD/ADCv2/hal_adc_lld.c os/hal/ports/STM32/LLD/CANv1/hal_can_lld.c os/hal/ports/STM32/LLD/DACv1/hal_dac_lld.c os/hal/ports/STM32/LLD/DMAv2/stm32_dma.c os/hal/ports/STM32/LLD/EXTIv1/hal_ext_lld.c os/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.c os/hal/ports/STM32/LLD/I2Cv1/hal_i2c_lld.c os/hal/ports/STM32/LLD/MACv1/hal_mac_lld.c os/hal/ports/STM32/LLD/OTGv1/hal_usb_lld.c os/hal/ports/STM32/LLD/OTGv1/hal_usb_lld_alt.c os/hal/ports/STM32/LLD/QUADSPIv1/hal_qspi_lld.c os/hal/ports/STM32/LLD/RTCv2/hal_rtc_lld.c os/hal/ports/STM32/LLD/SDIOv1/hal_sdc_lld.c os/hal/ports/STM32/LLD/SPIv1/hal_i2s_lld.c os/hal/ports/STM32/LLD/SPIv1/hal_spi_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_icu_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_pwm_lld.c os/hal/ports/STM32/LLD/TIMv1/hal_st_lld.c os/hal/ports/STM32/LLD/USARTv1/hal_serial_lld.c os/hal/ports/STM32/LLD/USARTv1/hal_uart_lld.c os/hal/ports/STM32/LLD/xWDGv1/hal_wdg_lld.c os/hal/ports/STM32/STM32F4xx/hal_lld.c os/hal/ports/STM32/STM32F4xx/stm32_isr.c os/hal/src/hal.c os/hal/src/hal_adc.c os/hal/src/hal_buffers.c os/hal/src/hal_can.c os/hal/src/hal_crypto.c os/hal/src/hal_dac.c os/hal/src/hal_ext.c os/hal/src/hal_gpt.c os/hal/src/hal_i2c.c os/hal/src/hal_i2s.c os/hal/src/hal_icu.c os/hal/src/hal_mac.c os/hal/src/hal_mmcsd.c os/hal/src/hal_mmc_spi.c os/hal/src/hal_pal.c os/hal/src/hal_pwm.c os/hal/src/hal_qspi.c os/hal/src/hal_queues.c os/hal/src/hal_rtc.c os/hal/src/hal_sdc.c os/hal/src/hal_serial.c os/hal/src/hal_serial_usb.c os/hal/src/hal_spi.c os/hal/src/hal_st.c os/hal/src/hal_uart.c os/hal/src/hal_usb.c os/hal/src/hal_wdg.c os/rt/src/chcond.c os/rt/src/chdebug.c os/rt/src/chdynamic.c os/rt/src/chevents.c os/rt/src/chmsg.c os/rt/src/chmtx.c os/rt/src/chregistry.c os/rt/src/chschd.c os/rt/src/chsem.c os/rt/src/chstats.c os/rt/src/chsys.c os/rt/src/chthreads.c os/rt/src/chtm.c os/rt/src/chtrace.c os/rt/src/chvt.c os/test/lib/ch_test.c os/test/oslib/source/test/oslib_test_root.c os/test/oslib/source/test/oslib_test_sequence_001.c os/test/oslib/source/test/oslib_test_sequence_002.c os/test/oslib/source/test/oslib_test_sequence_003.c os/test/oslib/source/test/oslib_test_sequence_004.c os/test/rt/source/test/rt_test_root.c os/test/rt/source/test/rt_test_sequence_001.c os/test/rt/source/test/rt_test_sequence_002.c os/test/rt/source/test/rt_test_sequence_003.c os/test/rt/source/test/rt_test_sequence_004.c os/test/rt/source/test/rt_test_sequence_005.c os/test/rt/source/test/rt_test_sequence_006.c os/test/rt/source/test/rt_test_sequence_007.c os/test/rt/source/test/rt_test_sequence_008.c os/test/rt/source/test/rt_test_sequence_009.c os/test/rt/source/test/rt_test_sequence_010.c os/various/cpp_wrappers/ch.cpp os/various/evtimer.c os/various/fatfs_bindings/fatfs_diskio.c os/various/fatfs_bindings/fatfs_syscall.c SingleBRSensorReader.cpp BRSensorReader.cpp MultipleBRSensorsReader.cpp Support/LexicalAnalyzer.cpp Support/Utility.cpp Tests/MultipleBRSensorsReaderTest.cpp
+SOURCEFILES := board.c ChibiOS/hal/ports/STM32/LLD/CRCv1/hal_crc_lld.c ChibiOS/hal/src/hal_community.c ChibiOS/hal/src/hal_crc.c ChibiOS/various/crcsw.c Core/ByteRingBuffer.cpp Core/CpuUsageMonitor.cpp Core/DataTimeService.cpp Core/NewDelete.cpp Core/ObjectMemoryUtilizer.cpp Crc32HW.cpp Drivers/Interfaces/Usart.cpp Drivers/LogicOutput.cpp Drivers/Network/SimGsm/SimGsm.cpp Drivers/Network/SimGsm/SimGsmATResponseParsers.cpp Drivers/Network/SimGsm/SimGsmSocketBase.cpp Drivers/Network/SimGsm/SimGsmTcpServer.cpp Drivers/Network/SimGsm/SimGsmTcpSocket.cpp Drivers/Network/SimGsm/SimGsmUdpSocket.cpp Drivers/Sensors/AbstractSensor.cpp Drivers/Sensors/CE301Sensor.cpp Drivers/Sensors/SimpleSensor.cpp Lib/fatfs/src/ff.c Lib/fatfs/src/ffunicode.c Lib/tinyxml2/tinyxml2.cpp MLinkServer.cpp Network/AbstractTcpSocket.cpp Network/AbstractUdpSocket.cpp Network/IpAddress.cpp SensorService/CE301Type.cpp SensorService/SensorService.cpp SensorService/SimpleSensorType.cpp SingleBRSensorReader.cpp BRSensorReader.cpp MultipleBRSensorsReader.cpp Support/LexicalAnalyzer.cpp Support/Utility.cpp Tests/MLinkTest.cpp Tests/MultipleBRSensorsReaderTest.cpp ChibiOS/common/oslib/src/chfactory.c ChibiOS/common/oslib/src/chheap.c ChibiOS/common/oslib/src/chmboxes.c ChibiOS/common/oslib/src/chmemcore.c ChibiOS/common/oslib/src/chmempools.c ChibiOS/common/ports/ARMCMx/chcore.c ChibiOS/common/ports/ARMCMx/chcore_v7m.c ChibiOS/common/ports/ARMCMx/compilers/GCC/chcoreasm_v7m.S ChibiOS/common/startup/ARMCMx/compilers/GCC/crt0_v7m.S ChibiOS/common/startup/ARMCMx/compilers/GCC/crt1.c ChibiOS/common/startup/ARMCMx/compilers/GCC/vectors.S ChibiOS/hal/lib/streams/chprintf.c ChibiOS/hal/lib/streams/memstreams.c ChibiOS/hal/lib/streams/nullstreams.c ChibiOS/hal/osal/rt/osal.c ChibiOS/hal/ports/common/ARMCMx/nvic.c ChibiOS/hal/ports/STM32/LLD/ADCv2/hal_adc_lld.c ChibiOS/hal/ports/STM32/LLD/CANv1/hal_can_lld.c ChibiOS/hal/ports/STM32/LLD/DACv1/hal_dac_lld.c ChibiOS/hal/ports/STM32/LLD/DMAv2/stm32_dma.c ChibiOS/hal/ports/STM32/LLD/EXTIv1/hal_ext_lld.c ChibiOS/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.c ChibiOS/hal/ports/STM32/LLD/I2Cv1/hal_i2c_lld.c ChibiOS/hal/ports/STM32/LLD/MACv1/hal_mac_lld.c ChibiOS/hal/ports/STM32/LLD/OTGv1/hal_usb_lld.c ChibiOS/hal/ports/STM32/LLD/OTGv1/hal_usb_lld_alt.c ChibiOS/hal/ports/STM32/LLD/QUADSPIv1/hal_qspi_lld.c ChibiOS/hal/ports/STM32/LLD/RTCv2/hal_rtc_lld.c ChibiOS/hal/ports/STM32/LLD/SDIOv1/hal_sdc_lld.c ChibiOS/hal/ports/STM32/LLD/SPIv1/hal_i2s_lld.c ChibiOS/hal/ports/STM32/LLD/SPIv1/hal_spi_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_icu_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_pwm_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_st_lld.c ChibiOS/hal/ports/STM32/LLD/USARTv1/hal_serial_lld.c ChibiOS/hal/ports/STM32/LLD/USARTv1/hal_uart_lld.c ChibiOS/hal/ports/STM32/LLD/xWDGv1/hal_wdg_lld.c ChibiOS/hal/ports/STM32/STM32F4xx/hal_lld.c ChibiOS/hal/ports/STM32/STM32F4xx/stm32_isr.c ChibiOS/hal/src/hal.c ChibiOS/hal/src/hal_adc.c ChibiOS/hal/src/hal_buffers.c ChibiOS/hal/src/hal_can.c ChibiOS/hal/src/hal_crypto.c ChibiOS/hal/src/hal_dac.c ChibiOS/hal/src/hal_ext.c ChibiOS/hal/src/hal_gpt.c ChibiOS/hal/src/hal_i2c.c ChibiOS/hal/src/hal_i2s.c ChibiOS/hal/src/hal_icu.c ChibiOS/hal/src/hal_mac.c ChibiOS/hal/src/hal_mmcsd.c ChibiOS/hal/src/hal_mmc_spi.c ChibiOS/hal/src/hal_pal.c ChibiOS/hal/src/hal_pwm.c ChibiOS/hal/src/hal_qspi.c ChibiOS/hal/src/hal_queues.c ChibiOS/hal/src/hal_rtc.c ChibiOS/hal/src/hal_sdc.c ChibiOS/hal/src/hal_serial.c ChibiOS/hal/src/hal_serial_usb.c ChibiOS/hal/src/hal_spi.c ChibiOS/hal/src/hal_st.c ChibiOS/hal/src/hal_uart.c ChibiOS/hal/src/hal_usb.c ChibiOS/hal/src/hal_wdg.c ChibiOS/rt/src/chcond.c ChibiOS/rt/src/chdebug.c ChibiOS/rt/src/chdynamic.c ChibiOS/rt/src/chevents.c ChibiOS/rt/src/chmsg.c ChibiOS/rt/src/chmtx.c ChibiOS/rt/src/chregistry.c ChibiOS/rt/src/chschd.c ChibiOS/rt/src/chsem.c ChibiOS/rt/src/chstats.c ChibiOS/rt/src/chsys.c ChibiOS/rt/src/chthreads.c ChibiOS/rt/src/chtm.c ChibiOS/rt/src/chtrace.c ChibiOS/rt/src/chvt.c ChibiOS/test/lib/ch_test.c ChibiOS/test/oslib/source/test/oslib_test_root.c ChibiOS/test/oslib/source/test/oslib_test_sequence_001.c ChibiOS/test/oslib/source/test/oslib_test_sequence_002.c ChibiOS/test/oslib/source/test/oslib_test_sequence_003.c ChibiOS/test/oslib/source/test/oslib_test_sequence_004.c ChibiOS/test/rt/source/test/rt_test_root.c ChibiOS/test/rt/source/test/rt_test_sequence_001.c ChibiOS/test/rt/source/test/rt_test_sequence_002.c ChibiOS/test/rt/source/test/rt_test_sequence_003.c ChibiOS/test/rt/source/test/rt_test_sequence_004.c ChibiOS/test/rt/source/test/rt_test_sequence_005.c ChibiOS/test/rt/source/test/rt_test_sequence_006.c ChibiOS/test/rt/source/test/rt_test_sequence_007.c ChibiOS/test/rt/source/test/rt_test_sequence_008.c ChibiOS/test/rt/source/test/rt_test_sequence_009.c ChibiOS/test/rt/source/test/rt_test_sequence_010.c ChibiOS/various/evtimer.c ChibiOS/various/cpp_wrappers/ch.cpp ChibiOS/various/fatfs_bindings/fatfs_diskio.c ChibiOS/various/fatfs_bindings/fatfs_syscall.c Tests/SimGsmTcpEcho.cpp Tests/XmlParserTest.cpp
 EXTERNAL_LIBS := 
 EXTERNAL_LIBS_COPIED := $(foreach lib, $(EXTERNAL_LIBS),$(BINARYDIR)/$(notdir $(lib)))
 
@@ -181,7 +181,27 @@ $(BINARYDIR)/%.o : %.cxx $(all_make_files) |$(BINARYDIR)
 #VisualGDB: GeneratedRules				#<--- All lines below are auto-generated. Remove this line to suppress auto-generation of file rules.
 
 
+$(BINARYDIR)/hal_crc_lld.o : ChibiOS/hal/ports/STM32/LLD/CRCv1/hal_crc_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_community.o : ChibiOS/hal/src/hal_community.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_crc.o : ChibiOS/hal/src/hal_crc.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/crcsw.o : ChibiOS/various/crcsw.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
 $(BINARYDIR)/ByteRingBuffer.o : Core/ByteRingBuffer.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/CpuUsageMonitor.o : Core/CpuUsageMonitor.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
@@ -190,6 +210,10 @@ $(BINARYDIR)/DataTimeService.o : Core/DataTimeService.cpp $(all_make_files) |$(B
 
 
 $(BINARYDIR)/NewDelete.o : Core/NewDelete.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ObjectMemoryUtilizer.o : Core/ObjectMemoryUtilizer.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
@@ -229,16 +253,24 @@ $(BINARYDIR)/AbstractSensor.o : Drivers/Sensors/AbstractSensor.cpp $(all_make_fi
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
-$(BINARYDIR)/CE301.o : Drivers/Sensors/CE301.cpp $(all_make_files) |$(BINARYDIR)
+$(BINARYDIR)/CE301Sensor.o : Drivers/Sensors/CE301Sensor.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
-$(BINARYDIR)/ff.o : ext/fatfs/src/ff.c $(all_make_files) |$(BINARYDIR)
+$(BINARYDIR)/SimpleSensor.o : Drivers/Sensors/SimpleSensor.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ff.o : Lib/fatfs/src/ff.c $(all_make_files) |$(BINARYDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
-$(BINARYDIR)/ffunicode.o : ext/fatfs/src/ffunicode.c $(all_make_files) |$(BINARYDIR)
+$(BINARYDIR)/ffunicode.o : Lib/fatfs/src/ffunicode.c $(all_make_files) |$(BINARYDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/tinyxml2.o : Lib/tinyxml2/tinyxml2.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
 $(BINARYDIR)/AbstractTcpSocket.o : Network/AbstractTcpSocket.cpp $(all_make_files) |$(BINARYDIR)
@@ -253,416 +285,16 @@ $(BINARYDIR)/IpAddress.o : Network/IpAddress.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
-$(BINARYDIR)/chfactory.o : os/common/oslib/src/chfactory.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chheap.o : os/common/oslib/src/chheap.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chmboxes.o : os/common/oslib/src/chmboxes.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chmemcore.o : os/common/oslib/src/chmemcore.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chmempools.o : os/common/oslib/src/chmempools.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chcore.o : os/common/ports/ARMCMx/chcore.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chcore_v7m.o : os/common/ports/ARMCMx/chcore_v7m.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chcoreasm_v7m.o : os/common/ports/ARMCMx/compilers/GCC/chcoreasm_v7m.S $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) $(ASFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/crt0_v7m.o : os/common/startup/ARMCMx/compilers/GCC/crt0_v7m.S $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) $(ASFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/crt1.o : os/common/startup/ARMCMx/compilers/GCC/crt1.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/vectors.o : os/common/startup/ARMCMx/compilers/GCC/vectors.S $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) $(ASFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chprintf.o : os/hal/lib/streams/chprintf.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/memstreams.o : os/hal/lib/streams/memstreams.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/nullstreams.o : os/hal/lib/streams/nullstreams.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/osal.o : os/hal/osal/rt/osal.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/nvic.o : os/hal/ports/common/ARMCMx/nvic.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_adc_lld.o : os/hal/ports/STM32/LLD/ADCv2/hal_adc_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_can_lld.o : os/hal/ports/STM32/LLD/CANv1/hal_can_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_dac_lld.o : os/hal/ports/STM32/LLD/DACv1/hal_dac_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/stm32_dma.o : os/hal/ports/STM32/LLD/DMAv2/stm32_dma.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_ext_lld.o : os/hal/ports/STM32/LLD/EXTIv1/hal_ext_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_pal_lld.o : os/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_i2c_lld.o : os/hal/ports/STM32/LLD/I2Cv1/hal_i2c_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_mac_lld.o : os/hal/ports/STM32/LLD/MACv1/hal_mac_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_usb_lld.o : os/hal/ports/STM32/LLD/OTGv1/hal_usb_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_usb_lld_alt.o : os/hal/ports/STM32/LLD/OTGv1/hal_usb_lld_alt.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_qspi_lld.o : os/hal/ports/STM32/LLD/QUADSPIv1/hal_qspi_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_rtc_lld.o : os/hal/ports/STM32/LLD/RTCv2/hal_rtc_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_sdc_lld.o : os/hal/ports/STM32/LLD/SDIOv1/hal_sdc_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_i2s_lld.o : os/hal/ports/STM32/LLD/SPIv1/hal_i2s_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_spi_lld.o : os/hal/ports/STM32/LLD/SPIv1/hal_spi_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_gpt_lld.o : os/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_icu_lld.o : os/hal/ports/STM32/LLD/TIMv1/hal_icu_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_pwm_lld.o : os/hal/ports/STM32/LLD/TIMv1/hal_pwm_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_st_lld.o : os/hal/ports/STM32/LLD/TIMv1/hal_st_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_serial_lld.o : os/hal/ports/STM32/LLD/USARTv1/hal_serial_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_uart_lld.o : os/hal/ports/STM32/LLD/USARTv1/hal_uart_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_wdg_lld.o : os/hal/ports/STM32/LLD/xWDGv1/hal_wdg_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_lld.o : os/hal/ports/STM32/STM32F4xx/hal_lld.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/stm32_isr.o : os/hal/ports/STM32/STM32F4xx/stm32_isr.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal.o : os/hal/src/hal.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_adc.o : os/hal/src/hal_adc.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_buffers.o : os/hal/src/hal_buffers.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_can.o : os/hal/src/hal_can.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_crypto.o : os/hal/src/hal_crypto.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_dac.o : os/hal/src/hal_dac.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_ext.o : os/hal/src/hal_ext.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_gpt.o : os/hal/src/hal_gpt.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_i2c.o : os/hal/src/hal_i2c.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_i2s.o : os/hal/src/hal_i2s.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_icu.o : os/hal/src/hal_icu.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_mac.o : os/hal/src/hal_mac.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_mmcsd.o : os/hal/src/hal_mmcsd.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_mmc_spi.o : os/hal/src/hal_mmc_spi.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_pal.o : os/hal/src/hal_pal.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_pwm.o : os/hal/src/hal_pwm.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_qspi.o : os/hal/src/hal_qspi.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_queues.o : os/hal/src/hal_queues.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_rtc.o : os/hal/src/hal_rtc.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_sdc.o : os/hal/src/hal_sdc.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_serial.o : os/hal/src/hal_serial.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_serial_usb.o : os/hal/src/hal_serial_usb.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_spi.o : os/hal/src/hal_spi.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_st.o : os/hal/src/hal_st.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_uart.o : os/hal/src/hal_uart.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_usb.o : os/hal/src/hal_usb.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/hal_wdg.o : os/hal/src/hal_wdg.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chcond.o : os/rt/src/chcond.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chdebug.o : os/rt/src/chdebug.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chdynamic.o : os/rt/src/chdynamic.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chevents.o : os/rt/src/chevents.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chmsg.o : os/rt/src/chmsg.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chmtx.o : os/rt/src/chmtx.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chregistry.o : os/rt/src/chregistry.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chschd.o : os/rt/src/chschd.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chsem.o : os/rt/src/chsem.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chstats.o : os/rt/src/chstats.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chsys.o : os/rt/src/chsys.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chthreads.o : os/rt/src/chthreads.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chtm.o : os/rt/src/chtm.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chtrace.o : os/rt/src/chtrace.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/chvt.o : os/rt/src/chvt.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/ch_test.o : os/test/lib/ch_test.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/oslib_test_root.o : os/test/oslib/source/test/oslib_test_root.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/oslib_test_sequence_001.o : os/test/oslib/source/test/oslib_test_sequence_001.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/oslib_test_sequence_002.o : os/test/oslib/source/test/oslib_test_sequence_002.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/oslib_test_sequence_003.o : os/test/oslib/source/test/oslib_test_sequence_003.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/oslib_test_sequence_004.o : os/test/oslib/source/test/oslib_test_sequence_004.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/rt_test_root.o : os/test/rt/source/test/rt_test_root.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/rt_test_sequence_001.o : os/test/rt/source/test/rt_test_sequence_001.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/rt_test_sequence_002.o : os/test/rt/source/test/rt_test_sequence_002.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/rt_test_sequence_003.o : os/test/rt/source/test/rt_test_sequence_003.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/rt_test_sequence_004.o : os/test/rt/source/test/rt_test_sequence_004.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/rt_test_sequence_005.o : os/test/rt/source/test/rt_test_sequence_005.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/rt_test_sequence_006.o : os/test/rt/source/test/rt_test_sequence_006.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/rt_test_sequence_007.o : os/test/rt/source/test/rt_test_sequence_007.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/rt_test_sequence_008.o : os/test/rt/source/test/rt_test_sequence_008.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/rt_test_sequence_009.o : os/test/rt/source/test/rt_test_sequence_009.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/rt_test_sequence_010.o : os/test/rt/source/test/rt_test_sequence_010.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/ch.o : os/various/cpp_wrappers/ch.cpp $(all_make_files) |$(BINARYDIR)
+$(BINARYDIR)/CE301Type.o : SensorService/CE301Type.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
-$(BINARYDIR)/evtimer.o : os/various/evtimer.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+$(BINARYDIR)/SensorService.o : SensorService/SensorService.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
-$(BINARYDIR)/fatfs_diskio.o : os/various/fatfs_bindings/fatfs_diskio.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
-
-$(BINARYDIR)/fatfs_syscall.o : os/various/fatfs_bindings/fatfs_syscall.c $(all_make_files) |$(BINARYDIR)
-	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+$(BINARYDIR)/SimpleSensorType.o : SensorService/SimpleSensorType.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
 $(BINARYDIR)/LexicalAnalyzer.o : Support/LexicalAnalyzer.cpp $(all_make_files) |$(BINARYDIR)
@@ -673,6 +305,430 @@ $(BINARYDIR)/Utility.o : Support/Utility.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
+$(BINARYDIR)/MLinkTest.o : Tests/MLinkTest.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
 $(BINARYDIR)/MultipleBRSensorsReaderTest.o : Tests/MultipleBRSensorsReaderTest.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chfactory.o : ChibiOS/common/oslib/src/chfactory.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chheap.o : ChibiOS/common/oslib/src/chheap.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chmboxes.o : ChibiOS/common/oslib/src/chmboxes.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chmemcore.o : ChibiOS/common/oslib/src/chmemcore.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chmempools.o : ChibiOS/common/oslib/src/chmempools.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chcore.o : ChibiOS/common/ports/ARMCMx/chcore.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chcore_v7m.o : ChibiOS/common/ports/ARMCMx/chcore_v7m.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chcoreasm_v7m.o : ChibiOS/common/ports/ARMCMx/compilers/GCC/chcoreasm_v7m.S $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) $(ASFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/crt0_v7m.o : ChibiOS/common/startup/ARMCMx/compilers/GCC/crt0_v7m.S $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) $(ASFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/crt1.o : ChibiOS/common/startup/ARMCMx/compilers/GCC/crt1.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/vectors.o : ChibiOS/common/startup/ARMCMx/compilers/GCC/vectors.S $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) $(ASFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chprintf.o : ChibiOS/hal/lib/streams/chprintf.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/memstreams.o : ChibiOS/hal/lib/streams/memstreams.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/nullstreams.o : ChibiOS/hal/lib/streams/nullstreams.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/osal.o : ChibiOS/hal/osal/rt/osal.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/nvic.o : ChibiOS/hal/ports/common/ARMCMx/nvic.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_adc_lld.o : ChibiOS/hal/ports/STM32/LLD/ADCv2/hal_adc_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_can_lld.o : ChibiOS/hal/ports/STM32/LLD/CANv1/hal_can_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_dac_lld.o : ChibiOS/hal/ports/STM32/LLD/DACv1/hal_dac_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/stm32_dma.o : ChibiOS/hal/ports/STM32/LLD/DMAv2/stm32_dma.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_ext_lld.o : ChibiOS/hal/ports/STM32/LLD/EXTIv1/hal_ext_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_pal_lld.o : ChibiOS/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_i2c_lld.o : ChibiOS/hal/ports/STM32/LLD/I2Cv1/hal_i2c_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_mac_lld.o : ChibiOS/hal/ports/STM32/LLD/MACv1/hal_mac_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_usb_lld.o : ChibiOS/hal/ports/STM32/LLD/OTGv1/hal_usb_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_usb_lld_alt.o : ChibiOS/hal/ports/STM32/LLD/OTGv1/hal_usb_lld_alt.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_qspi_lld.o : ChibiOS/hal/ports/STM32/LLD/QUADSPIv1/hal_qspi_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_rtc_lld.o : ChibiOS/hal/ports/STM32/LLD/RTCv2/hal_rtc_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_sdc_lld.o : ChibiOS/hal/ports/STM32/LLD/SDIOv1/hal_sdc_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_i2s_lld.o : ChibiOS/hal/ports/STM32/LLD/SPIv1/hal_i2s_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_spi_lld.o : ChibiOS/hal/ports/STM32/LLD/SPIv1/hal_spi_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_gpt_lld.o : ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_icu_lld.o : ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_icu_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_pwm_lld.o : ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_pwm_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_st_lld.o : ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_st_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_serial_lld.o : ChibiOS/hal/ports/STM32/LLD/USARTv1/hal_serial_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_uart_lld.o : ChibiOS/hal/ports/STM32/LLD/USARTv1/hal_uart_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_wdg_lld.o : ChibiOS/hal/ports/STM32/LLD/xWDGv1/hal_wdg_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_lld.o : ChibiOS/hal/ports/STM32/STM32F4xx/hal_lld.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/stm32_isr.o : ChibiOS/hal/ports/STM32/STM32F4xx/stm32_isr.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal.o : ChibiOS/hal/src/hal.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_adc.o : ChibiOS/hal/src/hal_adc.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_buffers.o : ChibiOS/hal/src/hal_buffers.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_can.o : ChibiOS/hal/src/hal_can.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_crypto.o : ChibiOS/hal/src/hal_crypto.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_dac.o : ChibiOS/hal/src/hal_dac.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_ext.o : ChibiOS/hal/src/hal_ext.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_gpt.o : ChibiOS/hal/src/hal_gpt.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_i2c.o : ChibiOS/hal/src/hal_i2c.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_i2s.o : ChibiOS/hal/src/hal_i2s.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_icu.o : ChibiOS/hal/src/hal_icu.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_mac.o : ChibiOS/hal/src/hal_mac.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_mmcsd.o : ChibiOS/hal/src/hal_mmcsd.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_mmc_spi.o : ChibiOS/hal/src/hal_mmc_spi.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_pal.o : ChibiOS/hal/src/hal_pal.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_pwm.o : ChibiOS/hal/src/hal_pwm.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_qspi.o : ChibiOS/hal/src/hal_qspi.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_queues.o : ChibiOS/hal/src/hal_queues.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_rtc.o : ChibiOS/hal/src/hal_rtc.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_sdc.o : ChibiOS/hal/src/hal_sdc.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_serial.o : ChibiOS/hal/src/hal_serial.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_serial_usb.o : ChibiOS/hal/src/hal_serial_usb.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_spi.o : ChibiOS/hal/src/hal_spi.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_st.o : ChibiOS/hal/src/hal_st.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_uart.o : ChibiOS/hal/src/hal_uart.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_usb.o : ChibiOS/hal/src/hal_usb.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/hal_wdg.o : ChibiOS/hal/src/hal_wdg.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chcond.o : ChibiOS/rt/src/chcond.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chdebug.o : ChibiOS/rt/src/chdebug.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chdynamic.o : ChibiOS/rt/src/chdynamic.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chevents.o : ChibiOS/rt/src/chevents.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chmsg.o : ChibiOS/rt/src/chmsg.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chmtx.o : ChibiOS/rt/src/chmtx.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chregistry.o : ChibiOS/rt/src/chregistry.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chschd.o : ChibiOS/rt/src/chschd.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chsem.o : ChibiOS/rt/src/chsem.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chstats.o : ChibiOS/rt/src/chstats.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chsys.o : ChibiOS/rt/src/chsys.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chthreads.o : ChibiOS/rt/src/chthreads.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chtm.o : ChibiOS/rt/src/chtm.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chtrace.o : ChibiOS/rt/src/chtrace.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chvt.o : ChibiOS/rt/src/chvt.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ch_test.o : ChibiOS/test/lib/ch_test.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/oslib_test_root.o : ChibiOS/test/oslib/source/test/oslib_test_root.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/oslib_test_sequence_001.o : ChibiOS/test/oslib/source/test/oslib_test_sequence_001.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/oslib_test_sequence_002.o : ChibiOS/test/oslib/source/test/oslib_test_sequence_002.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/oslib_test_sequence_003.o : ChibiOS/test/oslib/source/test/oslib_test_sequence_003.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/oslib_test_sequence_004.o : ChibiOS/test/oslib/source/test/oslib_test_sequence_004.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/rt_test_root.o : ChibiOS/test/rt/source/test/rt_test_root.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/rt_test_sequence_001.o : ChibiOS/test/rt/source/test/rt_test_sequence_001.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/rt_test_sequence_002.o : ChibiOS/test/rt/source/test/rt_test_sequence_002.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/rt_test_sequence_003.o : ChibiOS/test/rt/source/test/rt_test_sequence_003.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/rt_test_sequence_004.o : ChibiOS/test/rt/source/test/rt_test_sequence_004.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/rt_test_sequence_005.o : ChibiOS/test/rt/source/test/rt_test_sequence_005.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/rt_test_sequence_006.o : ChibiOS/test/rt/source/test/rt_test_sequence_006.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/rt_test_sequence_007.o : ChibiOS/test/rt/source/test/rt_test_sequence_007.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/rt_test_sequence_008.o : ChibiOS/test/rt/source/test/rt_test_sequence_008.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/rt_test_sequence_009.o : ChibiOS/test/rt/source/test/rt_test_sequence_009.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/rt_test_sequence_010.o : ChibiOS/test/rt/source/test/rt_test_sequence_010.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/evtimer.o : ChibiOS/various/evtimer.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ch.o : ChibiOS/various/cpp_wrappers/ch.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/fatfs_diskio.o : ChibiOS/various/fatfs_bindings/fatfs_diskio.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/fatfs_syscall.o : ChibiOS/various/fatfs_bindings/fatfs_syscall.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/SimGsmTcpEcho.o : Tests/SimGsmTcpEcho.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/XmlParserTest.o : Tests/XmlParserTest.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 

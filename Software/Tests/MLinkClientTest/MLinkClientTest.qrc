@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/MLinkClientTest">
+        <file>icons/icons8-rs-232-female-filled-50.png</file>
+        <file>icons/icons8-rs-232-female-filled-50-green.png</file>
+        <file>icons/icons8-rs-232-female-filled-50-orange.png</file>
+    </qresource>
+</RCC>

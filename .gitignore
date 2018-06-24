@@ -10,3 +10,6 @@ ChibiOSF4-Debug.vgdbsettings.User.user
 ReleaseOpt/
 releaseopt.mak.old
 ChibiOSF4-ReleaseOpt.vgdbsettings.User.user
+Software/Debug/
+Software/GeneratedFiles/
+Software/x64/

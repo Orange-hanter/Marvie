@@ -610,6 +610,9 @@
 #ifndef __INT_FAST64_TYPE__
 #define __INT_FAST64_TYPE__ long long int
 #endif
+#ifndef USE_ASSERT
+#define USE_ASSERT 1
+#endif
 #ifndef __FLT64_DENORM_MIN__
 #define __FLT64_DENORM_MIN__ 4.9406564584124654e-324F64
 #endif
@@ -1377,40 +1380,41 @@
 //$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\7.2.0\include-fixed
 //$(TOOLCHAIN_ROOT)\arm-eabi\sys-include
 //$(TOOLCHAIN_ROOT)\arm-eabi\include
-//os\common\ext\ARM\CMSIS\Core\Include
-//os\common\ext\ST\STM32F4xx
-//os\common\oslib\include
-//os\common\ports\ARMCMx
-//os\common\ports\ARMCMx\compilers\GCC
-//os\common\startup\ARMCMx\devices\STM32F4xx
-//os\license
-//os\rt\include
-//os\hal\include
-//os\hal\osal\rt
-//os\hal\ports\STM32\STM32F4xx
-//os\hal\ports\STM32\LLD\ADCv2
-//os\hal\ports\STM32\LLD\CANv1
-//os\hal\ports\STM32\LLD\DACv1
-//os\hal\ports\STM32\LLD\DMAv2
-//os\hal\ports\STM32\LLD\EXTIv1
-//os\hal\ports\STM32\LLD\GPIOv2
-//os\hal\ports\STM32\LLD\I2Cv1
-//os\hal\ports\STM32\LLD\MACv1
-//os\hal\ports\STM32\LLD\OTGv1
-//os\hal\ports\STM32\LLD\QUADSPIv1
-//os\hal\ports\STM32\LLD\RTCv2
-//os\hal\ports\STM32\LLD\SDIOv1
-//os\hal\ports\STM32\LLD\SPIv1
-//os\hal\ports\STM32\LLD\TIMv1
-//os\hal\ports\STM32\LLD\USARTv1
-//os\hal\ports\STM32\LLD\xWDGv1
-//os\hal\ports\common\ARMCMx
-//os\test\lib
-//os\test\rt\source\test
-//os\test\oslib\source\test
-//ext\fatfs\src
-//os\various
-//os\hal\lib\streams
+//ChibiOS\common\ext\ARM\CMSIS\Core\Include
+//ChibiOS\common\ext\ST\STM32F4xx
+//ChibiOS\common\oslib\include
+//ChibiOS\common\ports\ARMCMx
+//ChibiOS\common\ports\ARMCMx\compilers\GCC
+//ChibiOS\common\startup\ARMCMx\devices\STM32F4xx
+//ChibiOS\license
+//ChibiOS\rt\include
+//ChibiOS\hal\include
+//ChibiOS\hal\osal\rt
+//ChibiOS\hal\ports\STM32\STM32F4xx
+//ChibiOS\hal\ports\STM32\LLD\ADCv2
+//ChibiOS\hal\ports\STM32\LLD\CANv1
+//ChibiOS\hal\ports\STM32\LLD\CRCv1
+//ChibiOS\hal\ports\STM32\LLD\DACv1
+//ChibiOS\hal\ports\STM32\LLD\DMAv2
+//ChibiOS\hal\ports\STM32\LLD\EXTIv1
+//ChibiOS\hal\ports\STM32\LLD\GPIOv2
+//ChibiOS\hal\ports\STM32\LLD\I2Cv1
+//ChibiOS\hal\ports\STM32\LLD\MACv1
+//ChibiOS\hal\ports\STM32\LLD\OTGv1
+//ChibiOS\hal\ports\STM32\LLD\QUADSPIv1
+//ChibiOS\hal\ports\STM32\LLD\RTCv2
+//ChibiOS\hal\ports\STM32\LLD\SDIOv1
+//ChibiOS\hal\ports\STM32\LLD\SPIv1
+//ChibiOS\hal\ports\STM32\LLD\TIMv1
+//ChibiOS\hal\ports\STM32\LLD\USARTv1
+//ChibiOS\hal\ports\STM32\LLD\xWDGv1
+//ChibiOS\hal\ports\common\ARMCMx
+//ChibiOS\test\lib
+//ChibiOS\test\rt\source\test
+//ChibiOS\test\oslib\source\test
+//Lib\fatfs\src
+//ChibiOS\various
+//ChibiOS\hal\lib\streams
 // --- Include directories end --- //
 
 
