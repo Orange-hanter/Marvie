@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<DataDesc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="file:// ../../Xml/schemas/SensorData.xsd">
+  <int32>a</int32>
+  <array type="float" bias="8" count="3">b</array>
+  <unused size="4"/>
+  <double>d</double>
+  <groupArray count="2">
+    <group name="Ch">
+      <int8>c</int8>
+      <array type="char" count="3">str</array>
+      <array type="uint16" count="2">m</array>
+      <unused size="4"/>
+    </group>
+  </groupArray>
+</DataDesc>

@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>moc;h;cpp</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Source Files\thirdparty">
+      <UniqueIdentifier>{8a4f3a8b-03b8-47e1-acd8-74289d559326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\thirdparty\FramelessWindow">
+      <UniqueIdentifier>{ddc82f6e-d448-402d-b610-70aaa7042524}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\thirdparty\QCustomPlot">
+      <UniqueIdentifier>{26e85116-4160-4f0e-8900-c4bef94e4f97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\thirdparty">
+      <UniqueIdentifier>{97a0db78-cd95-4915-b87c-efed443c234b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\thirdparty\FramelessWindow">
+      <UniqueIdentifier>{63c6984f-c691-45a5-821c-42dd48f74889}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\thirdparty\QCustomPlot">
+      <UniqueIdentifier>{59af5b2e-66ca-4079-94d9-939dfc896dbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Xml">
+      <UniqueIdentifier>{5ca55e9f-2461-4806-8b05-1078dc99e436}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Xml\schemas">
+      <UniqueIdentifier>{7cb9fa85-b58d-4e6a-b421-d86db028e877}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Sensors">
+      <UniqueIdentifier>{ba7d28f8-d92b-4e69-a74e-8558a91a91c7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MarvieController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\FramelessWindow\FramelessWindow.cpp">
+      <Filter>Source Files\thirdparty\FramelessWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\FramelessWindow\WindowButtonsWidget.cpp">
+      <Filter>Source Files\thirdparty\FramelessWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\QCustomPlot\qcustomplot.cpp">
+      <Filter>Source Files\thirdparty\QCustomPlot</Filter>
+    </ClCompile>
+    <ClCompile Include="Crc32SW.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MLinkClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ComPortsConfigWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VPortOverIpModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VPortsOverIpDelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MonitoringDataItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MonitoringDataModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VPortTileWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VPortTileListWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SensorErrorsModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="MarvieController.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="thirdparty\FramelessWindow\FramelessWindow.h">
+      <Filter>Header Files\thirdparty\FramelessWindow</Filter>
+    </QtMoc>
+    <QtMoc Include="thirdparty\FramelessWindow\WindowButtonsWidget.h">
+      <Filter>Header Files\thirdparty\FramelessWindow</Filter>
+    </QtMoc>
+    <QtMoc Include="thirdparty\QCustomPlot\qcustomplot.h">
+      <Filter>Header Files\thirdparty\QCustomPlot</Filter>
+    </QtMoc>
+    <QtMoc Include="MLinkClient.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ComPortsConfigWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="VPortOverIpModel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="MonitoringDataModel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="VPortTileWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="MarvieController.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MarvieController.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="MarvieController.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GeneratedFiles\ui_MarvieController.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Crc32SW.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VPortsOverIpDelegate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MonitoringDataItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VPortTileListWidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SensorErrorsModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="Xml\schemas\Base.xsd">
+      <Filter>Xml\schemas</Filter>
+    </Xml>
+    <Xml Include="Xml\schemas\Config.xsd">
+      <Filter>Xml\schemas</Filter>
+    </Xml>
+    <Xml Include="Xml\schemas\SensorData.xsd">
+      <Filter>Xml\schemas</Filter>
+    </Xml>
+    <Xml Include="Xml\schemas\Sensors.xsd">
+      <Filter>Xml\schemas</Filter>
+    </Xml>
+    <Xml Include="Xml\schemas\SensorSettings.xsd">
+      <Filter>Xml\schemas</Filter>
+    </Xml>
+  </ItemGroup>
+</Project>

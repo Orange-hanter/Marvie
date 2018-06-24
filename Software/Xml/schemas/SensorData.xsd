@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:simpleType name="name">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+      <xs:pattern value="[0-9A-Za-z_]+"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:attribute name="bias">
+    <xs:simpleType>
+      <xs:restriction base="xs:int">
+        <xs:minInclusive value="0"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:attribute>
+
+  <xs:attribute name="count">
+    <xs:simpleType>
+      <xs:restriction base="xs:positiveInteger"/>
+    </xs:simpleType>
+  </xs:attribute>
+
+  <xs:element name="char">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute ref="bias"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="int8">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute ref="bias"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="uint8">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute ref="bias"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="int16">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute ref="bias"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="uint16">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute ref="bias"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="int32">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute ref="bias"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="uint32">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute ref="bias"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="int64">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute ref="bias"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="uint64">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute ref="bias"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="float">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute ref="bias"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="double">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute ref="bias"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:group name="basicTypesGroup">
+    <xs:choice>
+      <xs:element ref="char"/>
+      <xs:element ref="int8"/>
+      <xs:element ref="uint8"/>
+      <xs:element ref="int16"/>
+      <xs:element ref="uint16"/>
+      <xs:element ref="int32"/>
+      <xs:element ref="uint32"/>
+      <xs:element ref="int64"/>
+      <xs:element ref="uint64"/>
+      <xs:element ref="float"/>
+      <xs:element ref="double"/>
+    </xs:choice>
+  </xs:group>
+
+  <xs:group name="auxGroup">
+    <xs:sequence>
+      <xs:choice minOccurs="1" maxOccurs="unbounded">
+        <xs:group ref="basicTypesGroup"/>
+        <xs:element name="unused">
+          <xs:complexType>
+            <xs:attribute name="size" use="required">
+              <xs:simpleType>
+                <xs:restriction base="xs:int">
+                  <xs:minInclusive value="1"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="array">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="name">
+                <xs:attribute name="type" use="required">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:enumeration value="char"/>
+                      <xs:enumeration value="int8"/>
+                      <xs:enumeration value="uint8"/>
+                      <xs:enumeration value="int16"/>
+                      <xs:enumeration value="uint16"/>
+                      <xs:enumeration value="int32"/>
+                      <xs:enumeration value="uint32"/>
+                      <xs:enumeration value="int64"/>
+                      <xs:enumeration value="uint64"/>
+                      <xs:enumeration value="float"/>
+                      <xs:enumeration value="double"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:attribute>
+                <xs:attribute ref="count" use="required"/>
+                <xs:attribute ref="bias" use="optional"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="groupArray">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="group" type="group" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+            <xs:attribute ref="count" use="required"/>
+            <xs:attribute ref="bias" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="group" type="group"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+
+  <xs:complexType name="group">
+    <xs:group ref="auxGroup"/>
+    <xs:attribute name="name" type="name" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="DataDesc">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="auxGroup" minOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

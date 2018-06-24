@@ -1,0 +1,62 @@
+#include "ObjectMemoryUtilizer.h"
+
+ObjectMemoryUtilizer* ObjectMemoryUtilizer::inst = nullptr;
+
+ObjectMemoryUtilizer::ObjectMemoryUtilizer()
+{
+	state = State::Stopped;
+	chMBObjectInit( &mailbox, mboxBuffer, 8 );
+}
+
+ObjectMemoryUtilizer::~ObjectMemoryUtilizer()
+{
+
+}
+
+ObjectMemoryUtilizer* ObjectMemoryUtilizer::instance()
+{
+	if( inst )
+		return inst;
+	inst = new ObjectMemoryUtilizer;
+	return inst;
+}
+
+void ObjectMemoryUtilizer::runUtilizer( tprio_t prio )
+{
+	if( state == State::Stopped )
+	{
+		state = State::Running;
+		start( prio );
+	}
+	else
+		chThdSetPriority( prio );
+}
+
+void ObjectMemoryUtilizer::stopUtilizer()
+{
+	if( state == State::Stopped )
+		return;
+	chThdTerminate( this->thread_ref );
+	chSysLock();
+	chMBPostI( &mailbox, 0 );
+	chSysUnlock();
+	chThdWait( this->thread_ref );
+}
+
+void ObjectMemoryUtilizer::utilize( void* p )
+{
+	syssts_t sysStatus = chSysGetStatusAndLockX();
+	chMBPostTimeoutS( &mailbox, reinterpret_cast< msg_t >( p ), TIME_INFINITE );
+	chSysRestoreStatusX( sysStatus );
+}
+
+void ObjectMemoryUtilizer::main()
+{
+	while( !chThdShouldTerminateX() )
+	{
+		msg_t msg;
+		chMBFetchTimeout( &mailbox, &msg, TIME_INFINITE );
+		delete reinterpret_cast< uint8_t* >( msg );
+	}
+	state = State::Stopped;
+}

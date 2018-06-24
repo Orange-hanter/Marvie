@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<qxConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="file:// schemas/Config.xsd">
+
+  <comPortsConfig>
+    <com0>
+      <gsmModem pinCode="1234" vpn="mts.by">
+        <modbusRtuServer port="502"/>
+        <vPortOverIp ip="127.0.0.5" port="42"/>
+        <vPortOverIp ip="127.0.0.6" port="42"/>
+      </gsmModem>
+      <!--<modbusSlave baudrate="115200" address="1"/>-->
+    </com0>
+    <com1>
+      <vPort frameFormat="B8N" baudrate="115200"/>
+    </com1>
+    <com2>
+      <multiplexer>
+        <com0 frameFormat="B8N" baudrate="115200"/>
+        <com1 frameFormat="B8N" baudrate="115200"/>
+        <com2 frameFormat="B8N" baudrate="115200"/>
+        <com3 frameFormat="B8N" baudrate="115200"/>
+        <com4 frameFormat="B8N" baudrate="115200"/>
+      </multiplexer>
+    </com2>
+  </comPortsConfig>
+
+  <ethernetConfig>
+    <modbusTcpServer port="502"/>
+    <vPortOverIp ip="42.42.42.42" port="42"/>
+  </ethernetConfig>
+
+  <sensorsConfig>
+    <CE301>
+      <vPortID>1</vPortID>
+      <normalPeriod>15</normalPeriod>
+      <emergencyPeriod>30</emergencyPeriod>
+      <address>0</address>
+    </CE301>
+    <SimpleSensor>
+      <vPortID>2</vPortID>
+      <baudrate>9600</baudrate>
+      <normalPeriod>15</normalPeriod>
+      <emergencyPeriod>15</emergencyPeriod>
+      <intPrm>4</intPrm>
+      <floatPrm>4.2</floatPrm>
+      <doublePrm>44</doublePrm>
+      <strPrm>V0</strPrm>
+      <boolPrm>true</boolPrm>
+      <enumA>5</enumA>
+      <enumB>0</enumB>
+    </SimpleSensor>
+  </sensorsConfig>
+
+</qxConfig>

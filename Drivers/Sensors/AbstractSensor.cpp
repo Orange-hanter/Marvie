@@ -8,7 +8,7 @@ ByteRingIterator AbstractBRSensor::waitForResponse( IODevice* io, const char* re
 	i = respBegin = io->inputBuffer()->begin();
 
 	enum Event : eventmask_t { IODeviceEvent = EVENT_MASK( 0 ), InnerEvent = EVENT_MASK( 1 ) };
-	eventmask_t prevEmask = chEvtGetAndClearEvents( IODeviceEvent | InnerEvent );
+	chEvtGetAndClearEvents( IODeviceEvent | InnerEvent );
 
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
@@ -44,7 +44,7 @@ Leave:
 	io->eventSource()->unregister( &ioDeviceListener );
 	chVTReset( &timer );
 
-	chEvtAddEvents( prevEmask );
+	// chEvtGetAndClearEvents( IODeviceEvent | InnerEvent );
 	if( pos == responseLen )
 		return respBegin;
 	return ByteRingIterator();

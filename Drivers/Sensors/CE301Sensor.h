@@ -1,10 +1,12 @@
 #pragma once
 
 #include "AbstractSensor.h"
+#include "Drivers/Interfaces/UsartBasedDevice.h"
 
 class CE301Sensor : public AbstractBRSensor
 {
 public:
+	static const char Name[];
 	class Data : public SensorData
 	{
 		friend class CE301Sensor;
@@ -22,6 +24,7 @@ public:
 
 	const char* name() const final override;
 	void setAddress( uint8_t address );
+	void setBaudrate( uint32_t baudrate );
 	void setIODevice( IODevice* ) final override;
 	IODevice* ioDevice() final override;
 
@@ -38,7 +41,8 @@ private:
 	static const uint8_t programModeRequest[6];
 	static const uint8_t tariffsDataRequest[13];
 
-	IODevice* io;
+	UsartBasedDevice* io;
 	uint8_t address;
+	uint32_t baudrate;
 	Data data;
 };

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<SettingsDesc target="BRSensor" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="file:// ../../Xml/schemas/SensorSettings.xsd">
+  <int default="-42">intPrm</int>
+  <float default="2.718">floatPrm</float>
+  <double default="3.14">doublePrm</double>
+  <string default="V0" pattern="V0|V1|V2">strPrm</string>
+  <bool default="true">boolPrm</bool>
+  <enum>
+    <name>enumA</name>
+    <default>E3</default>
+    <element value="5">E0</element>
+    <element>E1</element>
+    <element>E2</element>
+    <element value="10">E3</element>
+  </enum>
+  <enum>
+    <name>enumB</name>
+    <default>E1</default>
+    <element>E0</element>
+    <element>E1</element>
+  </enum>
+</SettingsDesc>

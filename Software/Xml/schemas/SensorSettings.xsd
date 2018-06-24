@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:simpleType name="name">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+      <xs:pattern value="[0-9A-Za-z_]+"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="int">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute name="default" type="xs:int" use="required"/>
+          <xs:attribute name="min" type="xs:int" use="optional"/>
+          <xs:attribute name="max" type="xs:int" use="optional"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="float">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute name="default" type="xs:float" use="required"/>
+          <xs:attribute name="min" type="xs:float" use="optional"/>
+          <xs:attribute name="max" type="xs:float" use="optional"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="double">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute name="default" type="xs:double" use="required"/>
+          <xs:attribute name="min" type="xs:double" use="optional"/>
+          <xs:attribute name="max" type="xs:double" use="optional"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="string">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute name="default" type="xs:string" use="required"/>
+          <xs:attribute name="pattern" type="xs:string" use="optional"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="bool">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="name">
+          <xs:attribute name="default" type="xs:boolean" use="required"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="enum">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="default" type="name" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="element" minOccurs="1" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="name">
+                <xs:attribute name="value" type="xs:int" use="optional"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="SettingsDesc">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="int"/>
+          <xs:element ref="float"/>
+          <xs:element ref="double"/>
+          <xs:element ref="string"/>
+          <xs:element ref="bool"/>
+          <xs:element ref="enum"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="target" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="BRSensor"/>
+            <xs:enumeration value="SRSensor"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

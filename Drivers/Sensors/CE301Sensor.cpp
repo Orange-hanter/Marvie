@@ -2,6 +2,8 @@
 #include "Core/DataTimeService.h"
 #include "Support/Utility.h"
 
+const char CE301Sensor::Name[] = "CE301";
+
 const uint8_t CE301Sensor::deviceAddressRequestUnion[5] = { '/', '?', '!', '\r', '\n' };
 const uint8_t CE301Sensor::programModeRequest[6] = { ACK, 0x30, 0x35, 0x31, '\r', '\n' };
 const uint8_t CE301Sensor::tariffsDataRequest[13] = { SOH, 'R', '1', STX, 'E', 'T', '0', 'P', 'E', '(', ')', ETX, 0x37 };
@@ -10,6 +12,7 @@ CE301Sensor::CE301Sensor()
 {
 	io = nullptr;
 	address = 0;
+	baudrate = 9600;
 }
 
 CE301Sensor::~CE301Sensor()
@@ -19,7 +22,7 @@ CE301Sensor::~CE301Sensor()
 
 const char* CE301Sensor::name() const
 {
-	return "CE301";
+	return Name;
 }
 
 void CE301Sensor::setAddress( uint8_t address )
@@ -27,9 +30,14 @@ void CE301Sensor::setAddress( uint8_t address )
 	this->address = address;
 }
 
+void CE301Sensor::setBaudrate( uint32_t baudrate )
+{
+	this->baudrate = baudrate;
+}
+
 void CE301Sensor::setIODevice( IODevice* io )
 {
-	this->io = io;
+	this->io = static_cast< UsartBasedDevice* >( io );
 }
 
 IODevice* CE301Sensor::ioDevice()
@@ -40,6 +48,10 @@ IODevice* CE301Sensor::ioDevice()
 CE301Sensor::Data* CE301Sensor::readData()
 {
 #define returnInvalid() { data.valid = false; return &data; }
+
+	io->setDataFormat( UsartBasedDevice::B7E );
+	io->setStopBits( UsartBasedDevice::S1 );
+	io->setBaudRate( baudrate );
 
 	// Device address request
 	if( address == 0 )

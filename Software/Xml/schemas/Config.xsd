@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:include schemaLocation="Sensors.xsd"/>
+
+  <xs:complexType name="vPort">
+    <xs:attribute name="frameFormat" type="frameFormat"/>
+    <xs:attribute name="baudrate" type="baudrate" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="vPort" type="vPort"/>
+
+  <xs:element name="vPortOverIp">
+    <xs:complexType>
+      <xs:attribute name="ip" type="ip" use="required"/>
+      <xs:attribute name="port" type="port" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:group name="networkGroup">
+    <xs:sequence>
+      <xs:element name="modbusRtuServer" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:attribute name="port" type="port" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="modbusTcpServer" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:attribute name="port" type="port" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="modbusAsciiServer" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:attribute name="port" type="port" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element ref="vPortOverIp" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:group>
+
+  <xs:element name="modbusRtuSlave">
+    <xs:complexType>
+      <xs:attribute name="frameFormat" type="frameFormat"/>
+      <xs:attribute name="baudrate" type="baudrate" use="required"/>
+      <xs:attribute name="address" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="255"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="gsmModem">
+    <xs:complexType>
+      <xs:group ref="networkGroup"/>
+      <xs:attribute name="pinCode" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="9999"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="vpn" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="20"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="multiplexer">
+    <xs:complexType>
+      <xs:sequence minOccurs="1" maxOccurs="1">
+        <xs:element name="com0" type="vPort"/>
+        <xs:element name="com1" type="vPort"/>
+        <xs:element name="com2" type="vPort"/>
+        <xs:element name="com3" type="vPort"/>
+        <xs:element name="com4" type="vPort"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="qxConfig">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="comPortsConfig">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="com0">
+                <xs:complexType>
+                  <xs:choice>
+                    <xs:element ref="gsmModem"/>
+                    <xs:element ref="modbusRtuSlave"/>
+                    <xs:element ref="vPort"/>
+                  </xs:choice>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="com1">
+                <xs:complexType>
+                  <xs:choice>
+                    <xs:element ref="vPort"/>
+                    <xs:element ref="modbusRtuSlave"/>
+                  </xs:choice>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="com2">
+                <xs:complexType>
+                  <xs:choice>
+                    <xs:element ref="vPort"/>
+                    <xs:element ref="modbusRtuSlave"/>
+                    <xs:element ref="multiplexer"/>
+                  </xs:choice>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ethernetConfig" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:group ref="networkGroup"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="sensorsConfig" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
