@@ -102,9 +102,6 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="stm32.xml" />
-    <Xml Include="Xml\config.xml">
-      <SubType>Designer</SubType>
-    </Xml>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
@@ -430,12 +427,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="board.h" />
-    <ClInclude Include="BRSensorBase.h">
-      <DependentUpon>Xml\schemas\BRSensorBase.xsd</DependentUpon>
-    </ClInclude>
-    <ClInclude Include="BRSensors.h">
-      <DependentUpon>Xml\schemas\BRSensors.xsd</DependentUpon>
-    </ClInclude>
     <ClInclude Include="chconf.h" />
     <ClInclude Include="Core\AbstractByteRingBuffer.h" />
     <ClInclude Include="Core\AbstractReadable.h" />
@@ -473,9 +464,6 @@
     <ClInclude Include="Lib\fatfs\src\integer.h" />
     <ClInclude Include="Lib\fatfs\src\_ffconf.h" />
     <ClInclude Include="Lib\tinyxml2\tinyxml2.h" />
-    <ClInclude Include="MarvyConfig.h">
-      <DependentUpon>Xml\schemas\MarvieConfig.xsd</DependentUpon>
-    </ClInclude>
     <ClInclude Include="mcuconf.h" />
     <ClInclude Include="mcuconf_community.h" />
     <ClInclude Include="MLinkServer.h" />
@@ -492,10 +480,5 @@
     <ClInclude Include="MultipleBRSensorsReader.h" />
     <ClInclude Include="Support\LexicalAnalyzer.h" />
     <ClInclude Include="Support\Utility.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Xsd Include="Xml\schemas\BRSensorBase.xsd" />
-    <Xsd Include="Xml\schemas\BRSensors.xsd" />
-    <Xsd Include="Xml\schemas\MarvieConfig.xsd" />
   </ItemGroup>
 </Project>

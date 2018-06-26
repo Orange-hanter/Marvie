@@ -4,7 +4,7 @@
 
 using namespace tinyxml2;
 
-int main889()
+int main()
 {
 	halInit();
 	chSysInit();

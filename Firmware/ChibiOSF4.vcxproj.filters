@@ -77,12 +77,6 @@
     <Filter Include="Source files\Tests">
       <UniqueIdentifier>{8b49fed3-fbb0-410a-8bf8-931711593a14}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Xml">
-      <UniqueIdentifier>{75386e5d-d1b6-40cb-99b0-4c5c3ea03ac3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Xml\schemas">
-      <UniqueIdentifier>{50849cb9-aa03-4dd6-a922-a60b98dbcc11}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source files\ChibiOS">
       <UniqueIdentifier>{448a0cc9-2d5d-431f-bf11-1123a63a7745}</UniqueIdentifier>
     </Filter>
@@ -1374,9 +1368,6 @@
     <Xml Include="stm32.xml">
       <Filter>VisualGDB settings</Filter>
     </Xml>
-    <Xml Include="Xml\config.xml">
-      <Filter>Xml</Filter>
-    </Xml>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="board.c">
@@ -1687,16 +1678,5 @@
     <ClInclude Include="MLinkServer.h">
       <Filter>Header files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Xsd Include="Xml\schemas\BRSensorBase.xsd">
-      <Filter>Xml\schemas</Filter>
-    </Xsd>
-    <Xsd Include="Xml\schemas\BRSensors.xsd">
-      <Filter>Xml\schemas</Filter>
-    </Xsd>
-    <Xsd Include="Xml\schemas\MarvieConfig.xsd">
-      <Filter>Xml\schemas</Filter>
-    </Xsd>
   </ItemGroup>
 </Project>
