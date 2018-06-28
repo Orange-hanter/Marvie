@@ -270,4 +270,13 @@ SECTIONS
         . = ORIGIN(HEAP_RAM) + LENGTH(HEAP_RAM);
         __heap_end__ = .;
     } > HEAP_RAM
+
+     /* The CCM heap uses the (statically) unused part of a CCM_RAM section.*/
+    .ccm_heap (NOLOAD) :
+    {
+        . = ALIGN(8);
+        __ccm_heap_base__ = .;
+        . = ORIGIN(CCM_HEAP_RAM) + LENGTH(CCM_HEAP_RAM);
+        __ccm_heap_end__ = .;
+    } > CCM_HEAP_RAM
 }
