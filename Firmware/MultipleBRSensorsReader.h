@@ -1,10 +1,13 @@
 #pragma once
 
-#include "BRSensorReader.h"
+#include "Core/BaseDynamicThread.h"
 #include "Core/NanoList.h"
+#include "BRSensorReader.h"
 #include "chmempools.h"
 
-class MultipleBRSensorsReader : private BaseStaticThread< 192 >, public BRSensorReader // 192b min stack size
+#define MULTIPLE_BR_SENSORS_READER_STACK_SIZE    192 // 192B min stack size
+
+class MultipleBRSensorsReader : private BaseDynamicThread, public BRSensorReader
 {
 public:
 	struct SensorDesc

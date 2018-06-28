@@ -1,9 +1,11 @@
 #pragma once
 
+#include "Core/BaseDynamicThread.h"
 #include "BRSensorReader.h"
-#include "cpp_wrappers/ch.hpp"
 
-class SingleBRSensorReader : private BaseStaticThread< 192 >, public BRSensorReader // 192b min stack size
+#define SINGLE_BR_SENSOR_READER_STACK_SIZE    192 // 192B min stack size
+
+class SingleBRSensorReader : private BaseDynamicThread, public BRSensorReader
 {
 public:
 	SingleBRSensorReader();

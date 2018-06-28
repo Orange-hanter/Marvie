@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/BaseDynamicThread.h"
 #include "Core/ByteRingBuffer.h"
 #include "Core/NanoList.h"
 
@@ -20,7 +21,7 @@ class SimGsmTcpServer;
 class SimGsmUdpSocket;
 class SimGsmTcpSocket;
 
-class SimGsm : private BaseStaticThread< 1280 >, public AbstractGsmModem
+class SimGsm : private BaseDynamicThread, public AbstractGsmModem
 {
 	friend class SimGsmSocketBase;
 	friend class SimGsmUdpSocket;

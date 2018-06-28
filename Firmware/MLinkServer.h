@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/BaseDynamicThread.h"
 #include "Core/ByteRingBuffer.h"
 #include "Core/NanoList.h"
 #include "Core/IODevice.h"
@@ -8,7 +9,7 @@
 #define MLINK_PACKET_BUFFER_SIZE   MLINK_MAX_FRAME_SIZE * 2
 #define MLINK_STACK_SIZE           1024
 
-class MLinkServer : private BaseStaticThread< MLINK_STACK_SIZE >
+class MLinkServer : private BaseDynamicThread
 {
 public:
 	enum class State { Stopped, Listening, Connected, Stopping };

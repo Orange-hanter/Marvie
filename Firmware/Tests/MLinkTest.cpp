@@ -1,11 +1,12 @@
+#include "Core/ObjectMemoryUtilizer.h"
+#include "Core/BaseDynamicThread.h"
+#include "Core/CpuUsageMonitor.h"
+#include "Core/Assert.h"
 #include "Drivers/Interfaces/Usart.h"
 #include "MLinkServer.h"
 #include "ff.h"
 #include <stdio.h>
 #include <string.h>
-#include "Core/Assert.h"
-#include "Core/ObjectMemoryUtilizer.h"
-#include "Core/CpuUsageMonitor.h"
 
 static FATFS SDC_FS;
 static uint8_t ib[1024] = {}, ob[1024] = {};
@@ -76,11 +77,11 @@ class MLinkCallbacks : public MLinkServer::ComplexDataCallback
 	FRESULT err;
 } mlinkCallbacks;
 
-class FileTransmitterThread : private BaseStaticThread< 512 >
+class FileTransmitterThread : private BaseDynamicThread
 {
 public:
 	FileTransmitterThread( MLinkServer::ComplexDataChannel* channel, FIL* file, tprio_t prio = NORMALPRIO ) :
-		channel( channel ), file( file )
+		BaseDynamicThread( 512 ), channel( channel ), file( file )
 	{
 		start( prio );
 	}
@@ -104,7 +105,7 @@ private:
 		delete file;
 
 		chSysLock();
-		ObjectMemoryUtilizer::instance()->utilize( this );
+		deleteLater();
 		exitS( 0 );
 	}
 
@@ -114,10 +115,10 @@ private:
 	uint8_t buffer[420];
 };
 
-class DebugInfoPrinter : private BaseStaticThread< 512 >
+class DebugInfoPrinter : private BaseDynamicThread
 {
 public:
-	DebugInfoPrinter( Usart* usart, tprio_t prio = NORMALPRIO ) : usart( usart )
+	DebugInfoPrinter( Usart* usart, tprio_t prio = NORMALPRIO ) : BaseDynamicThread( 512 ), usart( usart )
 	{
 		start( prio );
 	}
@@ -163,12 +164,12 @@ int main()
 	FRESULT err = f_unlink( "/MLinkTest" );
 	err = f_mkdir( "/MLinkTest" );
 
-	Usart* usart = Usart::instance( &SD4 );
+	Usart* usart = Usart::instance( &SD1 );
 	usart->setOutputBuffer( ob, sizeof( ob ) );
 	usart->setInputBuffer( ib, sizeof( ib ) );
 	usart->open();
-	palSetPadMode( GPIOA, 0, PAL_MODE_ALTERNATE( GPIO_AF_UART4 ) );
-	palSetPadMode( GPIOA, 1, PAL_MODE_ALTERNATE( GPIO_AF_UART4 ) );
+	palSetPadMode( GPIOA, 10, PAL_MODE_ALTERNATE( GPIO_AF_USART1 ) );
+	palSetPadMode( GPIOA, 9, PAL_MODE_ALTERNATE( GPIO_AF_USART1 ) );
 
 	Usart* debugUsart = Usart::instance( &SD2 );
 	debugUsart->setOutputBuffer( debugOb, sizeof( debugOb ) );

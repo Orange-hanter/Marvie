@@ -2,7 +2,7 @@
 
 ObjectMemoryUtilizer* ObjectMemoryUtilizer::inst = nullptr;
 
-ObjectMemoryUtilizer::ObjectMemoryUtilizer()
+ObjectMemoryUtilizer::ObjectMemoryUtilizer() : BaseDynamicThread( 128 )
 {
 	state = State::Stopped;
 	chMBObjectInit( &mailbox, mboxBuffer, 8 );
@@ -43,7 +43,7 @@ void ObjectMemoryUtilizer::stopUtilizer()
 	chThdWait( this->thread_ref );
 }
 
-void ObjectMemoryUtilizer::utilize( void* p )
+void ObjectMemoryUtilizer::utilize( Object* p )
 {
 	syssts_t sysStatus = chSysGetStatusAndLockX();
 	chMBPostTimeoutS( &mailbox, reinterpret_cast< msg_t >( p ), TIME_INFINITE );
@@ -56,7 +56,7 @@ void ObjectMemoryUtilizer::main()
 	{
 		msg_t msg;
 		chMBFetchTimeout( &mailbox, &msg, TIME_INFINITE );
-		delete reinterpret_cast< uint8_t* >( msg );
+		delete reinterpret_cast< Object* >( msg );
 	}
 	state = State::Stopped;
 }

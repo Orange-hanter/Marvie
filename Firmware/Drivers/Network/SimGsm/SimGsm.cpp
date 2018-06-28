@@ -31,7 +31,7 @@
 using namespace Utility;
 using namespace SimGsmATResponseParsers;
 
-SimGsm::SimGsm( IOPort port ) : lexicalAnalyzer( 21, 10 )
+SimGsm::SimGsm( IOPort port ) : BaseDynamicThread( 1280 ), lexicalAnalyzer( 21, 10 )
 {
 	mStatus = ModemStatus::Stopped;
 	mError = ModemError::NoError;

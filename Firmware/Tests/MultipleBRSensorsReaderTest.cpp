@@ -3,7 +3,7 @@
 #include "hal.h"
 #include <math.h>
 
-static MultipleBRSensorsReader thread;
+static MultipleBRSensorsReader* thread;
 
 class Sensor : public AbstractBRSensor
 {
@@ -52,14 +52,15 @@ int main()
 	halInit();
 	chSysInit();
 
-	thread.setMinInterval( 1 );
-	thread.addSensorElement( thread.createSensorElement( new GoodSensor( 0 ), TIME_MS2I( 10 ), TIME_MS2I( 10 ) ) );
-	thread.addSensorElement( thread.createSensorElement( new GoodSensor( 1 ), TIME_MS2I( 4 ), TIME_MS2I( 4 ) ) );
-	thread.addSensorElement( thread.createSensorElement( new GoodSensor( 2 ), TIME_MS2I( 10 ), TIME_MS2I( 10 ) ) );
-	thread.addSensorElement( thread.createSensorElement( new BadSensor( 3 ), TIME_MS2I( 12 ), TIME_MS2I( 4 ) ) );
+	thread = new MultipleBRSensorsReader;
+	thread->setMinInterval( 1 );
+	thread->addSensorElement( thread->createSensorElement( new GoodSensor( 0 ), TIME_MS2I( 10 ), TIME_MS2I( 10 ) ) );
+	thread->addSensorElement( thread->createSensorElement( new GoodSensor( 1 ), TIME_MS2I( 4 ), TIME_MS2I( 4 ) ) );
+	thread->addSensorElement( thread->createSensorElement( new GoodSensor( 2 ), TIME_MS2I( 10 ), TIME_MS2I( 10 ) ) );
+	thread->addSensorElement( thread->createSensorElement( new BadSensor( 3 ), TIME_MS2I( 12 ), TIME_MS2I( 4 ) ) );
 
 	EvtListener listener;
-	thread.eventSource()->registerMask( &listener, EVENT_MASK( 0 ) );
+	thread->eventSource()->registerMask( &listener, EVENT_MASK( 0 ) );
 	int n = 0;
 	struct Info
 	{
@@ -67,14 +68,14 @@ int main()
 		int id;
 	} info[6];
 
-	thread.startReading( NORMALPRIO );
+	thread->startReading( NORMALPRIO );
 	while( n < 6 )
 	{
 		chEvtWaitAny( ALL_EVENTS );
 		if( listener.getAndClearFlags() & MultipleBRSensorsReader::SensorDataUpdated )
 		{
 			Sensor* s;
-			while( ( s = static_cast< Sensor* >( thread.nextUpdatedSensor() ) ) )
+			while( ( s = static_cast< Sensor* >( thread->nextUpdatedSensor() ) ) )
 			{
 				info[n].id = s->id;
 				info[n].time = s->sensorData()->time();
@@ -82,8 +83,8 @@ int main()
 			}
 		}
 	}
-	thread.stopReading();
-	thread.waitForStateChange();
+	thread->stopReading();
+	thread->waitForStateChange();
 
 	assert( info[0].id == 1 );
 	assert( info[1].id == 1 );
@@ -94,10 +95,10 @@ int main()
 
 	listener.getAndClearFlags();
 	chEvtGetAndClearEvents( ALL_EVENTS );
-	while( thread.nextUpdatedSensor() );
+	while( thread->nextUpdatedSensor() );
 
-	thread.setMinInterval( 0 );
-	thread.startReading( NORMALPRIO );
+	thread->setMinInterval( 0 );
+	thread->startReading( NORMALPRIO );
 	systime_t t0 = chVTGetSystemTimeX();
 	systime_t t1 = t0 + TIME_S2I( 4 );
 	int counter[4] = {};
@@ -107,12 +108,12 @@ int main()
 		if( listener.getAndClearFlags() & MultipleBRSensorsReader::SensorDataUpdated )
 		{
 			Sensor* s;
-			while( ( s = static_cast< Sensor* >( thread.nextUpdatedSensor() ) ) )
+			while( ( s = static_cast< Sensor* >( thread->nextUpdatedSensor() ) ) )
 				++counter[s->id];
 		}
 	}
-	thread.stopReading();
-	thread.waitForStateChange();
+	thread->stopReading();
+	thread->waitForStateChange();
 
 	assert( abs( counter[0] - 400 ) <= 2 );
 	assert( abs( counter[1] - 1000 ) <= 2 );
@@ -121,10 +122,10 @@ int main()
 
 	listener.getAndClearFlags();
 	chEvtGetAndClearEvents( ALL_EVENTS );
-	while( thread.nextUpdatedSensor() );
+	while( thread->nextUpdatedSensor() );
 
-	thread.setMinInterval( TIME_MS2I( 100 ) );
-	thread.startReading( NORMALPRIO );
+	thread->setMinInterval( TIME_MS2I( 100 ) );
+	thread->startReading( NORMALPRIO );
 	t0 = chVTGetSystemTimeX();
 	t1 = t0 + TIME_S2I( 4 );
 	int counter2[4] = {};
@@ -134,12 +135,12 @@ int main()
 		if( listener.getAndClearFlags() & MultipleBRSensorsReader::SensorDataUpdated )
 		{
 			Sensor* s;
-			while( ( s = static_cast< Sensor* >( thread.nextUpdatedSensor() ) ) )
+			while( ( s = static_cast< Sensor* >( thread->nextUpdatedSensor() ) ) )
 				++counter2[s->id];
 		}
 	}
-	thread.stopReading();
-	thread.waitForStateChange();
+	thread->stopReading();
+	thread->waitForStateChange();
 
 	assert( abs( counter2[0] - 6 ) <= 2 );
 	assert( abs( counter2[1] - 14 ) <= 2 );
@@ -148,12 +149,12 @@ int main()
 
 	listener.getAndClearFlags();
 	chEvtGetAndClearEvents( ALL_EVENTS );
-	thread.removeAllSensorElements();
+	thread->removeAllSensorElements();
 
-	thread.addSensorElement( thread.createSensorElement( new GoodSensor( 0 ), TIME_MS2I( 10 ), TIME_MS2I( 10 ) ) );
+	thread->addSensorElement( thread->createSensorElement( new GoodSensor( 0 ), TIME_MS2I( 10 ), TIME_MS2I( 10 ) ) );
 
-	thread.setMinInterval( 0 );
-	thread.startReading( NORMALPRIO );
+	thread->setMinInterval( 0 );
+	thread->startReading( NORMALPRIO );
 	t0 = chVTGetSystemTimeX();
 	t1 = t0 + TIME_S2I( 1 );
 	int counter3[4] = {};
@@ -163,12 +164,12 @@ int main()
 		if( listener.getAndClearFlags() & MultipleBRSensorsReader::SensorDataUpdated )
 		{
 			Sensor* s;
-			while( ( s = static_cast< Sensor* >( thread.nextUpdatedSensor() ) ) )
+			while( ( s = static_cast< Sensor* >( thread->nextUpdatedSensor() ) ) )
 				++counter3[s->id];
 		}
 	}
-	thread.stopReading();
-	thread.waitForStateChange();
+	thread->stopReading();
+	thread->waitForStateChange();
 
 	assert( abs( counter3[0] - 100 ) <= 2 );
 	assert( counter3[1] == 0 );

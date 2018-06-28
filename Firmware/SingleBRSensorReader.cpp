@@ -1,7 +1,7 @@
 #include "SingleBRSensorReader.h"
 #include "Core/Assert.h"
 
-SingleBRSensorReader::SingleBRSensorReader() : BRSensorReader()
+SingleBRSensorReader::SingleBRSensorReader() : BaseDynamicThread( SINGLE_BR_SENSOR_READER_STACK_SIZE ), BRSensorReader()
 {
 	sensor = nullptr;
 	normalPriod = emergencyPeriod = 0;

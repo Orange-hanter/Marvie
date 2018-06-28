@@ -153,7 +153,7 @@ void MLinkServer::ComplexDataChannel::close( bool cancelFlag )
 	chMtxUnlock( &link->ioMutex );
 }
 
-MLinkServer::MLinkServer()
+MLinkServer::MLinkServer() : BaseDynamicThread( MLINK_STACK_SIZE )
 {
 	linkState = State::Stopped;
 	linkError = Error::NoError;

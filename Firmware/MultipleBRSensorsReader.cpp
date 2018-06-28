@@ -6,7 +6,7 @@
 
 memory_pool_t MultipleBRSensorsReader::objectPool = _MEMORYPOOL_DATA( MultipleBRSensorsReader::objectPool, sizeof( MultipleBRSensorsReader::SensorElement ), PORT_NATURAL_ALIGN, nullptr );
 
-MultipleBRSensorsReader::MultipleBRSensorsReader() : BRSensorReader()
+MultipleBRSensorsReader::MultipleBRSensorsReader() : BaseDynamicThread( MULTIPLE_BR_SENSORS_READER_STACK_SIZE ), BRSensorReader()
 {
 	minInterval = TIME_MS2I( 1000 );
 	sumTimeError = 0;
