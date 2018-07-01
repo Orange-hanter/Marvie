@@ -40,7 +40,7 @@ class MLinkCallbacks : public MLinkServer::ComplexDataCallback
 
 		return 1;
 	}
-	void newDataReceived( uint8_t id, const uint8_t* data, uint32_t size ) final override
+	bool newDataReceived( uint8_t id, const uint8_t* data, uint32_t size ) final override
 	{
 		assert( id < 5 );
 		assert( files[id] != nullptr );
@@ -49,6 +49,8 @@ class MLinkCallbacks : public MLinkServer::ComplexDataCallback
 		assert( ( err = f_write( files[id], data, size, &bw ) ) == FR_OK );
 		assert( bw == size );
 		dataSize[id] -= size;
+
+		return true;
 	}
 	void onClosing( uint8_t id, bool canceled ) final override
 	{
@@ -112,6 +114,42 @@ private:
 private:
 	MLinkServer::ComplexDataChannel* channel;
 	FIL* file;
+	uint8_t buffer[420];
+};
+
+class DataXTransmitterThread : private BaseDynamicThread
+{
+public:
+	DataXTransmitterThread( MLinkServer::ComplexDataChannel* channel, uint32_t size, tprio_t prio = NORMALPRIO ) :
+		BaseDynamicThread( 512 ), channel( channel ), totalSize( size )
+	{
+		start( prio );
+	}
+
+private:
+	void main()
+	{
+		uint32_t i = 0;
+		while( totalSize )
+		{
+			uint size;
+			for( size = 0; size < totalSize && size < 420; ++size )
+				buffer[size] = '0' + i++ % 10;
+			totalSize -= size;
+			if( !channel->sendData( buffer, size ) )
+				break;
+		}
+		channel->close();
+		delete channel;
+
+		chSysLock();
+		deleteLater();
+		exitS( 0 );
+	}
+
+private:
+	MLinkServer::ComplexDataChannel* channel;	
+	uint32_t totalSize;
 	uint8_t buffer[420];
 };
 
@@ -197,7 +235,7 @@ int main()
 	link->setComplexDataReceiveCallback( &mlinkCallbacks );
 	link->startListening( NORMALPRIO + 1 );
 
-	enum PacketType { Hello, GetData };
+	enum PacketType { Hello, GetData, GetDataX };
 	while( true )
 	{
 		if( !link->waitPacket() )
@@ -233,6 +271,16 @@ int main()
 				}
 				else
 					new FileTransmitterThread( channel, file );
+			}
+			else if( type == GetDataX )
+			{
+				MLinkServer::ComplexDataChannel* channel = link->createComplexDataChannel();
+				char name[] = "3.dat";
+				uint32_t size = *( uint32_t* )packetData;
+				if( !channel->open( 3, name, size ) )
+					delete channel;
+				else
+					new DataXTransmitterThread( channel, size );
 			}
 		}
 	}

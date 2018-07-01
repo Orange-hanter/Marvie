@@ -5,7 +5,7 @@
 
 #define MLINK_PREAMBLE 0x203d26d1
 
-MLinkClient::MLinkClient() : g( 15 )
+MLinkClient::MLinkClient() : g( 4 )
 {
 	_state = State::Disconnected;
 	_error = Error::NoError;
@@ -118,6 +118,15 @@ bool MLinkClient::cancelComplexDataSending( uint8_t channelId )
 		return false;
 
 	outCDataMap[channelId].needCancel = true;
+	return true;
+}
+
+bool MLinkClient::cancelComplexDataReceiving( uint8_t channelId )
+{
+	if( _state != State::Connected || !inCDataMap.contains( channelId ) )
+		return false;
+
+	inCDataMap[channelId].needCancel = true;
 	return true;
 }
 
@@ -327,6 +336,8 @@ void MLinkClient::processPacket( Header& header, QByteArray& packetData )
 					Request req;
 					req.type = ComplexDataNextAck;
 					req.data.append( id );
+					uint8_t nextOk = !cdata.needCancel;
+					req.data.append( ( char* )&nextOk, 1 );
 					pushBackRequest( req );
 				}
 				break;
@@ -336,6 +347,8 @@ void MLinkClient::processPacket( Header& header, QByteArray& packetData )
 				uint8_t id = packetData.constData()[sizeof( Header )];
 				assert( outCDataMap.contains( id ) == true );
 				auto& cdata = outCDataMap[id];
+				if( packetData.constData()[sizeof( Header ) + sizeof( uint8_t )] == 0 )
+					cdata.needCancel = true;
 				if( cdata.needCancel )
 					pushBackRequest( complexDataEndRequest( id, true ) );
 				else
@@ -358,8 +371,9 @@ void MLinkClient::processPacket( Header& header, QByteArray& packetData )
 				cdata.g = *reinterpret_cast< const uint32_t* >( packetData.constData() + sizeof( Header ) + sizeof( uint8_t ) );
 				if( cdata.g == 0xFFFFFFFF ) // sending rejected
 				{
+					QString name = cdata.name;
 					outCDataMap.remove( id );
-					complexDataSendindCanceled( id );
+					complexDataSendindCanceled( id, name );
 					break;
 				}
 				if( cdata.needCancel )
@@ -386,7 +400,7 @@ void MLinkClient::processPacket( Header& header, QByteArray& packetData )
 				auto cdata = inCDataMap.take( id );
 				uint8_t canceled = packetData.constData()[sizeof( Header ) + sizeof( uint8_t )];
 				if( canceled )
-					complexDataReceivingProgress( id, cdata.name, -1.0f );
+					complexDataReceivingCanceled( id, cdata.name );
 				else
 					newComplexPacketAvailable( id, cdata.name, cdata.data );
 				break;
@@ -478,7 +492,7 @@ void MLinkClient::bytesWritten()
 		OutputCData cdata = outCDataMap.take( id );
 
 		if( cdata.needCancel )
-			complexDataSendindCanceled( id );
+			complexDataSendindCanceled( id, cdata.name );
 		else
 			complexDataSendingProgress( id, cdata.name, 1.0f );
 	}

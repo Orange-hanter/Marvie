@@ -106,7 +106,11 @@ bool MLinkServer::ComplexDataChannel::sendData( uint8_t* data, uint32_t size )
 				NanoList< DataNextResponse* >::Node node( &resp );
 				link->cdcDataRespList.pushBack( &node );
 				chMtxUnlock( &link->ioMutex );
-				chBSemWait( &resp.sem );
+				if( chBSemWait( &resp.sem ) == MSG_OK && !resp.nextOk )
+				{
+					close( true );
+					return false;
+				}
 			}
 			else
 				chMtxUnlock( &link->ioMutex );
@@ -463,15 +467,19 @@ void MLinkServer::processNewPacket()
 					callbacks->newDataReceived( packetData[sizeof( Header )], packetData + sizeof( Header ) + sizeof( uint8_t ), header->size - 1 );
 				break;
 			case PacketType::ComplexDataNext:
+			{
+				volatile bool nextOk = true;
 				if( callbacks )
-					callbacks->newDataReceived( packetData[sizeof( Header )], packetData + sizeof( Header ) + sizeof( uint8_t ), header->size - 1 );
-				sendComplexDataNextAckM( packetData[sizeof( Header )] );
+					nextOk = callbacks->newDataReceived( packetData[sizeof( Header )], packetData + sizeof( Header ) + sizeof( uint8_t ), header->size - 1 );
+				sendComplexDataNextAckM( packetData[sizeof( Header )], nextOk );
 				break;
+			}
 			case PacketType::ComplexDataNextAck:
 			{
 				auto node = cdcDataRespList.popFront();
 				assert( node != nullptr );
 				assert( node->value->id == packetData[sizeof( Header )] );
+				node->value->nextOk = packetData[sizeof( Header ) + sizeof( uint8_t )] == 1;
 				chBSemSignal( &node->value->sem );
 				break;
 			}
@@ -619,16 +627,17 @@ void MLinkServer::sendComplexDataBeginAckM( uint8_t id, uint32_t g )
 	device->write( packetData, sizeof( Header ) + sizeof( uint8_t ) + sizeof( uint32_t ) + sizeof( uint32_t ), TIME_INFINITE );
 }
 
-void MLinkServer::sendComplexDataNextAckM( uint8_t id )
+void MLinkServer::sendComplexDataNextAckM( uint8_t id, bool nextOk )
 {
 	Header* header = reinterpret_cast< Header* >( packetData );
 	header->preamble = MLINK_PREAMBLE;
-	header->size = sizeof( uint8_t );
+	header->size = sizeof( uint8_t ) + sizeof( uint8_t );
 	header->sqNum = sqNumCounter++;
 	header->type = PacketType::ComplexDataNextAck;
 	*reinterpret_cast< uint8_t* >( packetData + sizeof( Header ) ) = id;
-	*reinterpret_cast< uint32_t* >( packetData + sizeof( Header ) + sizeof( uint8_t ) ) = calcCrc( packetData, sizeof( Header ) + sizeof( uint8_t ) );
-	device->write( packetData, sizeof( Header ) + sizeof( uint8_t ) + sizeof( uint32_t ), TIME_INFINITE );
+	*reinterpret_cast< uint8_t* >( packetData + sizeof( Header ) + sizeof( uint8_t ) ) = ( uint8_t )nextOk;
+	*reinterpret_cast< uint32_t* >( packetData + sizeof( Header ) + sizeof( uint8_t ) + sizeof( uint8_t ) ) = calcCrc( packetData, sizeof( Header ) + sizeof( uint8_t ) + sizeof( uint8_t ) );
+	device->write( packetData, sizeof( Header ) + sizeof( uint8_t ) + sizeof( uint8_t ) + sizeof( uint32_t ), TIME_INFINITE );
 }
 
 void MLinkServer::timeout()

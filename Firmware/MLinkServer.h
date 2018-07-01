@@ -32,7 +32,7 @@ public:
 	private:
 		void close( bool cancelFlag );
 
-		struct BeginResponse 
+		struct BeginResponse
 		{
 			uint8_t id;
 			binary_semaphore_t sem;
@@ -41,7 +41,8 @@ public:
 		struct DataNextResponse
 		{
 			uint8_t id;
-			binary_semaphore_t sem;			
+			binary_semaphore_t sem;
+			volatile bool nextOk;
 		};
 		MLinkServer* link;
 		uint64_t r;
@@ -52,7 +53,7 @@ public:
 	{
 	public:
 		virtual uint32_t onOpennig( uint8_t id, const char* name, uint32_t size ) = 0;
-		virtual void newDataReceived( uint8_t id, const uint8_t* data, uint32_t size ) = 0;
+		virtual bool newDataReceived( uint8_t id, const uint8_t* data, uint32_t size ) = 0;
 		virtual void onClosing( uint8_t id, bool canceled ) = 0;
 	};
 
@@ -88,7 +89,7 @@ private:
 	inline void sendSynAckM();
 	inline void sendFinAckM();
 	inline void sendComplexDataBeginAckM( uint8_t id, uint32_t g );
-	inline void sendComplexDataNextAckM( uint8_t id );
+	inline void sendComplexDataNextAckM( uint8_t id, bool nextOk );
 	inline void timeout();
 	inline void closeLink( Error );
 	void closeLinkM( Error );	

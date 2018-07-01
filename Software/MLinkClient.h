@@ -26,6 +26,7 @@ public:
 	void sendPacket( uint8_t type, QByteArray data ); // 0 <= size <= 255
 	bool sendComplexData( uint8_t channelId, QByteArray data, QString name = QString() ); // 0 < size
 	bool cancelComplexDataSending( uint8_t channelId );
+	bool cancelComplexDataReceiving( uint8_t channelId );
 
 signals:
 	void stateChanged( State state );
@@ -35,8 +36,9 @@ signals:
 	void newPacketAvailable( uint8_t type, QByteArray data );
 	void newComplexPacketAvailable( uint8_t channelId, QString name, QByteArray data );
 	void complexDataSendingProgress( uint8_t channelId, QString name, float progress );
-	void complexDataSendindCanceled( uint8_t channelId );
+	void complexDataSendindCanceled( uint8_t channelId, QString name );
 	void complexDataReceivingProgress( uint8_t channelId, QString name, float progress );
+	void complexDataReceivingCanceled( uint8_t channelId, QString name );
 
 private:
 	struct Request;
@@ -89,9 +91,11 @@ private:
 	};
 	struct InputCData
 	{
+		InputCData() { size = 0; needCancel = false; }
 		uint32_t size;
 		QString name;
 		QByteArray data;
+		bool needCancel;
 	};
 	struct OutputCData
 	{

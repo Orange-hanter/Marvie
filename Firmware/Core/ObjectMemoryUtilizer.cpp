@@ -2,7 +2,7 @@
 
 ObjectMemoryUtilizer* ObjectMemoryUtilizer::inst = nullptr;
 
-ObjectMemoryUtilizer::ObjectMemoryUtilizer() : BaseDynamicThread( 128 )
+ObjectMemoryUtilizer::ObjectMemoryUtilizer() : BaseDynamicThread( 192 )
 {
 	state = State::Stopped;
 	chMBObjectInit( &mailbox, mboxBuffer, 8 );
