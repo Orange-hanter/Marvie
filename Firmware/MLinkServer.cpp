@@ -51,7 +51,11 @@ bool MLinkServer::ComplexDataChannel::open( uint8_t id, const char* name, uint32
 		chMtxUnlock( &link->ioMutex );
 
 		if( chBSemWait( &resp.sem ) == MSG_OK )
+		{
 			g = resp.g, n = 0;
+			if( g == 0xFFFFFFFF ) // sending rejected
+				r = 0;
+		}
 		else
 			r = 0;
 

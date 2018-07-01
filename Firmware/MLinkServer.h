@@ -7,7 +7,7 @@
 
 #define MLINK_MAX_FRAME_SIZE       267
 #define MLINK_PACKET_BUFFER_SIZE   MLINK_MAX_FRAME_SIZE * 2
-#define MLINK_STACK_SIZE           1024
+#define MLINK_STACK_SIZE           1280
 
 class MLinkServer : private BaseDynamicThread
 {

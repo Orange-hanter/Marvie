@@ -356,6 +356,12 @@ void MLinkClient::processPacket( Header& header, QByteArray& packetData )
 				assert( outCDataMap.contains( id ) == true );
 				auto& cdata = outCDataMap[id];
 				cdata.g = *reinterpret_cast< const uint32_t* >( packetData.constData() + sizeof( Header ) + sizeof( uint8_t ) );
+				if( cdata.g == 0xFFFFFFFF ) // sending rejected
+				{
+					outCDataMap.remove( id );
+					complexDataSendindCanceled( id );
+					break;
+				}
 				if( cdata.needCancel )
 					pushBackRequest( complexDataEndRequest( id, true ) );
 				else
