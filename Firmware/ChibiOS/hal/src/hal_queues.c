@@ -423,7 +423,7 @@ size_t iqReadTimeout(input_queue_t *iqp, uint8_t *bp,
 
   osalSysLock();
 
-  while (rd < n) {
+  while (n) {
     size_t done;
 
     done = iq_read(iqp, bp, n);
@@ -445,6 +445,7 @@ size_t iqReadTimeout(input_queue_t *iqp, uint8_t *bp,
       /* Giving a preemption chance in a controlled point.*/
       osalSysUnlock();
 
+      n -= done;
       rd += done;
 	  if (bp != NULL) {
         bp += done;
@@ -730,7 +731,7 @@ size_t oqWriteTimeout(output_queue_t *oqp, const uint8_t *bp,
       /* Giving a preemption chance in a controlled point.*/
       osalSysUnlock();
 
-	  n -= done;
+      n -= done;
       wr += done;
       bp += done;
 
