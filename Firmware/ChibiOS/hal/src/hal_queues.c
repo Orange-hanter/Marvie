@@ -708,7 +708,7 @@ size_t oqWriteTimeout(output_queue_t *oqp, const uint8_t *bp,
 
   osalSysLock();
 
-  while (wr < n) {
+  while (n) {
     size_t done;
 
     done = oq_write(oqp, bp, n);
@@ -730,6 +730,7 @@ size_t oqWriteTimeout(output_queue_t *oqp, const uint8_t *bp,
       /* Giving a preemption chance in a controlled point.*/
       osalSysUnlock();
 
+	  n -= done;
       wr += done;
       bp += done;
 
