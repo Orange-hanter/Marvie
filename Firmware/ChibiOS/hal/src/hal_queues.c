@@ -417,13 +417,13 @@ size_t iqReadI(input_queue_t *iqp, uint8_t *bp, size_t n) {
 size_t iqReadTimeout(input_queue_t *iqp, uint8_t *bp,
                      size_t n, sysinterval_t timeout) {
   qnotify_t nfy = iqp->q_notify;
-  size_t rd = 0;
+  size_t max = n;
 
   osalDbgCheck(n > 0U);
 
   osalSysLock();
 
-  while (n) {
+  while (n > 0U) {
     size_t done;
 
     done = iq_read(iqp, bp, n);
@@ -446,7 +446,6 @@ size_t iqReadTimeout(input_queue_t *iqp, uint8_t *bp,
       osalSysUnlock();
 
       n -= done;
-      rd += done;
 	  if (bp != NULL) {
         bp += done;
 	  }
@@ -455,7 +454,7 @@ size_t iqReadTimeout(input_queue_t *iqp, uint8_t *bp,
   }
 
   osalSysUnlock();
-  return rd;
+  return max - n;
 }
 
 /**
@@ -703,13 +702,13 @@ size_t oqWriteI(output_queue_t *oqp, const uint8_t *bp, size_t n) {
 size_t oqWriteTimeout(output_queue_t *oqp, const uint8_t *bp,
                       size_t n, sysinterval_t timeout) {
   qnotify_t nfy = oqp->q_notify;
-  size_t wr = 0;
+  size_t max = n;
 
   osalDbgCheck(n > 0U);
 
   osalSysLock();
 
-  while (n) {
+  while (n > 0U) {
     size_t done;
 
     done = oq_write(oqp, bp, n);
@@ -732,7 +731,6 @@ size_t oqWriteTimeout(output_queue_t *oqp, const uint8_t *bp,
       osalSysUnlock();
 
       n -= done;
-      wr += done;
       bp += done;
 
       osalSysLock();
@@ -740,7 +738,7 @@ size_t oqWriteTimeout(output_queue_t *oqp, const uint8_t *bp,
   }
 
   osalSysUnlock();
-  return wr;
+  return max - n;
 }
 
 /** @} */
