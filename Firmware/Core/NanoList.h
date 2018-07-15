@@ -30,6 +30,8 @@ public:
 		inline Iterator operator++( int );
 		inline Iterator& operator--();
 		inline Iterator operator--( int );
+		inline Iterator operator+( int );
+		inline Iterator operator-( int );
 		inline bool operator ==( Iterator ) const;
 		inline bool operator !=( Iterator ) const;
 		inline T& operator*();
@@ -47,15 +49,15 @@ public:
 	Iterator insert( Iterator before, NanoList< T >& );
 	Node* remove( Iterator pos );
 	void clear();
-	int size();
+	unsigned int size();
 	bool isEmpty();
 
 	Iterator begin();
 	Iterator end();
-	
+
 private:
 	Node enode;
-	int n;
+	unsigned int n;
 };
 
 template< typename T >
@@ -144,7 +146,7 @@ void NanoList< T >::clear()
 }
 
 template< typename T >
-int NanoList< T >::size()
+unsigned int NanoList< T >::size()
 {
 	return n;
 }
@@ -206,6 +208,42 @@ typename NanoList< T >::Iterator NanoList< T >::Iterator::operator--( int )
 {
 	Iterator tmp( *this );
 	operator --();
+	return tmp;
+}
+
+template< typename T >
+typename NanoList< T >::Iterator NanoList< T >::Iterator::operator-( int v )
+{
+	Iterator tmp( *this );
+	if( v > 0 )
+	{
+		while( v-- )
+			--tmp;
+	}
+	else
+	{
+		while( v++ != 0 )
+			++tmp;
+	}
+
+	return tmp;
+}
+
+template< typename T >
+typename NanoList< T >::Iterator NanoList< T >::Iterator::operator+( int v )
+{
+	Iterator tmp( *this );
+	if( v > 0 )
+	{
+		while( v-- )
+			++tmp;
+	}
+	else
+	{
+		while( v++ != 0 )
+			--tmp;
+	}
+
 	return tmp;
 }
 
