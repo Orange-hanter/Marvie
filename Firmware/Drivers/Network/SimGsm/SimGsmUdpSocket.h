@@ -18,6 +18,7 @@ public:
 	uint32_t write( const uint8_t* data, uint32_t size, sysinterval_t timeout ) override;
 	uint32_t read( uint8_t* data, uint32_t size, sysinterval_t timeout ) override;
 	uint32_t readAvailable() const override;
+	bool waitForBytesWritten( sysinterval_t timeout ) final override;
 	bool waitForReadAvailable( uint32_t size, sysinterval_t timeout ) final override; // not supported, use waitDatagram() instead
 
 	AbstractReadable* inputBuffer() final override;

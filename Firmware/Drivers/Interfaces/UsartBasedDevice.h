@@ -14,6 +14,9 @@ public:
 	virtual void setBaudRate( uint32_t baudRate ) = 0;
 	virtual void setDataFormat( DataFormat dataFormat ) = 0;
 	virtual void setStopBits( StopBits stopBits ) = 0;
-	
+	virtual uint32_t baudRate() = 0;
+	virtual DataFormat dataFormat() = 0;
+	virtual StopBits stopBits() = 0;
+
 	virtual USART_TypeDef* base() = 0;
 };

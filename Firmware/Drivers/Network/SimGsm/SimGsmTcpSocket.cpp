@@ -48,6 +48,11 @@ uint32_t SimGsmTcpSocket::readAvailable() const
 	return inBuffer.readAvailable();
 }
 
+bool SimGsmTcpSocket::waitForBytesWritten( sysinterval_t timeout )
+{
+	return true;
+}
+
 bool SimGsmTcpSocket::waitForReadAvailable( uint32_t size, sysinterval_t timeout )
 {
 	return inBuffer.waitForReadAvailable( size, timeout );

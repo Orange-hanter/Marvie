@@ -40,9 +40,9 @@ int usartId( SerialDriver* sd )
 
 Usart::Usart( SerialDriver* sd )
 {
-	baudRate = 115200;
-	dataFormat = B8N;
-	stopBits = StopBits::S1; 
+	_baudRate = 115200;
+	_dataFormat = B8N;
+	_stopBits = StopBits::S1; 
 	mode = Mode::RxTx;
 	hardwareFlowControl = FlowControl::None;
 	this->sd = sd;
@@ -101,18 +101,18 @@ bool Usart::open()
 		return false;
 
 	SerialConfig config = {};
-	config.speed = baudRate;
+	config.speed = _baudRate;
 
-	if( dataFormat == UsartBasedDevice::B7E )
+	if( _dataFormat == UsartBasedDevice::B7E )
 		config.cr1 = USART_CR1_PCE;
-	else if( dataFormat == UsartBasedDevice::B7O )
+	else if( _dataFormat == UsartBasedDevice::B7O )
 		config.cr1 = USART_CR1_PCE | USART_CR1_PS;
-	else if( dataFormat == UsartBasedDevice::B8E )
+	else if( _dataFormat == UsartBasedDevice::B8E )
 		config.cr1 = USART_CR1_M | USART_CR1_PCE;
-	else if( dataFormat == UsartBasedDevice::B8O )
+	else if( _dataFormat == UsartBasedDevice::B8O )
 		config.cr1 = USART_CR1_M | USART_CR1_PCE | USART_CR1_PS;
 
-	config.cr2 = stopBits << USART_CR2_STOP_Pos;
+	config.cr2 = _stopBits << USART_CR2_STOP_Pos;
 	
 	if( mode == UsartBasedDevice::RxTx )
 		config.cr1 |= USART_CR1_RE | USART_CR1_TE;
@@ -137,9 +137,9 @@ bool Usart::open( uint32_t baudRate, DataFormat dataFormat /*= B8N*/, StopBits s
 	if( sd->state != sdstate_t::SD_STOP )
 		return false;
 
-	this->baudRate = baudRate;
-	this->dataFormat = dataFormat;
-	this->stopBits = stopBits;
+	this->_baudRate = baudRate;
+	this->_dataFormat = dataFormat;
+	this->_stopBits = stopBits;
 	this->mode = mode;
 	this->hardwareFlowControl = hardwareFlowControl;
 
@@ -148,9 +148,9 @@ bool Usart::open( uint32_t baudRate, DataFormat dataFormat /*= B8N*/, StopBits s
 
 void Usart::setBaudRate( uint32_t baudRate )
 {
-	if( this->baudRate == baudRate )
+	if( this->_baudRate == baudRate )
 		return;
-	this->baudRate = baudRate;
+	this->_baudRate = baudRate;
 	if( sd->state == sdstate_t::SD_STOP )
 		return;
 
@@ -167,9 +167,9 @@ void Usart::setBaudRate( uint32_t baudRate )
 
 void Usart::setDataFormat( DataFormat dataFormat )
 {
-	if( this->dataFormat == dataFormat )
+	if( this->_dataFormat == dataFormat )
 		return;
-	this->dataFormat = dataFormat;
+	this->_dataFormat = dataFormat;
 	if( sd->state == sdstate_t::SD_STOP )
 		return;
 
@@ -187,15 +187,30 @@ void Usart::setDataFormat( DataFormat dataFormat )
 
 void Usart::setStopBits( StopBits stopBits )
 {
-	if( this->stopBits == stopBits )
+	if( this->_stopBits == stopBits )
 		return;
-	this->stopBits = stopBits;
+	this->_stopBits = stopBits;
 	if( sd->state == sdstate_t::SD_STOP )
 		return;
 
 	USART_TypeDef* u = sd->usart;
 	u->CR2 &= ~( USART_CR2_STOP_0 | USART_CR2_STOP_1 );
 	u->CR2 |= stopBits << USART_CR2_STOP_Pos;
+}
+
+uint32_t Usart::baudRate()
+{
+	return _baudRate;
+}
+
+UsartBasedDevice::DataFormat Usart::dataFormat()
+{
+	return _dataFormat;
+}
+
+UsartBasedDevice::StopBits Usart::stopBits()
+{
+	return _stopBits;
 }
 
 bool Usart::isOpen() const
@@ -237,13 +252,60 @@ uint32_t Usart::readAvailable() const
 	return iqGetFullI( &sd->iqueue );
 }
 
+bool Usart::waitForBytesWritten( sysinterval_t timeout )
+{
+	if( !isOpen() )
+		return false;
+	chSysLock();
+	if( oqIsEmptyI( &sd->oqueue ) && sd->usart->SR & USART_SR_TC )
+	{
+		chSysUnlock();
+		return true;
+	}
+	chSysUnlock();
+	if( timeout == TIME_IMMEDIATE )
+		return false;
+
+	enum Event : eventmask_t { UsartEvent = EVENT_MASK( 0 ), TimeoutEvent = EVENT_MASK( 1 ) };
+	chEvtGetAndClearEvents( UsartEvent | TimeoutEvent );
+
+	virtual_timer_t timer;
+	chVTObjectInit( &timer );
+	chVTSet( &timer, timeout, timerCallback, chThdGetSelfX() );
+
+	EvtListener listener;
+	eventSource()->registerMaskWithFlags( &listener, UsartEvent, CHN_TRANSMISSION_END );
+
+	chSysLock();
+	if( oqIsEmptyI( &sd->oqueue ) && sd->usart->SR & USART_SR_TC )
+	{
+		chSysUnlock();
+		eventSource()->unregister( &listener );
+		chVTReset( &timer );
+		return true;
+	}
+	chSysUnlock();
+
+	eventmask_t em = chEvtWaitAny( UsartEvent | TimeoutEvent );
+	eventSource()->unregister( &listener );
+	chVTReset( &timer );
+
+	if( em & TimeoutEvent )
+		return false;
+	return true;
+}
+
 bool Usart::waitForReadAvailable( uint32_t size, sysinterval_t timeout )
 {
+	if( !isOpen() )
+		return false;
 	if( readAvailable() >= size )
 		return true;
+	if( timeout == TIME_IMMEDIATE )
+		return false;
 
-	enum Event : eventmask_t { UsartEvent = EVENT_MASK( 0 ), InnerEvent = EVENT_MASK( 1 ) };
-	chEvtGetAndClearEvents( UsartEvent | InnerEvent );
+	enum Event : eventmask_t { UsartEvent = EVENT_MASK( 0 ), TimeoutEvent = EVENT_MASK( 1 ) };
+	chEvtGetAndClearEvents( UsartEvent | TimeoutEvent );
 
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
@@ -253,8 +315,8 @@ bool Usart::waitForReadAvailable( uint32_t size, sysinterval_t timeout )
 	eventSource()->registerMaskWithFlags( &usartListener, UsartEvent, CHN_INPUT_AVAILABLE );
 	while( readAvailable() < size )
 	{
-		eventmask_t em = chEvtWaitAny( UsartEvent | InnerEvent );
-		if( em & InnerEvent )
+		eventmask_t em = chEvtWaitAny( UsartEvent | TimeoutEvent );
+		if( em & TimeoutEvent )
 			break;
 		if( em & UsartEvent )
 			usartListener.getAndClearFlags();
@@ -349,7 +411,7 @@ EvtSource* Usart::eventSource()
 void Usart::timerCallback( void* p )
 {
 	chSysLockFromISR();
-	chEvtSignalI( reinterpret_cast< thread_t* >( p ), EVENT_MASK( 1 ) ); // InnerEvent
+	chEvtSignalI( reinterpret_cast< thread_t* >( p ), EVENT_MASK( 1 ) ); // TimeoutEvent
 	chSysUnlockFromISR();
 }
 

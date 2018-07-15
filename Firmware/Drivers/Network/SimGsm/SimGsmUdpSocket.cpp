@@ -58,6 +58,11 @@ uint32_t SimGsmUdpSocket::readAvailable() const
 	return 0;
 }
 
+bool SimGsmUdpSocket::waitForBytesWritten( sysinterval_t timeout )
+{
+	return true;
+}
+
 bool SimGsmUdpSocket::waitForReadAvailable( uint32_t size, sysinterval_t timeout )
 {
 	assert( false );
