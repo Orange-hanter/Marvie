@@ -1,5 +1,5 @@
 #include "CE301Sensor.h"
-#include "Core/DataTimeService.h"
+#include "Core/DateTimeService.h"
 #include "Support/Utility.h"
 
 const char CE301Sensor::Name[] = "CE301";
@@ -47,7 +47,8 @@ IODevice* CE301Sensor::ioDevice()
 
 CE301Sensor::Data* CE301Sensor::readData()
 {
-#define returnInvalid() { data.valid = false; return &data; }
+#define returnNoResponse( code ) { data.errType = SensorData::Error::NoResponseError; data.errCode = code; data.t = DateTimeService::currentDateTime(); return &data; }
+#define returnCrcError( code ) { data.errType = SensorData::Error::CrcError; data.errCode = code; data.t = DateTimeService::currentDateTime(); return &data; }
 
 	io->setDataFormat( UsartBasedDevice::B7E );
 	io->setStopBits( UsartBasedDevice::S1 );
@@ -60,7 +61,7 @@ CE301Sensor::Data* CE301Sensor::readData()
 		io->write( deviceAddressRequest, sizeof( deviceAddressRequest ), TIME_INFINITE );
 	ByteRingIterator end = waitForResponse( io, "\r\n", 2, TIME_S2I( 1 ) );
 	if( !end.isValid() || *io->inputBuffer()->begin() != '/' )
-		returnInvalid();
+		returnNoResponse( 0 );
 	io->inputBuffer()->read( nullptr, io->readAvailable() );
 
 	chThdSleepMilliseconds( 1000 );
@@ -70,7 +71,7 @@ CE301Sensor::Data* CE301Sensor::readData()
 	char tmp[1] = { ETX };
 	end = waitForResponse( io, tmp, 1, TIME_S2I( 1 ) );
 	if( !end.isValid() || *io->inputBuffer()->begin() != SOH )
-		returnInvalid();
+		returnNoResponse( 1 );
 	io->inputBuffer()->read( nullptr, io->readAvailable() );
 
 	chThdSleepMilliseconds( 1000 );
@@ -79,8 +80,10 @@ CE301Sensor::Data* CE301Sensor::readData()
 	io->write( tariffsDataRequest, sizeof( tariffsDataRequest ), TIME_INFINITE );
 	end = waitForResponse( io, tmp, 1, TIME_S2I( 1 ) );
 	ByteRingIterator it = ++io->inputBuffer()->begin();
-	if( !end.isValid() || *io->inputBuffer()->begin() != STX || !isValidChecksum( it, end ) )
-		returnInvalid();
+	if( !end.isValid() || *io->inputBuffer()->begin() != STX )
+		returnNoResponse( 2 );
+	if( !isValidChecksum( it, end ) )
+		returnCrcError( 3 );
 
 	// Parse tariff data
 	data.lock();
@@ -92,8 +95,8 @@ CE301Sensor::Data* CE301Sensor::readData()
 			;
 		it += 7;
 	}
-	data.t = DataTimeService::currentDataTime();
-	data.valid = true;
+	data.t = DateTimeService::currentDateTime();
+	data.errType = SensorData::Error::NoError;
 	data.unlock();
 	io->inputBuffer()->read( nullptr, io->readAvailable() );
 
@@ -103,6 +106,11 @@ CE301Sensor::Data* CE301Sensor::readData()
 CE301Sensor::Data* CE301Sensor::sensorData()
 {
 	return &data;
+}
+
+uint32_t CE301Sensor::sensorDataSize()
+{
+	return sizeof( Data ) - sizeof( SensorData );
 }
 
 bool CE301Sensor::isValidChecksum( ByteRingIterator begin, ByteRingIterator end ) const

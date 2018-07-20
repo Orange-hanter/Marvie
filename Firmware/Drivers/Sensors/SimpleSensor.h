@@ -24,6 +24,7 @@ public:
 
 	Data* readData() final override;
 	Data* sensorData() final override;
+	uint32_t sensorDataSize() final override;
 
 private:
 	IODevice * io;

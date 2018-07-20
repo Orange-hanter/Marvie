@@ -5,7 +5,7 @@
 #include "BRSensorReader.h"
 #include "chmempools.h"
 
-#define MULTIPLE_BR_SENSORS_READER_STACK_SIZE    192 // 192B min stack size
+#define MULTIPLE_BR_SENSORS_READER_STACK_SIZE    2048 // 192B min stack size
 
 class MultipleBRSensorsReader : private BaseDynamicThread, public BRSensorReader
 {
@@ -37,19 +37,26 @@ public:
 
 	static SensorElement* createSensorElement();
 	static SensorElement* createSensorElement( AbstractBRSensor* sensor, sysinterval_t normalPriod, sysinterval_t emergencyPeriod );
-	static inline void deleteSensorElement( SensorElement* e );
+	static inline void deleteSensorElement( SensorElement* e )
+	{
+		free( e );
+	}
 
 	void addSensorElement( SensorElement* sensorElement );
-	void removeAllSensorElements();
+	void removeAllSensorElements( bool deleteSensors = false );
 	void moveAllSensorElementsTo( NanoList< SensorDesc >& list );
 
 	void setMinInterval( sysinterval_t minInterval ); // Minimal interval between readings
 
-	void startReading( tprio_t prio ) final override;
+	bool startReading( tprio_t prio ) final override;
 	void stopReading() final override;
 
+	void forceOne( AbstractBRSensor* ) final override;
+	void forceAll() final override;
+
 	AbstractBRSensor* nextUpdatedSensor();
-	AbstractBRSensor* nextSensor();
+	AbstractBRSensor* nextSensor() final override;
+	sysinterval_t timeToNextReading() final override;
 
 private:
 	void main() final override;
@@ -58,7 +65,10 @@ private:
 	inline void addTimeError( sysinterval_t dt );
 
 	static SensorElement* alloc();
-	static inline void free( void* );
+	static inline void free( void* sd )
+	{
+		chPoolFree( &objectPool, sd );
+	}
 	static void timerCallback( void* );
 
 private:
@@ -68,5 +78,8 @@ private:
 	sysinterval_t sumTimeError;
 	NanoList< SensorDesc > elist;
 	AbstractBRSensor* _nextSensor;
+	sysinterval_t nextInterval;
+	systime_t nextTime;
 	SensorElement* updatedSensorsRoot;
+	AbstractBRSensor* forcedSensor;
 };

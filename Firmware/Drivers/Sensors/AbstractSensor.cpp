@@ -1,6 +1,16 @@
 #include "AbstractSensor.h"
 #include "hal.h"
 
+AbstractSensor::Type AbstractSRSensor::type()
+{
+	return Type::SR;
+}
+
+AbstractBRSensor::Type AbstractBRSensor::type()
+{
+	return Type::BR;
+}
+
 ByteRingIterator AbstractBRSensor::waitForResponse( IODevice* io, const char* response, uint32_t responseLen, sysinterval_t timeout )
 {
 	uint32_t pos = 0;

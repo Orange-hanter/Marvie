@@ -11,7 +11,9 @@ MultipleBRSensorsReader::MultipleBRSensorsReader() : BaseDynamicThread( MULTIPLE
 	minInterval = TIME_MS2I( 1000 );
 	sumTimeError = 0;
 	_nextSensor = nullptr;
+	nextInterval = 0;
 	updatedSensorsRoot = nullptr;
+	forcedSensor = nullptr;
 }
 
 MultipleBRSensorsReader::~MultipleBRSensorsReader()
@@ -36,11 +38,6 @@ MultipleBRSensorsReader::SensorElement* MultipleBRSensorsReader::createSensorEle
 	return e;
 }
 
-void MultipleBRSensorsReader::deleteSensorElement( SensorElement* e )
-{
-	free( e );
-}
-
 void MultipleBRSensorsReader::addSensorElement( SensorElement* sensorElement )
 {
 	if( tState != State::Stopped )
@@ -53,7 +50,7 @@ void MultipleBRSensorsReader::addSensorElement( SensorElement* sensorElement )
 	elist.pushBack( sensorElement );
 }
 
-void MultipleBRSensorsReader::removeAllSensorElements()
+void MultipleBRSensorsReader::removeAllSensorElements( bool deleteSensors )
 {
 	if( tState != State::Stopped )
 	{
@@ -62,7 +59,11 @@ void MultipleBRSensorsReader::removeAllSensorElements()
 	}
 
 	for( auto i = elist.popFront(); i; i = elist.popFront() )
+	{
+		if( deleteSensors )
+			delete ( *i ).value.sensor;
 		deleteSensorElement( static_cast< SensorElement* >( i ) );
+	}
 	updatedSensorsRoot = nullptr;
 }
 
@@ -80,41 +81,59 @@ void MultipleBRSensorsReader::moveAllSensorElementsTo( NanoList< SensorDesc >& l
 
 void MultipleBRSensorsReader::setMinInterval( sysinterval_t minInterval )
 {
-	this->minInterval = minInterval;
+	if( tState == State::Stopped )
+		this->minInterval = minInterval;
 }
 
-void MultipleBRSensorsReader::startReading( tprio_t prio )
+bool MultipleBRSensorsReader::startReading( tprio_t prio )
 {
 	if( tState != State::Stopped || !elist.size() )
-	{
-		assert( false );
-		return;
-	}
+		return false;
 
 	tState = State::Working;
 	extEventSource.broadcastFlags( ( eventflags_t )EventFlag::StateChanged );
 	start( prio );
+
+	return true;
 }
 
 void MultipleBRSensorsReader::stopReading()
 {
-	chSysLock();
+	syssts_t sysStatus = chSysGetStatusAndLockX();
 	if( tState == State::Stopped || tState == State::Stopping )
 	{
-		chSysUnlock();
+		chSysRestoreStatusX( sysStatus );
 		return;
 	}
 	tState = State::Stopping;
 	extEventSource.broadcastFlagsI( ( eventflags_t )EventFlag::StateChanged );
 	signalEventsI( InnerEventFlag::StopRequestFlag );
-	chSchRescheduleS();
-	chSysUnlock();
+	chSysRestoreStatusX( sysStatus );
+}
+
+void MultipleBRSensorsReader::forceOne( AbstractBRSensor* sensor )
+{
+	syssts_t sysStatus = chSysGetStatusAndLockX();
+	if( tState == State::Working && forcedSensor == nullptr )
+	{
+		forcedSensor = sensor;
+		signalEventsI( InnerEventFlag::ForceOneRequestFlag );
+	}
+	chSysRestoreStatusX( sysStatus );
+}
+
+void MultipleBRSensorsReader::forceAll()
+{
+	syssts_t sysStatus = chSysGetStatusAndLockX();
+	if( tState == State::Working )
+		signalEventsI( InnerEventFlag::ForceAllRequestFlag );
+	chSysRestoreStatusX( sysStatus );
 }
 
 AbstractBRSensor* MultipleBRSensorsReader::nextUpdatedSensor()
 {
 	AbstractBRSensor* next;
-	chSysLock();
+	syssts_t sysStatus = chSysGetStatusAndLockX();
 	if( updatedSensorsRoot )
 	{
 		next = updatedSensorsRoot->value.sensor;
@@ -127,7 +146,7 @@ AbstractBRSensor* MultipleBRSensorsReader::nextUpdatedSensor()
 	}
 	else
 		next = nullptr;
-	chSysUnlock();
+	chSysRestoreStatusX( sysStatus );
 
 	return next;
 }
@@ -137,45 +156,164 @@ AbstractBRSensor* MultipleBRSensorsReader::nextSensor()
 	return _nextSensor;
 }
 
+sysinterval_t MultipleBRSensorsReader::timeToNextReading()
+{
+	syssts_t sysStatus = chSysGetStatusAndLockX();
+	sysinterval_t interval;
+	if( tState == BRSensorReader::State::Working && wState == BRSensorReader::WorkingState::Waiting )
+	{
+		interval = ( sysinterval_t )( nextTime - chVTGetSystemTimeX() );
+		if( interval > nextInterval )
+			interval = 0;
+	}
+	else
+		interval = 0;
+	chSysRestoreStatusX( sysStatus );
+
+	return interval;
+}
+
 void MultipleBRSensorsReader::main()
 {
 	sumTimeError = 0;
-	prepareList();
-	getAndClearEvents( ALL_EVENTS );
-
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
-	if( minInterval == 0 )
+
+	prepareList();
+	SensorElement* next = SENSOR_ELEMENT( elist.begin() );
+
+	chSysLock();
+	_nextSensor = next->value.sensor;
+	if( next->delta < minInterval )
+		nextInterval = minInterval;
+	else
+		nextInterval = next->delta;
+	nextTime = ( systime_t )( chVTGetSystemTimeX() + nextInterval );
+	chSysUnlock();
+
+	if( nextInterval == 0 )
 		signalEvents( InnerEventFlag::TimeoutFlag );
 	else
-		chVTSet( &timer, minInterval, timerCallback, this );
+		chVTSet( &timer, nextInterval, timerCallback, this );
 
 	while( tState == State::Working )
 	{
 		eventmask_t em = chEvtWaitAny( ALL_EVENTS );
 		if( em & InnerEventFlag::StopRequestFlag )
 			break;
+		if( em & InnerEventFlag::ForceOneRequestFlag )
+		{
+			auto i = elist.begin();
+			for( ; i != elist.end(); ++i )
+			{
+				if( ( *i ).sensor == forcedSensor )
+				{
+					chVTReset( &timer );
+					chEvtGetAndClearEvents( InnerEventFlag::TimeoutFlag );
+					em &= ~InnerEventFlag::TimeoutFlag;
+
+					sysinterval_t ivB = ( sysinterval_t )( nextTime - chVTGetSystemTimeX() );
+					sysinterval_t ivA;
+					if( ivB > nextInterval )
+						ivB = 0, ivA = 0;
+					else
+					{
+						ivA = nextInterval - ivB;
+						if( ivA >= minInterval )
+							ivA = 0;
+						else
+							ivA = minInterval - ivA;
+					}
+
+					if( i != elist.begin() )
+					{
+						auto iNext = i;
+						++iNext;
+						if( iNext != elist.end() )
+							SENSOR_ELEMENT( iNext )->delta += SENSOR_ELEMENT( i )->delta;
+						static_cast< SensorElement* >( elist.first() )->delta = ivB - ivA;
+						auto node = elist.remove( i );
+						elist.pushFront( node );
+						static_cast< SensorElement* >( node )->delta = ivA;
+					}
+					else
+					{
+						auto iNext = i;
+						++iNext;
+						if( iNext != elist.end() )
+							SENSOR_ELEMENT( iNext )->delta += ivB - ivA;
+						SENSOR_ELEMENT( i )->delta = ivA;
+					}
+
+					chSysLock();
+					nextInterval = static_cast< SensorElement* >( elist.first() )->delta;
+					if( nextInterval == 0 )
+						signalEventsI( InnerEventFlag::TimeoutFlag );
+					else
+						chVTSetI( &timer, nextInterval, timerCallback, this );
+					_nextSensor = forcedSensor;
+					nextTime = ( systime_t )( chVTGetSystemTimeX() + nextInterval );
+					chSysUnlock();
+
+					break;
+				}
+			}
+			forcedSensor = nullptr;
+		}
+		if( em & InnerEventFlag::ForceAllRequestFlag )
+		{
+			chVTReset( &timer );
+			chEvtGetAndClearEvents( InnerEventFlag::TimeoutFlag );
+			em &= ~InnerEventFlag::TimeoutFlag;
+
+			for( auto i = ++elist.begin(); i != elist.end(); ++i )
+				SENSOR_ELEMENT( i )->delta = minInterval;
+
+			sysinterval_t interval = ( sysinterval_t )( nextTime - chVTGetSystemTimeX() );
+			if( interval > nextInterval )
+				interval = 0;
+			else
+			{
+				interval = nextInterval - interval;
+				if( interval >= minInterval )
+					interval = 0;
+				else
+					interval = minInterval - interval;
+			}
+			static_cast< SensorElement* >( elist.first() )->delta = interval;
+
+			chSysLock();
+			nextInterval = interval;
+			if( nextInterval == 0 )
+				signalEventsI( InnerEventFlag::TimeoutFlag );
+			else
+				chVTSetI( &timer, nextInterval, timerCallback, this );
+			nextTime = ( systime_t )( chVTGetSystemTimeX() + nextInterval );
+			chSysUnlock();
+		}
 		if( em & InnerEventFlag::TimeoutFlag )
 		{
 			auto currentNode = elist.popFront();
 			systime_t t0 = chVTGetSystemTimeX();
+			wState = BRSensorReader::WorkingState::Reading;
 			auto data = currentNode->value.sensor->readData();
 			addTimeError( chVTTimeElapsedSinceX( t0 ) );
 			insert( currentNode, data->isValid() ? currentNode->value.normalPriod : currentNode->value.emergencyPeriod );
 
 			SensorElement* next = SENSOR_ELEMENT( elist.begin() );
+			chSysLock();
+			wState = BRSensorReader::WorkingState::Waiting;
 			_nextSensor = next->value.sensor;
 			if( next->delta < sumTimeError )
 				sumTimeError -= next->delta, next->delta = 0;
 			else
 				next->delta -= sumTimeError, sumTimeError = 0;
-			sysinterval_t nextInterval;
 			if( next->delta < minInterval )
 				addTimeError( minInterval - next->delta ), nextInterval = minInterval;
 			else
 				nextInterval = next->delta;
+			nextTime = ( systime_t )( chVTGetSystemTimeX() + nextInterval );
 
-			chSysLock();
 			if( !static_cast< SensorElement* >( currentNode )->next )
 			{
 				if( updatedSensorsRoot )
@@ -187,9 +325,9 @@ void MultipleBRSensorsReader::main()
 				{
 					updatedSensorsRoot = static_cast< SensorElement* >( currentNode )->next = static_cast< SensorElement* >( currentNode );
 					extEventSource.broadcastFlagsI( EventFlag::SensorDataUpdated );
+					chSchRescheduleS();
 				}
 			}
-			chSchRescheduleS();
 			chSysUnlock();
 
 			if( nextInterval == 0 )
@@ -203,7 +341,10 @@ void MultipleBRSensorsReader::main()
 
 	chSysLock();
 	tState = State::Stopped;
+	wState = BRSensorReader::WorkingState::Waiting;
 	_nextSensor = nullptr;
+	nextInterval = 0;
+	forcedSensor = nullptr;
 	extEventSource.broadcastFlagsI( ( eventflags_t )EventFlag::StateChanged );
 	chThdDequeueNextI( &waitingQueue, MSG_OK );
 	exitS( MSG_OK );
@@ -267,11 +408,6 @@ MultipleBRSensorsReader::SensorElement* MultipleBRSensorsReader::alloc()
 	chSysUnlock();
 
 	return new( sd ) SensorElement;
-}
-
-void MultipleBRSensorsReader::free( void* sd )
-{
-	chPoolFree( &objectPool, sd );
 }
 
 void MultipleBRSensorsReader::timerCallback( void* p )

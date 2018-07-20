@@ -3,12 +3,12 @@
 
 using namespace tinyxml2;
 
-static AbstractBRSensor* ce301Allocate()
+static AbstractSensor* ce301Allocate()
 {
 	return new CE301Sensor;
 }
 
-static bool ce301Tune( AbstractBRSensor* sensor, XMLElement* e )
+static bool ce301Tune( AbstractSensor* sensor, XMLElement* e, uint32_t defaultBaudrate )
 {
 	XMLElement* c0 = e->FirstChildElement( "address" );
 	if( !c0 )
@@ -17,12 +17,13 @@ static bool ce301Tune( AbstractBRSensor* sensor, XMLElement* e )
 	return true;
 }
 
-static BRSensorService::Node* ce301Type = []()
+static SensorService::Node* ce301Type = []()
 {
-	static BRSensorService::Node node;
+	static SensorService::Node node;
+	node.value.type = AbstractSensor::Type::BR;
 	node.value.name = CE301Sensor::Name;
 	node.value.allocator = ce301Allocate;
 	node.value.tuner = ce301Tune;
-	BRSensorService::registerSensorType( &node );
+	SensorService::registerSensorType( &node );
 	return &node;
 }( );

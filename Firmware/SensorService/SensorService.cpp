@@ -2,59 +2,76 @@
 #include "Core/Assert.h"
 #include <string.h>
 
-NanoList< BRSensorService::SensorTypeDesc > BRSensorService::list;
-BRSensorService* BRSensorService::service = nullptr;
+NanoList< SensorService::SensorTypeDesc >* SensorService::list;
+SensorService* SensorService::service = nullptr;
 
-BRSensorService::BRSensorService()
+SensorService::SensorService()
 {
-	assert( list.size() != 0 );
-	_last = list.begin();
+	assert( list && list->size() != 0 );
+	_last = list->begin();
 }
 
-BRSensorService::~BRSensorService()
+SensorService::~SensorService()
 {
 
 }
 
-void BRSensorService::registerSensorType( Node* node )
+bool SensorService::registerSensorType( Node* node )
 {
-	list.pushBack( node );
+	static NanoList< SensorService::SensorTypeDesc > _list;
+	list = &_list;
+
+	if( strlen( node->value.name ) > 64 || strstr( node->value.name, "," ) != nullptr )
+		return false;
+	
+	list->pushBack( node );
+	return true;
 }
 
-BRSensorService* BRSensorService::instance()
+uint32_t SensorService::sensorsCount()
+{
+	return list->size();
+}
+
+NanoList< SensorService::SensorTypeDesc >::Iterator SensorService::beginSensorsList()
+{
+	return list->begin();
+}
+
+NanoList< SensorService::SensorTypeDesc >::Iterator SensorService::endSensorsList()
+{
+	return list->end();
+}
+
+SensorService* SensorService::instance()
 {
 	if( service )
 		return service;
-	service = new BRSensorService;
+	service = new SensorService;
 	return service;
 }
 
-const BRSensorService::SensorTypeDesc* BRSensorService::sensorTypeDesc( const char* sensorName )
-{
-	return &findByName( sensorName )->value;
-}
-
-AbstractBRSensor* BRSensorService::allocate( const char* sensorName )
+AbstractSensor* SensorService::allocate( const char* sensorName )
 {
 	Node* node = findByName( sensorName );
 	return node->value.allocator();
 }
 
-bool BRSensorService::tune( AbstractBRSensor* sensor, tinyxml2::XMLElement* element )
+bool SensorService::tune( AbstractSensor* sensor, tinyxml2::XMLElement* element, uint32_t defaultBaudrate )
 {
 	Node* node = findByName( sensor->name() );
 	if( !node )
 		return false;
-	node->value.tuner( sensor, element );
+	node->value.tuner( sensor, element, defaultBaudrate );
 	return true;
 }
 
-BRSensorService::Node* BRSensorService::findByName( const char* sensorName )
+SensorService::Node* SensorService::findByName( const char* sensorName )
 {
 	if( strcmp( _last->value.name, sensorName ) == 0 )
 		return _last;
-	auto end = list.end();
-	for( auto i = list.begin(); i != end; ++i )
+	auto end = list->end();
+	for( auto i = list->begin(); i != end; ++i )
 	{
 		if( strcmp( ( *i ).name, sensorName ) == 0 )
 		{

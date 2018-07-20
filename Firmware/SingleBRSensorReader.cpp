@@ -20,61 +20,107 @@ void SingleBRSensorReader::setSensor( AbstractBRSensor* sensor, sysinterval_t no
 	this->emergencyPeriod = emergencyPeriod;
 }
 
-void SingleBRSensorReader::startReading( tprio_t prio )
+bool SingleBRSensorReader::startReading( tprio_t prio )
 {
 	if( tState != State::Stopped || sensor == nullptr )
-	{
-		assert( false );
-		return;
-	}
+		return false;
 
 	tState = State::Working;
 	extEventSource.broadcastFlags( ( eventflags_t )EventFlag::StateChanged );
 	start( prio );
+
+	return true;
 }
 
 void SingleBRSensorReader::stopReading()
 {
-
-	chSysLock();
+	syssts_t sysStatus = chSysGetStatusAndLockX();
 	if( tState == State::Stopped || tState == State::Stopping )
 	{
-		chSysUnlock();
+		chSysRestoreStatusX( sysStatus );
 		return;
 	}
 	tState = State::Stopping;
 	extEventSource.broadcastFlagsI( ( eventflags_t )EventFlag::StateChanged );
 	signalEventsI( InnerEventFlag::StopRequestFlag );
-	chSchRescheduleS();
-	chSysUnlock();
+	chSysRestoreStatusX( sysStatus );
+}
+
+void SingleBRSensorReader::forceOne( AbstractBRSensor* forcedSensor )
+{
+	syssts_t sysStatus = chSysGetStatusAndLockX();
+	if( tState == State::Working && forcedSensor == sensor )
+		signalEventsI( InnerEventFlag::ForceOneRequestFlag );
+	chSysRestoreStatusX( sysStatus );
+}
+
+void SingleBRSensorReader::forceAll()
+{
+	syssts_t sysStatus = chSysGetStatusAndLockX();
+	if( tState == State::Working )
+		signalEventsI( InnerEventFlag::ForceOneRequestFlag );
+	chSysRestoreStatusX( sysStatus );
+}
+
+AbstractBRSensor* SingleBRSensorReader::nextSensor()
+{
+	if( tState == State::Stopped )
+		return nullptr;
+	return sensor;
+}
+
+sysinterval_t SingleBRSensorReader::timeToNextReading()
+{
+	syssts_t sysStatus = chSysGetStatusAndLockX();
+	sysinterval_t interval;
+	if( tState == BRSensorReader::State::Working && wState == BRSensorReader::WorkingState::Waiting )
+	{
+		interval = ( sysinterval_t )( nextTime - chVTGetSystemTimeX() );
+		if( interval > nextInterval )
+			interval = 0;
+	}
+	else
+		interval = 0;
+	chSysRestoreStatusX( sysStatus );
+
+	return interval;
 }
 
 void SingleBRSensorReader::main()
 {
-	getAndClearEvents( ALL_EVENTS );
-
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
-	if( normalPriod == 0 )
-		signalEvents( InnerEventFlag::TimeoutFlag );
-	else
-		chVTSet( &timer, normalPriod, timerCallback, this );
+
+	chSysLock();
+	nextInterval = normalPriod;
+	nextTime = ( systime_t )( chVTGetSystemTimeX() + nextInterval );
+	chSysUnlock();
 
 	while( tState == State::Working )
 	{
 		eventmask_t em = chEvtWaitAny( ALL_EVENTS );
 		if( em & InnerEventFlag::StopRequestFlag )
 			break;
+		if( em & InnerEventFlag::ForceOneRequestFlag )
+		{
+			chVTReset( &timer );
+			em = InnerEventFlag::TimeoutFlag;
+		}
 		if( em & InnerEventFlag::TimeoutFlag )
 		{
 			systime_t t0 = chVTGetSystemTimeX();
+			wState = BRSensorReader::WorkingState::Reading;
 			auto data = sensor->readData();
 			sysinterval_t dt = chVTTimeElapsedSinceX( t0 );
-			sysinterval_t nextInterval = data->isValid() ? normalPriod : emergencyPeriod;
+			chSysLock();
+			wState = BRSensorReader::WorkingState::Waiting;
+			nextInterval = data->isValid() ? normalPriod : emergencyPeriod;
 			if( nextInterval > dt )
 				nextInterval -= dt;
 			else
 				nextInterval = 0;
+			chSysUnlock();
+
 			if( nextInterval == 0 )
 				signalEvents( InnerEventFlag::TimeoutFlag );
 			else
@@ -87,6 +133,8 @@ void SingleBRSensorReader::main()
 
 	chSysLock();
 	tState = State::Stopped;
+	wState = BRSensorReader::WorkingState::Waiting;
+	nextInterval = 0;
 	extEventSource.broadcastFlagsI( ( eventflags_t )EventFlag::StateChanged );
 	chThdDequeueNextI( &waitingQueue, MSG_OK );
 	exitS( MSG_OK );

@@ -3,26 +3,27 @@
 
 using namespace tinyxml2;
 
-static AbstractBRSensor* simpleSensorAllocate()
+static AbstractSensor* simpleSensorAllocate()
 {
 	return new SimpleSensor;
 }
 
-static bool simpleSensorTune( AbstractBRSensor* sensor, XMLElement* e )
+static bool simpleSensorTune( AbstractSensor* sensor, XMLElement* e, uint32_t defaultBaudrate )
 {
-	XMLElement* c0 = e->FirstChildElement( "address" );
+	/*XMLElement* c0 = e->FirstChildElement( "address" );
 	if( !c0 )
 		return false;
-	static_cast< SimpleSensor* >( sensor )->setAddress( c0->IntText( 0 ) );
+	static_cast< SimpleSensor* >( sensor )->setAddress( c0->IntText( 0 ) );*/
 	return true;
 }
 
-static BRSensorService::Node* simpleSensorType = []()
+static SensorService::Node* simpleSensorType = []()
 {
-	static BRSensorService::Node node;
+	static SensorService::Node node;
+	node.value.type = AbstractSensor::Type::BR;
 	node.value.name = SimpleSensor::sName();
 	node.value.allocator = simpleSensorAllocate;
 	node.value.tuner = simpleSensorTune;
-	BRSensorService::registerSensorType( &node );
+	SensorService::registerSensorType( &node );
 	return &node;
 }();

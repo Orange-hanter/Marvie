@@ -4,32 +4,43 @@
 #include "Drivers/Sensors/AbstractSensor.h"
 #include "Lib/tinyxml2/tinyxml2.h"
 
-class BRSensorService
+class SensorService
 {
-	BRSensorService();
-	~BRSensorService();
+	SensorService();
+	~SensorService();
 
 public:
 	struct SensorTypeDesc
 	{
+		AbstractSensor::Type type;
 		const char* name;
-		AbstractBRSensor* ( *allocator )( );
-		bool( *tuner )( AbstractBRSensor*, tinyxml2::XMLElement* );
+		AbstractSensor* ( *allocator )( );
+		bool( *tuner )( AbstractSensor*, tinyxml2::XMLElement*, uint32_t defaultBaudrate );
 	};
 	typedef NanoList< SensorTypeDesc >::Node Node;
 
-	static void registerSensorType( Node* node );
-	static BRSensorService* instance();
+	static bool registerSensorType( Node* node );
+	static uint32_t sensorsCount();
+	static NanoList< SensorTypeDesc >::Iterator beginSensorsList();
+	static NanoList< SensorTypeDesc >::Iterator endSensorsList();
+	static SensorService* instance();
 
-	inline const SensorTypeDesc* sensorTypeDesc( const char* sensorName );
-	AbstractBRSensor* allocate( const char* sensorName );
-	bool tune( AbstractBRSensor*, tinyxml2::XMLElement* );
+	inline const SensorTypeDesc* sensorTypeDesc( const char* sensorName )
+	{
+		return &findByName( sensorName )->value;
+	}
+	inline AbstractSensor::Type sensorType( const char* sensorName )
+	{
+		return findByName( sensorName )->value.type;
+	}
+	AbstractSensor* allocate( const char* sensorName );
+	bool tune( AbstractSensor*, tinyxml2::XMLElement*, uint32_t defaultBaudrate = 0 );
 
 private:
 	Node* findByName( const char* sensorName );
 
 private:
-	static NanoList< SensorTypeDesc > list;
-	static BRSensorService* service;
+	static NanoList< SensorTypeDesc >* list;
+	static SensorService* service;
 	Node* _last;
 };

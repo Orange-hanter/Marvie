@@ -30,6 +30,7 @@ public:
 
 	Data* readData() final override;
 	Data* sensorData() final override;
+	uint32_t sensorDataSize() final override;
 
 private:
 	bool isValidChecksum( ByteRingIterator begin, ByteRingIterator end ) const;

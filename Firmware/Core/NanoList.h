@@ -45,6 +45,8 @@ public:
 	void pushFront( Node* node );
 	Node* popBack();
 	Node* popFront();
+	Node* first();
+	Node* back();
 	Iterator insert( Iterator before, Node* node );
 	Iterator insert( Iterator before, NanoList< T >& );
 	Node* remove( Iterator pos );
@@ -100,6 +102,18 @@ typename NanoList< T >::Node* NanoList< T >::popFront()
 	if( n )
 		return remove( Iterator( enode.next ) );
 	return nullptr;
+}
+
+template< typename T >
+typename NanoList< T >::Node* NanoList< T >::first()
+{
+	return enode.next;
+}
+
+template< typename T >
+typename NanoList< T >::Node* NanoList< T >::back()
+{
+	return enode.prev;
 }
 
 template< typename T >

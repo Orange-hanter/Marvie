@@ -3,6 +3,7 @@
 BRSensorReader::BRSensorReader()
 {
 	tState = State::Stopped;
+	wState = WorkingState::Waiting;
 	chThdQueueObjectInit( &waitingQueue );
 }
 
