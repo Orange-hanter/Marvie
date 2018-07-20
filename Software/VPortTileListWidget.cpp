@@ -41,8 +41,13 @@ VPortTileListWidget::~VPortTileListWidget()
 void VPortTileListWidget::setTilesCount( uint count )
 {
 	removeAllTiles();
-	for( int i = 0; i < count; ++i )
+	for( uint i = 0; i < count; ++i )
 		layout->addWidget( new VPortTileWidget( i ) );
+}
+
+uint VPortTileListWidget::tilesCount()
+{
+	return layout->count();
 }
 
 void VPortTileListWidget::removeAllTiles()

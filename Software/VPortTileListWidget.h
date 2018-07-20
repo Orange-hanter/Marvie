@@ -9,6 +9,7 @@ public:
 	~VPortTileListWidget();
 
 	void setTilesCount( uint count );
+	uint tilesCount();
 	void removeAllTiles();
 
 	VPortTileWidget* tile( uint index );

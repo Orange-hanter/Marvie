@@ -13,7 +13,7 @@ public:
 	SensorErrorsModel( QObject* parent = nullptr );
 	~SensorErrorsModel();
 
-	void addSensorReadError( uint sensorId, QString sensorName, SensorError error, QDateTime date );
+	void addSensorReadError( uint sensorId, QString sensorName, SensorError error, uint8_t errorCode, QDateTime date );
 	void removeSensorReadError( uint sensorId );
 	void clear();
 

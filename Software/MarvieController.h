@@ -6,6 +6,7 @@
 #include <QList>
 #include <QVector>
 #include <QRegExp>
+#include <QDomDocument>
 #include <QXmlSchemaValidator>
 #include <QAbstractMessageHandler>
 #include <QSharedPointer>
@@ -13,6 +14,9 @@
 #include "VPortOverIpModel.h"
 #include "VPortsOverIpDelegate.h"
 #include "MonitoringDataModel.h"
+#include "SynchronizationWindow.h"
+
+#include "../Firmware/MarviePackets.h"
 
 #include "ui_MarvieController.h"
 
@@ -33,6 +37,12 @@ private slots:
 
 	void nextInterfaceButtonClicked();
 	void connectButtonClicked();
+
+	void startVPortsButtonClicked();
+	void stopVPortsButtonClicked();
+	void updateAllSensorsButtonClicked();
+	void updateSensorButtonClicked();
+	void syncDateTimeButtonClicked();
 
 	void monitoringDataViewMenuRequested( const QPoint& point );
 	void monitoringDataViewMenuActionTriggered( QAction* action );
@@ -76,16 +86,25 @@ private:
 	bool loadConfigFromXml( QByteArray xmlData );
 	QByteArray saveConfigToXml();
 
-	struct DeviceLoad;
-	void updateDeviceLoad( DeviceLoad* deviceLoad );
+	struct DeviceMemoryLoad;
+	void updateDeviceCpuLoad( float cpuLoad );
+	void updateDeviceMemoryLoad( const DeviceMemoryLoad& memoryLoad );
 	void resetDeviceLoad();
+	void updateDeviceStatus( const MarviePackets::DeviceStatus* );
+	void resetDeviceStatus();
 
-	void updateSensorData( uint id, QString sensorName, uint8_t* data );
+	void updateSensorData( uint id, QString sensorName, const uint8_t* data );
 	void attachSensorRelatedMonitoringDataItems( MonitoringDataItem* sensorItem, QString sensorName );
-	void updateAnalogData( uint id, float* data, uint count );	
+	void updateAnalogData( uint id, float* data, uint count );
 	void updateDiscreteData( uint id, uint64_t data, uint count );
 	void attachADRelatedMonitoringDataItems( MonitoringDataItem* item, uint count );
 	void insertTopLevelMonitoringDataItem( MonitoringDataItem* item );
+
+	DateTime toDeviceDateTime( const QDateTime& );
+	QDateTime toQtDateTime( const DateTime& );
+
+	QString saveCanonicalXML( const QDomDocument& doc, int indent = 1 ) const;
+	void writeDomNodeCanonically( QXmlStreamWriter &stream, const QDomNode &domNode ) const;
 
 private:
 	MLinkClient mlink;
@@ -163,7 +182,7 @@ private:
 	};
 	QMap< QString, SensorDesc > sensorDescMap;
 
-	QVector< QString > vPorts;
+	QVector< QString > vPorts, loadedXmlSensors;
 
 	class VPortIdComboBoxEventFilter : public QObject
 	{
@@ -176,14 +195,13 @@ private:
 	VPortOverIpModel vPortsOverEthernetModel;
 	VPortsOverIpDelegate vPortsOverIpDelegate;
 
-	struct DeviceLoad
+	struct DeviceMemoryLoad
 	{
-		float cpuLoad;
-		uint32_t totalMemory;
-		uint32_t allocatedCoreMemory;
-		uint32_t allocatedHeapMemory;
-		unsigned long long sdCapacity;
-		unsigned long long freeSdSpace;
+		uint32_t totalRam;
+		uint32_t staticAllocatedRam;
+		uint32_t heapAllocatedRam;
+		unsigned long long sdCardCapacity;
+		unsigned long long sdCardFreeSpace;
 	};
 
 	MonitoringDataModel monitoringDataModel;
@@ -193,6 +211,11 @@ private:
 	QTreeWidget* popupSensorsListWidget;
 
 	QXmlSchemaValidator configValidator;
+
+	SynchronizationWindow* syncWindow;
+
+	QVector< QString > deviceVPorts, deviceSensors, deviceSupportedSensors;
+	enum class DeviceState { Unknown, IncorrectConfiguration, Working, Reconfiguration } deviceState;
 
 	Ui::MarvieControllerClass ui;
 };

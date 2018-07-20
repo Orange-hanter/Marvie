@@ -32,6 +32,7 @@ public:
 	void insertChild( int index, MonitoringDataItem* item );
 	void appendChild( MonitoringDataItem* item );
 	void removeChild( int index );
+	void removeAllChildren();
 
 	void setValue( bool value );
 	void setValue( char value );

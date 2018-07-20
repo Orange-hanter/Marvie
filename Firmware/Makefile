@@ -35,7 +35,7 @@ error:
 	$(error Invalid configuration, please check your inputs)
 endif
 
-SOURCEFILES := board.c ChibiOS/hal/ports/STM32/LLD/CRCv1/hal_crc_lld.c ChibiOS/hal/src/hal_community.c ChibiOS/hal/src/hal_crc.c ChibiOS/various/crcsw.c Core/ByteRingBuffer.cpp Core/CpuUsageMonitor.cpp Core/DataTimeService.cpp Core/NewDelete.cpp Core/ObjectMemoryUtilizer.cpp Crc32HW.cpp Drivers/Interfaces/Usart.cpp Drivers/LogicOutput.cpp Drivers/Network/SimGsm/SimGsm.cpp Drivers/Network/SimGsm/SimGsmATResponseParsers.cpp Drivers/Network/SimGsm/SimGsmSocketBase.cpp Drivers/Network/SimGsm/SimGsmTcpServer.cpp Drivers/Network/SimGsm/SimGsmTcpSocket.cpp Drivers/Network/SimGsm/SimGsmUdpSocket.cpp Drivers/Sensors/AbstractSensor.cpp Drivers/Sensors/CE301Sensor.cpp Drivers/Sensors/SimpleSensor.cpp Lib/fatfs/src/ff.c Lib/fatfs/src/ffunicode.c Lib/tinyxml2/tinyxml2.cpp MLinkServer.cpp Network/AbstractTcpSocket.cpp Network/AbstractUdpSocket.cpp Network/IpAddress.cpp SensorService/CE301Type.cpp SensorService/SensorService.cpp SensorService/SimpleSensorType.cpp SingleBRSensorReader.cpp BRSensorReader.cpp MultipleBRSensorsReader.cpp Support/LexicalAnalyzer.cpp Support/Utility.cpp Tests/MLinkTest.cpp Tests/MultipleBRSensorsReaderTest.cpp ChibiOS/common/oslib/src/chfactory.c ChibiOS/common/oslib/src/chheap.c ChibiOS/common/oslib/src/chmboxes.c ChibiOS/common/oslib/src/chmemcore.c ChibiOS/common/oslib/src/chmempools.c ChibiOS/common/ports/ARMCMx/chcore.c ChibiOS/common/ports/ARMCMx/chcore_v7m.c ChibiOS/common/ports/ARMCMx/compilers/GCC/chcoreasm_v7m.S ChibiOS/common/startup/ARMCMx/compilers/GCC/crt0_v7m.S ChibiOS/common/startup/ARMCMx/compilers/GCC/crt1.c ChibiOS/common/startup/ARMCMx/compilers/GCC/vectors.S ChibiOS/hal/lib/streams/chprintf.c ChibiOS/hal/lib/streams/memstreams.c ChibiOS/hal/lib/streams/nullstreams.c ChibiOS/hal/osal/rt/osal.c ChibiOS/hal/ports/common/ARMCMx/nvic.c ChibiOS/hal/ports/STM32/LLD/ADCv2/hal_adc_lld.c ChibiOS/hal/ports/STM32/LLD/CANv1/hal_can_lld.c ChibiOS/hal/ports/STM32/LLD/DACv1/hal_dac_lld.c ChibiOS/hal/ports/STM32/LLD/DMAv2/stm32_dma.c ChibiOS/hal/ports/STM32/LLD/EXTIv1/hal_ext_lld.c ChibiOS/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.c ChibiOS/hal/ports/STM32/LLD/I2Cv1/hal_i2c_lld.c ChibiOS/hal/ports/STM32/LLD/MACv1/hal_mac_lld.c ChibiOS/hal/ports/STM32/LLD/OTGv1/hal_usb_lld.c ChibiOS/hal/ports/STM32/LLD/OTGv1/hal_usb_lld_alt.c ChibiOS/hal/ports/STM32/LLD/QUADSPIv1/hal_qspi_lld.c ChibiOS/hal/ports/STM32/LLD/RTCv2/hal_rtc_lld.c ChibiOS/hal/ports/STM32/LLD/SDIOv1/hal_sdc_lld.c ChibiOS/hal/ports/STM32/LLD/SPIv1/hal_i2s_lld.c ChibiOS/hal/ports/STM32/LLD/SPIv1/hal_spi_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_icu_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_pwm_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_st_lld.c ChibiOS/hal/ports/STM32/LLD/USARTv1/hal_serial_lld.c ChibiOS/hal/ports/STM32/LLD/USARTv1/hal_uart_lld.c ChibiOS/hal/ports/STM32/LLD/xWDGv1/hal_wdg_lld.c ChibiOS/hal/ports/STM32/STM32F4xx/hal_lld.c ChibiOS/hal/ports/STM32/STM32F4xx/stm32_isr.c ChibiOS/hal/src/hal.c ChibiOS/hal/src/hal_adc.c ChibiOS/hal/src/hal_buffers.c ChibiOS/hal/src/hal_can.c ChibiOS/hal/src/hal_crypto.c ChibiOS/hal/src/hal_dac.c ChibiOS/hal/src/hal_ext.c ChibiOS/hal/src/hal_gpt.c ChibiOS/hal/src/hal_i2c.c ChibiOS/hal/src/hal_i2s.c ChibiOS/hal/src/hal_icu.c ChibiOS/hal/src/hal_mac.c ChibiOS/hal/src/hal_mmcsd.c ChibiOS/hal/src/hal_mmc_spi.c ChibiOS/hal/src/hal_pal.c ChibiOS/hal/src/hal_pwm.c ChibiOS/hal/src/hal_qspi.c ChibiOS/hal/src/hal_queues.c ChibiOS/hal/src/hal_rtc.c ChibiOS/hal/src/hal_sdc.c ChibiOS/hal/src/hal_serial.c ChibiOS/hal/src/hal_serial_usb.c ChibiOS/hal/src/hal_spi.c ChibiOS/hal/src/hal_st.c ChibiOS/hal/src/hal_uart.c ChibiOS/hal/src/hal_usb.c ChibiOS/hal/src/hal_wdg.c ChibiOS/rt/src/chcond.c ChibiOS/rt/src/chdebug.c ChibiOS/rt/src/chdynamic.c ChibiOS/rt/src/chevents.c ChibiOS/rt/src/chmsg.c ChibiOS/rt/src/chmtx.c ChibiOS/rt/src/chregistry.c ChibiOS/rt/src/chschd.c ChibiOS/rt/src/chsem.c ChibiOS/rt/src/chstats.c ChibiOS/rt/src/chsys.c ChibiOS/rt/src/chthreads.c ChibiOS/rt/src/chtm.c ChibiOS/rt/src/chtrace.c ChibiOS/rt/src/chvt.c ChibiOS/test/lib/ch_test.c ChibiOS/test/oslib/source/test/oslib_test_root.c ChibiOS/test/oslib/source/test/oslib_test_sequence_001.c ChibiOS/test/oslib/source/test/oslib_test_sequence_002.c ChibiOS/test/oslib/source/test/oslib_test_sequence_003.c ChibiOS/test/oslib/source/test/oslib_test_sequence_004.c ChibiOS/test/rt/source/test/rt_test_root.c ChibiOS/test/rt/source/test/rt_test_sequence_001.c ChibiOS/test/rt/source/test/rt_test_sequence_002.c ChibiOS/test/rt/source/test/rt_test_sequence_003.c ChibiOS/test/rt/source/test/rt_test_sequence_004.c ChibiOS/test/rt/source/test/rt_test_sequence_005.c ChibiOS/test/rt/source/test/rt_test_sequence_006.c ChibiOS/test/rt/source/test/rt_test_sequence_007.c ChibiOS/test/rt/source/test/rt_test_sequence_008.c ChibiOS/test/rt/source/test/rt_test_sequence_009.c ChibiOS/test/rt/source/test/rt_test_sequence_010.c ChibiOS/various/evtimer.c ChibiOS/various/cpp_wrappers/ch.cpp ChibiOS/various/fatfs_bindings/fatfs_diskio.c ChibiOS/various/fatfs_bindings/fatfs_syscall.c Tests/SimGsmTcpEcho.cpp Tests/XmlParserTest.cpp
+SOURCEFILES := board.c ChibiOS/hal/ports/STM32/LLD/CRCv1/hal_crc_lld.c ChibiOS/hal/src/hal_community.c ChibiOS/hal/src/hal_crc.c ChibiOS/various/crcsw.c Core/BaseDynamicThread.cpp Core/ByteRingBuffer.cpp Core/CCMemoryAllocator.cpp Core/CCMemoryHeap.cpp Core/CpuUsageMonitor.cpp Core/DateTimeService.cpp Core/NewDelete.cpp Core/Object.cpp Core/ObjectMemoryUtilizer.cpp Crc32HW.cpp Drivers/Interfaces/Rs485.cpp Drivers/Interfaces/SharedRs485.cpp Drivers/Interfaces/Usart.cpp Drivers/LogicOutput.cpp Drivers/Network/SimGsm/SimGsm.cpp Drivers/Network/SimGsm/SimGsmATResponseParsers.cpp Drivers/Network/SimGsm/SimGsmSocketBase.cpp Drivers/Network/SimGsm/SimGsmTcpServer.cpp Drivers/Network/SimGsm/SimGsmTcpSocket.cpp Drivers/Network/SimGsm/SimGsmUdpSocket.cpp Drivers/Sensors/AbstractSensor.cpp Drivers/Sensors/CE301Sensor.cpp Drivers/Sensors/SimpleSensor.cpp Drivers/Sensors/TestSensorA.cpp Drivers/Sensors/TestSensorB.cpp Lib/fatfs/src/ff.c Lib/fatfs/src/ffunicode.c Lib/sha1/sha1.cpp Lib/tinyxml2/tinyxml2.cpp main.cpp MarvieDevice.cpp MarviePlatform.cpp MarvieXmlConfigParsers.cpp MLinkServer.cpp Network/AbstractTcpSocket.cpp Network/AbstractUdpSocket.cpp Network/IpAddress.cpp SensorService/CE301Type.cpp SensorService/SensorService.cpp SensorService/SimpleSensorType.cpp SensorService/TestSensorAType.cpp SensorService/TestSensorBType.cpp SingleBRSensorReader.cpp BRSensorReader.cpp MultipleBRSensorsReader.cpp Support/LexicalAnalyzer.cpp Support/Utility.cpp Tests/MLinkTest.cpp Tests/MultipleBRSensorsReaderTest.cpp ChibiOS/common/oslib/src/chfactory.c ChibiOS/common/oslib/src/chheap.c ChibiOS/common/oslib/src/chmboxes.c ChibiOS/common/oslib/src/chmemcore.c ChibiOS/common/oslib/src/chmempools.c ChibiOS/common/ports/ARMCMx/chcore.c ChibiOS/common/ports/ARMCMx/chcore_v7m.c ChibiOS/common/ports/ARMCMx/compilers/GCC/chcoreasm_v7m.S ChibiOS/common/startup/ARMCMx/compilers/GCC/crt0_v7m.S ChibiOS/common/startup/ARMCMx/compilers/GCC/crt1.c ChibiOS/common/startup/ARMCMx/compilers/GCC/vectors.S ChibiOS/hal/lib/streams/chprintf.c ChibiOS/hal/lib/streams/memstreams.c ChibiOS/hal/lib/streams/nullstreams.c ChibiOS/hal/osal/rt/osal.c ChibiOS/hal/ports/common/ARMCMx/nvic.c ChibiOS/hal/ports/STM32/LLD/ADCv2/hal_adc_lld.c ChibiOS/hal/ports/STM32/LLD/CANv1/hal_can_lld.c ChibiOS/hal/ports/STM32/LLD/DACv1/hal_dac_lld.c ChibiOS/hal/ports/STM32/LLD/DMAv2/stm32_dma.c ChibiOS/hal/ports/STM32/LLD/EXTIv1/hal_ext_lld.c ChibiOS/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.c ChibiOS/hal/ports/STM32/LLD/I2Cv1/hal_i2c_lld.c ChibiOS/hal/ports/STM32/LLD/MACv1/hal_mac_lld.c ChibiOS/hal/ports/STM32/LLD/OTGv1/hal_usb_lld.c ChibiOS/hal/ports/STM32/LLD/OTGv1/hal_usb_lld_alt.c ChibiOS/hal/ports/STM32/LLD/QUADSPIv1/hal_qspi_lld.c ChibiOS/hal/ports/STM32/LLD/RTCv2/hal_rtc_lld.c ChibiOS/hal/ports/STM32/LLD/SDIOv1/hal_sdc_lld.c ChibiOS/hal/ports/STM32/LLD/SPIv1/hal_i2s_lld.c ChibiOS/hal/ports/STM32/LLD/SPIv1/hal_spi_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_icu_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_pwm_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_st_lld.c ChibiOS/hal/ports/STM32/LLD/USARTv1/hal_serial_lld.c ChibiOS/hal/ports/STM32/LLD/USARTv1/hal_uart_lld.c ChibiOS/hal/ports/STM32/LLD/xWDGv1/hal_wdg_lld.c ChibiOS/hal/ports/STM32/STM32F4xx/hal_lld.c ChibiOS/hal/ports/STM32/STM32F4xx/stm32_isr.c ChibiOS/hal/src/hal.c ChibiOS/hal/src/hal_adc.c ChibiOS/hal/src/hal_buffers.c ChibiOS/hal/src/hal_can.c ChibiOS/hal/src/hal_crypto.c ChibiOS/hal/src/hal_dac.c ChibiOS/hal/src/hal_ext.c ChibiOS/hal/src/hal_gpt.c ChibiOS/hal/src/hal_i2c.c ChibiOS/hal/src/hal_i2s.c ChibiOS/hal/src/hal_icu.c ChibiOS/hal/src/hal_mac.c ChibiOS/hal/src/hal_mmcsd.c ChibiOS/hal/src/hal_mmc_spi.c ChibiOS/hal/src/hal_pal.c ChibiOS/hal/src/hal_pwm.c ChibiOS/hal/src/hal_qspi.c ChibiOS/hal/src/hal_queues.c ChibiOS/hal/src/hal_rtc.c ChibiOS/hal/src/hal_sdc.c ChibiOS/hal/src/hal_serial.c ChibiOS/hal/src/hal_serial_usb.c ChibiOS/hal/src/hal_spi.c ChibiOS/hal/src/hal_st.c ChibiOS/hal/src/hal_uart.c ChibiOS/hal/src/hal_usb.c ChibiOS/hal/src/hal_wdg.c ChibiOS/rt/src/chcond.c ChibiOS/rt/src/chdebug.c ChibiOS/rt/src/chdynamic.c ChibiOS/rt/src/chevents.c ChibiOS/rt/src/chmsg.c ChibiOS/rt/src/chmtx.c ChibiOS/rt/src/chregistry.c ChibiOS/rt/src/chschd.c ChibiOS/rt/src/chsem.c ChibiOS/rt/src/chstats.c ChibiOS/rt/src/chsys.c ChibiOS/rt/src/chthreads.c ChibiOS/rt/src/chtm.c ChibiOS/rt/src/chtrace.c ChibiOS/rt/src/chvt.c ChibiOS/test/lib/ch_test.c ChibiOS/test/oslib/source/test/oslib_test_root.c ChibiOS/test/oslib/source/test/oslib_test_sequence_001.c ChibiOS/test/oslib/source/test/oslib_test_sequence_002.c ChibiOS/test/oslib/source/test/oslib_test_sequence_003.c ChibiOS/test/oslib/source/test/oslib_test_sequence_004.c ChibiOS/test/rt/source/test/rt_test_root.c ChibiOS/test/rt/source/test/rt_test_sequence_001.c ChibiOS/test/rt/source/test/rt_test_sequence_002.c ChibiOS/test/rt/source/test/rt_test_sequence_003.c ChibiOS/test/rt/source/test/rt_test_sequence_004.c ChibiOS/test/rt/source/test/rt_test_sequence_005.c ChibiOS/test/rt/source/test/rt_test_sequence_006.c ChibiOS/test/rt/source/test/rt_test_sequence_007.c ChibiOS/test/rt/source/test/rt_test_sequence_008.c ChibiOS/test/rt/source/test/rt_test_sequence_009.c ChibiOS/test/rt/source/test/rt_test_sequence_010.c ChibiOS/various/evtimer.c ChibiOS/various/cpp_wrappers/ch.cpp ChibiOS/various/fatfs_bindings/fatfs_diskio.c ChibiOS/various/fatfs_bindings/fatfs_syscall.c Tests/SimGsmTcpEcho.cpp Tests/XmlParserTest.cpp
 EXTERNAL_LIBS := 
 EXTERNAL_LIBS_COPIED := $(foreach lib, $(EXTERNAL_LIBS),$(BINARYDIR)/$(notdir $(lib)))
 
@@ -197,7 +197,19 @@ $(BINARYDIR)/crcsw.o : ChibiOS/various/crcsw.c $(all_make_files) |$(BINARYDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
+$(BINARYDIR)/BaseDynamicThread.o : Core/BaseDynamicThread.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
 $(BINARYDIR)/ByteRingBuffer.o : Core/ByteRingBuffer.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/CCMemoryAllocator.o : Core/CCMemoryAllocator.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/CCMemoryHeap.o : Core/CCMemoryHeap.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
@@ -205,7 +217,7 @@ $(BINARYDIR)/CpuUsageMonitor.o : Core/CpuUsageMonitor.cpp $(all_make_files) |$(B
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
-$(BINARYDIR)/DataTimeService.o : Core/DataTimeService.cpp $(all_make_files) |$(BINARYDIR)
+$(BINARYDIR)/DateTimeService.o : Core/DateTimeService.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
@@ -213,7 +225,19 @@ $(BINARYDIR)/NewDelete.o : Core/NewDelete.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
+$(BINARYDIR)/Object.o : Core/Object.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
 $(BINARYDIR)/ObjectMemoryUtilizer.o : Core/ObjectMemoryUtilizer.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/Rs485.o : Drivers/Interfaces/Rs485.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/SharedRs485.o : Drivers/Interfaces/SharedRs485.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
@@ -261,12 +285,24 @@ $(BINARYDIR)/SimpleSensor.o : Drivers/Sensors/SimpleSensor.cpp $(all_make_files)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
+$(BINARYDIR)/TestSensorA.o : Drivers/Sensors/TestSensorA.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/TestSensorB.o : Drivers/Sensors/TestSensorB.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
 $(BINARYDIR)/ff.o : Lib/fatfs/src/ff.c $(all_make_files) |$(BINARYDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
 $(BINARYDIR)/ffunicode.o : Lib/fatfs/src/ffunicode.c $(all_make_files) |$(BINARYDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/sha1.o : Lib/sha1/sha1.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
 $(BINARYDIR)/tinyxml2.o : Lib/tinyxml2/tinyxml2.cpp $(all_make_files) |$(BINARYDIR)
@@ -294,6 +330,14 @@ $(BINARYDIR)/SensorService.o : SensorService/SensorService.cpp $(all_make_files)
 
 
 $(BINARYDIR)/SimpleSensorType.o : SensorService/SimpleSensorType.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/TestSensorAType.o : SensorService/TestSensorAType.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/TestSensorBType.o : SensorService/TestSensorBType.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 

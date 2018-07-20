@@ -2,9 +2,9 @@
 #include <QtWidgets/QApplication>
 #include <time.h>
 
-int main(int argc, char *argv[])
+int main( int argc, char *argv[] )
 {
-	QApplication a(argc, argv);
+	QApplication a( argc, argv );
 	a.setStyle( "Fusion" );
 	QLocale::setDefault( QLocale( QLocale::English, QLocale::UnitedKingdom ) );
 	qsrand( time( nullptr ) );

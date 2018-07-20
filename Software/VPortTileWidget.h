@@ -15,7 +15,7 @@ class VPortTileWidget : public QWidget
 	Q_OBJECT
 
 public:
-	enum class State {};
+	enum class State { Stopped, Working, Stopping };
 	typedef SensorErrorsModel::SensorError SensorError;
 
 	VPortTileWidget( QWidget* parent = nullptr );
@@ -29,7 +29,7 @@ public:
 	void setNextSensorRead( uint sensorId, QString sensorName, uint timeLeftSec );
 	void resetNextSensorRead();
 
-	void addSensorReadError( uint sensorId, QString sensorName, SensorError error, QDateTime date );
+	void addSensorReadError( uint sensorId, QString sensorName, SensorError error, uint8_t errorCode, QDateTime date );
 	void removeSensorReadError( uint sensorId );
 	void clearSensorErrorsList();
 

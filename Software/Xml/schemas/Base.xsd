@@ -26,7 +26,8 @@
   </xs:simpleType>
 
   <xs:simpleType name="updatePeriod">
-    <xs:restriction base="xs:positiveInteger">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="0"/>
       <xs:maxInclusive value="86400"/>
     </xs:restriction>
   </xs:simpleType>

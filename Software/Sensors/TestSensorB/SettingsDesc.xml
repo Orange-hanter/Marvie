@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<SettingsDesc target="BRSensor" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="file:// ../../Xml/schemas/SensorSettings.xsd">
+  <string default="Hello">text</string>
+  <int default="1" min="1" max="10">goodNum</int>
+  <int default="0" min="0" max="10">badNum</int>
+  <string default="NoResp" pattern="NoResp|Crc">errType</string>
+  <int default="0" min="0" max="255">errCode</int>
+</SettingsDesc>

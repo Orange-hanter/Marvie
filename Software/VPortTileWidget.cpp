@@ -80,7 +80,7 @@ VPortTileWidget::VPortTileWidget( QWidget* parent /*= nullptr */ ) : QWidget( pa
 	sensorErrorsListTableView->horizontalHeader()->setSectionResizeMode( QHeaderView::ResizeMode::Interactive );
 	sensorErrorsListTableView->horizontalHeader()->resizeSection( 0, 26 );
 	sensorErrorsListTableView->horizontalHeader()->resizeSection( 1, 90 );
-	sensorErrorsListTableView->horizontalHeader()->resizeSection( 2, 50 );
+	sensorErrorsListTableView->horizontalHeader()->resizeSection( 2, 75 );
 	sensorErrorsListTableView->horizontalHeader()->resizeSection( 3, 118 );
 	sensorErrorsListTableView->horizontalHeader()->setStretchLastSection( true );
 	sensorErrorsListTableView->verticalHeader()->setStretchLastSection( false );
@@ -102,13 +102,6 @@ VPortTileWidget::VPortTileWidget( QWidget* parent /*= nullptr */ ) : QWidget( pa
 	p.setBrush( QPalette::Window, QBrush( linearGrad ) );
 	setPalette( p );
 	setAutoFillBackground( true );*/
-
-	model.addSensorReadError( 0, "CE301", SensorError::NoResponseError, QDateTime::currentDateTime() );
-	model.addSensorReadError( 1, "CE301", SensorError::CrcError, QDateTime::currentDateTime() );
-	//model.addSensorReadError( 2, "CE301", SensorError::NoResponseError, QDateTime::currentDateTime() );
-	//model.addSensorReadError( 3, "SimpleSensor", SensorError::NoResponseError, QDateTime::currentDateTime() );
-	//model.addSensorReadError( 4, "SimpleSensor", SensorError::CrcError, QDateTime::currentDateTime() );
-	//removeSensorReadError( 1 );
 }
 
 VPortTileWidget::VPortTileWidget( uint index, QWidget* parent /*= nullptr */ ) : VPortTileWidget( parent )
@@ -165,25 +158,30 @@ void VPortTileWidget::resetNextSensorRead()
 	nextSensorId = -1;
 }
 
-void VPortTileWidget::addSensorReadError( uint sensorId, QString sensorName, SensorError error, QDateTime date )
+void VPortTileWidget::addSensorReadError( uint sensorId, QString sensorName, SensorError error, uint8_t errorCode, QDateTime date )
 {
-	model.addSensorReadError( sensorId, sensorName, error, date );
+	if( model.rowCount() == 0 )
+		statusLabel->setPixmap( QPixmap( ":/MarvieController/icons/icons8-box-important-42.png" ) );
+	model.addSensorReadError( sensorId, sensorName, error, errorCode, date );
 }
 
 void VPortTileWidget::removeSensorReadError( uint sensorId )
 {
 	model.removeSensorReadError( sensorId );
+	if( model.rowCount() == 0 )
+		statusLabel->setPixmap( QPixmap( ":/MarvieController/icons/icons8-checkmark-64.png" ) );
 }
 
 void VPortTileWidget::clearSensorErrorsList()
 {
 	model.clear();
+	statusLabel->setPixmap( QPixmap( ":/MarvieController/icons/icons8-checkmark-64.png" ) );
 }
 
 void VPortTileWidget::buttonClicked()
 {
 	auto desktopRect = QApplication::desktop()->rect();
-	QRect rect = QRect( mapToGlobal( QPoint( width(), 0 ) ), QSize( 312, 200 ) );
+	QRect rect = QRect( mapToGlobal( QPoint( width(), 0 ) ), QSize( 337, 200 ) );
 	if( desktopRect.bottom() < rect.bottom() )
 		rect.translate( 0, desktopRect.bottom() - rect.bottom() );
 	if( desktopRect.right() < rect.right() )
@@ -203,5 +201,16 @@ bool VPortTileWidget::eventFilter( QObject* obj, QEvent* e )
 
 QString VPortTileWidget::toText( State state )
 {
-	return "Stopped";
+	switch( state )
+	{
+	case VPortTileWidget::State::Stopped:
+		return "Stopped";
+	case VPortTileWidget::State::Working:
+		return "Working";
+	case VPortTileWidget::State::Stopping:
+		return "Stopping";
+	default:
+		break;
+	}
+	return "";
 }

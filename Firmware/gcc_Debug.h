@@ -395,6 +395,9 @@
 #ifndef __ULLACCUM_MAX__
 #define __ULLACCUM_MAX__ 0XFFFFFFFFFFFFFFFFP-32ULLK
 #endif
+#ifndef __GXX_RTTI
+#define __GXX_RTTI 1
+#endif
 #ifndef __cpp_delegating_constructors
 #define __cpp_delegating_constructors 200604
 #endif
@@ -744,6 +747,9 @@
 #endif
 #ifndef __INT16_MAX__
 #define __INT16_MAX__ 0x7fff
+#endif
+#ifndef __cpp_rtti
+#define __cpp_rtti 199711
 #endif
 #ifndef __SIZE_TYPE__
 #define __SIZE_TYPE__ unsigned int

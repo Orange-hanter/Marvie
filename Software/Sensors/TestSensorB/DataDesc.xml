@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<DataDesc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="file:// ../../Xml/schemas/SensorData.xsd">
+  <uint32>readNum</uint32>
+</DataDesc>

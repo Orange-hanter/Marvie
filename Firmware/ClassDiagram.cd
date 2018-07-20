@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="chibios_rt::Mutex" Collapsed="true">
+    <Position X="14.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAEAAAAAAAAEAAAAAAAIAAAAAAAAAgAAAAKAA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::System" Collapsed="true">
+    <Position X="16.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAEAAAAAABgCAAACAAAAAAAAIAAAAAIAMAAAA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::Core" Collapsed="true">
+    <Position X="14.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::Timer" Collapsed="true">
+    <Position X="12.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAAgAAAAAgAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::ThreadStayPoint" Collapsed="true">
+    <Position X="10.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAAAAAAAAAAAAAAQBAAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::ThreadReference">
+    <Position X="6.75" Y="0.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAIAAAAAAAgAAAgAAAEAAAgAAEgAGA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::BaseThread">
+    <Position X="0.5" Y="0.5" Width="5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAElAgAEgAEAFQAAAAIADAABGAAAIBCgAAAU=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::BaseStaticThread&lt;N&gt;">
+    <Position X="6.25" Y="4.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAgAAAAAAAAAAQAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::CounterSemaphore" Collapsed="true">
+    <Position X="14.25" Y="2.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAgAAAAQEAIAAAAAAAIAGAACAAAAAAAQ=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::BinarySemaphore" Collapsed="true">
+    <Position X="10.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAEAAAAAQAAAAAEAIAAAAAAAAAGAAEAAAAAAAA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::CondVar" Collapsed="true">
+    <Position X="12.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAABBAAAAAAAAAEAIAAAAAAAAAWAAAAAAAAAAA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::EvtListener">
+    <Position X="13.75" Y="4" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::EvtSource">
+    <Position X="9.75" Y="3.75" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAQAgCQAAAAAAA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::MailboxBase&lt;T&gt;" Collapsed="true">
+    <Position X="15" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAQAAFEIAgCgAAAAABAAABAAAAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::Mailbox&lt;T, N&gt;" Collapsed="true">
+    <Position X="15" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAABBAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::MemoryPool" Collapsed="true">
+    <Position X="13.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAAAACAAAABAAEAAAAAAAAAgAAACAAAA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::ObjectsPool&lt;T, N&gt;" Collapsed="true">
+    <Position X="13.25" Y="8" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="chibios_rt::BaseSequentialStreamInterface" Collapsed="true">
+    <Position X="11.5" Y="1.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAAAAAAAAACAAQAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>os\various\cpp_wrappers\ch.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

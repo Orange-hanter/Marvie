@@ -10,11 +10,11 @@ SensorErrorsModel::~SensorErrorsModel()
 
 }
 
-void SensorErrorsModel::addSensorReadError( uint sensorId, QString sensorName, SensorError error, QDateTime date )
+void SensorErrorsModel::addSensorReadError( uint sensorId, QString sensorName, SensorError error, uint8_t errorCode, QDateTime date )
 {
 	removeSensorReadError( sensorId );
 	beginInsertRows( QModelIndex(), 0, 0 );
-	list.insert( 0, Item{ sensorId, sensorName, errorName( error ), date.toString( Qt::DateFormat::ISODate ) } );
+	list.insert( 0, Item{ sensorId, sensorName, errorName( error ) + QString( "(%1)" ).arg( errorCode ), date.toString( Qt::DateFormat::ISODate ) } );
 	endInsertRows();
 }
 

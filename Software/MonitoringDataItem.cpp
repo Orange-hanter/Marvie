@@ -135,6 +135,11 @@ void MonitoringDataItem::removeChild( int index )
 	delete item;
 }
 
+void MonitoringDataItem::removeAllChildren()
+{
+	qDeleteAll( _childItems );
+}
+
 void MonitoringDataItem::setValue( bool value )
 {
 	_value.setValue( value );

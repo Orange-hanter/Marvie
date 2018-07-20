@@ -4,9 +4,11 @@
  <xs:element name="sensorsConfig">
   <xs:complexType>
    <xs:sequence>
-    <xs:choice minOccurs="1" maxOccurs="unbounded">
+    <xs:choice maxOccurs="unbounded" minOccurs="1">
      <xs:element ref="CE301"/>
      <xs:element ref="SimpleSensor"/>
+     <xs:element ref="TestSensorA"/>
+     <xs:element ref="TestSensorB"/>
     </xs:choice>
    </xs:sequence>
   </xs:complexType>
@@ -37,9 +39,9 @@
    <xs:complexContent>
     <xs:extension base="brSensorBase">
      <xs:sequence>
-      <xs:element name="intPrm" type="xs:int"/>
-      <xs:element name="floatPrm" type="xs:float"/>
-      <xs:element name="doublePrm" type="xs:double"/>
+      <xs:element type="xs:int" name="intPrm"/>
+      <xs:element type="xs:float" name="floatPrm"/>
+      <xs:element type="xs:double" name="doublePrm"/>
       <xs:element name="strPrm">
        <xs:simpleType>
         <xs:restriction base="xs:string">
@@ -49,7 +51,7 @@
         </xs:restriction>
        </xs:simpleType>
       </xs:element>
-      <xs:element name="boolPrm" type="xs:boolean"/>
+      <xs:element type="xs:boolean" name="boolPrm"/>
       <xs:element name="enumA">
        <xs:simpleType>
         <xs:restriction base="xs:int">
@@ -65,6 +67,59 @@
         <xs:restriction base="xs:int">
          <xs:enumeration value="0"/>
          <xs:enumeration value="1"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+     </xs:sequence>
+    </xs:extension>
+   </xs:complexContent>
+  </xs:complexType>
+ </xs:element>
+ <xs:element name="TestSensorA">
+  <xs:complexType>
+   <xs:complexContent>
+    <xs:extension base="brSensorBase">
+     <xs:sequence>
+      <xs:element type="xs:string" name="text"/>
+      <xs:element name="delayMs">
+       <xs:simpleType>
+        <xs:restriction base="xs:int">
+         <xs:minInclusive value="0"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+      <xs:element name="cpuLoad">
+       <xs:simpleType>
+        <xs:restriction base="xs:int">
+         <xs:minInclusive value="0"/>
+         <xs:maxInclusive value="100"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+     </xs:sequence>
+    </xs:extension>
+   </xs:complexContent>
+  </xs:complexType>
+ </xs:element>
+ <xs:element name="TestSensorB">
+  <xs:complexType>
+   <xs:complexContent>
+    <xs:extension base="brSensorBase">
+     <xs:sequence>
+      <xs:element type="xs:string" name="text"/>
+      <xs:element name="goodNum">
+       <xs:simpleType>
+        <xs:restriction base="xs:int">
+         <xs:minInclusive value="1"/>
+         <xs:maxInclusive value="10"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+      <xs:element name="badNum">
+       <xs:simpleType>
+        <xs:restriction base="xs:int">
+         <xs:minInclusive value="0"/>
+         <xs:maxInclusive value="10"/>
         </xs:restriction>
        </xs:simpleType>
       </xs:element>

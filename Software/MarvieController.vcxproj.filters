@@ -102,6 +102,12 @@
     <ClCompile Include="SensorErrorsModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DataTransferProgressWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SynchronizationWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MarvieController.h">
@@ -129,6 +135,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="VPortTileWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="DataTransferProgressWindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SynchronizationWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

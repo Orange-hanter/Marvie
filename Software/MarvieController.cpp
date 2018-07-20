@@ -2,7 +2,7 @@
 #include <QSerialPortInfo>
 #include <QSerialPort>
 #include <QXmlSchema>
-#include <QDomDocument>
+#include <QXmlStreamWriter>
 #include <QFile>
 #include <QDir>
 #include <QCryptographicHash>
@@ -13,6 +13,8 @@
 #include <QtCharts/QScatterSeries>
 #include <QtCharts/QValueAxis>
 #include <QStack>
+#include <DataTransferProgressWindow.h>
+#include <QDebug>
 #include <limits>
 #include <assert.h>
 
@@ -39,7 +41,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	windowButtons()->setButtonColor( ButtonType::Minimize | ButtonType::Maximize | ButtonType::Close, QColor( 100, 100, 100 ) );
 	setTitleText( "MarvieController" );
 
-	//setMinimumSize( QSize( 830, 560 ) );
+	//setMinimumSize( QSize( 540, 680 ) );
 	QRect mainWindowRect( 0, 0, 540, 680 );
 	mainWindowRect.moveCenter( qApp->desktop()->rect().center() );
 	setGeometry( mainWindowRect );
@@ -172,6 +174,10 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 
 	resetDeviceLoad();
 
+	ui.monitoringDataTreeView->setModel( &monitoringDataModel );
+	ui.monitoringDataTreeView->header()->resizeSection( 0, 175 );
+	ui.monitoringDataTreeView->header()->resizeSection( 1, 175 );
+
 	monitoringDataViewMenu = new QMenu( this );
 	monitoringDataViewMenu->addAction( "Copy value" );
 	monitoringDataViewMenu->addAction( "Copy row" );
@@ -180,6 +186,9 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	monitoringDataViewMenu->addAction( "Collapse all" );
 	monitoringDataViewMenu->addSeparator();
 	monitoringDataViewMenu->addAction( "Hexadecimal output" )->setCheckable( true );
+
+	syncWindow = new SynchronizationWindow( this );
+	deviceState = DeviceState::Unknown;
 
 	QObject::connect( ui.controlButton, &QToolButton::released, this, &MarvieController::mainMenuButtonClicked );
 	QObject::connect( ui.monitoringButton, &QToolButton::released, this, &MarvieController::mainMenuButtonClicked );
@@ -196,6 +205,12 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	QObject::connect( &mlink, &MLinkClient::newComplexPacketAvailable, this, &MarvieController::mlinkNewComplexPacketAvailable );
 	QObject::connect( &mlink, &MLinkClient::complexDataSendingProgress, this, &MarvieController::mlinkComplexDataSendingProgress );
 	QObject::connect( &mlink, &MLinkClient::complexDataReceivingProgress, this, &MarvieController::mlinkComplexDataReceivingProgress );
+
+	QObject::connect( ui.startVPortsButton, &QToolButton::released, this, &MarvieController::startVPortsButtonClicked );
+	QObject::connect( ui.stopVPortsButton, &QToolButton::released, this, &MarvieController::stopVPortsButtonClicked );
+	QObject::connect( ui.updateAllSensorsButton, &QToolButton::released, this, &MarvieController::updateAllSensorsButtonClicked );
+	QObject::connect( ui.updateSensorButton, &QToolButton::released, this, &MarvieController::updateSensorButtonClicked );
+	QObject::connect( ui.syncDateTimeButton, &QToolButton::released, this, &MarvieController::syncDateTimeButtonClicked );
 
 	QObject::connect( ui.addVPortOverGsmButton, &QToolButton::released, this, &MarvieController::addVPortOverIpButtonClicked );
 	QObject::connect( ui.removeVPortOverGsmButton, &QToolButton::released, this, &MarvieController::removeVPortOverIpButtonClicked );
@@ -237,43 +252,40 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	targetDeviceChanged( ui.targetDeviceComboBox->currentText() );
 
 	//////////////////////////////////////////////////////////////////////////
-	ui.monitoringDataTreeView->setModel( &monitoringDataModel );
-	ui.monitoringDataTreeView->header()->resizeSection( 0, 175 );
-	ui.monitoringDataTreeView->header()->resizeSection( 1, 175 );
-	struct Data
-	{
-		uint64_t dataTime;
-		int a;
-		int _reseved;
-		float b[3];
-		int _reseved2;
-		double d;
-		struct Ch 
-		{
-			uint8_t c;
-			char str[3];
-			uint16_t m[2];
-			uint32_t _reseved;
-		} ch[2];
-	} data;
-	data.a = 1;
-	data.b[0] = 3.14f; data.b[1] = 0.0000042f; data.b[2] = 4200000000000.0f;
-	data.d = 42.12345678900123456789;
-	data.ch[0].c = 2;
-	data.ch[0].str[0] = 'a'; data.ch[0].str[1] = 'b'; data.ch[0].str[2] = 'c';
-	data.ch[0].m[0] = 3; data.ch[0].m[1] = 4;
-	data.ch[1].c = 5;
-	data.ch[1].str[0] = 'd'; data.ch[1].str[1] = 'e'; data.ch[1].str[2] = 'f';
-	data.ch[1].m[0] = 6; data.ch[1].m[1] = 7;
-	//for( int i  = 0; i < 32; ++i )
-	updateSensorData( 0, "SimpleSensor", reinterpret_cast< uint8_t* >( &data ) );
+	//struct Data
+	//{
+	//	uint64_t dataTime;
+	//	int a;
+	//	int _reseved;
+	//	float b[3];
+	//	int _reseved2;
+	//	double d;
+	//	struct Ch 
+	//	{
+	//		uint8_t c;
+	//		char str[3];
+	//		uint16_t m[2];
+	//		uint32_t _reseved;
+	//	} ch[2];
+	//} data;
+	//data.a = 1;
+	//data.b[0] = 3.14f; data.b[1] = 0.0000042f; data.b[2] = 4200000000000.0f;
+	//data.d = 42.12345678900123456789;
+	//data.ch[0].c = 2;
+	//data.ch[0].str[0] = 'a'; data.ch[0].str[1] = 'b'; data.ch[0].str[2] = 'c';
+	//data.ch[0].m[0] = 3; data.ch[0].m[1] = 4;
+	//data.ch[1].c = 5;
+	//data.ch[1].str[0] = 'd'; data.ch[1].str[1] = 'e'; data.ch[1].str[2] = 'f';
+	//data.ch[1].m[0] = 6; data.ch[1].m[1] = 7;
+	////for( int i  = 0; i < 32; ++i )
+	//updateSensorData( 0, "SimpleSensor", reinterpret_cast< uint8_t* >( &data ) );
 
-	float ai[8];
-	for( int i = 0; i < ARRAYSIZE( ai ); ++i )
-		ai[i] = 0.1 * i;
-	updateAnalogData( 0, ai, ARRAYSIZE( ai ) );
-	uint16_t di = 0x4288;
-	updateDiscreteData( 0, di, 16 );
+	//float ai[8];
+	//for( int i = 0; i < ARRAYSIZE( ai ); ++i )
+	//	ai[i] = 0.1 * i;
+	//updateAnalogData( 0, ai, ARRAYSIZE( ai ) );
+	//uint16_t di = 0x4288;
+	//updateDiscreteData( 0, di, 16 );
 
 	/*updateSensorData( 15, "SimpleSensor", reinterpret_cast< uint8_t* >( &data ) );
 
@@ -286,29 +298,40 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 
 	updateSensorData( 9, "SimpleSensor", reinterpret_cast< uint8_t* >( &data ) );*/
 
-	ui.vPortTileListWidget->setTilesCount( 5 );
+	/*ui.vPortTileListWidget->setTilesCount( 8 );
 	ui.vPortTileListWidget->tile( 0 )->setNextSensorRead( 0, "CE301", 61 );
 	ui.vPortTileListWidget->tile( 0 )->setNextSensorRead( 0, "CE301", 4 );
 	ui.vPortTileListWidget->tile( 1 )->setNextSensorRead( 1, "CE301", 0 );
-	ui.vPortTileListWidget->tile( 2 )->setNextSensorRead( 2, "CE301", 5);
+	ui.vPortTileListWidget->tile( 2 )->setNextSensorRead( 2, "CE301", 5 );
 	ui.vPortTileListWidget->tile( 2 )->resetNextSensorRead();
+	ui.vPortTileListWidget->tile( 1 )->addSensorReadError( 0, "CE301", VPortTileWidget::SensorError::NoResponseError, 255, QDateTime::currentDateTime() );*/
+
+	//ui.vPortTileListWidget->removeAllTiles();
+	//ui.vPortTileListWidget->setTilesCount( 5 );
+	//ui.vPortTileListWidget->tile( 0 )->setNextSensorRead( 0, "CE301", 61 );
+	//ui.vPortTileListWidget->tile( 0 )->setNextSensorRead( 0, "CE301", 4 );
+	//ui.vPortTileListWidget->tile( 1 )->setNextSensorRead( 1, "CE301", 0 );
+	//ui.vPortTileListWidget->tile( 2 )->setNextSensorRead( 2, "CE301", 5 );
+	//ui.vPortTileListWidget->tile( 2 )->resetNextSensorRead();
 
 
-	QTimer* timer = new QTimer;
+	/*QTimer* timer = new QTimer;
 	timer->setInterval( 1000 / DEVICE_LOAD_FREQ );
 	timer->setSingleShot( false );
 	QObject::connect( timer, &QTimer::timeout, [this]() 
 	{
-		DeviceLoad load;
+		DeviceMemoryLoad load;
 		load.cpuLoad = qrand() % 100;
 		load.totalMemory = 128 * 1024;
 		load.allocatedCoreMemory = 64 * 1024;
 		load.allocatedHeapMemory = 32 * 1024;
 		load.sdCapacity = 4 * 1024 * 1024 * 1024ULL;
 		load.freeSdSpace = 1 * 1024 * 1024 * 1024ULL;
-		updateDeviceLoad( &load );
+		updateDeviceMemoryLoad( &load );
 	} );
-	timer->start();
+	timer->start();*/
+
+	//syncWindow->show();
 }
 
 MarvieController::~MarvieController()
@@ -426,14 +449,6 @@ void MarvieController::connectButtonClicked()
 		return;
 	}
 
-	if( mlinkIODevice )
-	{
-		mlink.setIODevice( nullptr );
-		mlinkIODevice->close();
-		delete mlinkIODevice;
-		mlinkIODevice = nullptr;
-	}
-
 	if( sender() == ui.rs232ConnectButton )
 	{
 		if( ui.rs232ComboBox->currentText().isEmpty() )
@@ -464,6 +479,36 @@ void MarvieController::connectButtonClicked()
 		ui.nextInterfaceButton->setEnabled( true );
 	}
 	ui.nextInterfaceButton->setEnabled( false );
+}
+
+void MarvieController::startVPortsButtonClicked()
+{
+	mlink.sendPacket( MarviePackets::Type::StartVPorts, QByteArray() );
+}
+
+void MarvieController::stopVPortsButtonClicked()
+{
+	mlink.sendPacket( MarviePackets::Type::StopVPorts, QByteArray() );
+}
+
+void MarvieController::updateAllSensorsButtonClicked()
+{
+	mlink.sendPacket( MarviePackets::Type::UpdateAllSensors, QByteArray() );
+}
+
+void MarvieController::updateSensorButtonClicked()
+{
+	if( ui.deviceSensorsComboBox->currentIndex() != -1 )
+	{
+		uint16_t id = ( uint16_t )ui.deviceSensorsComboBox->currentIndex();
+		mlink.sendPacket( MarviePackets::Type::UpdateOneSensor, QByteArray( ( const char* )&id, sizeof( id ) ) );
+	}
+}
+
+void MarvieController::syncDateTimeButtonClicked()
+{
+	DateTime dateTime = toDeviceDateTime( QDateTime::currentDateTime() );
+	mlink.sendPacket( MarviePackets::Type::SetDateTimeType, QByteArray( ( const char* )&dateTime, sizeof( dateTime ) ) );
 }
 
 void MarvieController::monitoringDataViewMenuRequested( const QPoint& point )
@@ -615,12 +660,28 @@ void MarvieController::exportConfigButtonClicked()
 
 void MarvieController::uploadConfigButtonClicked()
 {
+	if( mlink.state() != MLinkClient::State::Connected )
+		return;
 
+	QByteArray data = saveConfigToXml();
+	if( data.isEmpty() )
+	{
+		// ADD // FIX
+		return;
+	}
+
+	mlink.sendComplexData( MarviePackets::ComplexChannel::XmlConfigChannel, data );
+	DataTransferProgressWindow window( &mlink, MarviePackets::ComplexChannel::XmlConfigChannel, DataTransferProgressWindow::TransferDir::Sending, this );
+	window.setTitleText( "Uploading config" );
+	window.exec();
 }
 
 void MarvieController::downloadConfigButtonClicked()
 {
-
+	mlink.sendPacket( MarviePackets::Type::GetConfigXmlType, QByteArray() );
+	DataTransferProgressWindow window( &mlink, MarviePackets::ComplexChannel::XmlConfigChannel, DataTransferProgressWindow::TransferDir::Receiving, this, MarviePackets::Type::ConfigXmlMissingType );
+	window.setTitleText( "Downloading config" );
+	window.exec();
 }
 
 void MarvieController::addVPortOverIpButtonClicked()
@@ -815,6 +876,12 @@ void MarvieController::mlinkStateChanged( MLinkClient::State s )
 			ui.nextInterfaceButton->setEnabled( true );
 			ui.rs232ComboBox->setEnabled( true );
 			ui.rs232ConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-rs-232-female-filled-50.png" ) );
+			
+			mlink.setIODevice( nullptr );
+			mlinkIODevice->close();
+			delete mlinkIODevice;
+			mlinkIODevice = nullptr;
+			
 			break;
 		case MLinkClient::State::Connecting:
 			ui.rs232ConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-rs-232-female-filled-50-orange.png" ) );
@@ -837,16 +904,186 @@ void MarvieController::mlinkStateChanged( MLinkClient::State s )
 	{
 
 	}
+
+	switch( s )
+	{
+	case MLinkClient::State::Disconnected:
+		resetDeviceLoad();
+		ui.vPortTileListWidget->removeAllTiles();
+		syncWindow->hide();
+		ui.targetDeviceComboBox->setEnabled( true );
+		deviceVPorts.clear();
+		deviceSensors.clear();
+		ui.deviceSensorsComboBox->clear();
+		deviceSupportedSensors.clear();
+		resetDeviceStatus();
+		deviceState = DeviceState::Unknown;
+		syncWindow->hide();
+		break;
+	case MLinkClient::State::Connecting:
+		ui.targetDeviceComboBox->setEnabled( false );
+		ui.syncDateTimeButton->setEnabled( true );
+		break;
+	case MLinkClient::State::Connected:
+		monitoringDataModel.resetData();
+		break;
+	case MLinkClient::State::Disconnecting:
+		resetDeviceStatus();
+		ui.syncDateTimeButton->setEnabled( false );
+		deviceState = DeviceState::Unknown;
+		syncWindow->hide();
+		break;
+	default:
+		break;
+	}
+
 }
 
 void MarvieController::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
 {
-
+	switch( type )
+	{
+	case MarviePackets::Type::CpuLoadType:
+	{
+		updateDeviceCpuLoad( reinterpret_cast< const MarviePackets::CpuLoad* >( data.constData() )->load );
+		break;
+	}
+	case MarviePackets::Type::MemoryLoadType:
+	{
+		DeviceMemoryLoad load;
+		const MarviePackets::MemoryLoad* pLoad = reinterpret_cast< const MarviePackets::MemoryLoad* >( data.constData() );
+		load.totalRam = pLoad->totalRam;
+		load.staticAllocatedRam = pLoad->staticAllocatedRam;
+		load.heapAllocatedRam = pLoad->heapAllocatedRam;
+		load.sdCardCapacity = pLoad->sdCardCapacity;
+		load.sdCardFreeSpace = pLoad->sdCardFreeSpace;
+		updateDeviceMemoryLoad( load );
+		break;
+	}
+	case MarviePackets::Type::VPortStatusType:
+	{
+		const MarviePackets::VPortStatus* status = reinterpret_cast< const MarviePackets::VPortStatus* >( data.constData() );
+		auto tile = ui.vPortTileListWidget->tile( status->vPortId );
+		switch( status->state )
+		{
+		case MarviePackets::VPortStatus::State::Stopped:
+			tile->setState( VPortTileWidget::State::Stopped );
+			break;
+		case MarviePackets::VPortStatus::State::Working:
+			tile->setState( VPortTileWidget::State::Working );
+			break;
+		case MarviePackets::VPortStatus::State::Stopping:
+			tile->setState( VPortTileWidget::State::Stopping );
+			break;
+		default:
+			break;
+		}
+		if( status->sensorId == -1 )
+			tile->resetNextSensorRead();
+		else
+		{
+			if( deviceSensors.isEmpty() )
+				tile->setNextSensorRead( status->sensorId, "", status->timeLeft );
+			else
+				tile->setNextSensorRead( status->sensorId, deviceSensors[status->sensorId], status->timeLeft );
+		}
+		break;
+	}
+	case MarviePackets::Type::DeviceStatusType:
+	{
+		updateDeviceStatus( reinterpret_cast< const MarviePackets::DeviceStatus* >( data.constData() ) );
+		break;
+	}
+	case MarviePackets::Type::SensorErrorReportType:
+	{
+		const MarviePackets::SensorErrorReport* report = reinterpret_cast< const MarviePackets::SensorErrorReport* >( data.constData() );
+		VPortTileWidget::SensorError err;
+		switch( report->error )
+		{
+		case MarviePackets::SensorErrorReport::Error::CrcError:
+			err = VPortTileWidget::SensorError::CrcError;
+			break;
+		case MarviePackets::SensorErrorReport::Error::NoResponseError:
+			err = VPortTileWidget::SensorError::NoResponseError;
+			break;
+		default:
+			break;
+		}
+		ui.vPortTileListWidget->tile( report->vPortId )->addSensorReadError( report->sensorId,
+																			 deviceSensors.isEmpty() ? "" : deviceSensors[report->sensorId],
+																			 err, report->errorCode, toQtDateTime( report->dateTime ) );
+		break;
+	}
+	case MarviePackets::Type::VPortCountType:
+	{
+		ui.vPortTileListWidget->setTilesCount( *reinterpret_cast< const uint32_t* >( data.constData() ) );
+		if( deviceVPorts.size() )
+		{
+			for( uint i = 0; i < ui.vPortTileListWidget->tilesCount(); ++i )
+				ui.vPortTileListWidget->tile( i )->setBindInfo( deviceVPorts[i] );
+		}
+		break;
+	}
+	case MarviePackets::Type::SyncStartType:
+	{
+		ui.vPortTileListWidget->removeAllTiles();
+		monitoringDataModel.resetData();
+		deviceVPorts.clear();
+		deviceSensors.clear();
+		ui.deviceSensorsComboBox->clear();
+		syncWindow->show();
+		break;
+	}
+	case MarviePackets::Type::SyncEndType:
+	{
+		syncWindow->hide();
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 void MarvieController::mlinkNewComplexPacketAvailable( uint8_t channelId, QString name, QByteArray data )
 {
-
+	if( channelId == MarviePackets::ComplexChannel::XmlConfigSyncChannel )
+	{
+		if( !loadConfigFromXml( data ) )
+		{
+			deviceVPorts.clear();
+			deviceSensors.clear();
+			// ADD // FIX
+		}
+		else
+		{
+			deviceVPorts = vPorts;
+			deviceSensors = loadedXmlSensors;
+			QStringList list = deviceSensors.toList();
+			int n = 1;
+			for( auto i = list.begin(); i != list.end(); ++i )
+				( *i ).insert( 0, QString( "%1. " ).arg( n++ ) );
+			ui.deviceSensorsComboBox->addItems( list );
+		}
+	}
+	else if( channelId == MarviePackets::ComplexChannel::XmlConfigChannel )
+	{
+		if( !loadConfigFromXml( data ) )
+		{
+			// ADD // FIX
+		}
+	}
+	else if( channelId == MarviePackets::ComplexChannel::SupportedSensorsListChannel )
+		deviceSupportedSensors = QString( data ).split( ',' ).toVector();
+	else if( channelId == MarviePackets::ComplexChannel::SensorDataChannel )
+	{
+		uint8_t sensorId = ( uint8_t )data.constData()[0];
+		uint8_t vPortId = ( uint8_t )data.constData()[1];
+		ui.vPortTileListWidget->tile( vPortId )->removeSensorReadError( sensorId );
+		if( deviceSensors.isEmpty() )
+			updateSensorData( sensorId, "", reinterpret_cast< const uint8_t* >( data.constData() + sizeof( uint8_t ) * 2 ) );
+		else
+			updateSensorData( sensorId, deviceSensors[sensorId], reinterpret_cast< const uint8_t* >( data.constData() + sizeof( uint8_t ) * 2 ) );
+	}
 }
 
 void MarvieController::mlinkComplexDataSendingProgress( uint8_t channelId, QString name, float progress )
@@ -1500,7 +1737,8 @@ QTreeWidgetItem* MarvieController::insertSensorSettings( int position, QString s
 			else
 			{
 				QLineEdit* lineEdit = new QLineEdit;
-				lineEdit->setValidator( new QRegExpValidator( prm->regExp, lineEdit ) );
+				if( !prm->regExp.pattern().isEmpty() )
+					lineEdit->setValidator( new QRegExpValidator( prm->regExp, lineEdit ) );
 				lineEdit->setProperty( "defaultValue", prm->defaultValue );
 				class Filter : public QObject
 				{
@@ -1657,11 +1895,13 @@ bool MarvieController::loadConfigFromXml( QByteArray xmlData )
 	}
 	auto c0 = configRoot.firstChildElement( "sensorsConfig" );
 	QSet< QString > missingSensors;
+	loadedXmlSensors.clear();
 	if( !c0.isNull() )
 	{
 		auto c1 = c0.firstChildElement();
 		while( !c1.isNull() )
 		{
+			loadedXmlSensors.append( c1.tagName() );
 			auto cs = c1;
 			c1 = c1.nextSiblingElement();
 
@@ -2019,37 +2259,40 @@ QByteArray MarvieController::saveConfigToXml()
 		}
 	}
 
-	return QByteArray( "<?xml version=\"1.0\"?>\n" ) + doc.toByteArray();
+	return /*QByteArray( "<?xml version=\"1.0\"?>\n" ) +*/ saveCanonicalXML( doc ).toLocal8Bit();
 }
 
-void MarvieController::updateDeviceLoad( DeviceLoad* deviceLoad )
+void MarvieController::updateDeviceCpuLoad( float cpuLoad )
 {
-	static_cast< QPieSeries* >( ui.cpuLoadChartView->chart()->series()[0] )->slices()[0]->setValue( deviceLoad->cpuLoad );
-	static_cast< QPieSeries* >( ui.cpuLoadChartView->chart()->series()[0] )->slices()[1]->setValue( 100.0 - deviceLoad->cpuLoad );
+	static_cast< QPieSeries* >( ui.cpuLoadChartView->chart()->series()[0] )->slices()[0]->setValue( cpuLoad );
+	static_cast< QPieSeries* >( ui.cpuLoadChartView->chart()->series()[0] )->slices()[1]->setValue( 100.0 - cpuLoad );
 	QSplineSeries* splineSeries = static_cast< QSplineSeries* >( ui.cpuLoadSeriesChartView->chart()->series()[0] );
 	if( splineSeries->count() == DEVICE_LOAD_FREQ * CPU_LOAD_SERIES_WINDOW )
 		splineSeries->remove( 0 );
 	if( splineSeries->points().size() )
-		splineSeries->append( QPointF( splineSeries->points().last().x() + 1.0 / DEVICE_LOAD_FREQ, deviceLoad->cpuLoad ) );
+		splineSeries->append( QPointF( splineSeries->points().last().x() + 1.0 / DEVICE_LOAD_FREQ, cpuLoad ) );
 	else
-		splineSeries->append( QPointF( 0, deviceLoad->cpuLoad ) );
+		splineSeries->append( QPointF( 0, cpuLoad ) );
 	QScatterSeries* scatterSeries = static_cast< QScatterSeries* >( ui.cpuLoadSeriesChartView->chart()->series()[1] );
 	scatterSeries->clear();
 	auto last = splineSeries->points().last();
 	scatterSeries->append( last );
-	ui.cpuLoadSeriesChartView->chart()->axisX()->setRange( last.x() - CPU_LOAD_SERIES_WINDOW, last.x() );
-	ui.cpuLoadLabel->setText( QString( "CPU\n%1%" ).arg( deviceLoad->cpuLoad ) );
+	ui.cpuLoadSeriesChartView->chart()->axisX()->setRange( last.x() - CPU_LOAD_SERIES_WINDOW, last.x() + 0.5 );
+	ui.cpuLoadLabel->setText( QString( "CPU\n%1%" ).arg( cpuLoad ) );
+}
 
-	static_cast< QPieSeries* >( ui.memoryLoadChartView->chart()->series()[0] )->slices()[0]->setValue( deviceLoad->allocatedHeapMemory );
-	static_cast< QPieSeries* >( ui.memoryLoadChartView->chart()->series()[0] )->slices()[1]->setValue( deviceLoad->allocatedCoreMemory - deviceLoad->allocatedHeapMemory );
-	static_cast< QPieSeries* >( ui.memoryLoadChartView->chart()->series()[0] )->slices()[2]->setValue( deviceLoad->totalMemory - deviceLoad->allocatedCoreMemory );
-	ui.memoryLoadLabel->setText( QString( "Memory\n%1KB" ).arg( ( deviceLoad->allocatedHeapMemory + 512 ) / 1024 ) );
+void MarvieController::updateDeviceMemoryLoad( const DeviceMemoryLoad& deviceLoad )
+{
+	static_cast< QPieSeries* >( ui.memoryLoadChartView->chart()->series()[0] )->slices()[0]->setValue( deviceLoad.heapAllocatedRam );
+	static_cast< QPieSeries* >( ui.memoryLoadChartView->chart()->series()[0] )->slices()[1]->setValue( deviceLoad.staticAllocatedRam - deviceLoad.heapAllocatedRam );
+	static_cast< QPieSeries* >( ui.memoryLoadChartView->chart()->series()[0] )->slices()[2]->setValue( deviceLoad.totalRam - deviceLoad.staticAllocatedRam );
+	ui.memoryLoadLabel->setText( QString( "Memory\n%1KB" ).arg( ( deviceLoad.heapAllocatedRam + 512 ) / 1024 ) );
 
-	if( deviceLoad->sdCapacity != 0 )
+	if( deviceLoad.sdCardCapacity != 0 )
 	{
-		static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[0]->setValue( deviceLoad->sdCapacity - deviceLoad->freeSdSpace );
-		static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[1]->setValue( deviceLoad->freeSdSpace );
-		ui.sdLoadLabel->setText( QString( "SD\n%1MB" ).arg( ( deviceLoad->sdCapacity - deviceLoad->freeSdSpace + 1024 * 1024 / 2 ) / 1024 / 1024 ) );
+		static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[0]->setValue( deviceLoad.sdCardCapacity - deviceLoad.sdCardFreeSpace );
+		static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[1]->setValue( deviceLoad.sdCardFreeSpace );
+		ui.sdLoadLabel->setText( QString( "SD\n%1MB" ).arg( ( deviceLoad.sdCardCapacity - deviceLoad.sdCardFreeSpace + 1024 * 1024 / 2 ) / 1024 / 1024 ) );
 	}
 	else
 	{
@@ -2079,8 +2322,36 @@ void MarvieController::resetDeviceLoad()
 	ui.sdLoadLabel->show();
 }
 
+void MarvieController::updateDeviceStatus( const MarviePackets::DeviceStatus* status )
+{
+	ui.deviceDateTimeLabel->setText( QString( "Time: " ) + toQtDateTime( status->dateTime ).toString( Qt::ISODate ) );
+	switch( status->state )
+	{
+	case MarviePackets::DeviceStatus::DeviceState::Reconfiguration:
+		deviceState = DeviceState::Reconfiguration;
+		ui.deviceStateLabel->setText( "State: reconfiguration" );
+		break;
+	case MarviePackets::DeviceStatus::DeviceState::Working:
+		deviceState = DeviceState::Working;
+		ui.deviceStateLabel->setText( "State: working" );
+		break;
+	case MarviePackets::DeviceStatus::DeviceState::IncorrectConfiguration:
+		deviceState = DeviceState::IncorrectConfiguration;
+		ui.deviceStateLabel->setText( "State: incorrect configuration" );
+		break;
+	default:
+		break;
+	}
+}
+
+void MarvieController::resetDeviceStatus()
+{
+	ui.deviceDateTimeLabel->setText( "Time: unknown" );
+	ui.deviceStateLabel->setText( "State: unknown" );
+}
+
 template< typename T >
-QVector< T > getVector( T* array, int size )
+QVector< T > getVector( const T* array, int size )
 {
 	QVector< T > v( size );
 	for( int i = 0; i < size; ++i )
@@ -2089,7 +2360,7 @@ QVector< T > getVector( T* array, int size )
 	return v;
 }
 
-void MarvieController::updateSensorData( uint id, QString sensorName, uint8_t* data )
+void MarvieController::updateSensorData( uint id, QString sensorName, const uint8_t* data )
 {
 	QString itemName = QString( "%1. %2" ).arg( id ).arg( sensorName );
 	MonitoringDataItem* item = monitoringDataModel.findItem( itemName );
@@ -2099,15 +2370,15 @@ void MarvieController::updateSensorData( uint id, QString sensorName, uint8_t* d
 		attachSensorRelatedMonitoringDataItems( item, sensorName );
 		insertTopLevelMonitoringDataItem( item );
 	}
-	item->setValue( QDateTime::currentDateTime() );
+	item->setValue( toQtDateTime( *reinterpret_cast< const DateTime* >( data ) ) );
 
 	if( !sensorDescMap.contains( sensorName ) )
 		return;
 	auto desc = sensorDescMap[sensorName];
 	if( !desc.data.root )
 		return;
-#define BASE_SIZE 8
-	static std::function< void( MonitoringDataItem* item, SensorDesc::Data::Node* node ) > set = [data]( MonitoringDataItem* item, SensorDesc::Data::Node* node )
+#define BASE_SIZE sizeof( DateTime )
+	std::function< void( MonitoringDataItem* item, SensorDesc::Data::Node* node ) > set = [&set, data]( MonitoringDataItem* item, SensorDesc::Data::Node* node )
 	{
 		int itemChildIndex = 0;
 		for( auto i : node->childNodes )
@@ -2136,34 +2407,34 @@ void MarvieController::updateSensorData( uint id, QString sensorName, uint8_t* d
 				switch( i->childNodes[0]->type )
 				{
 				case SensorDesc::Data::Type::Int8:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< int8_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
+					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const int8_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
 					break;
 				case SensorDesc::Data::Type::Uint8:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< uint8_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
+					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const uint8_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
 					break;
 				case SensorDesc::Data::Type::Int16:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< int16_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
+					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const int16_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
 					break;
 				case SensorDesc::Data::Type::Uint16:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< uint16_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
+					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const uint16_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
 					break;
 				case SensorDesc::Data::Type::Int32:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< int32_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
+					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const int32_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
 					break;
 				case SensorDesc::Data::Type::Uint32:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< uint32_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
+					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const uint32_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
 					break;
 				case SensorDesc::Data::Type::Int64:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< int64_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
+					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const int64_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
 					break;
 				case SensorDesc::Data::Type::Uint64:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< uint64_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
+					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const uint64_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
 					break;
 				case SensorDesc::Data::Type::Float:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< float* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
+					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const float* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
 					break;
 				case SensorDesc::Data::Type::Double:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< double* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
+					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const double* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
 					break;
 				default:
 					break;
@@ -2172,37 +2443,37 @@ void MarvieController::updateSensorData( uint id, QString sensorName, uint8_t* d
 				break;
 			}
 			case SensorDesc::Data::Type::Char:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< char* >( data + i->bias + BASE_SIZE ) );
+				item->child( itemChildIndex )->setValue( *reinterpret_cast< const char* >( data + i->bias + BASE_SIZE ) );
 				break;
 			case SensorDesc::Data::Type::Int8:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< int8_t* >( data + i->bias + BASE_SIZE ) );
+				item->child( itemChildIndex )->setValue( *reinterpret_cast< const int8_t* >( data + i->bias + BASE_SIZE ) );
 				break;
 			case SensorDesc::Data::Type::Uint8:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< uint8_t* >( data + i->bias + BASE_SIZE ) );
+				item->child( itemChildIndex )->setValue( *reinterpret_cast< const uint8_t* >( data + i->bias + BASE_SIZE ) );
 				break;
 			case SensorDesc::Data::Type::Int16:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< int16_t* >( data + i->bias + BASE_SIZE ) );
+				item->child( itemChildIndex )->setValue( *reinterpret_cast< const int16_t* >( data + i->bias + BASE_SIZE ) );
 				break;
 			case SensorDesc::Data::Type::Uint16:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< uint16_t* >( data + i->bias + BASE_SIZE ) );
+				item->child( itemChildIndex )->setValue( *reinterpret_cast< const uint16_t* >( data + i->bias + BASE_SIZE ) );
 				break;
 			case SensorDesc::Data::Type::Int32:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< int32_t* >( data + i->bias + BASE_SIZE ) );
+				item->child( itemChildIndex )->setValue( *reinterpret_cast< const int32_t* >( data + i->bias + BASE_SIZE ) );
 				break;
 			case SensorDesc::Data::Type::Uint32:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< uint32_t* >( data + i->bias + BASE_SIZE ) );
+				item->child( itemChildIndex )->setValue( *reinterpret_cast< const uint32_t* >( data + i->bias + BASE_SIZE ) );
 				break;
 			case SensorDesc::Data::Type::Int64:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< int64_t* >( data + i->bias + BASE_SIZE ) );
+				item->child( itemChildIndex )->setValue( *reinterpret_cast< const int64_t* >( data + i->bias + BASE_SIZE ) );
 				break;
 			case SensorDesc::Data::Type::Uint64:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< uint64_t* >( data + i->bias + BASE_SIZE ) );
+				item->child( itemChildIndex )->setValue( *reinterpret_cast< const uint64_t* >( data + i->bias + BASE_SIZE ) );
 				break;
 			case SensorDesc::Data::Type::Float:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< float* >( data + i->bias + BASE_SIZE ) );
+				item->child( itemChildIndex )->setValue( *reinterpret_cast< const float* >( data + i->bias + BASE_SIZE ) );
 				break;
 			case SensorDesc::Data::Type::Double:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< double* >( data + i->bias + BASE_SIZE ) );
+				item->child( itemChildIndex )->setValue( *reinterpret_cast< const double* >( data + i->bias + BASE_SIZE ) );
 				break;
 			default:
 				break;
@@ -2342,6 +2613,91 @@ void MarvieController::insertTopLevelMonitoringDataItem( MonitoringDataItem* ite
 	}
 
 	monitoringDataModel.insertTopLevelItem( index, item );
+}
+
+DateTime MarvieController::toDeviceDateTime( const QDateTime& dateTime )
+{
+	return DateTime( Date( dateTime.date().day(), dateTime.date().dayOfWeek(), dateTime.date().month(), dateTime.date().year() ),
+					 Time( dateTime.time().msec(), dateTime.time().second(), dateTime.time().minute(), dateTime.time().hour() ) );
+}
+
+QDateTime MarvieController::toQtDateTime( const DateTime& dateTime )
+{
+	return QDateTime( QDate( dateTime.year(), dateTime.month(), dateTime.day() ),
+					  QTime( dateTime.hour(), dateTime.min(), dateTime.sec(), dateTime.msec() ) );
+}
+
+QString MarvieController::saveCanonicalXML( const QDomDocument& doc, int indent ) const
+{
+	QString xmlData;
+	QXmlStreamWriter stream( &xmlData );
+	stream.setAutoFormatting( true );
+	stream.setAutoFormattingIndent( indent );
+	stream.writeStartDocument();
+
+	QDomNode root = doc.documentElement();
+	while( !root.isNull() )
+	{
+		writeDomNodeCanonically( stream, root );
+		if( stream.hasError() )
+			break;
+		root = root.nextSibling();
+	}
+
+	stream.writeEndDocument();
+	if( stream.hasError() )
+		return "";
+
+	return xmlData;
+}
+
+void MarvieController::writeDomNodeCanonically( QXmlStreamWriter &stream, const QDomNode &domNode ) const
+{
+	if( stream.hasError() )
+		return;
+
+	if( domNode.isElement() )
+	{
+		const QDomElement domElement = domNode.toElement();
+		if( !domElement.isNull() )
+		{
+			stream.writeStartElement( domElement.tagName() );
+
+			if( domElement.hasAttributes() )
+			{
+				QMap<QString, QString> attributes;
+				const QDomNamedNodeMap attributeMap = domElement.attributes();
+				for( int i = 0; i < attributeMap.count(); ++i )
+				{
+					const QDomNode attribute = attributeMap.item( i );
+					attributes.insert( attribute.nodeName(), attribute.nodeValue() );
+				}
+
+				QMap<QString, QString>::const_iterator i = attributes.constBegin();
+				while( i != attributes.constEnd() )
+				{
+					stream.writeAttribute( i.key(), i.value() );
+					++i;
+				}
+			}
+
+			if( domElement.hasChildNodes() )
+			{
+				QDomNode elementChild = domElement.firstChild();
+				while( !elementChild.isNull() )
+				{
+					writeDomNodeCanonically( stream, elementChild );
+					elementChild = elementChild.nextSibling();
+				}
+			}
+
+			stream.writeEndElement();
+		}
+	}
+	else if( domNode.isComment() )
+		stream.writeComment( domNode.nodeValue() );
+	else if( domNode.isText() )
+		stream.writeCharacters( domNode.nodeValue() );
 }
 
 void MarvieController::XmlMessageHandler::handleMessage( QtMsgType type, const QString &description, const QUrl &identifier, const QSourceLocation &sourceLocation )

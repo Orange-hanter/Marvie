@@ -5,7 +5,7 @@ DateTime DateTimeService::currentDateTime()
 {
 	RTCDateTime dateTime;
 	rtcGetTime( &RTCD1, &dateTime );
-	return DateTime( Date( dateTime.day, dateTime.dayofweek, dateTime.month, dateTime.year + 1980 ),
+	return DateTime( Date( dateTime.day, dateTime.dayofweek, dateTime.month, dateTime.year + RTC_BASE_YEAR ),
 					 Time( dateTime.millisecond % 1000,
 						   ( dateTime.millisecond / 1000 ) % 60,
 						   ( dateTime.millisecond / 1000 / 60 ) % 60,
@@ -15,8 +15,9 @@ DateTime DateTimeService::currentDateTime()
 void DateTimeService::setDateTime( const DateTime& dateTime )
 {
 	RTCDateTime rtcDateTime;
-	if( dateTime.year() >= 1980 )
-		rtcDateTime.year = dateTime.year() - 1980;
+	rtcDateTime.dstflag = false;
+	if( dateTime.year() >= RTC_BASE_YEAR )
+		rtcDateTime.year = dateTime.year() - RTC_BASE_YEAR;
 	else
 		rtcDateTime.year = 0;
 	rtcDateTime.month = dateTime.month();

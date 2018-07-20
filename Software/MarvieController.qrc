@@ -44,5 +44,12 @@
         <file>icons/icons8-chevron-right-filled-50.png</file>
         <file>icons/icons8-error-48.png</file>
         <file>icons/icons8-box-important-42.png</file>
+        <file>icons/icons8-cancel-26.png</file>
+        <file>Animations/loading.gif</file>
+        <file>icons/icons8-synchronize-60.png</file>
+        <file>icons/icons8-play-60.png</file>
+        <file>icons/icons8-stop-48.png</file>
+        <file>icons/icons8-end-32.png</file>
+        <file>icons/icons8-update-left-rotation-64.png</file>
     </qresource>
 </RCC>

@@ -23,6 +23,13 @@ MonitoringDataItem* MonitoringDataModel::rootItem()
 	return root;
 }
 
+void MonitoringDataModel::resetData()
+{
+	beginResetModel();
+	root->removeAllChildren();
+	endResetModel();
+}
+
 MonitoringDataItem* MonitoringDataModel::findItem( QString name )
 {
 	for( int i = 0; i < root->childCount(); ++i )

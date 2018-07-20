@@ -13,6 +13,7 @@ public:
 
 	void setRootItem( MonitoringDataItem* item );
 	MonitoringDataItem* rootItem();
+	void resetData();
 
 	MonitoringDataItem* findItem( QString name );
 
