@@ -24,8 +24,8 @@ public:
 		~ComplexDataChannel();
 
 		bool open( uint8_t id, const char* name, uint32_t size = 0 );
-		bool sendData( uint8_t* data, uint32_t size ); // 0 < size
-		bool sendDataAndClose( uint8_t* data, uint32_t size ); // 0 < size
+		bool sendData( const uint8_t* data, uint32_t size ); // 0 < size
+		bool sendDataAndClose( const uint8_t* data, uint32_t size ); // 0 < size
 		void close();
 		void cancelAndClose();
 

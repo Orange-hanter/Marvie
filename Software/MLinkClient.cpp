@@ -399,7 +399,7 @@ void MLinkClient::processPacket( Header& header, QByteArray& packetData )
 				assert( inCDataMap.contains( id ) == true );
 				auto cdata = inCDataMap.take( id );
 				uint8_t canceled = packetData.constData()[sizeof( Header ) + sizeof( uint8_t )];
-				if( canceled )
+				if( canceled || cdata.needCancel )
 					complexDataReceivingCanceled( id, cdata.name );
 				else
 					newComplexPacketAvailable( id, cdata.name, cdata.data );

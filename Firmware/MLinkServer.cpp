@@ -69,7 +69,7 @@ bool MLinkServer::ComplexDataChannel::open( uint8_t id, const char* name, uint32
 	return false;
 }
 
-bool MLinkServer::ComplexDataChannel::sendData( uint8_t* data, uint32_t size )
+bool MLinkServer::ComplexDataChannel::sendData( const uint8_t* data, uint32_t size )
 {
 	while( size )
 	{
@@ -125,7 +125,7 @@ bool MLinkServer::ComplexDataChannel::sendData( uint8_t* data, uint32_t size )
 	return true;
 }
 
-bool MLinkServer::ComplexDataChannel::sendDataAndClose( uint8_t* data, uint32_t size )
+bool MLinkServer::ComplexDataChannel::sendDataAndClose( const uint8_t* data, uint32_t size )
 {
 	return false;
 }
@@ -453,6 +453,7 @@ void MLinkServer::processNewPacket()
 				if( header->size )
 					packetBuffer.write( packetData + sizeof( Header ), header->size );
 				chSysLock();
+				extEventSource.broadcastFlagsI( ( eventflags_t )Event::NewPacketAvailable );
 				chThdDequeueNextI( &packetWaitingQueue, MSG_OK );
 				chSchRescheduleS();
 				chSysUnlock();
@@ -532,6 +533,7 @@ void MLinkServer::processNewPacket()
 				r = *reinterpret_cast< uint64_t* >( packetData + sizeof( Header ) );
 				packetBuffer.clear();
 				chVTSetI( &timer, TIME_MS2I( 600 ), timerCallback, this );
+				extEventSource.broadcastFlagsI( ( eventflags_t )Event::StateChanged );
 				chThdDequeueNextI( &stateWaitingQueue, MSG_OK );
 				chSchRescheduleS();
 				chSysUnlock();

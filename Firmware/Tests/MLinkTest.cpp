@@ -169,7 +169,7 @@ private:
 		chEvtSignal( thread_ref, 1 );
 		while( true )
 		{
-			eventmask_t em = chEvtWaitAny( ALL_EVENTS );
+			chEvtWaitAny( ALL_EVENTS );
 			sprintf( str, "CPU usage = %d\n", ( int )CpuUsageMonitor::tryInstance()->usage() );
 			usart->write( ( uint8_t* )str, strlen( str ), TIME_INFINITE );
 		}
