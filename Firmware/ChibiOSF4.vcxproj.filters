@@ -1544,6 +1544,9 @@
     <ClCompile Include="SensorService\TestSensorBType.cpp">
       <Filter>Source files\SensorService</Filter>
     </ClCompile>
+    <ClCompile Include="Tests\Rs485Test.cpp">
+      <Filter>Source files\Tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mcuconf.h">

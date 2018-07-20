@@ -201,14 +201,14 @@ void SharedRs485::releseDevice()
 
 void SharedRs485::receiveMode()
 {
-	reOutput.on();
-	deOutput.on();
+	reOutput.off();
+	deOutput.off();
 }
 
 void SharedRs485::transmitMode()
 {
-	deOutput.off();
-	reOutput.off();
+	deOutput.on();
+	reOutput.on();
 }
 
 void SharedRs485::disableMode()

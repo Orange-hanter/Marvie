@@ -264,6 +264,7 @@
     <ClCompile Include="ChibiOS\various\cpp_wrappers\ch.cpp" />
     <ClCompile Include="ChibiOS\various\fatfs_bindings\fatfs_diskio.c" />
     <ClCompile Include="ChibiOS\various\fatfs_bindings\fatfs_syscall.c" />
+    <ClCompile Include="Tests\Rs485Test.cpp" />
     <ClCompile Include="Tests\SimGsmTcpEcho.cpp" />
     <ClCompile Include="Tests\XmlParserTest.cpp" />
     <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\cmsis_armcc.h" />

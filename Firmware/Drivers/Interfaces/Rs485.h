@@ -40,6 +40,7 @@ public:
 private:
 	inline void receiveMode();
 	inline void transmitMode();
+	inline void disableMode();
 
 private:
 	Usart* usart;

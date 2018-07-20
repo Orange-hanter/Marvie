@@ -39,8 +39,7 @@ void Rs485::disable()
 {
 	if( conjugate )
 		return;
-	reOutput.on();
-	deOutput.off();
+	disableMode();
 }
 
 void Rs485::setBaudRate( uint32_t baudRate )
@@ -159,21 +158,27 @@ EvtSource* Rs485::eventSource()
 void Rs485::receiveMode()
 {
 	if( conjugate )
-		reOutput.on();
+		reOutput.off();
 	else
 	{
-		reOutput.on();
-		deOutput.on();
+		reOutput.off();
+		deOutput.off();
 	}
 }
 
 void Rs485::transmitMode()
 {
 	if( conjugate )
-		reOutput.off();
+		reOutput.on();
 	else
 	{
-		deOutput.off();
-		reOutput.off();
+		deOutput.on();
+		reOutput.on();
 	}
+}
+
+void Rs485::disableMode()
+{
+	reOutput.on();
+	deOutput.off();
 }
