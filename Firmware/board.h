@@ -45,7 +45,7 @@
 #endif
 
 #if !defined(STM32_HSECLK)
-#define STM32_HSECLK                /*8000000U*/24000000U
+#define STM32_HSECLK                8000000U
 #endif
 
 /*
@@ -58,6 +58,12 @@
  * MCU type as defined in the ST header.
  */
 #define STM32F407xx
+
+ /*
+ * Ethernet PHY type.
+ */
+#define BOARD_PHY_ID            MII_LAN8720_ID//0x00008201
+#define BOARD_PHY_RMII
 
 /*
  * IO pins assignments.

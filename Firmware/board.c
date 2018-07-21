@@ -192,6 +192,24 @@ static void stm32_gpio_init(void) {
 #if STM32_HAS_GPIOK
   gpio_init(GPIOK, &gpio_default_config.PKData);
 #endif
+
+  //palSetPadMode( GPIOE, 2, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_TXD3*
+  palSetPadMode( GPIOC, 1, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_MDC*
+  //palSetPadMode( GPIOC, 2, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_TXD2*
+  //palSetPadMode( GPIOC, 3, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_TX_CLK*
+  //palSetPadMode( GPIOA, 0, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_CRS*
+  palSetPadMode( GPIOA, 1, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_RX_CLK*
+  palSetPadMode( GPIOA, 2, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_MDIO*
+  //palSetPadMode( GPIOA, 3, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_COOL*
+  palSetPadMode( GPIOA, 7, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_RX_DV*
+  palSetPadMode( GPIOC, 4, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_RXD0*
+  palSetPadMode( GPIOC, 5, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_RXD1*
+  //palSetPadMode( GPIOB, 0, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_RXD2*
+  //palSetPadMode( GPIOB, 1, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_RXD3*
+  //palSetPadMode( GPIOB, 10, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_RX_ER*
+  palSetPadMode( GPIOB, 11, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_TX_EN*
+  palSetPadMode( GPIOB, 12, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_TXD0*
+  palSetPadMode( GPIOB, 13, PAL_MODE_ALTERNATE( 11 ) | PAL_STM32_OSPEED_HIGHEST ); // ETH_TXD1*
 }
 
 /*===========================================================================*/
@@ -262,5 +280,4 @@ bool mmc_lld_is_write_protected(MMCDriver *mmcp) {
  * @todo    Add your board-specific code, if any.
  */
 void boardInit(void) {
-
 }

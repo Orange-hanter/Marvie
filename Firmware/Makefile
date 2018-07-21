@@ -35,7 +35,7 @@ error:
 	$(error Invalid configuration, please check your inputs)
 endif
 
-SOURCEFILES := board.c ChibiOS/hal/ports/STM32/LLD/CRCv1/hal_crc_lld.c ChibiOS/hal/src/hal_community.c ChibiOS/hal/src/hal_crc.c ChibiOS/various/crcsw.c Core/BaseDynamicThread.cpp Core/ByteRingBuffer.cpp Core/CCMemoryAllocator.cpp Core/CCMemoryHeap.cpp Core/CpuUsageMonitor.cpp Core/DateTimeService.cpp Core/NewDelete.cpp Core/Object.cpp Core/ObjectMemoryUtilizer.cpp Crc32HW.cpp Drivers/Interfaces/Rs485.cpp Drivers/Interfaces/SharedRs485.cpp Drivers/Interfaces/Usart.cpp Drivers/LogicOutput.cpp Drivers/Network/SimGsm/SimGsm.cpp Drivers/Network/SimGsm/SimGsmATResponseParsers.cpp Drivers/Network/SimGsm/SimGsmSocketBase.cpp Drivers/Network/SimGsm/SimGsmTcpServer.cpp Drivers/Network/SimGsm/SimGsmTcpSocket.cpp Drivers/Network/SimGsm/SimGsmUdpSocket.cpp Drivers/Sensors/AbstractSensor.cpp Drivers/Sensors/CE301Sensor.cpp Drivers/Sensors/SimpleSensor.cpp Drivers/Sensors/TestSensorA.cpp Drivers/Sensors/TestSensorB.cpp Lib/fatfs/src/ff.c Lib/fatfs/src/ffunicode.c Lib/sha1/sha1.cpp Lib/tinyxml2/tinyxml2.cpp main.cpp MarvieDevice.cpp MarviePlatform.cpp MarvieXmlConfigParsers.cpp MLinkServer.cpp Network/AbstractTcpSocket.cpp Network/AbstractUdpSocket.cpp Network/IpAddress.cpp SensorService/CE301Type.cpp SensorService/SensorService.cpp SensorService/SimpleSensorType.cpp SensorService/TestSensorAType.cpp SensorService/TestSensorBType.cpp SingleBRSensorReader.cpp BRSensorReader.cpp MultipleBRSensorsReader.cpp Support/LexicalAnalyzer.cpp Support/Utility.cpp Tests/MLinkTest.cpp Tests/MultipleBRSensorsReaderTest.cpp ChibiOS/common/oslib/src/chfactory.c ChibiOS/common/oslib/src/chheap.c ChibiOS/common/oslib/src/chmboxes.c ChibiOS/common/oslib/src/chmemcore.c ChibiOS/common/oslib/src/chmempools.c ChibiOS/common/ports/ARMCMx/chcore.c ChibiOS/common/ports/ARMCMx/chcore_v7m.c ChibiOS/common/ports/ARMCMx/compilers/GCC/chcoreasm_v7m.S ChibiOS/common/startup/ARMCMx/compilers/GCC/crt0_v7m.S ChibiOS/common/startup/ARMCMx/compilers/GCC/crt1.c ChibiOS/common/startup/ARMCMx/compilers/GCC/vectors.S ChibiOS/hal/lib/streams/chprintf.c ChibiOS/hal/lib/streams/memstreams.c ChibiOS/hal/lib/streams/nullstreams.c ChibiOS/hal/osal/rt/osal.c ChibiOS/hal/ports/common/ARMCMx/nvic.c ChibiOS/hal/ports/STM32/LLD/ADCv2/hal_adc_lld.c ChibiOS/hal/ports/STM32/LLD/CANv1/hal_can_lld.c ChibiOS/hal/ports/STM32/LLD/DACv1/hal_dac_lld.c ChibiOS/hal/ports/STM32/LLD/DMAv2/stm32_dma.c ChibiOS/hal/ports/STM32/LLD/EXTIv1/hal_ext_lld.c ChibiOS/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.c ChibiOS/hal/ports/STM32/LLD/I2Cv1/hal_i2c_lld.c ChibiOS/hal/ports/STM32/LLD/MACv1/hal_mac_lld.c ChibiOS/hal/ports/STM32/LLD/OTGv1/hal_usb_lld.c ChibiOS/hal/ports/STM32/LLD/OTGv1/hal_usb_lld_alt.c ChibiOS/hal/ports/STM32/LLD/QUADSPIv1/hal_qspi_lld.c ChibiOS/hal/ports/STM32/LLD/RTCv2/hal_rtc_lld.c ChibiOS/hal/ports/STM32/LLD/SDIOv1/hal_sdc_lld.c ChibiOS/hal/ports/STM32/LLD/SPIv1/hal_i2s_lld.c ChibiOS/hal/ports/STM32/LLD/SPIv1/hal_spi_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_icu_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_pwm_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_st_lld.c ChibiOS/hal/ports/STM32/LLD/USARTv1/hal_serial_lld.c ChibiOS/hal/ports/STM32/LLD/USARTv1/hal_uart_lld.c ChibiOS/hal/ports/STM32/LLD/xWDGv1/hal_wdg_lld.c ChibiOS/hal/ports/STM32/STM32F4xx/hal_lld.c ChibiOS/hal/ports/STM32/STM32F4xx/stm32_isr.c ChibiOS/hal/src/hal.c ChibiOS/hal/src/hal_adc.c ChibiOS/hal/src/hal_buffers.c ChibiOS/hal/src/hal_can.c ChibiOS/hal/src/hal_crypto.c ChibiOS/hal/src/hal_dac.c ChibiOS/hal/src/hal_ext.c ChibiOS/hal/src/hal_gpt.c ChibiOS/hal/src/hal_i2c.c ChibiOS/hal/src/hal_i2s.c ChibiOS/hal/src/hal_icu.c ChibiOS/hal/src/hal_mac.c ChibiOS/hal/src/hal_mmcsd.c ChibiOS/hal/src/hal_mmc_spi.c ChibiOS/hal/src/hal_pal.c ChibiOS/hal/src/hal_pwm.c ChibiOS/hal/src/hal_qspi.c ChibiOS/hal/src/hal_queues.c ChibiOS/hal/src/hal_rtc.c ChibiOS/hal/src/hal_sdc.c ChibiOS/hal/src/hal_serial.c ChibiOS/hal/src/hal_serial_usb.c ChibiOS/hal/src/hal_spi.c ChibiOS/hal/src/hal_st.c ChibiOS/hal/src/hal_uart.c ChibiOS/hal/src/hal_usb.c ChibiOS/hal/src/hal_wdg.c ChibiOS/rt/src/chcond.c ChibiOS/rt/src/chdebug.c ChibiOS/rt/src/chdynamic.c ChibiOS/rt/src/chevents.c ChibiOS/rt/src/chmsg.c ChibiOS/rt/src/chmtx.c ChibiOS/rt/src/chregistry.c ChibiOS/rt/src/chschd.c ChibiOS/rt/src/chsem.c ChibiOS/rt/src/chstats.c ChibiOS/rt/src/chsys.c ChibiOS/rt/src/chthreads.c ChibiOS/rt/src/chtm.c ChibiOS/rt/src/chtrace.c ChibiOS/rt/src/chvt.c ChibiOS/test/lib/ch_test.c ChibiOS/test/oslib/source/test/oslib_test_root.c ChibiOS/test/oslib/source/test/oslib_test_sequence_001.c ChibiOS/test/oslib/source/test/oslib_test_sequence_002.c ChibiOS/test/oslib/source/test/oslib_test_sequence_003.c ChibiOS/test/oslib/source/test/oslib_test_sequence_004.c ChibiOS/test/rt/source/test/rt_test_root.c ChibiOS/test/rt/source/test/rt_test_sequence_001.c ChibiOS/test/rt/source/test/rt_test_sequence_002.c ChibiOS/test/rt/source/test/rt_test_sequence_003.c ChibiOS/test/rt/source/test/rt_test_sequence_004.c ChibiOS/test/rt/source/test/rt_test_sequence_005.c ChibiOS/test/rt/source/test/rt_test_sequence_006.c ChibiOS/test/rt/source/test/rt_test_sequence_007.c ChibiOS/test/rt/source/test/rt_test_sequence_008.c ChibiOS/test/rt/source/test/rt_test_sequence_009.c ChibiOS/test/rt/source/test/rt_test_sequence_010.c ChibiOS/various/evtimer.c ChibiOS/various/cpp_wrappers/ch.cpp ChibiOS/various/fatfs_bindings/fatfs_diskio.c ChibiOS/various/fatfs_bindings/fatfs_syscall.c Tests/Rs485Test.cpp Tests/SimGsmTcpEcho.cpp Tests/XmlParserTest.cpp
+SOURCEFILES := board.c ChibiOS/hal/ports/STM32/LLD/CRCv1/hal_crc_lld.c ChibiOS/hal/src/hal_community.c ChibiOS/hal/src/hal_crc.c ChibiOS/various/crcsw.c ChibiOS/various/lwip_bindings/arch/sys_arch.c ChibiOS/various/lwip_bindings/lwipthread.c Core/BaseDynamicThread.cpp Core/ByteRingBuffer.cpp Core/CCMemoryAllocator.cpp Core/CCMemoryHeap.cpp Core/CpuUsageMonitor.cpp Core/DateTimeService.cpp Core/NewDelete.cpp Core/Object.cpp Core/ObjectMemoryUtilizer.cpp Crc32HW.cpp Drivers/Interfaces/Rs485.cpp Drivers/Interfaces/SharedRs485.cpp Drivers/Interfaces/Usart.cpp Drivers/LogicOutput.cpp Drivers/Network/SimGsm/SimGsm.cpp Drivers/Network/SimGsm/SimGsmATResponseParsers.cpp Drivers/Network/SimGsm/SimGsmSocketBase.cpp Drivers/Network/SimGsm/SimGsmTcpServer.cpp Drivers/Network/SimGsm/SimGsmTcpSocket.cpp Drivers/Network/SimGsm/SimGsmUdpSocket.cpp Drivers/Sensors/AbstractSensor.cpp Drivers/Sensors/CE301Sensor.cpp Drivers/Sensors/SimpleSensor.cpp Drivers/Sensors/TestSensorA.cpp Drivers/Sensors/TestSensorB.cpp Lib/fatfs/src/ff.c Lib/fatfs/src/ffunicode.c Lib/sha1/sha1.cpp Lib/tinyxml2/tinyxml2.cpp main.cpp MarvieDevice.cpp MarviePlatform.cpp MarvieXmlConfigParsers.cpp MLinkServer.cpp Network/AbstractTcpSocket.cpp Network/AbstractUdpSocket.cpp Network/IpAddress.cpp SensorService/CE301Type.cpp SensorService/SensorService.cpp SensorService/SimpleSensorType.cpp SensorService/TestSensorAType.cpp SensorService/TestSensorBType.cpp SingleBRSensorReader.cpp BRSensorReader.cpp MultipleBRSensorsReader.cpp Support/LexicalAnalyzer.cpp Support/Utility.cpp Tests/LwipEthernetTest.cpp Tests/MLinkTest.cpp Tests/MultipleBRSensorsReaderTest.cpp ChibiOS/common/oslib/src/chfactory.c ChibiOS/common/oslib/src/chheap.c ChibiOS/common/oslib/src/chmboxes.c ChibiOS/common/oslib/src/chmemcore.c ChibiOS/common/oslib/src/chmempools.c ChibiOS/common/ports/ARMCMx/chcore.c ChibiOS/common/ports/ARMCMx/chcore_v7m.c ChibiOS/common/ports/ARMCMx/compilers/GCC/chcoreasm_v7m.S ChibiOS/common/startup/ARMCMx/compilers/GCC/crt0_v7m.S ChibiOS/common/startup/ARMCMx/compilers/GCC/crt1.c ChibiOS/common/startup/ARMCMx/compilers/GCC/vectors.S ChibiOS/hal/lib/streams/chprintf.c ChibiOS/hal/lib/streams/memstreams.c ChibiOS/hal/lib/streams/nullstreams.c ChibiOS/hal/osal/rt/osal.c ChibiOS/hal/ports/common/ARMCMx/nvic.c ChibiOS/hal/ports/STM32/LLD/ADCv2/hal_adc_lld.c ChibiOS/hal/ports/STM32/LLD/CANv1/hal_can_lld.c ChibiOS/hal/ports/STM32/LLD/DACv1/hal_dac_lld.c ChibiOS/hal/ports/STM32/LLD/DMAv2/stm32_dma.c ChibiOS/hal/ports/STM32/LLD/EXTIv1/hal_ext_lld.c ChibiOS/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.c ChibiOS/hal/ports/STM32/LLD/I2Cv1/hal_i2c_lld.c ChibiOS/hal/ports/STM32/LLD/MACv1/hal_mac_lld.c ChibiOS/hal/ports/STM32/LLD/OTGv1/hal_usb_lld.c ChibiOS/hal/ports/STM32/LLD/OTGv1/hal_usb_lld_alt.c ChibiOS/hal/ports/STM32/LLD/QUADSPIv1/hal_qspi_lld.c ChibiOS/hal/ports/STM32/LLD/RTCv2/hal_rtc_lld.c ChibiOS/hal/ports/STM32/LLD/SDIOv1/hal_sdc_lld.c ChibiOS/hal/ports/STM32/LLD/SPIv1/hal_i2s_lld.c ChibiOS/hal/ports/STM32/LLD/SPIv1/hal_spi_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_icu_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_pwm_lld.c ChibiOS/hal/ports/STM32/LLD/TIMv1/hal_st_lld.c ChibiOS/hal/ports/STM32/LLD/USARTv1/hal_serial_lld.c ChibiOS/hal/ports/STM32/LLD/USARTv1/hal_uart_lld.c ChibiOS/hal/ports/STM32/LLD/xWDGv1/hal_wdg_lld.c ChibiOS/hal/ports/STM32/STM32F4xx/hal_lld.c ChibiOS/hal/ports/STM32/STM32F4xx/stm32_isr.c ChibiOS/hal/src/hal.c ChibiOS/hal/src/hal_adc.c ChibiOS/hal/src/hal_buffers.c ChibiOS/hal/src/hal_can.c ChibiOS/hal/src/hal_crypto.c ChibiOS/hal/src/hal_dac.c ChibiOS/hal/src/hal_ext.c ChibiOS/hal/src/hal_gpt.c ChibiOS/hal/src/hal_i2c.c ChibiOS/hal/src/hal_i2s.c ChibiOS/hal/src/hal_icu.c ChibiOS/hal/src/hal_mac.c ChibiOS/hal/src/hal_mmcsd.c ChibiOS/hal/src/hal_mmc_spi.c ChibiOS/hal/src/hal_pal.c ChibiOS/hal/src/hal_pwm.c ChibiOS/hal/src/hal_qspi.c ChibiOS/hal/src/hal_queues.c ChibiOS/hal/src/hal_rtc.c ChibiOS/hal/src/hal_sdc.c ChibiOS/hal/src/hal_serial.c ChibiOS/hal/src/hal_serial_usb.c ChibiOS/hal/src/hal_spi.c ChibiOS/hal/src/hal_st.c ChibiOS/hal/src/hal_uart.c ChibiOS/hal/src/hal_usb.c ChibiOS/hal/src/hal_wdg.c ChibiOS/rt/src/chcond.c ChibiOS/rt/src/chdebug.c ChibiOS/rt/src/chdynamic.c ChibiOS/rt/src/chevents.c ChibiOS/rt/src/chmsg.c ChibiOS/rt/src/chmtx.c ChibiOS/rt/src/chregistry.c ChibiOS/rt/src/chschd.c ChibiOS/rt/src/chsem.c ChibiOS/rt/src/chstats.c ChibiOS/rt/src/chsys.c ChibiOS/rt/src/chthreads.c ChibiOS/rt/src/chtm.c ChibiOS/rt/src/chtrace.c ChibiOS/rt/src/chvt.c ChibiOS/test/lib/ch_test.c ChibiOS/test/oslib/source/test/oslib_test_root.c ChibiOS/test/oslib/source/test/oslib_test_sequence_001.c ChibiOS/test/oslib/source/test/oslib_test_sequence_002.c ChibiOS/test/oslib/source/test/oslib_test_sequence_003.c ChibiOS/test/oslib/source/test/oslib_test_sequence_004.c ChibiOS/test/rt/source/test/rt_test_root.c ChibiOS/test/rt/source/test/rt_test_sequence_001.c ChibiOS/test/rt/source/test/rt_test_sequence_002.c ChibiOS/test/rt/source/test/rt_test_sequence_003.c ChibiOS/test/rt/source/test/rt_test_sequence_004.c ChibiOS/test/rt/source/test/rt_test_sequence_005.c ChibiOS/test/rt/source/test/rt_test_sequence_006.c ChibiOS/test/rt/source/test/rt_test_sequence_007.c ChibiOS/test/rt/source/test/rt_test_sequence_008.c ChibiOS/test/rt/source/test/rt_test_sequence_009.c ChibiOS/test/rt/source/test/rt_test_sequence_010.c ChibiOS/various/evtimer.c ChibiOS/various/cpp_wrappers/ch.cpp ChibiOS/various/fatfs_bindings/fatfs_diskio.c ChibiOS/various/fatfs_bindings/fatfs_syscall.c Tests/Rs485Test.cpp Tests/SimGsmTcpEcho.cpp Tests/XmlParserTest.cpp Lib/lwip/src/api/api_lib.c Lib/lwip/src/api/api_msg.c Lib/lwip/src/api/err.c Lib/lwip/src/api/netbuf.c Lib/lwip/src/api/netdb.c Lib/lwip/src/api/netifapi.c Lib/lwip/src/api/sockets.c Lib/lwip/src/api/tcpip.c Lib/lwip/src/apps/httpd/fs.c Lib/lwip/src/apps/httpd/fsdata.c Lib/lwip/src/apps/httpd/httpd.c Lib/lwip/src/apps/lwiperf/lwiperf.c Lib/lwip/src/apps/mdns/mdns.c Lib/lwip/src/apps/mqtt/mqtt.c Lib/lwip/src/apps/netbiosns/netbiosns.c Lib/lwip/src/apps/snmp/snmpv3.c Lib/lwip/src/apps/snmp/snmpv3_dummy.c Lib/lwip/src/apps/snmp/snmpv3_mbedtls.c Lib/lwip/src/apps/snmp/snmp_asn1.c Lib/lwip/src/apps/snmp/snmp_core.c Lib/lwip/src/apps/snmp/snmp_mib2.c Lib/lwip/src/apps/snmp/snmp_mib2_icmp.c Lib/lwip/src/apps/snmp/snmp_mib2_interfaces.c Lib/lwip/src/apps/snmp/snmp_mib2_ip.c Lib/lwip/src/apps/snmp/snmp_mib2_snmp.c Lib/lwip/src/apps/snmp/snmp_mib2_system.c Lib/lwip/src/apps/snmp/snmp_mib2_tcp.c Lib/lwip/src/apps/snmp/snmp_mib2_udp.c Lib/lwip/src/apps/snmp/snmp_msg.c Lib/lwip/src/apps/snmp/snmp_netconn.c Lib/lwip/src/apps/snmp/snmp_pbuf_stream.c Lib/lwip/src/apps/snmp/snmp_raw.c Lib/lwip/src/apps/snmp/snmp_scalar.c Lib/lwip/src/apps/snmp/snmp_table.c Lib/lwip/src/apps/snmp/snmp_threadsync.c Lib/lwip/src/apps/snmp/snmp_traps.c Lib/lwip/src/apps/sntp/sntp.c Lib/lwip/src/apps/tftp/tftp_server.c Lib/lwip/src/core/def.c Lib/lwip/src/core/dns.c Lib/lwip/src/core/inet_chksum.c Lib/lwip/src/core/init.c Lib/lwip/src/core/ip.c Lib/lwip/src/core/mem.c Lib/lwip/src/core/memp.c Lib/lwip/src/core/netif.c Lib/lwip/src/core/pbuf.c Lib/lwip/src/core/raw.c Lib/lwip/src/core/stats.c Lib/lwip/src/core/sys.c Lib/lwip/src/core/tcp.c Lib/lwip/src/core/tcp_in.c Lib/lwip/src/core/tcp_out.c Lib/lwip/src/core/timeouts.c Lib/lwip/src/core/udp.c Lib/lwip/src/core/ipv4/autoip.c Lib/lwip/src/core/ipv4/dhcp.c Lib/lwip/src/core/ipv4/etharp.c Lib/lwip/src/core/ipv4/icmp.c Lib/lwip/src/core/ipv4/igmp.c Lib/lwip/src/core/ipv4/ip4.c Lib/lwip/src/core/ipv4/ip4_addr.c Lib/lwip/src/core/ipv4/ip4_frag.c Lib/lwip/src/core/ipv6/dhcp6.c Lib/lwip/src/core/ipv6/ethip6.c Lib/lwip/src/core/ipv6/icmp6.c Lib/lwip/src/core/ipv6/inet6.c Lib/lwip/src/core/ipv6/ip6.c Lib/lwip/src/core/ipv6/ip6_addr.c Lib/lwip/src/core/ipv6/ip6_frag.c Lib/lwip/src/core/ipv6/mld6.c Lib/lwip/src/core/ipv6/nd6.c Lib/lwip/src/netif/ethernet.c Lib/lwip/src/netif/ethernetif.c Lib/lwip/src/netif/lowpan6.c Lib/lwip/src/netif/slipif.c Lib/lwip/src/netif/ppp/auth.c Lib/lwip/src/netif/ppp/ccp.c Lib/lwip/src/netif/ppp/chap-md5.c Lib/lwip/src/netif/ppp/chap-new.c Lib/lwip/src/netif/ppp/chap_ms.c Lib/lwip/src/netif/ppp/demand.c Lib/lwip/src/netif/ppp/eap.c Lib/lwip/src/netif/ppp/ecp.c Lib/lwip/src/netif/ppp/eui64.c Lib/lwip/src/netif/ppp/fsm.c Lib/lwip/src/netif/ppp/ipcp.c Lib/lwip/src/netif/ppp/ipv6cp.c Lib/lwip/src/netif/ppp/lcp.c Lib/lwip/src/netif/ppp/magic.c Lib/lwip/src/netif/ppp/mppe.c Lib/lwip/src/netif/ppp/multilink.c Lib/lwip/src/netif/ppp/ppp.c Lib/lwip/src/netif/ppp/pppapi.c Lib/lwip/src/netif/ppp/pppcrypt.c Lib/lwip/src/netif/ppp/pppoe.c Lib/lwip/src/netif/ppp/pppol2tp.c Lib/lwip/src/netif/ppp/pppos.c Lib/lwip/src/netif/ppp/upap.c Lib/lwip/src/netif/ppp/utils.c Lib/lwip/src/netif/ppp/vj.c Lib/lwip/src/netif/ppp/polarssl/arc4.c Lib/lwip/src/netif/ppp/polarssl/des.c Lib/lwip/src/netif/ppp/polarssl/md4.c Lib/lwip/src/netif/ppp/polarssl/md5.c Lib/lwip/src/netif/ppp/polarssl/sha1.c
 EXTERNAL_LIBS := 
 EXTERNAL_LIBS_COPIED := $(foreach lib, $(EXTERNAL_LIBS),$(BINARYDIR)/$(notdir $(lib)))
 
@@ -197,6 +197,14 @@ $(BINARYDIR)/crcsw.o : ChibiOS/various/crcsw.c $(all_make_files) |$(BINARYDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
+$(BINARYDIR)/sys_arch.o : ChibiOS/various/lwip_bindings/arch/sys_arch.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/lwipthread.o : ChibiOS/various/lwip_bindings/lwipthread.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
 $(BINARYDIR)/BaseDynamicThread.o : Core/BaseDynamicThread.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
@@ -346,6 +354,10 @@ $(BINARYDIR)/LexicalAnalyzer.o : Support/LexicalAnalyzer.cpp $(all_make_files) |
 
 
 $(BINARYDIR)/Utility.o : Support/Utility.cpp $(all_make_files) |$(BINARYDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/LwipEthernetTest.o : Tests/LwipEthernetTest.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
 
@@ -779,4 +791,428 @@ $(BINARYDIR)/SimGsmTcpEcho.o : Tests/SimGsmTcpEcho.cpp $(all_make_files) |$(BINA
 
 $(BINARYDIR)/XmlParserTest.o : Tests/XmlParserTest.cpp $(all_make_files) |$(BINARYDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/api_lib.o : Lib/lwip/src/api/api_lib.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/api_msg.o : Lib/lwip/src/api/api_msg.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/err.o : Lib/lwip/src/api/err.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/netbuf.o : Lib/lwip/src/api/netbuf.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/netdb.o : Lib/lwip/src/api/netdb.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/netifapi.o : Lib/lwip/src/api/netifapi.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/sockets.o : Lib/lwip/src/api/sockets.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/tcpip.o : Lib/lwip/src/api/tcpip.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/fs.o : Lib/lwip/src/apps/httpd/fs.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/fsdata.o : Lib/lwip/src/apps/httpd/fsdata.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/httpd.o : Lib/lwip/src/apps/httpd/httpd.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/lwiperf.o : Lib/lwip/src/apps/lwiperf/lwiperf.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/mdns.o : Lib/lwip/src/apps/mdns/mdns.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/mqtt.o : Lib/lwip/src/apps/mqtt/mqtt.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/netbiosns.o : Lib/lwip/src/apps/netbiosns/netbiosns.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmpv3.o : Lib/lwip/src/apps/snmp/snmpv3.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmpv3_dummy.o : Lib/lwip/src/apps/snmp/snmpv3_dummy.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmpv3_mbedtls.o : Lib/lwip/src/apps/snmp/snmpv3_mbedtls.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_asn1.o : Lib/lwip/src/apps/snmp/snmp_asn1.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_core.o : Lib/lwip/src/apps/snmp/snmp_core.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_mib2.o : Lib/lwip/src/apps/snmp/snmp_mib2.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_mib2_icmp.o : Lib/lwip/src/apps/snmp/snmp_mib2_icmp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_mib2_interfaces.o : Lib/lwip/src/apps/snmp/snmp_mib2_interfaces.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_mib2_ip.o : Lib/lwip/src/apps/snmp/snmp_mib2_ip.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_mib2_snmp.o : Lib/lwip/src/apps/snmp/snmp_mib2_snmp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_mib2_system.o : Lib/lwip/src/apps/snmp/snmp_mib2_system.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_mib2_tcp.o : Lib/lwip/src/apps/snmp/snmp_mib2_tcp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_mib2_udp.o : Lib/lwip/src/apps/snmp/snmp_mib2_udp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_msg.o : Lib/lwip/src/apps/snmp/snmp_msg.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_netconn.o : Lib/lwip/src/apps/snmp/snmp_netconn.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_pbuf_stream.o : Lib/lwip/src/apps/snmp/snmp_pbuf_stream.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_raw.o : Lib/lwip/src/apps/snmp/snmp_raw.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_scalar.o : Lib/lwip/src/apps/snmp/snmp_scalar.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_table.o : Lib/lwip/src/apps/snmp/snmp_table.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_threadsync.o : Lib/lwip/src/apps/snmp/snmp_threadsync.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/snmp_traps.o : Lib/lwip/src/apps/snmp/snmp_traps.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/sntp.o : Lib/lwip/src/apps/sntp/sntp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/tftp_server.o : Lib/lwip/src/apps/tftp/tftp_server.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/def.o : Lib/lwip/src/core/def.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/dns.o : Lib/lwip/src/core/dns.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/inet_chksum.o : Lib/lwip/src/core/inet_chksum.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/init.o : Lib/lwip/src/core/init.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ip.o : Lib/lwip/src/core/ip.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/mem.o : Lib/lwip/src/core/mem.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/memp.o : Lib/lwip/src/core/memp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/netif.o : Lib/lwip/src/core/netif.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/pbuf.o : Lib/lwip/src/core/pbuf.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/raw.o : Lib/lwip/src/core/raw.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/stats.o : Lib/lwip/src/core/stats.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/sys.o : Lib/lwip/src/core/sys.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/tcp.o : Lib/lwip/src/core/tcp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/tcp_in.o : Lib/lwip/src/core/tcp_in.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/tcp_out.o : Lib/lwip/src/core/tcp_out.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/timeouts.o : Lib/lwip/src/core/timeouts.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/udp.o : Lib/lwip/src/core/udp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/autoip.o : Lib/lwip/src/core/ipv4/autoip.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/dhcp.o : Lib/lwip/src/core/ipv4/dhcp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/etharp.o : Lib/lwip/src/core/ipv4/etharp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/icmp.o : Lib/lwip/src/core/ipv4/icmp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/igmp.o : Lib/lwip/src/core/ipv4/igmp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ip4.o : Lib/lwip/src/core/ipv4/ip4.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ip4_addr.o : Lib/lwip/src/core/ipv4/ip4_addr.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ip4_frag.o : Lib/lwip/src/core/ipv4/ip4_frag.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/dhcp6.o : Lib/lwip/src/core/ipv6/dhcp6.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ethip6.o : Lib/lwip/src/core/ipv6/ethip6.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/icmp6.o : Lib/lwip/src/core/ipv6/icmp6.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/inet6.o : Lib/lwip/src/core/ipv6/inet6.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ip6.o : Lib/lwip/src/core/ipv6/ip6.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ip6_addr.o : Lib/lwip/src/core/ipv6/ip6_addr.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ip6_frag.o : Lib/lwip/src/core/ipv6/ip6_frag.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/mld6.o : Lib/lwip/src/core/ipv6/mld6.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/nd6.o : Lib/lwip/src/core/ipv6/nd6.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ethernet.o : Lib/lwip/src/netif/ethernet.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ethernetif.o : Lib/lwip/src/netif/ethernetif.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/lowpan6.o : Lib/lwip/src/netif/lowpan6.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/slipif.o : Lib/lwip/src/netif/slipif.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/auth.o : Lib/lwip/src/netif/ppp/auth.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ccp.o : Lib/lwip/src/netif/ppp/ccp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chap-md5.o : Lib/lwip/src/netif/ppp/chap-md5.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chap-new.o : Lib/lwip/src/netif/ppp/chap-new.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/chap_ms.o : Lib/lwip/src/netif/ppp/chap_ms.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/demand.o : Lib/lwip/src/netif/ppp/demand.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/eap.o : Lib/lwip/src/netif/ppp/eap.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ecp.o : Lib/lwip/src/netif/ppp/ecp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/eui64.o : Lib/lwip/src/netif/ppp/eui64.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/fsm.o : Lib/lwip/src/netif/ppp/fsm.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ipcp.o : Lib/lwip/src/netif/ppp/ipcp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ipv6cp.o : Lib/lwip/src/netif/ppp/ipv6cp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/lcp.o : Lib/lwip/src/netif/ppp/lcp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/magic.o : Lib/lwip/src/netif/ppp/magic.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/mppe.o : Lib/lwip/src/netif/ppp/mppe.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/multilink.o : Lib/lwip/src/netif/ppp/multilink.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/ppp.o : Lib/lwip/src/netif/ppp/ppp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/pppapi.o : Lib/lwip/src/netif/ppp/pppapi.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/pppcrypt.o : Lib/lwip/src/netif/ppp/pppcrypt.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/pppoe.o : Lib/lwip/src/netif/ppp/pppoe.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/pppol2tp.o : Lib/lwip/src/netif/ppp/pppol2tp.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/pppos.o : Lib/lwip/src/netif/ppp/pppos.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/upap.o : Lib/lwip/src/netif/ppp/upap.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/utils.o : Lib/lwip/src/netif/ppp/utils.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/vj.o : Lib/lwip/src/netif/ppp/vj.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/arc4.o : Lib/lwip/src/netif/ppp/polarssl/arc4.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/des.o : Lib/lwip/src/netif/ppp/polarssl/des.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/md4.o : Lib/lwip/src/netif/ppp/polarssl/md4.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/md5.o : Lib/lwip/src/netif/ppp/polarssl/md5.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/sha1.o : Lib/lwip/src/netif/ppp/polarssl/sha1.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 
