@@ -20,7 +20,8 @@ public:
 	uint32_t writeAvailable() const final override;
 
 	uint32_t read( uint8_t* data, uint32_t size, sysinterval_t timeout );
-	uint32_t read( uint8_t* data, uint32_t size )final override;
+	uint32_t read( uint8_t* data, uint32_t size ) final override;
+	uint32_t peek( uint32_t pos, uint8_t* data, uint32_t len ) final override;
 	uint32_t readAvailable() const final override;
 	bool waitForReadAvailable( uint32_t size, sysinterval_t timeout );
 	bool isOverflowed() const final override;

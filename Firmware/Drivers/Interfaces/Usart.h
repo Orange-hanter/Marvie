@@ -27,6 +27,7 @@ public:
 
 	uint32_t write( const uint8_t* data, uint32_t size, sysinterval_t timeout ) override;
 	uint32_t read( uint8_t* data, uint32_t size, sysinterval_t timeout ) override;
+	uint32_t peek( uint32_t pos, uint8_t* data, uint32_t size ) override;
 	uint32_t readAvailable() const override;
 	bool waitForBytesWritten( sysinterval_t timeout ) final override;
 	bool waitForReadAvailable( uint32_t size, sysinterval_t timeout ) final override;
@@ -57,20 +58,21 @@ private:
 	public:
 		Usart * usart;
 
-		uint32_t read( uint8_t* data, uint32_t len ) final override;
-		uint32_t readAvailable() const final override;
-		bool isOverflowed() const final override;
-		void resetOverflowFlag() final override;
-		void clear() final override;
+		uint32_t read( uint8_t* data, uint32_t len ) override;
+		uint32_t readAvailable() const override;
+		bool isOverflowed() const override;
+		void resetOverflowFlag() override;
+		void clear() override;
 
-		uint8_t& first() final override;
-		uint8_t& back() final override;
-		uint8_t& peek( uint32_t index ) final override;
+		uint8_t& first() override;
+		uint8_t& back() override;
+		uint8_t& peek( uint32_t index ) override;
+		uint32_t peek( uint32_t pos, uint8_t* data, uint32_t len ) override;
 
-		Iterator begin() final override;
-		Iterator end() final override;
-		ReverseIterator rbegin() final override;
-		ReverseIterator rend() final override;
+		Iterator begin() override;
+		Iterator end() override;
+		ReverseIterator rbegin() override;
+		ReverseIterator rend() override;
 
 	} inBuffer;
 
@@ -79,10 +81,10 @@ private:
 	public:
 		Usart* usart;
 
-		uint32_t write( const uint8_t* data, uint32_t len ) final override;
-		uint32_t write( Iterator begin, Iterator end ) final override;
-		uint32_t write( Iterator begin, uint32_t size ) final override;
-		uint32_t writeAvailable() const final override;
+		uint32_t write( const uint8_t* data, uint32_t len ) override;
+		uint32_t write( Iterator begin, Iterator end ) override;
+		uint32_t write( Iterator begin, uint32_t size ) override;
+		uint32_t writeAvailable() const override;
 
 	} outBuffer;
 };

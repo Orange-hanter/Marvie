@@ -1,7 +1,7 @@
 #include "ch.h"
 #include "hal.h"
-#include "os/various/cpp_wrappers/ch.hpp"
-#include "Assert.h"
+#include "ChibiOS/various/cpp_wrappers/ch.hpp"
+#include "core/Assert.h"
 #include "Core/RingBuffer.h"
 
 using namespace chibios_rt;
@@ -71,6 +71,24 @@ public:
 		assert( buffer->waitForReadAvailable( 3, TIME_MS2I( 10 ) ) == true );	
 		assert( buffer->readAvailable() >= 3 );
 		wait();
+
+		buffer->clear();
+		data[0] = 1; data[1] = 2; data[2] = 3; data[3] = 4; data[4] = 5;
+		buffer->write( data, 5 );
+		buffer->read( nullptr, 2 );
+		buffer->write( data, 2 );
+		assert( buffer->peek( 0 ) == 3 );
+		assert( buffer->peek( 4 ) == 2 );
+		uint8_t tmp[5];
+		for( int i = 0; i < 5; ++i )
+			buffer->peek( i, tmp + i, 1 );
+		uint8_t tmp2[5];
+		buffer->peek( 0, tmp2, 5 );
+		assert( tmp[0] == tmp2[0] && tmp[0] == 3 );
+		assert( tmp[1] == tmp2[1] && tmp[1] == 4 );
+		assert( tmp[2] == tmp2[2] && tmp[2] == 5 );
+		assert( tmp[3] == tmp2[3] && tmp[3] == 1 );
+		assert( tmp[4] == tmp2[4] && tmp[4] == 2 );
 	}
 
 private:

@@ -17,6 +17,7 @@ public:
 
 	uint32_t write( const uint8_t* data, uint32_t size, sysinterval_t timeout ) override;
 	uint32_t read( uint8_t* data, uint32_t size, sysinterval_t timeout ) override;
+	uint32_t peek( uint32_t pos, uint8_t* data, uint32_t size ) override;
 	uint32_t readAvailable() const override;
 	bool waitForBytesWritten( sysinterval_t timeout ) final override;
 	bool waitForReadAvailable( uint32_t size, sysinterval_t timeout ) final override; // not supported, use waitDatagram() instead
@@ -27,6 +28,7 @@ public:
 	EvtSource* eventSource() final override;
 
 	bool bind( uint16_t port ) final override;
+	bool bind( IpAddress address, uint16_t port ) final override;
 	bool connect( const char* hostName, uint16_t port ) final override;
 	bool connect( IpAddress address, uint16_t port ) final override;
 	void disconnect() final override;

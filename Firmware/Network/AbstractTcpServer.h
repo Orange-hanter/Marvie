@@ -10,7 +10,7 @@ public:
 	virtual ~AbstractTcpServer() {};
 
 	virtual bool isListening() const = 0;
-	virtual bool listen( uint16_t port ) = 0;
+	virtual bool listen( uint16_t port, IpAddress address = IpAddress::Any ) = 0;
 	virtual SocketError serverError() const = 0;
 	virtual void close() = 0;
 

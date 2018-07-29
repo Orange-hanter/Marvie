@@ -13,7 +13,7 @@ class SimGsmTcpServer : public AbstractTcpServer
 
 public:
 	bool isListening() const;
-	bool listen( uint16_t port );
+	bool listen( uint16_t port, IpAddress address = IpAddress::Any );
 	SocketError serverError() const;
 	void close();
 

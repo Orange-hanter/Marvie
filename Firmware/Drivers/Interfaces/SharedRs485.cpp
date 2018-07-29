@@ -149,6 +149,11 @@ uint32_t SharedRs485::read( uint8_t* data, uint32_t size, sysinterval_t timeout 
 	return n;
 }
 
+uint32_t SharedRs485::peek( uint32_t pos, uint8_t* data, uint32_t size )
+{
+	return control->usart->inputBuffer()->peek( pos, data, size );
+}
+
 uint32_t SharedRs485::readAvailable() const
 {
 	return control->usart->readAvailable();

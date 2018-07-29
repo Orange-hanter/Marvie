@@ -12,7 +12,7 @@ accompanying LICENSE file.
 #include <stdlib.h>
 #include <assert.h>
 
-#include "sha1.h"
+#include "_Sha1.h"
 
 // circular left bit rotation.  MSB wraps around to LSB
 Uint32 SHA1::lrot( Uint32 x, int bits )

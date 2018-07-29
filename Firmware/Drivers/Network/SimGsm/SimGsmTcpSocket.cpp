@@ -43,6 +43,11 @@ uint32_t SimGsmTcpSocket::read( uint8_t* data, uint32_t size, sysinterval_t time
 	return inBuffer.read( data, size, timeout );
 }
 
+uint32_t SimGsmTcpSocket::peek( uint32_t pos, uint8_t* data, uint32_t size )
+{
+	return inBuffer.peek( pos, data, size );
+}
+
 uint32_t SimGsmTcpSocket::readAvailable() const
 {
 	return inBuffer.readAvailable();
@@ -77,6 +82,11 @@ EvtSource* SimGsmTcpSocket::eventSource()
 bool SimGsmTcpSocket::bind( uint16_t port )
 {
 	assert( false );
+	return false;
+}
+
+bool SimGsmTcpSocket::bind( IpAddress address, uint16_t port )
+{
 	return false;
 }
 

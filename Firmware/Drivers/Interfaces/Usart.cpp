@@ -247,6 +247,11 @@ uint32_t Usart::read( uint8_t* data, uint32_t size, sysinterval_t timeout )
 	return iqReadTimeout( &sd->iqueue, data, size, timeout );
 }
 
+uint32_t Usart::peek( uint32_t pos, uint8_t* data, uint32_t size )
+{
+	return inBuffer.peek( pos, data, size );
+}
+
 uint32_t Usart::readAvailable() const
 {
 	return iqGetFullI( &sd->iqueue );
@@ -462,6 +467,32 @@ uint8_t& Usart::InputBuffer::peek( uint32_t index )
 		p -= iq.q_size + 1;
 
 	return *p;
+}
+
+uint32_t Usart::InputBuffer::peek( uint32_t pos, uint8_t* data, uint32_t len )
+{
+	input_queue_t& iq = usart->sd->iqueue;
+	uint32_t n = iqGetFullI( &iq );
+	if( n <= pos )
+		return 0;
+	n -= pos;
+	if( len > n )
+		len = n;
+	else
+		n = len;
+	auto p = iq.q_rdptr + pos;
+	if( p >= iq.q_top )
+		p -= iq.q_size + 1;
+	while( n )
+	{
+		*data = *p;
+		++data, ++p;
+		if( p == iq.q_top )
+			p = iq.q_buffer;
+		--n;
+	}
+
+	return len;
 }
 
 void Usart::InputBuffer::clear()

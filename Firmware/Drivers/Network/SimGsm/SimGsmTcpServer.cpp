@@ -30,7 +30,7 @@ bool SimGsmTcpServer::isListening() const
 	return listening;
 }
 
-bool SimGsmTcpServer::listen( uint16_t port )
+bool SimGsmTcpServer::listen( uint16_t port, IpAddress address )
 {
 	if( listening )
 		return false;

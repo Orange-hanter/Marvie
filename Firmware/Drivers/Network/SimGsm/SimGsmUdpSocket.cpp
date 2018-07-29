@@ -51,6 +51,11 @@ uint32_t SimGsmUdpSocket::read( uint8_t* data, uint32_t size, sysinterval_t time
 	return readDatagram( data, size, nullptr, nullptr );
 }
 
+uint32_t SimGsmUdpSocket::peek( uint32_t pos, uint8_t* data, uint32_t size )
+{
+	return inBuffer.peek( pos, data, size );
+}
+
 uint32_t SimGsmUdpSocket::readAvailable() const
 {
 	if( hasPendingDatagrams() )
@@ -93,6 +98,11 @@ bool SimGsmUdpSocket::bind( uint16_t port )
 	cAddr = IpAddress( 8, 8, 8, 8 );
 	cPort = 8888;
 	return gsm->openUdpSocket( this, port );
+}
+
+bool SimGsmUdpSocket::bind( IpAddress address, uint16_t port )
+{
+	return false;
 }
 
 bool SimGsmUdpSocket::connect( const char* hostName, uint16_t port )

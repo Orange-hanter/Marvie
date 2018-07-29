@@ -8,7 +8,8 @@ This file is licensed under the terms described in the
 accompanying LICENSE file.
 */
 
-#ifndef SHA1_HEADER
+#pragma once
+
 typedef unsigned int Uint32;
 
 class SHA1
@@ -39,6 +40,3 @@ class SHA1
 		static inline Uint32 lrot( Uint32 x, int bits );
 		static inline Uint32 toBigEndian( Uint32 num );
 };
-
-#define SHA1_HEADER
-#endif

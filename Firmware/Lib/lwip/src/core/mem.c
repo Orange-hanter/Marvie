@@ -95,13 +95,13 @@ mem_trim(void *mem, mem_size_t size)
  * allow these defines to be overridden.
  */
 #ifndef mem_clib_free
-#define mem_clib_free free
+#define mem_clib_free chHeapFree
 #endif
 #ifndef mem_clib_malloc
-#define mem_clib_malloc malloc
+#define mem_clib_malloc(size) chHeapAlloc(NULL, size)
 #endif
 #ifndef mem_clib_calloc
-#define mem_clib_calloc calloc
+#define mem_clib_calloc(count, size) chHeapAlloc(NULL, count * size)
 #endif
 
 #if LWIP_STATS && MEM_STATS

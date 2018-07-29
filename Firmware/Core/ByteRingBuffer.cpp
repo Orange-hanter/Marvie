@@ -94,6 +94,11 @@ uint8_t& BaseByteRingBuffer::peek( uint32_t index )
 	return buffer.peek( index );
 }
 
+uint32_t BaseByteRingBuffer::peek( uint32_t pos, uint8_t* data, uint32_t len )
+{
+	return buffer.peek( pos, data, len );
+}
+
 BaseByteRingBuffer::Iterator BaseByteRingBuffer::begin()
 {
 	return buffer.begin();

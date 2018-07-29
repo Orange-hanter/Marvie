@@ -416,9 +416,7 @@ void MLinkServer::processNewBytes()
 				if( device->readAvailable() < sizeof( Header ) + sizeof( uint32_t ) )
 					return;
 				uint32_t preamble;
-				auto it = device->inputBuffer()->begin();
-				for( int i = 0; i < 4; ++i, ++it )
-					reinterpret_cast< uint8_t* >( &preamble )[i] = *it;
+				device->peek( ( uint8_t* )&preamble, 4 );
 				if( preamble != MLINK_PREAMBLE )
 				{
 					device->read( nullptr, 1, TIME_INFINITE );

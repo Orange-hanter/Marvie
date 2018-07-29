@@ -29,6 +29,7 @@ public:
 	Type& first();
 	Type& back();
 	Type& peek( uint32_t index );
+	uint32_t peek( uint32_t pos, Type* data, uint32_t size );
 
 	Iterator begin();
 	Iterator end();
@@ -306,6 +307,32 @@ Type& BaseRingBuffer< Type >::peek( uint32_t index )
 	if( p >= top )
 		p -= size + 1;
 	return *p;
+}
+
+template< typename Type >
+uint32_t BaseRingBuffer< Type >::peek( uint32_t pos, Type* data, uint32_t len )
+{
+	uint32_t n = counter;
+	if( n <= pos )
+		return 0;
+	n -= pos;
+	if( len > n )
+		len = n;
+	else
+		n = len;
+	Type* p = rdPtr + pos;
+	if( p >= top )
+		p -= size + 1;
+	while( n )
+	{
+		*data = *p;
+		++data, ++p;
+		if( p == top )
+			p = buffer;
+		--n;
+	}
+
+	return len;
 }
 
 template< typename Type >

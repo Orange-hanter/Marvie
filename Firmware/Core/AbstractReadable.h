@@ -18,6 +18,8 @@ public:
 	virtual uint8_t& first() = 0;
 	virtual uint8_t& back() = 0;
 	virtual uint8_t& peek( uint32_t index ) = 0;
+	virtual uint32_t peek( uint32_t pos, uint8_t* data, uint32_t len ) = 0;
+	inline uint32_t peek( uint8_t* data, uint32_t len ) { return peek( 0, data, len ); }
 
 	virtual Iterator begin() = 0;
 	virtual Iterator end() = 0;
