@@ -38,6 +38,7 @@ namespace Utility
 	uint32_t parseInt( const uint8_t* p );
 	uint32_t parseHex( const uint8_t* p );
 	uint32_t parseTime( const uint8_t* p );
+	uint32_t parseIp( const char* s );
 	float convertPressureToMeters( float p );
 
 	template< typename T>

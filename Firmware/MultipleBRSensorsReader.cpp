@@ -341,7 +341,7 @@ void MultipleBRSensorsReader::main()
 
 	chSysLock();
 	tState = State::Stopped;
-	wState = BRSensorReader::WorkingState::Waiting;
+	wState = WorkingState::Connecting;
 	_nextSensor = nullptr;
 	nextInterval = 0;
 	forcedSensor = nullptr;

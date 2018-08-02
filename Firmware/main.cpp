@@ -2,8 +2,6 @@
 
 //uint8_t data[513] __attribute__( ( section( ".ram4" ) ) );
 
-#include "Lib/sha1/sha1.h"
-
 #include "Drivers/Interfaces/Rs485.h"
 
 int main()

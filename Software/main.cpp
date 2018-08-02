@@ -8,6 +8,7 @@ int main( int argc, char *argv[] )
 	a.setStyle( "Fusion" );
 	QLocale::setDefault( QLocale( QLocale::English, QLocale::UnitedKingdom ) );
 	qsrand( time( nullptr ) );
+
 	MarvieController w;
 	w.show();
 	return a.exec();

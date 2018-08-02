@@ -4,7 +4,7 @@
 
 namespace MarviePackets
 {
-	enum Type : uint8_t { CpuLoadType, MemoryLoadType, VPortStatusType, GetConfigXmlType, ConfigXmlMissingType, SyncStartType, SyncEndType, VPortCountType, DeviceStatusType, SensorErrorReportType, SetDateTimeType, StopVPorts, StartVPorts, UpdateAllSensors, UpdateOneSensor };
+	enum Type : uint8_t { CpuLoadType, MemoryLoadType, VPortStatusType, GetConfigXmlType, ConfigXmlMissingType, SyncStartType, SyncEndType, ConfigResetType, VPortCountType, DeviceStatusType, SensorErrorReportType, SetDateTimeType, FormatSdCardType, StopVPortsType, StartVPortsType, UpdateAllSensorsType, UpdateOneSensorType };
 	enum ComplexChannel { BootloaderChannel, FirmwareChannel, XmlConfigChannel, XmlConfigSyncChannel, SensorDataChannel, SupportedSensorsListChannel };
 
 	struct CpuLoad 
@@ -33,7 +33,11 @@ namespace MarviePackets
 	struct DeviceStatus
 	{
 		DateTime dateTime;
-		enum class DeviceState { Reconfiguration, Working, IncorrectConfiguration } state;
+		enum class DeviceState : uint8_t { Reconfiguration, Working, IncorrectConfiguration } state;
+		enum class ConfigError : uint8_t { NoError, NoConfiglFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorsConfigError } configError;
+		enum class SdCardStatus : uint8_t { NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } sdCardStatus;
+		uint8_t errorSensorId;
+		uint32_t ethernetIp, gsmIp;
 	};
 	struct SensorErrorReport 
 	{

@@ -55,7 +55,6 @@
 
   <xs:element name="gsmModem">
     <xs:complexType>
-      <xs:group ref="networkGroup"/>
       <xs:attribute name="pinCode" use="optional">
         <xs:simpleType>
           <xs:restriction base="xs:int">
@@ -121,9 +120,16 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="ethernetConfig" minOccurs="0" maxOccurs="1">
+        <xs:element name="networkConfig" minOccurs="0" maxOccurs="1">
           <xs:complexType>
-            <xs:group ref="networkGroup"/>
+            <xs:sequence>
+              <xs:element name="staticIp" minOccurs="0" maxOccurs="1">
+                <xs:simpleType>
+                  <xs:restriction base="ip"/>
+                </xs:simpleType>
+              </xs:element>
+              <xs:group ref="networkGroup"/>
+            </xs:sequence>
           </xs:complexType>
         </xs:element>
         <xs:element ref="sensorsConfig" minOccurs="0"/>

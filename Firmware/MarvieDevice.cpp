@@ -2,6 +2,11 @@
 #include "Core/CCMemoryAllocator.h"
 #include "Core/DateTimeService.h"
 #include "Core/CCMemoryHeap.h"
+#include "lwipthread.h"
+#include "Network/UdpSocket.h"
+#include "Network/TcpServer.h"
+
+#include "Tests/UdpStressTestServer/UdpStressTestServer.h"
 
 #define SD_TEST_INTERVAL     100  // ms
 #define MEMORY_TEST_INTERVAL 1000 // ms
@@ -79,6 +84,7 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	configError = ConfigError::NoError;
 	sensorsConfigError = SensorsConfigError::NoError;
 	errorSensorName = nullptr;
+	errorSensorId = 0;
 
 	configNum = 0;
 	vPorts = nullptr;
@@ -99,6 +105,13 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	mLinkServer = new MLinkServer;
 	mLinkServer->setComplexDataReceiveCallback( this );
 	mLinkServer->setIODevice( comPorts[2] );
+
+	lwipInit( NULL );
+
+	UdpSocket* socket = new UdpSocket;
+	socket->bind( 16021 );
+	socket->connect( IpAddress( 192, 168, 1, 12 ), 16032 );
+	mLinkServer->setIODevice( socket );
 }
 
 MarvieDevice* MarvieDevice::instance()
@@ -117,6 +130,49 @@ void MarvieDevice::exec()
 	uiThread                 = Concurrent::run( [this]() { uiThreadMain(); },                 1024,  NORMALPRIO );
 
 	//mLinkServer->startListening( NORMALPRIO );
+		
+	Concurrent::run( []()
+	{
+		UdpStressTestServer* server = new UdpStressTestServer( 1112 );
+		server->exec();
+	}, 2048, NORMALPRIO );
+
+	Concurrent::run( []()
+	{
+		UdpStressTestServer* server = new UdpStressTestServer( 1114 );
+		server->exec();
+	}, 2048, NORMALPRIO );
+
+	TcpServer* server = new TcpServer;
+	server->listen( 42420 );
+	while( server->isListening() )
+	{
+		if( server->waitForNewConnection( TIME_MS2I( 100 ) ) )
+		{
+			TcpSocket* socket = server->nextPendingConnection();
+			Concurrent::run( [socket]()
+			{
+				uint8_t* data = new uint8_t[2048];
+				while( true )
+				{
+					if( socket->waitForReadAvailable( 1, TIME_MS2I( 100 ) ) )
+					{
+						while( socket->readAvailable() )
+						{
+							uint32_t len = socket->read( data, 2048, TIME_IMMEDIATE );
+							if( socket->write( data, len ) == 0 )
+								goto End;
+						}
+					}
+					if( !socket->isOpen() )
+						break;
+				}
+End:
+				delete data;
+				delete socket;
+			}, 2048, NORMALPRIO );
+		}
+	}
 
 	thread_reference_t ref = nullptr;
 	chSysLock();
@@ -146,27 +202,7 @@ void MarvieDevice::mainThreadMain()
 						if( fsError == FR_OK )
 						{
 							sdCardStatus = SdCardStatus::Working;
-
-							if( deviceState == DeviceState::IncorrectConfiguration || deviceState == DeviceState::Working )
-							{
-								char* xmlData;
-								uint32_t size = readConfigXmlFile( &xmlData );
-								if( size )
-								{
-									sha.reset();
-									sha.addBytes( xmlData, ( int )size );
-									auto hash = sha.result();
-									if( hash != configXmlHash )
-									{
-										configXmlHash = hash;
-										if( deviceState == DeviceState::Working )
-											reconfig();
-										else
-											applyConfig( xmlData, size );
-									}
-									delete xmlData;
-								}
-							}
+							reconfig();
 						}
 						else
 							sdCardStatus = SdCardStatus::InitFailed;
@@ -188,60 +224,18 @@ void MarvieDevice::mainThreadMain()
 			auto& file = datFiles[MarviePackets::ComplexChannel::XmlConfigChannel];
 			if( file )
 			{
-				sha.reset();
-				if( f_lseek( file, 0 ) == FR_OK )
+				char path[] = "/Temp/0.dat";
+				path[6] = '0' + MarviePackets::ComplexChannel::XmlConfigChannel;
+
+				configXmlFileMutex.lock();
+				f_unlink( "/config.xml" );
+				if( f_close( file ) == FR_OK && f_rename( path, "/config.xml" ) == FR_OK )
 				{
-					auto s = f_size( file );
-					while( s )
-					{
-						auto t = s;
-						if( t > 1024 )
-							t = 1024;
-						UINT br;
-						if( f_read( file, buffer, t, &br ) != FR_OK || br != t )
-							goto SkipNewXmlConfig;
-						sha.addBytes( ( const char* )buffer, t );
-						s -= t;
-					}
-
-					char path[] = "/Temp/0.dat";
-					path[6] = '0' + MarviePackets::ComplexChannel::XmlConfigChannel;
-
-					auto hash = sha.result();
-					if( hash != configXmlHash )
-					{
-						configXmlFileMutex.lock();
-						f_unlink( "/config.xml" );
-						if( f_close( file ) == FR_OK && f_rename( path, "/config.xml" ) == FR_OK )
-						{
-							configXmlFileMutex.unlock();
-							configXmlHash = hash;
-							if( deviceState == DeviceState::IncorrectConfiguration )
-							{
-								char* xmlData;
-								uint32_t size = readConfigXmlFile( &xmlData );
-								if( size )
-								{
-									applyConfig( xmlData, size );
-									delete xmlData;
-								}
-							}
-							else if( deviceState == DeviceState::Working )
-								reconfig();
-						}
-						else
-						{
-							configXmlHash = SHA1::Digest();
-							configXmlFileMutex.unlock();
-						}
-					}
-					else
-					{
-						f_close( file );
-						f_unlink( path );
-					}
+					configXmlFileMutex.unlock();
+					reconfig();
 				}
-SkipNewXmlConfig:
+				else
+					configXmlFileMutex.lock();
 				delete file;
 				file = nullptr;
 			}
@@ -249,73 +243,52 @@ SkipNewXmlConfig:
 		}
 		if( em & MainThreadEvent::BrSensorReaderEvent )
 		{
-			if( deviceState == DeviceState::Reconfiguration )
+			volatile bool updated = false;
+			for( uint i = 0; i < vPortsCount; ++i )
 			{
-				volatile bool allStopped = true;
-				for( uint i = 0; i < vPortsCount; ++i )
+				eventflags_t flags = brSensorReaderListeners[i].getAndClearFlags();
+				if( flags & ( eventflags_t )BRSensorReader::EventFlag::SensorDataUpdated )
 				{
-					if( brSensorReaders[i] )
+					updated = true;
+					if( vPortBindings[i] == VPortBinding::Rs485 )
 					{
-						if( brSensorReaders[i]->state() != BRSensorReader::State::Stopped )
+						MultipleBRSensorsReader* reader = static_cast< MultipleBRSensorsReader* >( brSensorReaders[i] );
+						AbstractBRSensor* sensor = reader->nextUpdatedSensor();
+						while( sensor )
 						{
-							allStopped = false;
-							break;
+							sensors[sensor->userData()].updated = true;
+							sensor = reader->nextUpdatedSensor();
 						}
 					}
-				}
-				if( allStopped )
-				{
-					chEvtGetAndClearEvents( MainThreadEvent::BrSensorReaderEvent );
-					removeConfigRelatedObject();
-					FIL* file = new FIL;
-					configXmlFileMutex.lock();
-					if( f_open( file, "/config.xml", FA_READ ) == FR_OK )
-					{
-						auto size = f_size( file );
-						char* xmlData = new char[size];
-						UINT br;
-						if( f_read( file, xmlData, size, &br ) == FR_OK && br == size )
-							applyConfig( xmlData, size );
-						else
-							deviceState = DeviceState::IncorrectConfiguration;
-						delete xmlData;
-						f_close( file );
-					}
+					else if( vPortBindings[i] == VPortBinding::Rs232 || vPortBindings[i] == VPortBinding::NetworkSocket )
+						sensors[static_cast< SingleBRSensorReader* >( brSensorReaders[i] )->nextSensor()->userData()].updated = true;
 					else
-						deviceState = DeviceState::IncorrectConfiguration;
-					configXmlFileMutex.unlock();
-					delete file;
+					{
+						// TODO: add code here
+					}
 				}
 			}
-			else if( deviceState == DeviceState::Working )
+			if( updated )
+				mLinkServerHandlerThread->signalEvents( MLinkThreadEvent::BrSensorUpdatedEvent );
+		}
+		if( em & MainThreadEvent::FormatSdCardRequest )
+		{
+			if( sdCardStatus != SdCardStatus::NotInserted && sdCardStatus != SdCardStatus::InitFailed )
 			{
-				volatile bool updated = false;
-				for( uint i = 0; i < vPortsCount; ++i )
-				{
-					eventflags_t flags = brSensorReaderListeners[i].getAndClearFlags();
-					if( flags & ( eventflags_t )BRSensorReader::EventFlag::SensorDataUpdated )
-					{
-						updated = true;
-						if( vPortBindings[i] == VPortBindind::Rs485 )
-						{
-							MultipleBRSensorsReader* reader = static_cast< MultipleBRSensorsReader* >( brSensorReaders[i] );
-							AbstractBRSensor* sensor = reader->nextUpdatedSensor();
-							while( sensor )
-							{
-								sensors[sensor->userData()].updated = true;
-								sensor = reader->nextUpdatedSensor();
-							}
-						}
-						else if( vPortBindings[i] == VPortBindind::Rs232 )
-							sensors[static_cast< SingleBRSensorReader* >( brSensorReaders[i] )->nextSensor()->userData()].updated = true;
-						else // vPortBindings[i] == VPortBindind::NetworkSocket
-						{
-							// TODO: add code here
-						}
-					}
-				}
-				if( updated )
-					mLinkServerHandlerThread->signalEvents( MLinkThreadEvent::BrSensorUpdated );
+				sdCardStatus = SdCardStatus::Formatting;
+				mLinkServerHandlerThread->signalEvents( MLinkThreadEvent::ConfigResetEvent );
+				configMutex.lock();
+				configShutdownM();
+				deviceState = DeviceState::IncorrectConfiguration;
+				configError = ConfigError::NoConfigFile;
+				configMutex.unlock();
+
+				removeOpenDatFiles();
+				if( f_mkfs( "/", FM_FAT32, 1024, buffer, 1024 ) == FR_OK && f_mkdir( "/Temp" ) == FR_OK )
+					sdCardStatus = SdCardStatus::Working;
+				else
+					sdCardStatus = SdCardStatus::BadFileSystem;
+				configXmlHash = SHA1::Digest();
 			}
 		}
 	}
@@ -391,12 +364,10 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 					removeOpenDatFiles();
 					mLinkServer->confirmSession();
 					mLinkSync( true );
-					chVTSet( &timer, TIME_MS2I( STATUS_INTERVAL ), mLinkServerHandlerThreadTimersCallback, ( void* )MLinkThreadEvent::StatusUpdate );
+					chVTSet( &timer, TIME_MS2I( STATUS_INTERVAL ), mLinkServerHandlerThreadTimersCallback, ( void* )MLinkThreadEvent::StatusUpdateEvent );
 				}
 				else
-				{
 					chVTReset( &timer );
-				}
 			}
 			if( flags & ( eventflags_t )MLinkServer::Event::NewPacketAvailable )
 			{
@@ -407,35 +378,42 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 		}
 		if( mLinkServer->state() != MLinkServer::State::Connected )
 			continue;
-		if( em & MLinkThreadEvent::ConfigChanged )
+		if( em & MLinkThreadEvent::ConfigResetEvent )
+			mLinkServer->sendPacket( MarviePackets::Type::ConfigResetType, nullptr, 0 );
+		if( em & MLinkThreadEvent::ConfigChangedEvent )
 			mLinkSync( false );
-		if( em & MLinkThreadEvent::BrSensorUpdated )
+		if( em & MLinkThreadEvent::BrSensorUpdatedEvent )
 		{
-			configMutex.lock();
-			if( syncConfigNum == configNum )
+			if( configMutex.tryLock() )
 			{
-				for( uint i = 0; i < sensorsCount; ++i )
+				if( syncConfigNum == configNum )
 				{
-					if( sensors[i].sensor->type() == AbstractSensor::Type::SR )
-						continue;
-					sendSensorDataM( i, sensorDataChannel );
+					for( uint i = 0; i < sensorsCount; ++i )
+					{
+						if( sensors[i].sensor->type() == AbstractSensor::Type::SR || !sensors[i].updated )
+							continue;
+						sensors[i].updated = false;
+						sendSensorDataM( i, sensorDataChannel );
+					}
 				}
+				sendDeviceStatusM();
+				configMutex.unlock();
 			}
-			sendDeviceStatusM();
-			configMutex.unlock();
 		}
-		if( em & MLinkThreadEvent::StatusUpdate )
+		if( em & MLinkThreadEvent::StatusUpdateEvent )
 		{
-			chVTSet( &timer, TIME_MS2I( STATUS_INTERVAL ), mLinkServerHandlerThreadTimersCallback, ( void* )MLinkThreadEvent::StatusUpdate );
-			configMutex.lock();
-			for( uint i = 0; i < vPortsCount; ++i )
+			chVTSet( &timer, TIME_MS2I( STATUS_INTERVAL ), mLinkServerHandlerThreadTimersCallback, ( void* )MLinkThreadEvent::StatusUpdateEvent );
+			if( configMutex.tryLock() )
 			{
-				if( syncConfigNum != configNum )
-					break;
-				sendVPortStatusM( i );
+				for( uint i = 0; i < vPortsCount; ++i )
+				{
+					if( syncConfigNum != configNum )
+						break;
+					sendVPortStatusM( i );
+				}
+				sendDeviceStatusM();
+				configMutex.unlock();
 			}
-			sendDeviceStatusM();
-			configMutex.unlock();
 		}
 		if( em & MLinkThreadEvent::CpuUsageMonitorEvent )
 		{
@@ -471,16 +449,56 @@ void MarvieDevice::uiThreadMain()
 
 void MarvieDevice::reconfig()
 {
-	deviceState = DeviceState::Reconfiguration;
+	configMutex.lock();
+
+	auto hash = calcConfigXmlHash();
+	if( hash == configXmlHash )
+	{
+		configMutex.unlock();
+		return;
+	}
+
+	if( deviceState == DeviceState::Working )
+	{
+		deviceState = DeviceState::Reconfiguration;
+		configShutdownM();
+	}
+	else
+		deviceState = DeviceState::Reconfiguration;
+
+	char* xmlData;
+	uint32_t size = readConfigXmlFile( &xmlData );
+	if( size )
+	{
+		sha.reset();
+		sha.addBytes( xmlData, ( uint32_t )size );
+		configXmlHash = sha.result();
+		applyConfigM( xmlData, size );
+	}
+	else
+		configError = ConfigError::NoConfigFile;
+
+	configMutex.unlock();
+}
+
+void MarvieDevice::configShutdownM()
+{
 	for( uint i = 0; i < vPortsCount; ++i )
 	{
 		if( brSensorReaders[i] )
 			brSensorReaders[i]->stopReading();
 	}
-	mainThread->signalEvents( MainThreadEvent::BrSensorReaderEvent );
+	for( uint i = 0; i < vPortsCount; ++i )
+	{
+		if( brSensorReaders[i] )
+			brSensorReaders[i]->waitForStateChange();
+	}
+
+	removeConfigRelatedObjectM();
+	mainThread->getAndClearEvents( MainThreadEvent::BrSensorReaderEvent );
 }
 
-void MarvieDevice::applyConfig( char* xmlData, uint32_t len )
+void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 {
 	configNum++;
 
@@ -489,24 +507,34 @@ void MarvieDevice::applyConfig( char* xmlData, uint32_t len )
 	if( doc->Parse( xmlData, len ) != XML_SUCCESS )
 	{
 		deviceState = DeviceState::IncorrectConfiguration;
-		configError = ConfigError::ComPortsConfigError;
-		
+		configError = ConfigError::XmlStructureError;
+
+		delete xmlData;
 		delete doc;
 		return;
 	}
+	delete xmlData;
 
 	XMLElement* rootNode = doc->FirstChildElement( MarviePlatform::configXmlRootTagName );
+	NetworkConf networkConf;
+	if( !parseNetworkConfig( rootNode->FirstChildElement( "networkConfig" ), &networkConf ) )
+	{
+		deviceState = DeviceState::IncorrectConfiguration;
+		configError = ConfigError::NetworkConfigError;
+
+		delete doc;
+		return;
+	}
 	ComPortConf** comPortsConf = parseComPortsConfig( rootNode->FirstChildElement( "comPortsConfig" ), comPortAssignments );
 	if( !comPortsConf )
 	{
 		deviceState = DeviceState::IncorrectConfiguration;
 		configError = ConfigError::ComPortsConfigError;
-		
+
 		delete doc;
 		return;
 	}
 
-	configMutex.lock();
 	vPortsCount = 0;
 	for( uint i = 0; i < MarviePlatform::comPortsCount; ++i )
 	{
@@ -516,15 +544,20 @@ void MarvieDevice::applyConfig( char* xmlData, uint32_t len )
 			comPorts[i]->setBaudRate( static_cast< VPortConf* >( comPortsConf[i] )->baudrate );
 			comPorts[i]->setDataFormat( static_cast< VPortConf* >( comPortsConf[i] )->format );
 		}
+
 	}
+	uint32_t ethernetVPortBegin = vPortsCount;
+	vPortsCount += networkConf.vPortOverIpList.size();
+
+	//for( uint i = 0; i <  )
 	vPorts = new IODevice*[vPortsCount];
-	vPortBindings = new VPortBindind[vPortsCount];
+	vPortBindings = new VPortBinding[vPortsCount];
 	brSensorReaders = new BRSensorReader*[vPortsCount];
 	brSensorReaderListeners = new EvtListener[vPortsCount];
 	for( uint i = 0; i < vPortsCount; ++i )
 	{
 		vPorts[i] = nullptr;
-		vPortBindings[i] = VPortBindind::Rs232;
+		vPortBindings[i] = VPortBinding::Rs232;
 		brSensorReaders[i] = nullptr;
 	}
 	uint32_t n = 0;
@@ -534,16 +567,19 @@ void MarvieDevice::applyConfig( char* xmlData, uint32_t len )
 		{
 			vPorts[n] = comPorts[i];
 			if( MarviePlatform::comPortTypes[n] == ComPortType::Rs232 )
-				vPortBindings[n++] = VPortBindind::Rs232;
+				vPortBindings[n++] = VPortBinding::Rs232;
 			else
-				vPortBindings[n++] = VPortBindind::Rs485;
+				vPortBindings[n++] = VPortBinding::Rs485;
 		}
 	}
+	for( uint i = 0; i < networkConf.vPortOverIpList.size(); ++i )
+		vPortBindings[n++] = VPortBinding::NetworkSocket;
 
 	sensorsCount = 0;
 	sensors = nullptr;
 	sensorsConfigError = SensorsConfigError::NoError;
 	errorSensorName = nullptr;
+	errorSensorId = 0;
 	XMLElement* sensorsNode = rootNode->FirstChildElement( "sensorsConfig" );
 	if( sensorsNode )
 	{
@@ -552,7 +588,7 @@ void MarvieDevice::applyConfig( char* xmlData, uint32_t len )
 		{
 			++sensorsCount;
 			sensorNode = sensorNode->NextSiblingElement();
-		}		
+		}
 		if( sensorsCount )
 		{
 			sensors = new SensorInfo[sensorsCount];
@@ -569,6 +605,7 @@ void MarvieDevice::applyConfig( char* xmlData, uint32_t len )
 		while( sensorNode )
 		{
 			errorSensorName = sensorNode->Name();
+			errorSensorId = sensorsCount;
 			auto desc = SensorService::instance()->sensorTypeDesc( sensorNode->Name() );
 			if( !desc )
 			{
@@ -586,14 +623,14 @@ void MarvieDevice::applyConfig( char* xmlData, uint32_t len )
 					break;
 				}
 
-				if( vPortBindings[vPortId] != VPortBindind::Rs485 && brSensorReaders[vPortId] ) // FIX?
+				if( vPortBindings[vPortId] != VPortBinding::Rs485 && brSensorReaders[vPortId] ) // FIX?
 				{
 					sensorsConfigError = SensorsConfigError::BingingError;
 					break;
 				}
 
 				uint32_t baudrate = 0;
-				if( vPortBindings[vPortId] != VPortBindind::NetworkSocket )
+				if( vPortBindings[vPortId] != VPortBinding::NetworkSocket )
 					baudrate = static_cast< UsartBasedDevice* >( vPorts[vPortId] )->baudRate();
 
 				uint32_t normapPeriod;
@@ -621,13 +658,13 @@ void MarvieDevice::applyConfig( char* xmlData, uint32_t len )
 					break;
 				}
 
-				if( vPortBindings[vPortId] == VPortBindind::Rs232 )
+				if( vPortBindings[vPortId] == VPortBinding::Rs232 )
 				{
 					SingleBRSensorReader* reader = new SingleBRSensorReader;
 					reader->setSensor( static_cast< AbstractBRSensor* >( sensor ), TIME_S2I( normapPeriod ), TIME_S2I( emergencyPeriod ) );
 					brSensorReaders[vPortId] = reader;
 				}
-				else if( vPortBindings[vPortId] == VPortBindind::Rs485 )
+				else if( vPortBindings[vPortId] == VPortBinding::Rs485 )
 				{
 					MultipleBRSensorsReader* reader;
 					if( brSensorReaders[vPortId] )
@@ -639,6 +676,14 @@ void MarvieDevice::applyConfig( char* xmlData, uint32_t len )
 					}
 					auto sensorElement = reader->createSensorElement( static_cast< AbstractBRSensor* >( sensor ), TIME_S2I( normapPeriod ), TIME_S2I( emergencyPeriod ) );
 					reader->addSensorElement( sensorElement );
+				}
+				else if( vPortBindings[vPortId] == VPortBinding::NetworkSocket )
+				{
+					NetworkSensorReader* reader = new NetworkSensorReader;
+					auto& conf = networkConf.vPortOverIpList[vPortId - ethernetVPortBegin];
+					reader->setSensorAddress( IpAddress( conf.ip ), conf.port );
+					reader->setSensor( static_cast< AbstractBRSensor* >( sensor ), TIME_S2I( normapPeriod ), TIME_S2I( emergencyPeriod ) );
+					brSensorReaders[vPortId] = reader;
 				}
 				else
 				{
@@ -655,12 +700,9 @@ void MarvieDevice::applyConfig( char* xmlData, uint32_t len )
 	}
 
 	delete doc;
-	if( comPortsConf )
-	{
-		for( uint i = 0; i < comPortAssignments.size(); ++i )
-			delete comPortsConf[i];
-		delete comPortsConf;
-	}
+	for( uint i = 0; i < comPortAssignments.size(); ++i )
+		delete comPortsConf[i];
+	delete comPortsConf;
 
 	if( sensorsConfigError == SensorsConfigError::NoError )
 	{
@@ -674,14 +716,13 @@ void MarvieDevice::applyConfig( char* xmlData, uint32_t len )
 			}
 		}
 		deviceState = DeviceState::Working;
-		mLinkServerHandlerThread->signalEvents( ( eventmask_t )MLinkThreadEvent::ConfigChanged );
+		mLinkServerHandlerThread->signalEvents( ( eventmask_t )MLinkThreadEvent::ConfigChangedEvent );
 	}
 	else
 	{
 		removeConfigRelatedObjectM();
 		deviceState = DeviceState::IncorrectConfiguration;
 	}
-	configMutex.unlock();
 }
 
 void MarvieDevice::removeConfigRelatedObject()
@@ -696,14 +737,14 @@ void MarvieDevice::removeConfigRelatedObjectM()
 	for( uint i = 0; i < vPortsCount; ++i )
 	{
 		// TODO: 
-		if( vPortBindings[i] == VPortBindind::Rs232 )
+		if( vPortBindings[i] == VPortBinding::Rs232 )
 		{
 			if( brSensorReaders[i] )
 			{
 				delete static_cast< SingleBRSensorReader* >( brSensorReaders[i] )->nextSensor();
 			}
 		}
-		else if( vPortBindings[i] == VPortBindind::Rs485 )
+		else if( vPortBindings[i] == VPortBinding::Rs485 )
 		{
 			if( brSensorReaders[i] )
 				static_cast< MultipleBRSensorsReader* >( brSensorReaders[i] )->removeAllSensorElements( true );
@@ -848,47 +889,60 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 		strncpy( ( char* )&dateTime, ( const char* )data, sizeof( DateTime ) );
 		DateTimeService::setDateTime( dateTime );
 	}
-	else if( type == MarviePackets::Type::StartVPorts )
+	else if( type == MarviePackets::Type::StartVPortsType )
 	{
-		configMutex.lock();
-		for( uint i = 0; i < vPortsCount; ++i )
+		if( configMutex.tryLock() )
 		{
-			if( brSensorReaders[i] )
-				brSensorReaders[i]->startReading( NORMALPRIO );
+			for( uint i = 0; i < vPortsCount; ++i )
+			{
+				if( brSensorReaders[i] )
+					brSensorReaders[i]->startReading( NORMALPRIO );
+			}
+			configMutex.unlock();
 		}
-		configMutex.unlock();
 	}
-	else if( type == MarviePackets::Type::StopVPorts )
+	else if( type == MarviePackets::Type::StopVPortsType )
 	{
-		configMutex.lock();
-		for( uint i = 0; i < vPortsCount; ++i )
+		if( configMutex.tryLock() )
 		{
-			if( brSensorReaders[i] )
-				brSensorReaders[i]->stopReading();
+			for( uint i = 0; i < vPortsCount; ++i )
+			{
+				if( brSensorReaders[i] )
+					brSensorReaders[i]->stopReading();
+			}
+			configMutex.unlock();
 		}
-		configMutex.unlock();
 	}
-	else if( type == MarviePackets::Type::UpdateAllSensors )
+	else if( type == MarviePackets::Type::UpdateAllSensorsType )
 	{
-		configMutex.lock();
-		for( uint i = 0; i < vPortsCount; ++i )
+		if( configMutex.tryLock() )
 		{
-			if( brSensorReaders[i] )
-				brSensorReaders[i]->forceAll();
+			for( uint i = 0; i < vPortsCount; ++i )
+			{
+				if( brSensorReaders[i] )
+					brSensorReaders[i]->forceAll();
+			}
+			configMutex.unlock();
 		}
-		configMutex.unlock();
 	}
-	else if( type == MarviePackets::Type::UpdateOneSensor )
+	else if( type == MarviePackets::Type::UpdateOneSensorType )
 	{
-		configMutex.lock();
-		uint32_t sensorId = *( uint16_t* )data;
-		if( sensorsCount > sensorId && sensors[sensorId].sensor->type() == AbstractSensor::Type::BR )
+		if( configMutex.tryLock() )
 		{
-			auto reader = brSensorReaders[sensors[sensorId].vPortId];
-			if( reader )
-				reader->forceOne( reinterpret_cast< AbstractBRSensor* >( sensors[sensorId].sensor ) );
+			uint32_t sensorId = *( uint16_t* )data;
+			if( sensorsCount > sensorId && sensors[sensorId].sensor->type() == AbstractSensor::Type::BR )
+			{
+				auto reader = brSensorReaders[sensors[sensorId].vPortId];
+				if( reader )
+					reader->forceOne( reinterpret_cast< AbstractBRSensor* >( sensors[sensorId].sensor ) );
+			}
+			configMutex.unlock();
 		}
-		configMutex.unlock();
+	}
+	else if( type == MarviePackets::Type::FormatSdCardType )
+	{
+		if( sdCardStatus != SdCardStatus::Formatting )
+			mainThread->signalEvents( MainThreadEvent::FormatSdCardRequest );
 	}
 }
 
@@ -943,25 +997,28 @@ void MarvieDevice::mLinkSync( bool sendSupportedSensorsList )
 		configXmlDataSendingSemaphore.signal();
 	}
 
-	configMutex.lock();
-	if( syncConfigNum != configNum )
-		goto End;
-	mLinkServer->sendPacket( MarviePackets::Type::VPortCountType, ( uint8_t* )&vPortsCount, sizeof( vPortsCount ) );
-	for( uint i = 0; i < vPortsCount; ++i )
+	if( configMutex.tryLock() )
 	{
-		if( syncConfigNum != configNum )
-			goto End;
-		sendVPortStatusM( i );
-	}
-	sendDeviceStatusM();
-	for( uint i = 0; i < sensorsCount; ++i )
-	{
-		if( syncConfigNum != configNum )
-			goto End;
-		sendSensorDataM( i, channel );
-	}
+		if( syncConfigNum == configNum )
+		{
+			mLinkServer->sendPacket( MarviePackets::Type::VPortCountType, ( uint8_t* )&vPortsCount, sizeof( vPortsCount ) );
+			for( uint i = 0; i < vPortsCount; ++i )
+			{
+				if( syncConfigNum != configNum )
+					goto End;
+				sendVPortStatusM( i );
+			}
+			sendDeviceStatusM();
+			for( uint i = 0; i < sensorsCount; ++i )
+			{
+				if( syncConfigNum != configNum )
+					goto End;
+				sendSensorDataM( i, channel );
+			}
+		}
 End:
-	configMutex.unlock();
+		configMutex.unlock();
+	}
 	delete channel;
 	mLinkServer->sendPacket( MarviePackets::Type::SyncEndType, nullptr, 0 );
 }
@@ -1045,11 +1102,60 @@ void MarvieDevice::sendDeviceStatusM()
 	default:
 		break;
 	}
+	status.errorSensorId = 0;
+	switch( configError )
+	{
+	case MarvieDevice::ConfigError::NoError:
+		status.configError = MarviePackets::DeviceStatus::ConfigError::NoError;
+		break;
+	case MarvieDevice::ConfigError::NoConfigFile:
+		status.configError = MarviePackets::DeviceStatus::ConfigError::NoConfiglFile;
+		break;
+	case MarvieDevice::ConfigError::XmlStructureError:
+		status.configError = MarviePackets::DeviceStatus::ConfigError::XmlStructureError;
+		break;
+	case MarvieDevice::ConfigError::ComPortsConfigError:
+		status.configError = MarviePackets::DeviceStatus::ConfigError::ComPortsConfigError;
+		break;
+	case MarvieDevice::ConfigError::NetworkConfigError:
+		status.configError = MarviePackets::DeviceStatus::ConfigError::NetworkConfigError;
+		break;
+	case MarvieDevice::ConfigError::SensorsConfigError:
+		status.configError = MarviePackets::DeviceStatus::ConfigError::SensorsConfigError;
+		status.errorSensorId = errorSensorId;
+		break;
+	default:
+		break;
+	}
+	switch( sdCardStatus )
+	{
+	case MarvieDevice::SdCardStatus::NotInserted:
+		status.sdCardStatus = MarviePackets::DeviceStatus::SdCardStatus::NotInserted;
+		break;
+	case MarvieDevice::SdCardStatus::Initialization:
+		status.sdCardStatus = MarviePackets::DeviceStatus::SdCardStatus::Initialization;
+		break;
+	case MarvieDevice::SdCardStatus::InitFailed:
+		status.sdCardStatus = MarviePackets::DeviceStatus::SdCardStatus::InitFailed;
+		break;
+	case MarvieDevice::SdCardStatus::BadFileSystem:
+		status.sdCardStatus = MarviePackets::DeviceStatus::SdCardStatus::BadFileSystem;
+		break;
+	case MarvieDevice::SdCardStatus::Formatting:
+		status.sdCardStatus = MarviePackets::DeviceStatus::SdCardStatus::Formatting;
+		break;
+	case MarvieDevice::SdCardStatus::Working:
+		status.sdCardStatus = MarviePackets::DeviceStatus::SdCardStatus::Working;
+		break;
+	default:
+		break;
+	}
 	mLinkServer->sendPacket( MarviePackets::Type::DeviceStatusType, ( uint8_t* )&status, sizeof( status ) );
 }
 
 uint32_t MarvieDevice::readConfigXmlFile( char** pXmlData )
 {
+	*pXmlData = nullptr;
 	FIL* file = new FIL;
 	configXmlFileMutex.lock();
 	if( f_open( file, "/config.xml", FA_READ ) == FR_OK )
@@ -1073,6 +1179,36 @@ uint32_t MarvieDevice::readConfigXmlFile( char** pXmlData )
 	delete file;
 
 	return 0;
+}
+
+SHA1::Digest MarvieDevice::calcConfigXmlHash()
+{
+	SHA1::Digest hash;
+	FIL* file = new FIL;
+	configXmlFileMutex.lock();
+	if( f_open( file, "/config.xml", FA_READ ) == FR_OK )
+	{
+		sha.reset();
+		auto s = f_size( file );
+		while( s )
+		{
+			auto t = s;
+			if( t > 1024 )
+				t = 1024;
+			UINT br;
+			if( f_read( file, buffer, t, &br ) != FR_OK || br != t )
+				goto Skip;
+			sha.addBytes( ( const char* )buffer, t );
+			s -= t;
+		}
+		hash = sha.result();
+		f_close( file );
+	}
+Skip:
+	configXmlFileMutex.unlock();
+	delete file;
+
+	return hash;
 }
 
 FRESULT MarvieDevice::clearDir( const char* path )

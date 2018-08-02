@@ -4,7 +4,7 @@
  <xs:element name="sensorsConfig">
   <xs:complexType>
    <xs:sequence>
-    <xs:choice maxOccurs="unbounded" minOccurs="1">
+    <xs:choice minOccurs="1" maxOccurs="unbounded">
      <xs:element ref="CE301"/>
      <xs:element ref="SimpleSensor"/>
      <xs:element ref="TestSensorA"/>
@@ -39,9 +39,9 @@
    <xs:complexContent>
     <xs:extension base="brSensorBase">
      <xs:sequence>
-      <xs:element type="xs:int" name="intPrm"/>
-      <xs:element type="xs:float" name="floatPrm"/>
-      <xs:element type="xs:double" name="doublePrm"/>
+      <xs:element name="intPrm" type="xs:int"/>
+      <xs:element name="floatPrm" type="xs:float"/>
+      <xs:element name="doublePrm" type="xs:double"/>
       <xs:element name="strPrm">
        <xs:simpleType>
         <xs:restriction base="xs:string">
@@ -51,7 +51,7 @@
         </xs:restriction>
        </xs:simpleType>
       </xs:element>
-      <xs:element type="xs:boolean" name="boolPrm"/>
+      <xs:element name="boolPrm" type="xs:boolean"/>
       <xs:element name="enumA">
        <xs:simpleType>
         <xs:restriction base="xs:int">
@@ -80,7 +80,7 @@
    <xs:complexContent>
     <xs:extension base="brSensorBase">
      <xs:sequence>
-      <xs:element type="xs:string" name="text"/>
+      <xs:element name="text" type="xs:string"/>
       <xs:element name="delayMs">
        <xs:simpleType>
         <xs:restriction base="xs:int">
@@ -106,7 +106,7 @@
    <xs:complexContent>
     <xs:extension base="brSensorBase">
      <xs:sequence>
-      <xs:element type="xs:string" name="text"/>
+      <xs:element name="text" type="xs:string"/>
       <xs:element name="goodNum">
        <xs:simpleType>
         <xs:restriction base="xs:int">
@@ -120,6 +120,22 @@
         <xs:restriction base="xs:int">
          <xs:minInclusive value="0"/>
          <xs:maxInclusive value="10"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+      <xs:element name="errType">
+       <xs:simpleType>
+        <xs:restriction base="xs:string">
+         <xs:enumeration value="NoResp"/>
+         <xs:enumeration value="Crc"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+      <xs:element name="errCode">
+       <xs:simpleType>
+        <xs:restriction base="xs:int">
+         <xs:minInclusive value="0"/>
+         <xs:maxInclusive value="255"/>
         </xs:restriction>
        </xs:simpleType>
       </xs:element>

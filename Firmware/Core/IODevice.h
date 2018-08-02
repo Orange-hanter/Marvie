@@ -27,6 +27,8 @@ public:
 	virtual AbstractReadable* inputBuffer() = 0;
 	virtual AbstractWritable* outputBuffer() = 0;
 
+	virtual bool isSerialDevice();
+
 	virtual void acquireDevice() {}
 	virtual void releseDevice() {}
 	virtual EvtSource* eventSource() = 0;

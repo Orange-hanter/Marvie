@@ -19,4 +19,6 @@ public:
 	virtual StopBits stopBits() = 0;
 
 	virtual USART_TypeDef* base() = 0;
+
+	bool isSerialDevice() final override;
 };

@@ -49,7 +49,7 @@ bool MarvieXmlConfigParsers::parseVPortOverIp( XMLElement* node, VPortOverIpConf
 	return true;
 }
 
-bool MarvieXmlConfigParsers::parseVPortOverIpGroup( XMLElement* node, std::list< VPortOverIpConf >* vPortOverIpList )
+bool MarvieXmlConfigParsers::parseVPortOverIpGroup( XMLElement* node, std::vector< VPortOverIpConf >* vPortOverIpList )
 {
 	while( node )
 	{
@@ -75,39 +75,6 @@ bool MarvieXmlConfigParsers::parseGsmModemConfig( XMLElement* node, GsmModemConf
 		return false;
 	strncpy( conf->vpn, v, len );
 	conf->vpn[len] = 0;
-
-	int port;
-	XMLElement* c0 = node->FirstChildElement( "modbusRtuServer" );
-	if( c0 )
-	{
-		if( c0->QueryIntAttribute( "port", &port ) == XML_NO_ATTRIBUTE )
-			return false;
-		conf->modbusRtuServerPort = ( uint16_t )port;
-	}
-	else
-		conf->modbusRtuServerPort = 0;
-	c0 = node->FirstChildElement( "modbusTcpServer" );
-	if( c0 )
-	{
-		if( c0->QueryIntAttribute( "port", &port ) == XML_NO_ATTRIBUTE )
-			return false;
-		conf->modbusTcpServerPort = ( uint16_t )port;
-	}
-	else
-		conf->modbusTcpServerPort = 0;
-	c0 = node->FirstChildElement( "modbusAsciiServer" );
-	if( c0 )
-	{
-		if( c0->QueryIntAttribute( "port", &port ) == XML_NO_ATTRIBUTE )
-			return false;
-		conf->modbusAsciiServerPort = ( uint16_t )port;
-	}
-	else
-		conf->modbusAsciiServerPort = 0;
-
-	c0 = node->FirstChildElement( "vPortOverIp" );
-	if( c0 )
-		return parseVPortOverIpGroup( c0, &conf->vPortOverIpList );
 
 	return true;
 }
@@ -151,6 +118,8 @@ bool MarvieXmlConfigParsers::parseMultiplexerConfig( XMLElement* node, Multiplex
 
 MarvieXmlConfigParsers::ComPortConf** MarvieXmlConfigParsers::parseComPortsConfig( XMLElement* comPortsConfigNode, const std::list< std::list< ComPortAssignment > >& comPortAssignments )
 {
+	if( !comPortsConfigNode )
+		return nullptr;
 	ComPortConf** comPortsConfig = new ComPortConf*[comPortAssignments.size()];
 	for( uint i = 0; i < comPortAssignments.size(); ++i )
 		comPortsConfig[i] = nullptr;
@@ -221,10 +190,15 @@ MarvieXmlConfigParsers::ComPortConf** MarvieXmlConfigParsers::parseComPortsConfi
 	return comPortsConfig;
 }
 
-bool MarvieXmlConfigParsers::parseEthernetConfig( XMLElement* ethernetConfigNode, EthernetConf* conf )
+bool MarvieXmlConfigParsers::parseNetworkConfig( XMLElement* networkConfigNode, NetworkConf* conf )
 {
+	if( !networkConfigNode )
+		return false;
 	int port;
-	XMLElement* c0 = ethernetConfigNode->FirstChildElement( "modbusRtuServer" );
+	XMLElement* c0 = networkConfigNode->FirstChildElement( "staticIp" );
+	if( c0 )
+		conf->staticIp = IpAddress( c0->GetText() );
+	c0 = networkConfigNode->FirstChildElement( "modbusRtuServer" );
 	if( c0 )
 	{
 		if( c0->QueryIntAttribute( "port", &port ) == XML_NO_ATTRIBUTE )
@@ -233,7 +207,7 @@ bool MarvieXmlConfigParsers::parseEthernetConfig( XMLElement* ethernetConfigNode
 	}
 	else
 		conf->modbusRtuServerPort = 0;
-	c0 = ethernetConfigNode->FirstChildElement( "modbusTcpServer" );
+	c0 = networkConfigNode->FirstChildElement( "modbusTcpServer" );
 	if( c0 )
 	{
 		if( c0->QueryIntAttribute( "port", &port ) == XML_NO_ATTRIBUTE )
@@ -242,7 +216,7 @@ bool MarvieXmlConfigParsers::parseEthernetConfig( XMLElement* ethernetConfigNode
 	}
 	else
 		conf->modbusTcpServerPort = 0;
-	c0 = ethernetConfigNode->FirstChildElement( "modbusAsciiServer" );
+	c0 = networkConfigNode->FirstChildElement( "modbusAsciiServer" );
 	if( c0 )
 	{
 		if( c0->QueryIntAttribute( "port", &port ) == XML_NO_ATTRIBUTE )
@@ -252,7 +226,7 @@ bool MarvieXmlConfigParsers::parseEthernetConfig( XMLElement* ethernetConfigNode
 	else
 		conf->modbusAsciiServerPort = 0;
 
-	c0 = ethernetConfigNode->FirstChildElement( "vPortOverIp" );
+	c0 = networkConfigNode->FirstChildElement( "vPortOverIp" );
 	if( c0 )
 		return parseVPortOverIpGroup( c0, &conf->vPortOverIpList );
 

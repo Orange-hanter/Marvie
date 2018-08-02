@@ -10,10 +10,11 @@
 #include "MarvieXmlConfigParsers.h"
 #include "MultipleBRSensorsReader.h"
 #include "SingleBRSensorReader.h"
+#include "NetworkSensorReader.h"
 #include "MarviePackets.h"
 #include "MLinkServer.h"
 #include "MarviePlatform.h"
-#include "Lib/sha1/sha1.h"
+#include "Lib/sha1/_Sha1.h"
 #include "ff.h"
 #include <stdio.h>
 #include <string.h>
@@ -37,7 +38,8 @@ private:
 	void uiThreadMain();
 
 	void reconfig();
-	void applyConfig( char* xmlData, uint32_t len );
+	void configShutdownM();
+	void applyConfigM( char* xmlData, uint32_t len );
 	void removeConfigRelatedObject();
 	void removeConfigRelatedObjectM();
 
@@ -52,6 +54,7 @@ private:
 	void sendDeviceStatusM();
 
 	uint32_t readConfigXmlFile( char** pXmlData );
+	SHA1::Digest calcConfigXmlHash();
 	FRESULT clearDir( const char* path );
 	void removeOpenDatFiles();
 
@@ -73,7 +76,7 @@ private:
 	uint32_t configNum;
 	uint32_t vPortsCount;
 	IODevice** vPorts;
-	enum class VPortBindind { Rs232, Rs485, NetworkSocket } *vPortBindings;
+	enum class VPortBinding { Rs232, Rs485, NetworkSocket } *vPortBindings;
 	uint32_t sensorsCount;
 	struct SensorInfo 
 	{
@@ -90,18 +93,19 @@ private:
 	Mutex configXmlFileMutex;
 
 	// Main thread resources =================================================================
-	enum MainThreadEvent { SdCardStatusChanged = 1, NewBootloaderDatFile = 2, NewFirmwareDatFile = 4, NewXmlConfigDatFile = 8, BrSensorReaderEvent = 16 };
+	enum MainThreadEvent { SdCardStatusChanged = 1, NewBootloaderDatFile = 2, NewFirmwareDatFile = 4, NewXmlConfigDatFile = 8, BrSensorReaderEvent = 16, FormatSdCardRequest = 32 };
 	enum class DeviceState { /*Initialization,*/ Reconfiguration, Working, IncorrectConfiguration } deviceState;
-	enum class ConfigError { NoError, XmlStructureError, ComPortsConfigError, EthernetConfigError, SensorsConfigError } configError;
+	enum class ConfigError { NoError, NoConfigFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorsConfigError } configError;
 	enum class SensorsConfigError { NoError, UnknownSensor, IncorrectSettings, BingingError } sensorsConfigError;
 	const char* errorSensorName;
+	uint32_t errorSensorId;
 	enum class SdCardStatus { NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } sdCardStatus;
 	FATFS fatFs;
-	FRESULT fsError;	
+	FRESULT fsError;
 	SHA1::Digest configXmlHash;
 
 	// MLink thread resources ================================================================
-	enum MLinkThreadEvent : eventmask_t { MLinkEvent = 1, CpuUsageMonitorEvent = 2, MemoryLoadEvent = 4, ConfigChanged = 8, BrSensorUpdated = 16, StatusUpdate = 32 };
+	enum MLinkThreadEvent : eventmask_t { MLinkEvent = 1, CpuUsageMonitorEvent = 2, MemoryLoadEvent = 4, ConfigChangedEvent = 8, ConfigResetEvent = 16, BrSensorUpdatedEvent = 32, StatusUpdateEvent = 64 };
 	MLinkServer* mLinkServer;
 	uint8_t mLinkBuffer[255];
 	Mutex datFilesMutex;

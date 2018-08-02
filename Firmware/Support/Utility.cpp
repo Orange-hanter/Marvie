@@ -99,6 +99,26 @@ namespace Utility
 		return time;
 	}
 
+	uint32_t parseIp( const char* s )
+	{
+		uint8_t value[4] = { 0 };
+		size_t index = 0;
+
+		while( *s && index < 4 )
+		{
+			if( *s >= '0' && *s <= '9' )
+			{
+				value[index] *= 10;
+				value[index] += *s - '0';
+			}
+			else
+				index++;
+			s++;
+		}
+
+		return value[0] << 24 | value[1] << 16 | value[2] << 8 | value[3];
+	}
+
 	float convertPressureToMeters( float p )
 	{
 		return ( 1.0f - powf( p / 101325.0f, 1.0f / 5.255f ) ) * 44330.0f;

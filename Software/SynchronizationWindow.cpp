@@ -4,7 +4,7 @@
 
 SynchronizationWindow::SynchronizationWindow( QWidget* mainWindow ) : QDialog( nullptr ), mainWindow( mainWindow )
 {
-	setWindowFlags( Qt::FramelessWindowHint );
+	setWindowFlags( Qt::FramelessWindowHint | Qt::SubWindow );
 	QPalette pal = palette();
 	pal.setColor( QPalette::Window, Qt::white );
 	setPalette( pal );
@@ -36,13 +36,15 @@ void SynchronizationWindow::show()
 	setGeometry( windowRect );
 
 	movie.start();
-	exec();
+	//exec();
+	setWindowModality( Qt::ApplicationModal );
+	QDialog::show();
 }
 
 void SynchronizationWindow::hide()
 {
 	movie.stop();
-	accept();
+	QDialog::hide();
 }
 
 void SynchronizationWindow::closeEvent( QCloseEvent * event )

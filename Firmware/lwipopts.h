@@ -903,6 +903,13 @@
 #endif
 
 /**
+ * The maximum segment lifetime in milliseconds.
+ */
+#ifndef TCP_MSL
+#define TCP_MSL                         1500UL
+#endif
+
+/**
  * TCP_TTL: Default Time-To-Live value.
  */
 #ifndef TCP_TTL

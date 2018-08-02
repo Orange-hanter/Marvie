@@ -1,6 +1,8 @@
 #include "MarvieController.h"
 #include <QSerialPortInfo>
 #include <QSerialPort>
+#include <QUdpSocket>
+#include <QNetworkDatagram>
 #include <QXmlSchema>
 #include <QXmlStreamWriter>
 #include <QFile>
@@ -41,7 +43,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	windowButtons()->setButtonColor( ButtonType::Minimize | ButtonType::Maximize | ButtonType::Close, QColor( 100, 100, 100 ) );
 	setTitleText( "MarvieController" );
 
-	//setMinimumSize( QSize( 540, 680 ) );
+	setMinimumSize( QSize( 544, 680 ) );
 	QRect mainWindowRect( 0, 0, 540, 680 );
 	mainWindowRect.moveCenter( qApp->desktop()->rect().center() );
 	setGeometry( mainWindowRect );
@@ -76,21 +78,12 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	ui.mainStackedWidget->setCurrentIndex( 0 );
 	ui.settingsStackedWidget->setCurrentIndex( 0 );
 
-	ui.gsmModemConfigWidget->hide();
-
-	ui.vPortsOverGsmTableView->setModel( &vPortsOverGsmModel );
-	ui.vPortsOverGsmTableView->setItemDelegate( &vPortsOverIpDelegate );
-	ui.vPortsOverGsmTableView->horizontalHeader()->setSectionResizeMode( QHeaderView::ResizeMode::Fixed  );
-	ui.vPortsOverGsmTableView->horizontalHeader()->resizeSection( 0, 100 );
-	ui.vPortsOverGsmTableView->horizontalHeader()->resizeSection( 1, 50 );
-	ui.vPortsOverGsmTableView->verticalHeader()->setSectionResizeMode( QHeaderView::ResizeMode::Fixed );
-	
-	ui.vPortsOverEthernetTableView->setModel( &vPortsOverEthernetModel );
-	ui.vPortsOverEthernetTableView->setItemDelegate( &vPortsOverIpDelegate );
-	ui.vPortsOverEthernetTableView->horizontalHeader()->setSectionResizeMode( QHeaderView::ResizeMode::Fixed );
-	ui.vPortsOverEthernetTableView->horizontalHeader()->resizeSection( 0, 100 );
-	ui.vPortsOverEthernetTableView->horizontalHeader()->resizeSection( 1, 50 );
-	ui.vPortsOverEthernetTableView->verticalHeader()->setSectionResizeMode( QHeaderView::ResizeMode::Fixed );
+	ui.vPortsOverIpTableView->setModel( &vPortsOverEthernetModel );
+	ui.vPortsOverIpTableView->setItemDelegate( &vPortsOverIpDelegate );
+	ui.vPortsOverIpTableView->horizontalHeader()->setSectionResizeMode( QHeaderView::ResizeMode::Fixed  );
+	ui.vPortsOverIpTableView->horizontalHeader()->resizeSection( 0, 100 );
+	ui.vPortsOverIpTableView->horizontalHeader()->resizeSection( 1, 50 );
+	ui.vPortsOverIpTableView->verticalHeader()->setSectionResizeMode( QHeaderView::ResizeMode::Fixed );
 
 	QPieSeries* cpuLoadSeries = new QPieSeries;
 	cpuLoadSeries->append( new QPieSlice( "", 15 ) );
@@ -179,6 +172,8 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	ui.monitoringDataTreeView->header()->resizeSection( 1, 175 );
 
 	monitoringDataViewMenu = new QMenu( this );
+	monitoringDataViewMenu->addAction( "Update" );
+	monitoringDataViewMenu->addSeparator();
 	monitoringDataViewMenu->addAction( "Copy value" );
 	monitoringDataViewMenu->addAction( "Copy row" );
 	monitoringDataViewMenu->addSeparator();
@@ -189,6 +184,31 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 
 	syncWindow = new SynchronizationWindow( this );
 	deviceState = DeviceState::Unknown;
+
+	QRegExpValidator* validator = new QRegExpValidator( ui.ipEdit );
+	validator->setRegExp( QRegExp( "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$" ) );
+	ui.ipEdit->setValidator( validator );
+
+	QSettings settings( "settings.ini", QSettings::Format::IniFormat );
+	ui.ipEdit->setText( settings.value( "remoteIP", "" ).toString() );
+	QString interfaceName = settings.value( "interface", "ethernet" ).toString();
+	if( interfaceName == "rs232" )
+		ui.interfaceStackedWidget->setCurrentIndex( 0 );
+	else if( interfaceName == "ethernet" )
+		ui.interfaceStackedWidget->setCurrentIndex( 1 );
+	else if( interfaceName == "bluetooth" )
+		ui.interfaceStackedWidget->setCurrentIndex( 2 );
+
+	validator = new QRegExpValidator( ui.staticIpLineEdit );
+	validator->setRegExp( QRegExp( "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$" ) );
+	ui.staticIpLineEdit->setValidator( validator );
+
+	ui.staticIpCheckBox->setCheckState( Qt::Unchecked );
+	QObject::connect( ui.staticIpCheckBox, &QCheckBox::stateChanged, [this]() { ui.staticIpLineEdit->setEnabled( ui.staticIpCheckBox->isChecked() ); } );
+	ui.staticIpLineEdit->setText( "" );
+	ui.staticIpLineEdit->setEnabled( false );
+
+	resetDeviceStatus();
 
 	QObject::connect( ui.controlButton, &QToolButton::released, this, &MarvieController::mainMenuButtonClicked );
 	QObject::connect( ui.monitoringButton, &QToolButton::released, this, &MarvieController::mainMenuButtonClicked );
@@ -211,16 +231,12 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	QObject::connect( ui.updateAllSensorsButton, &QToolButton::released, this, &MarvieController::updateAllSensorsButtonClicked );
 	QObject::connect( ui.updateSensorButton, &QToolButton::released, this, &MarvieController::updateSensorButtonClicked );
 	QObject::connect( ui.syncDateTimeButton, &QToolButton::released, this, &MarvieController::syncDateTimeButtonClicked );
+	QObject::connect( ui.formatSdCardButton, &QToolButton::released, this, &MarvieController::formatSdCardButtonClicked );
 
-	QObject::connect( ui.addVPortOverGsmButton, &QToolButton::released, this, &MarvieController::addVPortOverIpButtonClicked );
-	QObject::connect( ui.removeVPortOverGsmButton, &QToolButton::released, this, &MarvieController::removeVPortOverIpButtonClicked );
-	QObject::connect( ui.addVPortOverEthernetButton, &QToolButton::released, this, &MarvieController::addVPortOverIpButtonClicked );
-	QObject::connect( ui.removeVPortOverEthernetButton, &QToolButton::released, this, &MarvieController::removeVPortOverIpButtonClicked );
+	QObject::connect( ui.addVPortOverIpButton, &QToolButton::released, this, &MarvieController::addVPortOverIpButtonClicked );
+	QObject::connect( ui.removeVPortOverIpButton, &QToolButton::released, this, &MarvieController::removeVPortOverIpButtonClicked );
 
 	QObject::connect( ui.comPortsConfigWidget, &ComPortsConfigWidget::assignmentChanged, this, &MarvieController::comPortAssignmentChanged );
-	QObject::connect( &vPortsOverGsmModel, &VPortOverIpModel::dataChanged, this, &MarvieController::updateVPortsList );
-	QObject::connect( &vPortsOverGsmModel, &VPortOverIpModel::rowsInserted, this, &MarvieController::updateVPortsList );
-	QObject::connect( &vPortsOverGsmModel, &VPortOverIpModel::rowsRemoved, this, &MarvieController::updateVPortsList );
 	QObject::connect( &vPortsOverEthernetModel, &VPortOverIpModel::dataChanged, this, &MarvieController::updateVPortsList );
 	QObject::connect( &vPortsOverEthernetModel, &VPortOverIpModel::rowsInserted, this, &MarvieController::updateVPortsList );
 	QObject::connect( &vPortsOverEthernetModel, &VPortOverIpModel::rowsRemoved, this, &MarvieController::updateVPortsList );
@@ -280,12 +296,12 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	////for( int i  = 0; i < 32; ++i )
 	//updateSensorData( 0, "SimpleSensor", reinterpret_cast< uint8_t* >( &data ) );
 
-	//float ai[8];
-	//for( int i = 0; i < ARRAYSIZE( ai ); ++i )
-	//	ai[i] = 0.1 * i;
-	//updateAnalogData( 0, ai, ARRAYSIZE( ai ) );
-	//uint16_t di = 0x4288;
-	//updateDiscreteData( 0, di, 16 );
+	/*float ai[8];
+	for( int i = 0; i < ARRAYSIZE( ai ); ++i )
+		ai[i] = 0.1 * i;
+	updateAnalogData( 0, ai, ARRAYSIZE( ai ) );
+	uint16_t di = 0x4288;
+	updateDiscreteData( 0, di, 16 );*/
 
 	/*updateSensorData( 15, "SimpleSensor", reinterpret_cast< uint8_t* >( &data ) );
 
@@ -337,6 +353,26 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 MarvieController::~MarvieController()
 {
 	popupSensorsListWidget->deleteLater();
+
+	QSettings settings( "settings.ini", QSettings::Format::IniFormat );
+	if( ui.ipEdit->hasAcceptableInput() )
+		settings.setValue( "remoteIP", ui.ipEdit->text() );
+	QString interfaceName;
+	switch( ui.interfaceStackedWidget->currentIndex() )
+	{
+	case 0:
+		interfaceName = "rs232";
+		break;
+	case 1:
+		interfaceName = "ethernet";
+		break;
+	case 2:
+		interfaceName = "bluetooth";
+		break;
+	default:
+		break;
+	}
+	settings.setValue( "interface", interfaceName );
 }
 
 bool MarvieController::eventFilter( QObject *obj, QEvent *event )
@@ -472,28 +508,99 @@ void MarvieController::connectButtonClicked()
 	}
 	else if( sender() == ui.ethernetConnectButton )
 	{
-		ui.nextInterfaceButton->setEnabled( true );
+		if( !ui.ipEdit->hasAcceptableInput() )
+			return;
+
+		class Device : public QIODevice
+		{
+		public:
+			QUdpSocket* socket;
+			QHostAddress host;
+			QByteArray buffer;
+
+			Device( QString ip ) : host( ip )
+			{
+				socket = new QUdpSocket;
+				socket->bind( QHostAddress::AnyIPv4, 16032 );
+				QObject::connect( socket, &QUdpSocket::readyRead, [this]
+				{
+					while( socket->hasPendingDatagrams() )
+					{
+						QNetworkDatagram datagram = socket->receiveDatagram();
+						buffer.append( datagram.data() );
+					}
+					readyRead();
+				} );
+				QObject::connect( socket, &QUdpSocket::bytesWritten, [this]( qint64 n ) { bytesWritten( n ); } );
+			}
+			~Device()
+			{
+				delete socket;
+			}
+			qint64 writeData( const char *data, qint64 len ) override
+			{
+				return socket->writeDatagram( data, len, host, 16021 );
+			}
+			qint64 readData( char *data, qint64 maxlen ) override
+			{
+				if( buffer.size() < maxlen )
+					maxlen = buffer.size();
+				for( qint64 i = 0; i < maxlen; ++i )
+					data[i] = buffer.at( i );
+				buffer = buffer.right( buffer.size() - maxlen );
+
+				return maxlen;
+			}
+			qint64 bytesAvailable() const override
+			{
+				return QIODevice::bytesAvailable() + buffer.size();
+			}
+			qint64 bytesToWrite() const override
+			{
+				return socket->bytesToWrite();
+			}
+			bool isSequential() const override
+			{
+				return true;
+			}
+			void close() override
+			{
+				socket->close();
+				QIODevice::close();
+			}
+		};
+		Device* device = new Device( ui.ipEdit->text() );
+		device->open( QIODevice::ReadWrite );
+
+		/*QUdpSocket* socket = new QUdpSocket;
+		socket->bind( QHostAddress::AnyIPv4, 16032 );
+		socket->connectToHost( QHostAddress( ui.ipEdit->text() ), 16021 );*/
+
+		mlinkIODevice = device;
+		mlink.setIODevice( mlinkIODevice );
+		mlink.connectToHost();
+		ui.ipEdit->setEnabled( false );
 	}
 	else if( sender() == ui.bluetoothConnectButton )
 	{
-		ui.nextInterfaceButton->setEnabled( true );
+		return;
 	}
 	ui.nextInterfaceButton->setEnabled( false );
 }
 
 void MarvieController::startVPortsButtonClicked()
 {
-	mlink.sendPacket( MarviePackets::Type::StartVPorts, QByteArray() );
+	mlink.sendPacket( MarviePackets::Type::StartVPortsType, QByteArray() );
 }
 
 void MarvieController::stopVPortsButtonClicked()
 {
-	mlink.sendPacket( MarviePackets::Type::StopVPorts, QByteArray() );
+	mlink.sendPacket( MarviePackets::Type::StopVPortsType, QByteArray() );
 }
 
 void MarvieController::updateAllSensorsButtonClicked()
 {
-	mlink.sendPacket( MarviePackets::Type::UpdateAllSensors, QByteArray() );
+	mlink.sendPacket( MarviePackets::Type::UpdateAllSensorsType, QByteArray() );
 }
 
 void MarvieController::updateSensorButtonClicked()
@@ -501,7 +608,7 @@ void MarvieController::updateSensorButtonClicked()
 	if( ui.deviceSensorsComboBox->currentIndex() != -1 )
 	{
 		uint16_t id = ( uint16_t )ui.deviceSensorsComboBox->currentIndex();
-		mlink.sendPacket( MarviePackets::Type::UpdateOneSensor, QByteArray( ( const char* )&id, sizeof( id ) ) );
+		mlink.sendPacket( MarviePackets::Type::UpdateOneSensorType, QByteArray( ( const char* )&id, sizeof( id ) ) );
 	}
 }
 
@@ -511,15 +618,57 @@ void MarvieController::syncDateTimeButtonClicked()
 	mlink.sendPacket( MarviePackets::Type::SetDateTimeType, QByteArray( ( const char* )&dateTime, sizeof( dateTime ) ) );
 }
 
+void MarvieController::formatSdCardButtonClicked()
+{
+	if( mlink.state() != MLinkClient::State::Connected || ui.sdCardStatusLabel->text() == "SD card: formatting" )
+		return;
+	int ret = QMessageBox::question( nullptr, "Format SD card",
+									 "This operation cannot be interrupted. Do you want to continue?",
+									 QMessageBox::Yes, QMessageBox::Discard );
+	if( ret == QMessageBox::Discard )
+		return;
+	mlink.sendPacket( MarviePackets::Type::FormatSdCardType, QByteArray() );
+}
+
 void MarvieController::monitoringDataViewMenuRequested( const QPoint& point )
 {
-	//QModelIndex index = table->indexAt( pos );
+	auto updateAction = monitoringDataViewMenu->actions()[0];
+	QModelIndex index = ui.monitoringDataTreeView->currentIndex();
+	if( index.isValid() )
+	{
+		index = index.sibling( index.row(), 0 );
+		while( index.parent().isValid() )
+			index = index.parent();
+		auto list = index.data( Qt::DisplayRole ).toString().split( '.' );
+		if( list.size() >= 2 )
+		{
+			bool ok;
+			int num = list[0].toInt( &ok );
+			if( ok )
+			{
+				updateAction->setVisible( true );
+				updateAction->setProperty( "sensorId", num - 1 );
+			}
+			else
+				updateAction->setVisible( false );
+		}
+		else
+			updateAction->setVisible( false );
+	}
+	else
+		updateAction->setVisible( false );
+
 	monitoringDataViewMenu->popup( ui.monitoringDataTreeView->viewport()->mapToGlobal( point ) );
 }
 
 void MarvieController::monitoringDataViewMenuActionTriggered( QAction* action )
 {
-	if( action->text() == "Copy value" )
+	if( action->text() == "Update" )
+	{
+		ui.deviceSensorsComboBox->setCurrentIndex( action->property( "sensorId" ).toInt() );
+		updateSensorButtonClicked();
+	}
+	else if( action->text() == "Copy value" )
 	{
 		QModelIndex index = ui.monitoringDataTreeView->currentIndex();
 		if( !index.isValid() )
@@ -580,20 +729,16 @@ void MarvieController::targetDeviceChanged( QString text )
 	}();
 	static QVector< QVector< ComPortsConfigWidget::Assignment > > vxPortAssignments = []()
 	{
-		QVector< QVector< ComPortsConfigWidget::Assignment > > portAssignments;		
+		QVector< QVector< ComPortsConfigWidget::Assignment > > portAssignments;
 
 		return portAssignments;
 	}();
 
 	if( text == "QX" )
-	{
 		ui.comPortsConfigWidget->init( qxPortAssignments );
-		ui.ethernetConfigWidget->show();
-	}
 	else
 	{
 		ui.comPortsConfigWidget->init( vxPortAssignments );
-		ui.ethernetConfigWidget->hide();
 		vPortsOverEthernetModel.removeRows( 0, vPortsOverEthernetModel.rowCount() );
 	}
 }
@@ -602,21 +747,16 @@ void MarvieController::newConfigButtonClicked()
 {
 	targetDeviceChanged( ui.targetDeviceComboBox->currentText() );
 
-	ui.gsmModbusRtuCheckBox->setCheckState( Qt::Unchecked );
-	ui.gsmModbusRtuSpinBox->setValue( 502 );
-	ui.gsmModbusTcpCheckBox->setCheckState( Qt::Unchecked );
-	ui.gsmModbusTcpSpinBox->setValue( 503 );
-	ui.gsmModbusAsciiCheckBox->setCheckState( Qt::Unchecked );
-	ui.gsmModbusAsciiSpinBox->setValue( 504 );
+	ui.staticIpCheckBox->setCheckState( Qt::Unchecked );
+	ui.staticIpLineEdit->setText( "" );
+	ui.staticIpLineEdit->setEnabled( false );
+	ui.modbusRtuCheckBox->setCheckState( Qt::Unchecked );
+	ui.modbusRtuSpinBox->setValue( 502 );
+	ui.modbusTcpCheckBox->setCheckState( Qt::Unchecked );
+	ui.modbusTcpSpinBox->setValue( 503 );
+	ui.modbusAsciiCheckBox->setCheckState( Qt::Unchecked );
+	ui.modbusAsciiSpinBox->setValue( 504 );
 
-	ui.ethernetModbusRtuCheckBox->setCheckState( Qt::Unchecked );
-	ui.ethernetModbusRtuSpinBox->setValue( 502 );
-	ui.ethernetModbusTcpCheckBox->setCheckState( Qt::Unchecked );
-	ui.ethernetModbusTcpSpinBox->setValue( 503 );
-	ui.ethernetModbusAsciiCheckBox->setCheckState( Qt::Unchecked );
-	ui.ethernetModbusAsciiSpinBox->setValue( 504 );
-
-	vPortsOverGsmModel.removeRows( 0, vPortsOverGsmModel.rowCount() );
 	vPortsOverEthernetModel.removeRows( 0, vPortsOverEthernetModel.rowCount() );
 
 	sensorsClearButtonClicked();
@@ -686,29 +826,16 @@ void MarvieController::downloadConfigButtonClicked()
 
 void MarvieController::addVPortOverIpButtonClicked()
 {
-	if( sender() == ui.addVPortOverGsmButton )
-		vPortsOverGsmModel.insertRows( vPortsOverGsmModel.rowCount(), 1 );
-	else
-		vPortsOverEthernetModel.insertRows( vPortsOverEthernetModel.rowCount(), 1 );
+	vPortsOverEthernetModel.insertRows( vPortsOverEthernetModel.rowCount(), 1 );
 }
 
 void MarvieController::removeVPortOverIpButtonClicked()
 {
-	if( sender() == ui.removeVPortOverGsmButton )
-		vPortsOverGsmModel.removeRows( ui.vPortsOverGsmTableView->currentIndex().row(), 1 );
-	else
-		vPortsOverEthernetModel.removeRows( ui.vPortsOverEthernetTableView->currentIndex().row(), 1 );
+	vPortsOverEthernetModel.removeRows( ui.vPortsOverIpTableView->currentIndex().row(), 1 );
 }
 
 void MarvieController::comPortAssignmentChanged( unsigned int id, ComPortsConfigWidget::Assignment previous, ComPortsConfigWidget::Assignment current )
 {
-	if( previous == ComPortsConfigWidget::Assignment::GsmModem )
-	{
-		ui.gsmModemConfigWidget->hide();
-		vPortsOverGsmModel.removeRows( 0, vPortsOverGsmModel.rowCount() );
-	}
-	if( current == ComPortsConfigWidget::Assignment::GsmModem )
-		ui.gsmModemConfigWidget->show();
 	updateVPortsList();
 }
 
@@ -727,13 +854,9 @@ void MarvieController::updateVPortsList()
 		}
 	}
 
-	auto vPortsOverIp = vPortsOverGsmModel.modelData();
+	auto vPortsOverIp = vPortsOverEthernetModel.modelData();
 	for( const auto& i : vPortsOverIp )
-		vPorts.append( QString( "Gsm[%1]" ).arg( i ) );
-
-	vPortsOverIp = vPortsOverEthernetModel.modelData();
-	for( const auto& i : vPortsOverIp )
-		vPorts.append( QString( "Ethernet[%1]" ).arg( i ) );
+		vPorts.append( QString( "Network[%1]" ).arg( i ) );
 }
 
 void MarvieController::sensorNameEditReturnPressed()
@@ -873,15 +996,8 @@ void MarvieController::mlinkStateChanged( MLinkClient::State s )
 		switch( s )
 		{
 		case MLinkClient::State::Disconnected:
-			ui.nextInterfaceButton->setEnabled( true );
 			ui.rs232ComboBox->setEnabled( true );
 			ui.rs232ConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-rs-232-female-filled-50.png" ) );
-			
-			mlink.setIODevice( nullptr );
-			mlinkIODevice->close();
-			delete mlinkIODevice;
-			mlinkIODevice = nullptr;
-			
 			break;
 		case MLinkClient::State::Connecting:
 			ui.rs232ConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-rs-232-female-filled-50-orange.png" ) );
@@ -898,7 +1014,24 @@ void MarvieController::mlinkStateChanged( MLinkClient::State s )
 	}
 	else if( ui.interfaceStackedWidget->currentWidget() == ui.ethernetPage )
 	{
-
+		switch( s )
+		{
+		case MLinkClient::State::Disconnected:
+			ui.ipEdit->setEnabled( true );
+			ui.ethernetConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-ethernet-on-filled-50.png" ) );
+			break;
+		case MLinkClient::State::Connecting:
+			ui.ethernetConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-ethernet-on-filled-50-orange.png" ) );
+			break;
+		case MLinkClient::State::Connected:
+			ui.ethernetConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-ethernet-on-filled-50-green.png" ) );
+			break;
+		case MLinkClient::State::Disconnecting:
+			ui.ethernetConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-ethernet-on-filled-50-orange.png" ) );
+			break;
+		default:
+			break;
+		}
 	}
 	else if( ui.interfaceStackedWidget->currentWidget() == ui.bluetoothPage )
 	{
@@ -908,9 +1041,14 @@ void MarvieController::mlinkStateChanged( MLinkClient::State s )
 	switch( s )
 	{
 	case MLinkClient::State::Disconnected:
+		mlink.setIODevice( nullptr );
+		mlinkIODevice->close();
+		mlinkIODevice->deleteLater();
+		mlinkIODevice = nullptr;
+
+		ui.nextInterfaceButton->setEnabled( true );
 		resetDeviceLoad();
 		ui.vPortTileListWidget->removeAllTiles();
-		syncWindow->hide();
 		ui.targetDeviceComboBox->setEnabled( true );
 		deviceVPorts.clear();
 		deviceSensors.clear();
@@ -925,6 +1063,9 @@ void MarvieController::mlinkStateChanged( MLinkClient::State s )
 		ui.syncDateTimeButton->setEnabled( true );
 		break;
 	case MLinkClient::State::Connected:
+		ui.syncDateTimeButton->show();
+		ui.formatSdCardButton->show();
+
 		monitoringDataModel.resetData();
 		break;
 	case MLinkClient::State::Disconnecting:
@@ -1039,6 +1180,15 @@ void MarvieController::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
 		syncWindow->hide();
 		break;
 	}
+	case MarviePackets::Type::ConfigResetType:
+	{
+		ui.vPortTileListWidget->removeAllTiles();
+		monitoringDataModel.resetData();
+		deviceVPorts.clear();
+		deviceSensors.clear();
+		ui.deviceSensorsComboBox->clear();
+		break;
+	}
 	default:
 		break;
 	}
@@ -1080,9 +1230,9 @@ void MarvieController::mlinkNewComplexPacketAvailable( uint8_t channelId, QStrin
 		uint8_t vPortId = ( uint8_t )data.constData()[1];
 		ui.vPortTileListWidget->tile( vPortId )->removeSensorReadError( sensorId );
 		if( deviceSensors.isEmpty() )
-			updateSensorData( sensorId, "", reinterpret_cast< const uint8_t* >( data.constData() + sizeof( uint8_t ) * 2 ) );
+			updateSensorData( sensorId + 1, "", reinterpret_cast< const uint8_t* >( data.constData() + sizeof( uint8_t ) * 2 ) );
 		else
-			updateSensorData( sensorId, deviceSensors[sensorId], reinterpret_cast< const uint8_t* >( data.constData() + sizeof( uint8_t ) * 2 ) );
+			updateSensorData( sensorId + 1, deviceSensors[sensorId], reinterpret_cast< const uint8_t* >( data.constData() + sizeof( uint8_t ) * 2 ) );
 	}
 }
 
@@ -1974,34 +2124,6 @@ bool MarvieController::loadConfigFromXml( QByteArray xmlData )
 			prms.append( c3.attribute( "pinCode", "" ) );
 			prms.append( c3.attribute( "vpn", "9600" ) );
 			ui.comPortsConfigWidget->setRelatedParameters( i, prms );
-			auto c4 = c3.firstChildElement( "modbusRtuServer" );
-			if( !c4.isNull() )
-			{
-				ui.gsmModbusRtuCheckBox->setCheckState( Qt::Checked );
-				ui.gsmModbusRtuSpinBox->setValue( c4.attribute( "port" ).toInt() );
-			}
-			c4 = c3.firstChildElement( "modbusTcpServer" );
-			if( !c4.isNull() )
-			{
-				ui.gsmModbusTcpCheckBox->setCheckState( Qt::Checked );
-				ui.gsmModbusTcpSpinBox->setValue( c4.attribute( "port" ).toInt() );
-			}
-			c4 = c3.firstChildElement( "modbusAsciiServer" );
-			if( !c4.isNull() )
-			{
-				ui.gsmModbusAsciiCheckBox->setCheckState( Qt::Checked );
-				ui.gsmModbusAsciiSpinBox->setValue( c4.attribute( "port" ).toInt() );
-			}
-			c4 = c3.firstChildElement( "vPortOverIp" );
-			while( !c4.isNull() )
-			{
-				int row = vPortsOverGsmModel.rowCount();
-				vPortsOverGsmModel.insertRow( row );
-				vPortsOverGsmModel.setData( vPortsOverGsmModel.index( row, 0 ), c4.attribute( "ip" ) );
-				vPortsOverGsmModel.setData( vPortsOverGsmModel.index( row, 1 ), c4.attribute( "port" ).toInt() );
-
-				c4 = c4.nextSiblingElement();
-			}
 		}
 		else if( c3.tagName() == "multiplexer" )
 		{
@@ -2021,24 +2143,30 @@ bool MarvieController::loadConfigFromXml( QByteArray xmlData )
 		c2 = c2.nextSiblingElement();
 	}
 
-	c1 = configRoot.firstChildElement( "ethernetConfig" );
+	c1 = configRoot.firstChildElement( "networkConfig" );
+	c2 = c1.firstChildElement( "staticIp" );
+	if( !c2.isNull() )
+	{
+		ui.staticIpCheckBox->setCheckState( Qt::Checked );
+		ui.staticIpLineEdit->setText( c2.text() );
+	}
 	c2 = c1.firstChildElement( "modbusRtuServer" );
 	if( !c2.isNull() )
 	{
-		ui.ethernetModbusRtuCheckBox->setCheckState( Qt::Checked );
-		ui.ethernetModbusRtuSpinBox->setValue( c2.attribute( "port" ).toInt() );
+		ui.modbusRtuCheckBox->setCheckState( Qt::Checked );
+		ui.modbusRtuSpinBox->setValue( c2.attribute( "port" ).toInt() );
 	}
 	c2 = c1.firstChildElement( "modbusTcpServer" );
 	if( !c2.isNull() )
 	{
-		ui.ethernetModbusTcpCheckBox->setCheckState( Qt::Checked );
-		ui.ethernetModbusTcpSpinBox->setValue( c2.attribute( "port" ).toInt() );
+		ui.modbusTcpCheckBox->setCheckState( Qt::Checked );
+		ui.modbusTcpSpinBox->setValue( c2.attribute( "port" ).toInt() );
 	}
 	c2 = c1.firstChildElement( "modbusAsciiServer" );
 	if( !c2.isNull() )
 	{
-		ui.ethernetModbusAsciiCheckBox->setCheckState( Qt::Checked );
-		ui.ethernetModbusAsciiSpinBox->setValue( c2.attribute( "port" ).toInt() );
+		ui.modbusAsciiCheckBox->setCheckState( Qt::Checked );
+		ui.modbusAsciiSpinBox->setValue( c2.attribute( "port" ).toInt() );
 	}
 	c2 = c1.firstChildElement( "vPortOverIp" );
 	while( !c2.isNull() )
@@ -2086,6 +2214,8 @@ QByteArray MarvieController::saveConfigToXml()
 			xmlMessageHandler.description.append( QString( "vPortID of \"%1\" is not specified\n" ).arg( name ) );
 		}
 	}
+	if( ui.staticIpCheckBox->checkState() == Qt::Checked && !ui.staticIpLineEdit->hasAcceptableInput() )
+		xmlMessageHandler.description.append( "Invalid static IP\n" );
 	if( !xmlMessageHandler.description.isEmpty() )
 		return QByteArray();
 
@@ -2135,31 +2265,6 @@ QByteArray MarvieController::saveConfigToXml()
 			c2.setAttribute( "vpn", prms[1].toString() );
 			if( !prms[0].toString().isEmpty() )
 				c2.setAttribute( "pinCode", prms[0].toString() );
-			if( ui.gsmModbusRtuCheckBox->checkState() == Qt::Checked )
-			{
-				auto c3 = doc.createElement( "modbusRtuServer" );
-				c2.appendChild( c3 );
-				c3.setAttribute( "port", ui.gsmModbusRtuSpinBox->value() );
-			}
-			if( ui.gsmModbusTcpCheckBox->checkState() == Qt::Checked )
-			{
-				auto c3 = doc.createElement( "modbusTcpServer" );
-				c2.appendChild( c3 );
-				c3.setAttribute( "port", ui.gsmModbusTcpSpinBox->value() );
-			}
-			if( ui.gsmModbusAsciiCheckBox->checkState() == Qt::Checked )
-			{
-				auto c3 = doc.createElement( "modbusAsciiServer" );
-				c2.appendChild( c3 );
-				c3.setAttribute( "port", ui.gsmModbusAsciiSpinBox->value() );
-			}
-			for( int i = 0; i < vPortsOverGsmModel.rowCount(); ++i )
-			{
-				auto c3 = doc.createElement( "vPortOverIp" );
-				c2.appendChild( c3 );
-				c3.setAttribute( "port", vPortsOverGsmModel.data( vPortsOverGsmModel.index( i, 1 ), Qt::DisplayRole ).toInt() );
-				c3.setAttribute( "ip", vPortsOverGsmModel.data( vPortsOverGsmModel.index( i, 0 ), Qt::DisplayRole ).toString() );
-			}
 			break;
 		}
 		case ComPortsConfigWidget::Assignment::Multiplexer:
@@ -2185,25 +2290,31 @@ QByteArray MarvieController::saveConfigToXml()
 	root.appendChild( doc.createComment( "==================================================================" ) );
 	if( ui.targetDeviceComboBox->currentText() == "QX" )
 	{
-		auto c1 = doc.createElement( "ethernetConfig" );
+		auto c1 = doc.createElement( "networkConfig" );
 		root.appendChild( c1 );
-		if( ui.ethernetModbusRtuCheckBox->checkState() == Qt::Checked )
+		if( ui.staticIpCheckBox->checkState() == Qt::Checked )
+		{
+			auto c2 = doc.createElement( "staticIp" );
+			c1.appendChild( c2 );
+			c2.appendChild( doc.createTextNode( ui.staticIpLineEdit->text() ) );
+		}
+		if( ui.modbusRtuCheckBox->checkState() == Qt::Checked )
 		{
 			auto c2 = doc.createElement( "modbusRtuServer" );
 			c1.appendChild( c2 );
-			c2.setAttribute( "port", ui.ethernetModbusRtuSpinBox->value() );
+			c2.setAttribute( "port", ui.modbusRtuSpinBox->value() );
 		}
-		if( ui.ethernetModbusTcpCheckBox->checkState() == Qt::Checked )
+		if( ui.modbusTcpCheckBox->checkState() == Qt::Checked )
 		{
 			auto c2 = doc.createElement( "modbusTcpServer" );
 			c1.appendChild( c2 );
-			c2.setAttribute( "port", ui.ethernetModbusTcpSpinBox->value() );
+			c2.setAttribute( "port", ui.modbusTcpSpinBox->value() );
 		}
-		if( ui.ethernetModbusAsciiCheckBox->checkState() == Qt::Checked )
+		if( ui.modbusAsciiCheckBox->checkState() == Qt::Checked )
 		{
 			auto c2 = doc.createElement( "modbusAsciiServer" );
 			c1.appendChild( c2 );
-			c2.setAttribute( "port", ui.ethernetModbusAsciiSpinBox->value() );
+			c2.setAttribute( "port", ui.modbusAsciiSpinBox->value() );
 		}
 		for( int i = 0; i < vPortsOverEthernetModel.rowCount(); ++i )
 		{
@@ -2296,8 +2407,9 @@ void MarvieController::updateDeviceMemoryLoad( const DeviceMemoryLoad& deviceLoa
 	}
 	else
 	{
-		ui.sdLoadChartView->hide();
-		ui.sdLoadLabel->hide();
+		static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[0]->setValue( 0.0 );
+		static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[1]->setValue( 100.0 );
+		ui.sdLoadLabel->setText( "SD\nN/A" );
 	}
 }
 
@@ -2317,14 +2429,12 @@ void MarvieController::resetDeviceLoad()
 	static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[0]->setValue( 0.0 );
 	static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[1]->setValue( 100.0 );
 	ui.sdLoadLabel->setText( "SD\n0MB" );
-
-	ui.sdLoadChartView->show();
-	ui.sdLoadLabel->show();
 }
 
 void MarvieController::updateDeviceStatus( const MarviePackets::DeviceStatus* status )
 {
-	ui.deviceDateTimeLabel->setText( QString( "Time: " ) + toQtDateTime( status->dateTime ).toString( Qt::ISODate ) );
+	ui.deviceDateTimeLabel->setText( QString( "Time: " ) + printDateTime( toQtDateTime( status->dateTime ) ) );
+	ui.deviceStateLabel->setToolTip( "" );
 	switch( status->state )
 	{
 	case MarviePackets::DeviceStatus::DeviceState::Reconfiguration:
@@ -2338,6 +2448,50 @@ void MarvieController::updateDeviceStatus( const MarviePackets::DeviceStatus* st
 	case MarviePackets::DeviceStatus::DeviceState::IncorrectConfiguration:
 		deviceState = DeviceState::IncorrectConfiguration;
 		ui.deviceStateLabel->setText( "State: incorrect configuration" );
+		switch( status->configError )
+		{
+		case MarviePackets::DeviceStatus::ConfigError::NoConfiglFile:
+			ui.deviceStateLabel->setToolTip( "No config file" );
+			break;
+		case MarviePackets::DeviceStatus::ConfigError::XmlStructureError:
+			ui.deviceStateLabel->setToolTip( "Xml structure error" );
+			break;
+		case MarviePackets::DeviceStatus::ConfigError::ComPortsConfigError:
+			ui.deviceStateLabel->setToolTip( "Com-ports configuration error" );
+			break;
+		case MarviePackets::DeviceStatus::ConfigError::NetworkConfigError:
+			ui.deviceStateLabel->setToolTip( "Network configuration error" );
+			break;
+		case MarviePackets::DeviceStatus::ConfigError::SensorsConfigError:
+			ui.deviceStateLabel->setToolTip( "Sensors configuration error" );
+			break;
+		default:
+			break;
+		}
+		break;
+	default:
+		break;
+	}
+
+	switch( status->sdCardStatus )
+	{
+	case MarviePackets::DeviceStatus::SdCardStatus::NotInserted:
+		ui.sdCardStatusLabel->setText( "SD card: not inserted" );
+		break;
+	case MarviePackets::DeviceStatus::SdCardStatus::Initialization:
+		ui.sdCardStatusLabel->setText( "SD card: initialization" );
+		break;
+	case MarviePackets::DeviceStatus::SdCardStatus::InitFailed:
+		ui.sdCardStatusLabel->setText( "SD card: initialization failed" );
+		break;
+	case MarviePackets::DeviceStatus::SdCardStatus::BadFileSystem:
+		ui.sdCardStatusLabel->setText( "SD card: bad file system" );
+		break;
+	case MarviePackets::DeviceStatus::SdCardStatus::Formatting:
+		ui.sdCardStatusLabel->setText( "SD card: formatting" );
+		break;
+	case MarviePackets::DeviceStatus::SdCardStatus::Working:
+		ui.sdCardStatusLabel->setText( "SD card: working" );
 		break;
 	default:
 		break;
@@ -2348,6 +2502,18 @@ void MarvieController::resetDeviceStatus()
 {
 	ui.deviceDateTimeLabel->setText( "Time: unknown" );
 	ui.deviceStateLabel->setText( "State: unknown" );
+	ui.sdCardStatusLabel->setText( "SD card: unknown" );
+	ui.lanIpLabel->setText( "LAN IP: 0.0.0.0" );
+
+	ui.gsmStateLabel->setText( "State: unknown" );
+	ui.gsmIpLabel->setText( "IP: 0.0.0.0" );
+
+	ui.modbusRtuStatusLabel->setText( "ModbusRTU: unknown" );
+	ui.modbusTcpStatusLabel->setText( "ModbusTCP: unknown" );
+	ui.modbusAsciiStatusLabel->setText( "ModbusASCII: unknown" );
+
+	ui.syncDateTimeButton->hide();
+	ui.formatSdCardButton->hide();
 }
 
 template< typename T >
@@ -2625,6 +2791,16 @@ QDateTime MarvieController::toQtDateTime( const DateTime& dateTime )
 {
 	return QDateTime( QDate( dateTime.year(), dateTime.month(), dateTime.day() ),
 					  QTime( dateTime.hour(), dateTime.min(), dateTime.sec(), dateTime.msec() ) );
+}
+
+QString MarvieController::printDateTime( const QDateTime& dateTime )
+{
+	return QString( "%1.%2.%3/%4:%5:%6" ).arg( dateTime.date().day(), 2, 10, QChar( '0' ) )
+										 .arg( dateTime.date().month(), 2, 10, QChar( '0' ) )
+										 .arg( dateTime.date().year(), 2, 10, QChar( '0' ) )
+										 .arg( dateTime.time().hour(), 2, 10, QChar( '0' ) )
+										 .arg( dateTime.time().minute(), 2, 10, QChar( '0' ) )
+										 .arg( dateTime.time().second(), 2, 10, QChar( '0' ) );
 }
 
 QString MarvieController::saveCanonicalXML( const QDomDocument& doc, int indent ) const

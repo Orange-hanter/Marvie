@@ -66,7 +66,7 @@
     <NMakePreprocessorDefinitions>__VisualGDB_CFG_Debug;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <NMakeIncludeSearchPath>.;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0\arm-eabi\thumb\cortex_m4;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0\backward;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\7.2.0\include;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\7.2.0\include-fixed;$(TOOLCHAIN_ROOT)\arm-eabi\sys-include;$(TOOLCHAIN_ROOT)\arm-eabi\include;ChibiOS/common/ext/ARM/CMSIS/Core/Include;ChibiOS/common/ext/ST/STM32F4xx;ChibiOS/common/oslib/include;ChibiOS/common/ports/ARMCMx;ChibiOS/common/ports/ARMCMx/compilers/GCC;ChibiOS/common/startup/ARMCMx/devices/STM32F4xx;ChibiOS/license;ChibiOS/rt/include;ChibiOS/hal/include;ChibiOS/hal/osal/rt;ChibiOS/hal/ports/STM32/STM32F4xx;ChibiOS/hal/ports/STM32/LLD/ADCv2;ChibiOS/hal/ports/STM32/LLD/CANv1;ChibiOS/hal/ports/STM32/LLD/CRCv1;ChibiOS/hal/ports/STM32/LLD/DACv1;ChibiOS/hal/ports/STM32/LLD/DMAv2;ChibiOS/hal/ports/STM32/LLD/EXTIv1;ChibiOS/hal/ports/STM32/LLD/GPIOv2;ChibiOS/hal/ports/STM32/LLD/I2Cv1;ChibiOS/hal/ports/STM32/LLD/MACv1;ChibiOS/hal/ports/STM32/LLD/OTGv1;ChibiOS/hal/ports/STM32/LLD/QUADSPIv1;ChibiOS/hal/ports/STM32/LLD/RTCv2;ChibiOS/hal/ports/STM32/LLD/SDIOv1;ChibiOS/hal/ports/STM32/LLD/SPIv1;ChibiOS/hal/ports/STM32/LLD/TIMv1;ChibiOS/hal/ports/STM32/LLD/USARTv1;ChibiOS/hal/ports/STM32/LLD/xWDGv1;ChibiOS/hal/ports/common/ARMCMx;ChibiOS/test/lib;ChibiOS/test/rt/source/test;ChibiOS/test/oslib/source/test;Lib/fatfs/src;ChibiOS/various;ChibiOS/hal/lib/streams;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>.;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0\arm-eabi\thumb\cortex_m4;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0\backward;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\7.2.0\include;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\7.2.0\include-fixed;$(TOOLCHAIN_ROOT)\arm-eabi\sys-include;$(TOOLCHAIN_ROOT)\arm-eabi\include;ChibiOS/common/ext/ARM/CMSIS/Core/Include;ChibiOS/common/ext/ST/STM32F4xx;ChibiOS/common/oslib/include;ChibiOS/common/ports/ARMCMx;ChibiOS/common/ports/ARMCMx/compilers/GCC;ChibiOS/common/startup/ARMCMx/devices/STM32F4xx;ChibiOS/license;ChibiOS/rt/include;ChibiOS/hal/include;ChibiOS/hal/osal/rt;ChibiOS/hal/ports/STM32/STM32F4xx;ChibiOS/hal/ports/STM32/LLD/ADCv2;ChibiOS/hal/ports/STM32/LLD/CANv1;ChibiOS/hal/ports/STM32/LLD/CRCv1;ChibiOS/hal/ports/STM32/LLD/DACv1;ChibiOS/hal/ports/STM32/LLD/DMAv2;ChibiOS/hal/ports/STM32/LLD/EXTIv1;ChibiOS/hal/ports/STM32/LLD/GPIOv2;ChibiOS/hal/ports/STM32/LLD/I2Cv1;ChibiOS/hal/ports/STM32/LLD/MACv1;ChibiOS/hal/ports/STM32/LLD/OTGv1;ChibiOS/hal/ports/STM32/LLD/QUADSPIv1;ChibiOS/hal/ports/STM32/LLD/RTCv2;ChibiOS/hal/ports/STM32/LLD/SDIOv1;ChibiOS/hal/ports/STM32/LLD/SPIv1;ChibiOS/hal/ports/STM32/LLD/TIMv1;ChibiOS/hal/ports/STM32/LLD/USARTv1;ChibiOS/hal/ports/STM32/LLD/xWDGv1;ChibiOS/hal/ports/common/ARMCMx;ChibiOS/test/lib;ChibiOS/test/rt/source/test;ChibiOS/test/oslib/source/test;Lib/fatfs/src;Lib/lwip/src/include;ChibiOS/various;ChibiOS/various/lwip_bindings;ChibiOS/hal/lib/streams;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>$(ProjectDir)\gcc_Release.h;$(VISUALGDB_DIR)\gcc_compat.h;$(BSP_ROOT)\stm32_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
     <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
@@ -82,7 +82,7 @@
     <NMakeReBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /rebuild "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
     <NMakeOutput>$(ProjectDir)ChibiOSF4-ReleaseOpt.vgdbsettings</NMakeOutput>
-    <NMakeIncludeSearchPath>.;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0\arm-eabi\thumb\cortex_m4;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0\backward;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\7.2.0\include;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\7.2.0\include-fixed;$(TOOLCHAIN_ROOT)\arm-eabi\sys-include;$(TOOLCHAIN_ROOT)\arm-eabi\include;ChibiOS/common/ext/ARM/CMSIS/Core/Include;ChibiOS/common/ext/ST/STM32F4xx;ChibiOS/common/oslib/include;ChibiOS/common/ports/ARMCMx;ChibiOS/common/ports/ARMCMx/compilers/GCC;ChibiOS/common/startup/ARMCMx/devices/STM32F4xx;ChibiOS/license;ChibiOS/rt/include;ChibiOS/hal/include;ChibiOS/hal/osal/rt;ChibiOS/hal/ports/STM32/STM32F4xx;ChibiOS/hal/ports/STM32/LLD/ADCv2;ChibiOS/hal/ports/STM32/LLD/CANv1;ChibiOS/hal/ports/STM32/LLD/CRCv1;ChibiOS/hal/ports/STM32/LLD/DACv1;ChibiOS/hal/ports/STM32/LLD/DMAv2;ChibiOS/hal/ports/STM32/LLD/EXTIv1;ChibiOS/hal/ports/STM32/LLD/GPIOv2;ChibiOS/hal/ports/STM32/LLD/I2Cv1;ChibiOS/hal/ports/STM32/LLD/MACv1;ChibiOS/hal/ports/STM32/LLD/OTGv1;ChibiOS/hal/ports/STM32/LLD/QUADSPIv1;ChibiOS/hal/ports/STM32/LLD/RTCv2;ChibiOS/hal/ports/STM32/LLD/SDIOv1;ChibiOS/hal/ports/STM32/LLD/SPIv1;ChibiOS/hal/ports/STM32/LLD/TIMv1;ChibiOS/hal/ports/STM32/LLD/USARTv1;ChibiOS/hal/ports/STM32/LLD/xWDGv1;ChibiOS/hal/ports/common/ARMCMx;ChibiOS/test/lib;ChibiOS/test/rt/source/test;ChibiOS/test/oslib/source/test;Lib/fatfs/src;ChibiOS/various;ChibiOS/hal/lib/streams;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>.;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0\arm-eabi\thumb\cortex_m4;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0\backward;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\7.2.0\include;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\7.2.0\include-fixed;$(TOOLCHAIN_ROOT)\arm-eabi\sys-include;$(TOOLCHAIN_ROOT)\arm-eabi\include;ChibiOS/common/ext/ARM/CMSIS/Core/Include;ChibiOS/common/ext/ST/STM32F4xx;ChibiOS/common/oslib/include;ChibiOS/common/ports/ARMCMx;ChibiOS/common/ports/ARMCMx/compilers/GCC;ChibiOS/common/startup/ARMCMx/devices/STM32F4xx;ChibiOS/license;ChibiOS/rt/include;ChibiOS/hal/include;ChibiOS/hal/osal/rt;ChibiOS/hal/ports/STM32/STM32F4xx;ChibiOS/hal/ports/STM32/LLD/ADCv2;ChibiOS/hal/ports/STM32/LLD/CANv1;ChibiOS/hal/ports/STM32/LLD/CRCv1;ChibiOS/hal/ports/STM32/LLD/DACv1;ChibiOS/hal/ports/STM32/LLD/DMAv2;ChibiOS/hal/ports/STM32/LLD/EXTIv1;ChibiOS/hal/ports/STM32/LLD/GPIOv2;ChibiOS/hal/ports/STM32/LLD/I2Cv1;ChibiOS/hal/ports/STM32/LLD/MACv1;ChibiOS/hal/ports/STM32/LLD/OTGv1;ChibiOS/hal/ports/STM32/LLD/QUADSPIv1;ChibiOS/hal/ports/STM32/LLD/RTCv2;ChibiOS/hal/ports/STM32/LLD/SDIOv1;ChibiOS/hal/ports/STM32/LLD/SPIv1;ChibiOS/hal/ports/STM32/LLD/TIMv1;ChibiOS/hal/ports/STM32/LLD/USARTv1;ChibiOS/hal/ports/STM32/LLD/xWDGv1;ChibiOS/hal/ports/common/ARMCMx;ChibiOS/test/lib;ChibiOS/test/rt/source/test;ChibiOS/test/oslib/source/test;Lib/fatfs/src;Lib/lwip/src/include;ChibiOS/various;ChibiOS/various/lwip_bindings;ChibiOS/hal/lib/streams;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>$(ProjectDir)\gcc_ReleaseOpt.h;$(VISUALGDB_DIR)\gcc_compat.h;$(BSP_ROOT)\stm32_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
     <NMakePreprocessorDefinitions>__VisualGDB_CFG_ReleaseOpt;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
@@ -120,6 +120,7 @@
     <ClCompile Include="Core\CCMemoryHeap.cpp" />
     <ClCompile Include="Core\CpuUsageMonitor.cpp" />
     <ClCompile Include="Core\DateTimeService.cpp" />
+    <ClCompile Include="Core\IODevice.cpp" />
     <ClCompile Include="Core\NewDelete.cpp" />
     <ClCompile Include="Core\Object.cpp" />
     <ClCompile Include="Core\ObjectMemoryUtilizer.cpp" />
@@ -127,6 +128,7 @@
     <ClCompile Include="Drivers\Interfaces\Rs485.cpp" />
     <ClCompile Include="Drivers\Interfaces\SharedRs485.cpp" />
     <ClCompile Include="Drivers\Interfaces\Usart.cpp" />
+    <ClCompile Include="Drivers\Interfaces\UsartBasedDevice.cpp" />
     <ClCompile Include="Drivers\LogicOutput.cpp" />
     <ClCompile Include="Drivers\Network\SimGsm\SimGsm.cpp" />
     <ClCompile Include="Drivers\Network\SimGsm\SimGsmATResponseParsers.cpp" />
@@ -141,16 +143,21 @@
     <ClCompile Include="Drivers\Sensors\TestSensorB.cpp" />
     <ClCompile Include="Lib\fatfs\src\ff.c" />
     <ClCompile Include="Lib\fatfs\src\ffunicode.c" />
-    <ClCompile Include="Lib\sha1\sha1.cpp" />
+    <ClCompile Include="Lib\sha1\_Sha1.cpp" />
     <ClCompile Include="Lib\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MarvieDevice.cpp" />
     <ClCompile Include="MarviePlatform.cpp" />
     <ClCompile Include="MarvieXmlConfigParsers.cpp" />
     <ClCompile Include="MLinkServer.cpp" />
+    <ClCompile Include="NetworkSensorReader.cpp" />
     <ClCompile Include="Network\AbstractTcpSocket.cpp" />
     <ClCompile Include="Network\AbstractUdpSocket.cpp" />
     <ClCompile Include="Network\IpAddress.cpp" />
+    <ClCompile Include="Network\LwipSocketPrivate.cpp" />
+    <ClCompile Include="Network\TcpServer.cpp" />
+    <ClCompile Include="Network\TcpSocket.cpp" />
+    <ClCompile Include="Network\UdpSocket.cpp" />
     <ClCompile Include="SensorService\CE301Type.cpp" />
     <ClCompile Include="SensorService\SensorService.cpp" />
     <ClCompile Include="SensorService\SimpleSensorType.cpp" />
@@ -267,8 +274,10 @@
     <ClCompile Include="ChibiOS\various\cpp_wrappers\ch.cpp" />
     <ClCompile Include="ChibiOS\various\fatfs_bindings\fatfs_diskio.c" />
     <ClCompile Include="ChibiOS\various\fatfs_bindings\fatfs_syscall.c" />
+    <ClCompile Include="Tests\RingBufferTest.cpp" />
     <ClCompile Include="Tests\Rs485Test.cpp" />
     <ClCompile Include="Tests\SimGsmTcpEcho.cpp" />
+    <ClCompile Include="Tests\UdpStressTestServer\UdpStressTestServer.cpp" />
     <ClCompile Include="Tests\XmlParserTest.cpp" />
     <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\cmsis_armcc.h" />
     <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\cmsis_armclang.h" />
@@ -684,6 +693,11 @@
     <ClInclude Include="Lib\lwip\src\include\posix\errno.h" />
     <ClInclude Include="Lib\lwip\src\include\posix\netdb.h" />
     <ClInclude Include="Lib\lwip\src\include\posix\sys\socket.h" />
+    <ClInclude Include="NetworkSensorReader.h" />
+    <ClInclude Include="Network\LwipSocketPrivate.h" />
+    <ClInclude Include="Network\TcpServer.h" />
+    <ClInclude Include="Network\TcpSocket.h" />
+    <ClInclude Include="Tests\UdpStressTestServer\UdpStressTestServer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="board.h" />
@@ -739,7 +753,7 @@
     <ClInclude Include="Lib\fatfs\src\ff.h" />
     <ClInclude Include="Lib\fatfs\src\integer.h" />
     <ClInclude Include="Lib\fatfs\src\_ffconf.h" />
-    <ClInclude Include="Lib\sha1\sha1.h" />
+    <ClInclude Include="Lib\sha1\_Sha1.h" />
     <ClInclude Include="Lib\tinyxml2\tinyxml2.h" />
     <ClInclude Include="lwipopts.h" />
     <ClInclude Include="MarvieDevice.h" />
@@ -756,6 +770,7 @@
     <ClInclude Include="Network\AbstractTcpSocket.h" />
     <ClInclude Include="Network\AbstractUdpSocket.h" />
     <ClInclude Include="Network\IpAddress.h" />
+    <ClInclude Include="Network\UdpSocket.h" />
     <ClInclude Include="SensorService\SensorService.h" />
     <ClInclude Include="SingleBRSensorReader.h" />
     <ClInclude Include="BRSensorReader.h" />

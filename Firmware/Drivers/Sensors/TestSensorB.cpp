@@ -75,7 +75,8 @@ TestSensorB::Data* TestSensorB::readData()
 	if( !io )
 		return &data;
 
-	static_cast< UsartBasedDevice* >( io )->setBaudRate( _baudrate );
+	if( io->isSerialDevice() )
+		static_cast< UsartBasedDevice* >( io )->setBaudRate( _baudrate );
 
 	if( _text )
 		io->write( ( const uint8_t* )_text, strlen( _text ), TIME_INFINITE );
@@ -91,7 +92,6 @@ TestSensorB::Data* TestSensorB::readData()
 		data.errType = SensorData::Error::NoError;
 	else
 		data.errType = errType == ErrorType::Crc ? SensorData::Error::CrcError : SensorData::Error::NoResponseError;
-	data.readNum;
 	data.t = DateTimeService::currentDateTime();
 	data.unlock();
 

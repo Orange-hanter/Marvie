@@ -28,8 +28,11 @@ public:
 	EvtSource* eventSource();
 
 protected:
-	enum InnerEventFlag : eventflags_t { StopRequestFlag = 1, TimeoutFlag = 2, ForceOneRequestFlag = 4, ForceAllRequestFlag = 8 };
-	enum class WorkingState { Waiting, Reading };
+	bool waitAndCheck( sysinterval_t interval, sysinterval_t step = TIME_MS2I( 100 ) );
+
+protected:
+	enum InnerEventFlag : eventflags_t { StopRequestFlag = 1, TimeoutFlag = 2, ForceOneRequestFlag = 4, ForceAllRequestFlag = 8, NetworkFlag = 16 };
+	enum class WorkingState { Waiting, Connecting, Reading };
 
 	State tState;
 	WorkingState wState;

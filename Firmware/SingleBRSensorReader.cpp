@@ -104,6 +104,7 @@ void SingleBRSensorReader::main()
 		if( em & InnerEventFlag::ForceOneRequestFlag )
 		{
 			chVTReset( &timer );
+			chEvtGetAndClearEvents( InnerEventFlag::TimeoutFlag );
 			em = InnerEventFlag::TimeoutFlag;
 		}
 		if( em & InnerEventFlag::TimeoutFlag )
@@ -119,6 +120,7 @@ void SingleBRSensorReader::main()
 				nextInterval -= dt;
 			else
 				nextInterval = 0;
+			nextTime = ( systime_t )( chVTGetSystemTimeX() + nextInterval );
 			chSysUnlock();
 
 			if( nextInterval == 0 )
@@ -133,7 +135,7 @@ void SingleBRSensorReader::main()
 
 	chSysLock();
 	tState = State::Stopped;
-	wState = BRSensorReader::WorkingState::Waiting;
+	wState = WorkingState::Connecting;
 	nextInterval = 0;
 	extEventSource.broadcastFlagsI( ( eventflags_t )EventFlag::StateChanged );
 	chThdDequeueNextI( &waitingQueue, MSG_OK );

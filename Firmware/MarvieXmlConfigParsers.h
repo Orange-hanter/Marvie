@@ -2,6 +2,8 @@
 
 #include "Lib/tinyxml2/tinyxml2.h"
 #include "Drivers/Interfaces/UsartBasedDevice.h"
+#include "Network/IpAddress.h"
+#include <vector>
 #include <list>
 
 namespace MarvieXmlConfigParsers
@@ -25,12 +27,13 @@ namespace MarvieXmlConfigParsers
 		uint16_t port;
 	};
 
-	struct EthernetConf
+	struct NetworkConf
 	{
+		IpAddress staticIp;
 		uint16_t modbusRtuServerPort;
 		uint16_t modbusTcpServerPort;
 		uint16_t modbusAsciiServerPort;
-		std::list< VPortOverIpConf > vPortOverIpList;
+		std::vector< VPortOverIpConf > vPortOverIpList;
 	};
 
 	struct VPortConf : public ComPortConf
@@ -47,10 +50,6 @@ namespace MarvieXmlConfigParsers
 
 		uint32_t pinCode;
 		char vpn[20 + 1];
-		uint16_t modbusRtuServerPort;
-		uint16_t modbusTcpServerPort;
-		uint16_t modbusAsciiServerPort;
-		std::list< VPortOverIpConf > vPortOverIpList;
 	};
 
 	struct ModbusRtuSlaveConf : public ComPortConf
@@ -73,10 +72,10 @@ namespace MarvieXmlConfigParsers
 	UsartBasedDevice::DataFormat toFrameFormat( const char* s );
 	bool parseVPortConfig( XMLElement* node, VPortConf* conf );
 	bool parseVPortOverIp( XMLElement* node, VPortOverIpConf* conf );
-	bool parseVPortOverIpGroup( XMLElement* node, std::list< VPortOverIpConf >* vPortOverIpList );
+	bool parseVPortOverIpGroup( XMLElement* node, std::vector< VPortOverIpConf >* vPortOverIpList );
 	bool parseGsmModemConfig( XMLElement* node, GsmModemConf* conf );
 	bool parseModbusRtuSlaveConfig( XMLElement* node, ModbusRtuSlaveConf* conf );
 	bool parseMultiplexerConfig( XMLElement* node, MultiplexerConf* conf );
 	ComPortConf** parseComPortsConfig( XMLElement* comPortsConfigNode, const std::list< std::list< ComPortAssignment > >& comPortAssignments );
-	bool parseEthernetConfig( XMLElement* ethernetConfigNode, EthernetConf* conf );
+	bool parseNetworkConfig( XMLElement* networkConfigNode, NetworkConf* conf );
 }

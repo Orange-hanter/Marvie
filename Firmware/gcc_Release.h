@@ -1410,7 +1410,9 @@
 //ChibiOS\test\rt\source\test
 //ChibiOS\test\oslib\source\test
 //Lib\fatfs\src
+//Lib\lwip\src\include
 //ChibiOS\various
+//ChibiOS\various\lwip_bindings
 //ChibiOS\hal\lib\streams
 // --- Include directories end --- //
 

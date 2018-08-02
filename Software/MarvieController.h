@@ -11,6 +11,7 @@
 #include <QAbstractMessageHandler>
 #include <QSharedPointer>
 #include <QMenu>
+#include <QMessageBox>
 #include "VPortOverIpModel.h"
 #include "VPortsOverIpDelegate.h"
 #include "MonitoringDataModel.h"
@@ -43,6 +44,7 @@ private slots:
 	void updateAllSensorsButtonClicked();
 	void updateSensorButtonClicked();
 	void syncDateTimeButtonClicked();
+	void formatSdCardButtonClicked();
 
 	void monitoringDataViewMenuRequested( const QPoint& point );
 	void monitoringDataViewMenuActionTriggered( QAction* action );
@@ -102,6 +104,7 @@ private:
 
 	DateTime toDeviceDateTime( const QDateTime& );
 	QDateTime toQtDateTime( const DateTime& );
+	QString printDateTime( const QDateTime& );
 
 	QString saveCanonicalXML( const QDomDocument& doc, int indent = 1 ) const;
 	void writeDomNodeCanonically( QXmlStreamWriter &stream, const QDomNode &domNode ) const;
@@ -191,7 +194,6 @@ private:
 		VPortIdComboBoxEventFilter( const QVector< QString >& vPorts ) : vPorts( vPorts ) {}
 		bool eventFilter( QObject *obj, QEvent *event ) final override;
 	} vPortIdComboBoxEventFilter;
-	VPortOverIpModel vPortsOverGsmModel;
 	VPortOverIpModel vPortsOverEthernetModel;
 	VPortsOverIpDelegate vPortsOverIpDelegate;
 

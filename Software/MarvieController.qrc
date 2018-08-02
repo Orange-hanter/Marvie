@@ -51,5 +51,6 @@
         <file>icons/icons8-stop-48.png</file>
         <file>icons/icons8-end-32.png</file>
         <file>icons/icons8-update-left-rotation-64.png</file>
+        <file>icons/icons8-eraser-60.png</file>
     </qresource>
 </RCC>

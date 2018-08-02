@@ -524,9 +524,6 @@
     <Filter Include="Source files\Lib\sha1">
       <UniqueIdentifier>{7eeb0c38-af43-4883-bd40-1be640eaaf64}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header files\Lib\sha1">
-      <UniqueIdentifier>{ffb61951-db26-4a78-8eca-56cb1ec39de5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source files\ChibiOS\various\lwip_bindings">
       <UniqueIdentifier>{e59f5401-bd17-4572-9ec7-314239081afc}</UniqueIdentifier>
     </Filter>
@@ -637,6 +634,15 @@
     </Filter>
     <Filter Include="Header files\Lib\lwip\src\include\posix\sys">
       <UniqueIdentifier>{8552169c-5191-4755-8b01-02e0e2854905}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Lib\sha1">
+      <UniqueIdentifier>{ffb61951-db26-4a78-8eca-56cb1ec39de5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Tests\UdpStressTestServer">
+      <UniqueIdentifier>{63dc8fdc-0045-48f6-8647-342403d2a085}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Tests\UdpStressTestServer">
+      <UniqueIdentifier>{063fa441-44db-4c79-b555-65cd535e5a85}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -2345,9 +2351,6 @@
     <ClCompile Include="Core\Object.cpp">
       <Filter>Source files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Lib\sha1\sha1.cpp">
-      <Filter>Source files\Lib\sha1</Filter>
-    </ClCompile>
     <ClCompile Include="MarvieXmlConfigParsers.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
@@ -2386,6 +2389,36 @@
     </ClCompile>
     <ClCompile Include="Tests\LwipEthernetTest.cpp">
       <Filter>Source files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\sha1\_Sha1.cpp">
+      <Filter>Source files\Lib\sha1</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\UdpSocket.cpp">
+      <Filter>Source files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\RingBufferTest.cpp">
+      <Filter>Source files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\UdpStressTestServer\UdpStressTestServer.cpp">
+      <Filter>Source files\Tests\UdpStressTestServer</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\TcpSocket.cpp">
+      <Filter>Source files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\LwipSocketPrivate.cpp">
+      <Filter>Source files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\TcpServer.cpp">
+      <Filter>Source files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkSensorReader.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\IODevice.cpp">
+      <Filter>Source files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Interfaces\UsartBasedDevice.cpp">
+      <Filter>Source files\Drivers\Interfaces</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2581,9 +2614,6 @@
     <ClInclude Include="Core\Concurrent.h">
       <Filter>Header files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Lib\sha1\sha1.h">
-      <Filter>Header files\Lib\sha1</Filter>
-    </ClInclude>
     <ClInclude Include="MarvieXmlConfigParsers.h">
       <Filter>Header files\ChibiOS</Filter>
     </ClInclude>
@@ -2630,6 +2660,27 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="httpd_opts.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\sha1\_Sha1.h">
+      <Filter>Header files\Lib\sha1</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\UdpSocket.h">
+      <Filter>Header files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests\UdpStressTestServer\UdpStressTestServer.h">
+      <Filter>Header files\Tests\UdpStressTestServer</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\TcpSocket.h">
+      <Filter>Header files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\LwipSocketPrivate.h">
+      <Filter>Header files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\TcpServer.h">
+      <Filter>Header files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkSensorReader.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>
