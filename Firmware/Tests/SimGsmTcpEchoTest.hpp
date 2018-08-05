@@ -5,11 +5,8 @@
 static uint8_t ib[2048], ob[1024];
 static SimGsm* gsm;
 
-int main()
+int simGsmTcpEchoTest()
 {
-	halInit();
-	chSysInit();
-
 	Usart* usart = Usart::instance( &SD6 );
 	usart->setOutputBuffer( ob, 1024 );
 	usart->setInputBuffer( ib, 2048 );
@@ -115,5 +112,5 @@ int main()
 		}
 	}
 
-	chThdSleep( TIME_INFINITE );
+	return 0;
 }

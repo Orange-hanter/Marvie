@@ -180,11 +180,8 @@ private:
 	char str[50];
 };
 
-int main()
+int mLinkTest()
 {
-	halInit();
-	chSysInit();
-
 	CpuUsageMonitor::instance();
 
 	palSetPadMode( GPIOC, 8, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );

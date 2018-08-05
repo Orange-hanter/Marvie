@@ -6,7 +6,7 @@
 
 using namespace chibios_rt;
 
-class RingBufferTest : private BaseStaticThread< 256 >
+class RingBufferTestClass : private BaseStaticThread< 256 >
 {
 public:
 	void exec()
@@ -96,7 +96,7 @@ private:
 	{
 		switch( seq )
 		{
-		case RingBufferTest::Sequence::S1:
+		case RingBufferTestClass::Sequence::S1:
 		{
 			for( uint8_t i = 0; i < 3; ++i )
 			{
@@ -106,7 +106,7 @@ private:
 			exit( MSG_OK );
 			break;
 		}
-		case RingBufferTest::Sequence::S2:
+		case RingBufferTestClass::Sequence::S2:
 		{
 			for( uint8_t i = 0; i < 10; ++i )
 			{
@@ -116,21 +116,21 @@ private:
 			exit( MSG_OK );
 			break;
 		}
-		case RingBufferTest::Sequence::S3:
+		case RingBufferTestClass::Sequence::S3:
 		{
 			for( uint8_t i = 0; i < 10; ++i )
 				buffer->write( &i, 1, TIME_INFINITE );
 			exit( MSG_OK );
 			break;
 		}
-		case RingBufferTest::Sequence::S4:
+		case RingBufferTestClass::Sequence::S4:
 		{
 			uint8_t data[10];
 			assert( buffer->read( data, 10, TIME_INFINITE ) == 2 );
 			exit( MSG_OK );
 			break;
 		}
-		case RingBufferTest::Sequence::S5:
+		case RingBufferTestClass::Sequence::S5:
 		{
 			uint8_t data[5] = { 1,2,3,4,5 };
 			buffer->write( data, 1, TIME_INFINITE );
@@ -147,17 +147,12 @@ private:
 private:
 	DynamicRingBuffer< uint8_t >* buffer;
 	enum class Sequence { S1, S2, S3, S4, S5 } seq;
-} ringBufferTest;
+} ringBufferTestClass;
 
 
-int main()
+int ringBufferTest()
 {
-	halInit();
-	chSysInit();
-
-	ringBufferTest.exec();
-	while( true )
-		;
+	ringBufferTestClass.exec();
 
 	return 0;
 }

@@ -4,11 +4,8 @@
 
 using namespace tinyxml2;
 
-int main()
+int xmlParserTest()
 {
-	halInit();
-	chSysInit();
-
 	static const char* xml =
 		"<information>"
 		"	<attributeApproach v='3' />"

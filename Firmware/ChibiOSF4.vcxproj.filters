@@ -2273,9 +2273,6 @@
     <ClCompile Include="MultipleBRSensorsReader.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="Tests\MultipleBRSensorsReaderTest.cpp">
-      <Filter>Source files\Tests</Filter>
-    </ClCompile>
     <ClCompile Include="Drivers\Sensors\CE301Sensor.cpp">
       <Filter>Source files\Drivers\Sensors</Filter>
     </ClCompile>
@@ -2285,9 +2282,6 @@
     <ClCompile Include="Lib\fatfs\src\ff.c">
       <Filter>Source files\Lib\fatfs\src</Filter>
     </ClCompile>
-    <ClCompile Include="Tests\XmlParserTest.cpp">
-      <Filter>Source files\Tests</Filter>
-    </ClCompile>
     <ClCompile Include="Lib\tinyxml2\tinyxml2.cpp">
       <Filter>Source files\Lib\tinyxml2</Filter>
     </ClCompile>
@@ -2296,15 +2290,6 @@
     </ClCompile>
     <ClCompile Include="SensorService\CE301Type.cpp">
       <Filter>Source files\SensorService</Filter>
-    </ClCompile>
-    <ClCompile Include="Drivers\Sensors\SimpleSensor.cpp">
-      <Filter>Source files\Drivers\Sensors</Filter>
-    </ClCompile>
-    <ClCompile Include="SensorService\SimpleSensorType.cpp">
-      <Filter>Source files\SensorService</Filter>
-    </ClCompile>
-    <ClCompile Include="Tests\SimGsmTcpEcho.cpp">
-      <Filter>Source files\Tests</Filter>
     </ClCompile>
     <ClCompile Include="ChibiOS\hal\src\hal_crc.c">
       <Filter>Source files\ChibiOS\hal\src</Filter>
@@ -2320,9 +2305,6 @@
     </ClCompile>
     <ClCompile Include="Crc32HW.cpp">
       <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tests\MLinkTest.cpp">
-      <Filter>Source files\Tests</Filter>
     </ClCompile>
     <ClCompile Include="Core\ObjectMemoryUtilizer.cpp">
       <Filter>Source files\Core</Filter>
@@ -2378,26 +2360,17 @@
     <ClCompile Include="SensorService\TestSensorBType.cpp">
       <Filter>Source files\SensorService</Filter>
     </ClCompile>
-    <ClCompile Include="Tests\Rs485Test.cpp">
-      <Filter>Source files\Tests</Filter>
-    </ClCompile>
     <ClCompile Include="ChibiOS\various\lwip_bindings\arch\sys_arch.c">
       <Filter>Source files\ChibiOS\various\lwip_bindings\arch</Filter>
     </ClCompile>
     <ClCompile Include="ChibiOS\various\lwip_bindings\lwipthread.c">
       <Filter>Source files\ChibiOS\various\lwip_bindings</Filter>
     </ClCompile>
-    <ClCompile Include="Tests\LwipEthernetTest.cpp">
-      <Filter>Source files\Tests</Filter>
-    </ClCompile>
     <ClCompile Include="Lib\sha1\_Sha1.cpp">
       <Filter>Source files\Lib\sha1</Filter>
     </ClCompile>
     <ClCompile Include="Network\UdpSocket.cpp">
       <Filter>Source files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Tests\RingBufferTest.cpp">
-      <Filter>Source files\Tests</Filter>
     </ClCompile>
     <ClCompile Include="Tests\UdpStressTestServer\UdpStressTestServer.cpp">
       <Filter>Source files\Tests\UdpStressTestServer</Filter>
@@ -2419,6 +2392,30 @@
     </ClCompile>
     <ClCompile Include="Drivers\Interfaces\UsartBasedDevice.cpp">
       <Filter>Source files\Drivers\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\GsmPPPTest.hpp">
+      <Filter>Source files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\LwipEthernetTest.hpp">
+      <Filter>Source files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\MLinkTest.hpp">
+      <Filter>Source files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\MultipleBRSensorsReaderTest.hpp">
+      <Filter>Source files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\RingBufferTest.hpp">
+      <Filter>Source files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\Rs485Test.hpp">
+      <Filter>Source files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\SimGsmTcpEchoTest.hpp">
+      <Filter>Source files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\XmlParserTest.hpp">
+      <Filter>Source files\Tests</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2556,9 +2553,6 @@
     </ClInclude>
     <ClInclude Include="SensorService\SensorService.h">
       <Filter>Header files\SensorService</Filter>
-    </ClInclude>
-    <ClInclude Include="Drivers\Sensors\SimpleSensor.h">
-      <Filter>Header files\Drivers\Sensors</Filter>
     </ClInclude>
     <ClInclude Include="ChibiOS\hal\include\hal_crc.h">
       <Filter>Header files\ChibiOS\hal\include</Filter>

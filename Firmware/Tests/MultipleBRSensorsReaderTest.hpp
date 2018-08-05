@@ -60,11 +60,8 @@ void removeAllSensors( MultipleBRSensorsReader* reader )
 	}
 }
 
-int main()
+int multipleBRSensorsReaderTest()
 {
-	halInit();
-	chSysInit();
-
 	//====Test_1===========================================================================================================
 
 	thread = new MultipleBRSensorsReader;
@@ -300,9 +297,6 @@ EndTest5:
 	listener.getAndClearFlags();
 	chEvtGetAndClearEvents( ALL_EVENTS );
 	thread->removeAllSensorElements( true );
-
-	while( true )
-		;
 
 	return 0;
 }

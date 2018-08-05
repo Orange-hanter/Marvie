@@ -138,7 +138,6 @@
     <ClCompile Include="Drivers\Network\SimGsm\SimGsmUdpSocket.cpp" />
     <ClCompile Include="Drivers\Sensors\AbstractSensor.cpp" />
     <ClCompile Include="Drivers\Sensors\CE301Sensor.cpp" />
-    <ClCompile Include="Drivers\Sensors\SimpleSensor.cpp" />
     <ClCompile Include="Drivers\Sensors\TestSensorA.cpp" />
     <ClCompile Include="Drivers\Sensors\TestSensorB.cpp" />
     <ClCompile Include="Lib\fatfs\src\ff.c" />
@@ -160,7 +159,6 @@
     <ClCompile Include="Network\UdpSocket.cpp" />
     <ClCompile Include="SensorService\CE301Type.cpp" />
     <ClCompile Include="SensorService\SensorService.cpp" />
-    <ClCompile Include="SensorService\SimpleSensorType.cpp" />
     <ClCompile Include="SensorService\TestSensorAType.cpp" />
     <ClCompile Include="SensorService\TestSensorBType.cpp" />
     <ClCompile Include="SingleBRSensorReader.cpp" />
@@ -168,9 +166,10 @@
     <ClCompile Include="MultipleBRSensorsReader.cpp" />
     <ClCompile Include="Support\LexicalAnalyzer.cpp" />
     <ClCompile Include="Support\Utility.cpp" />
-    <ClCompile Include="Tests\LwipEthernetTest.cpp" />
-    <ClCompile Include="Tests\MLinkTest.cpp" />
-    <ClCompile Include="Tests\MultipleBRSensorsReaderTest.cpp" />
+    <ClCompile Include="Tests\GsmPPPTest.hpp" />
+    <ClCompile Include="Tests\LwipEthernetTest.hpp" />
+    <ClCompile Include="Tests\MLinkTest.hpp" />
+    <ClCompile Include="Tests\MultipleBRSensorsReaderTest.hpp" />
     <ClCompile Include="ChibiOS\common\oslib\src\chfactory.c" />
     <ClCompile Include="ChibiOS\common\oslib\src\chheap.c" />
     <ClCompile Include="ChibiOS\common\oslib\src\chmboxes.c" />
@@ -274,11 +273,11 @@
     <ClCompile Include="ChibiOS\various\cpp_wrappers\ch.cpp" />
     <ClCompile Include="ChibiOS\various\fatfs_bindings\fatfs_diskio.c" />
     <ClCompile Include="ChibiOS\various\fatfs_bindings\fatfs_syscall.c" />
-    <ClCompile Include="Tests\RingBufferTest.cpp" />
-    <ClCompile Include="Tests\Rs485Test.cpp" />
-    <ClCompile Include="Tests\SimGsmTcpEcho.cpp" />
+    <ClCompile Include="Tests\RingBufferTest.hpp" />
+    <ClCompile Include="Tests\Rs485Test.hpp" />
+    <ClCompile Include="Tests\SimGsmTcpEchoTest.hpp" />
     <ClCompile Include="Tests\UdpStressTestServer\UdpStressTestServer.cpp" />
-    <ClCompile Include="Tests\XmlParserTest.cpp" />
+    <ClCompile Include="Tests\XmlParserTest.hpp" />
     <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\cmsis_armcc.h" />
     <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\cmsis_armclang.h" />
     <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\cmsis_compiler.h" />
@@ -743,7 +742,6 @@
     <ClInclude Include="Drivers\Network\SimGsm\SimGsmUdpSocket.h" />
     <ClInclude Include="Drivers\Sensors\AbstractSensor.h" />
     <ClInclude Include="Drivers\Sensors\CE301Sensor.h" />
-    <ClInclude Include="Drivers\Sensors\SimpleSensor.h" />
     <ClInclude Include="Drivers\Sensors\TestSensorA.h" />
     <ClInclude Include="Drivers\Sensors\TestSensorB.h" />
     <ClInclude Include="ffconf.h" />

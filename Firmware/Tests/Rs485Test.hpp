@@ -3,11 +3,8 @@
 
 static uint8_t data[10];
 
-int main()
+int rs485Test()
 {
-	halInit();
-	chSysInit();
-
 	palSetPadMode( GPIOD, 8, PAL_MODE_ALTERNATE( GPIO_AF_USART3 ) | PAL_STM32_OSPEED_HIGHEST );
 	palSetPadMode( GPIOD, 9, PAL_MODE_ALTERNATE( GPIO_AF_USART3 ) | PAL_STM32_OSPEED_HIGHEST );
 	Usart* usart = Usart::instance( &SD3 );
@@ -24,5 +21,7 @@ int main()
 	sharedRs485[0]->read( data + 5, 5 );
 
 	while( true )
-		;	
+		;
+	
+	return 0;
 }
