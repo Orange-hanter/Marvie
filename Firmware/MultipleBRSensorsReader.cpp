@@ -6,7 +6,7 @@
 
 memory_pool_t MultipleBRSensorsReader::objectPool = _MEMORYPOOL_DATA( MultipleBRSensorsReader::objectPool, sizeof( MultipleBRSensorsReader::SensorElement ), PORT_NATURAL_ALIGN, nullptr );
 
-MultipleBRSensorsReader::MultipleBRSensorsReader() : BaseDynamicThread( MULTIPLE_BR_SENSORS_READER_STACK_SIZE ), BRSensorReader()
+MultipleBRSensorsReader::MultipleBRSensorsReader() : BRSensorReader( MULTIPLE_BR_SENSORS_READER_STACK_SIZE )
 {
 	minInterval = TIME_MS2I( 1000 );
 	sumTimeError = 0;
@@ -106,6 +106,7 @@ void MultipleBRSensorsReader::stopReading()
 		return;
 	}
 	tState = State::Stopping;
+	thread_ref->flags |= CH_FLAG_TERMINATE;
 	extEventSource.broadcastFlagsI( ( eventflags_t )EventFlag::StateChanged );
 	signalEventsI( InnerEventFlag::StopRequestFlag );
 	chSysRestoreStatusX( sysStatus );

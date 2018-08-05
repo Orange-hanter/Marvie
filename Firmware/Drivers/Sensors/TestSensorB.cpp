@@ -6,7 +6,6 @@
 
 TestSensorB::TestSensorB()
 {
-	io = nullptr;
 	_text = nullptr;
 	goodN = 1;
 	badN = 1;
@@ -21,16 +20,6 @@ TestSensorB::~TestSensorB()
 const char* TestSensorB::name() const
 {
 	return sName();
-}
-
-void TestSensorB::setIODevice( IODevice* io )
-{
-	this->io = io;
-}
-
-IODevice* TestSensorB::ioDevice()
-{
-	return io;
 }
 
 void TestSensorB::setBaudrate( uint32_t baudrate )

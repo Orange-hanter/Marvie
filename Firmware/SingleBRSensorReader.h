@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Core/BaseDynamicThread.h"
 #include "BRSensorReader.h"
 
 #define SINGLE_BR_SENSOR_READER_STACK_SIZE    1024 // 192B min stack size
 
-class SingleBRSensorReader : protected BaseDynamicThread, public BRSensorReader
+class SingleBRSensorReader : public BRSensorReader
 {
 public:
 	SingleBRSensorReader();

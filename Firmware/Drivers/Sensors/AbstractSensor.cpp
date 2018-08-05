@@ -1,9 +1,16 @@
 #include "AbstractSensor.h"
 #include "hal.h"
 
+#define SENSOR_TERMINATE_TEST_INTERVAL TIME_MS2I( 200 )
+
 AbstractSensor::Type AbstractSRSensor::type()
 {
 	return Type::SR;
+}
+
+AbstractBRSensor::AbstractBRSensor()
+{
+	io = nullptr;
 }
 
 AbstractBRSensor::Type AbstractBRSensor::type()
@@ -11,7 +18,17 @@ AbstractBRSensor::Type AbstractBRSensor::type()
 	return Type::BR;
 }
 
-ByteRingIterator AbstractBRSensor::waitForResponse( IODevice* io, const char* response, uint32_t responseLen, sysinterval_t timeout )
+void AbstractBRSensor::setIODevice( IODevice* io )
+{
+	this->io = io;
+}
+
+IODevice* AbstractBRSensor::ioDevice()
+{
+	return io;
+}
+
+ByteRingIterator AbstractBRSensor::waitForResponse( const char* response, uint32_t responseLen, sysinterval_t timeout )
 {
 	uint32_t pos = 0;
 	ByteRingIterator i, respBegin;
@@ -22,7 +39,10 @@ ByteRingIterator AbstractBRSensor::waitForResponse( IODevice* io, const char* re
 
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
-	chVTSet( &timer, timeout, timerCallback, chThdGetSelfX() );
+	sysinterval_t nextInterval = timeout;
+	if( nextInterval > SENSOR_TERMINATE_TEST_INTERVAL )
+		nextInterval = SENSOR_TERMINATE_TEST_INTERVAL;
+	chVTSet( &timer, nextInterval, timerCallback, chThdGetSelfX() );
 
 	EvtListener ioDeviceListener;
 	io->eventSource()->registerMaskWithFlags( &ioDeviceListener, IODeviceEvent, CHN_INPUT_AVAILABLE );
@@ -45,7 +65,16 @@ ByteRingIterator AbstractBRSensor::waitForResponse( IODevice* io, const char* re
 		}
 		eventmask_t em = chEvtWaitAny( IODeviceEvent | InnerEvent );
 		if( em & InnerEvent )
-			break;
+		{
+			timeout -= nextInterval;
+			if( timeout == 0 || chThdShouldTerminateX() )
+				break;
+			if( timeout > SENSOR_TERMINATE_TEST_INTERVAL )
+				nextInterval = SENSOR_TERMINATE_TEST_INTERVAL;
+			else
+				nextInterval = timeout;
+			chVTSet( &timer, nextInterval, timerCallback, chThdGetSelfX() );
+		}
 		if( em & IODeviceEvent )
 			ioDeviceListener.getAndClearFlags();
 	}
@@ -58,6 +87,25 @@ Leave:
 	if( pos == responseLen )
 		return respBegin;
 	return ByteRingIterator();
+}
+
+bool AbstractBRSensor::waitForReadAvailable( uint32_t size, sysinterval_t timeout )
+{
+	sysinterval_t nextInterval = 0;
+	while( timeout )
+	{
+		if( chThdShouldTerminateX() )
+			return false;
+		if( timeout > SENSOR_TERMINATE_TEST_INTERVAL )
+			nextInterval = SENSOR_TERMINATE_TEST_INTERVAL;
+		else
+			nextInterval = timeout;
+		if( io->waitForReadAvailable( size, nextInterval ) )
+			return true;
+		timeout -= nextInterval;
+	}
+
+	return false;
 }
 
 void AbstractBRSensor::timerCallback( void* p )

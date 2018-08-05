@@ -19,8 +19,6 @@ public:
 
 	inline static const char* sName() { return "TestSensorB"; }
 	const char* name() const final override;
-	void setIODevice( IODevice* ) final override;
-	IODevice* ioDevice() final override;
 
 	void setBaudrate( uint32_t baudrate );
 	void setTextMessage( const char* text );
@@ -37,7 +35,6 @@ private:
 	bool nextIsGood();
 
 private:
-	IODevice * io;
 	uint32_t _baudrate;
 	char* _text;
 	uint32_t goodN, badN;

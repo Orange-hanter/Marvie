@@ -1,7 +1,7 @@
 #include "SingleBRSensorReader.h"
 #include "Core/Assert.h"
 
-SingleBRSensorReader::SingleBRSensorReader() : BaseDynamicThread( SINGLE_BR_SENSOR_READER_STACK_SIZE ), BRSensorReader()
+SingleBRSensorReader::SingleBRSensorReader() : BRSensorReader( SINGLE_BR_SENSOR_READER_STACK_SIZE )
 {
 	sensor = nullptr;
 	normalPriod = emergencyPeriod = 0;
@@ -41,6 +41,7 @@ void SingleBRSensorReader::stopReading()
 		return;
 	}
 	tState = State::Stopping;
+	thread_ref->flags |= CH_FLAG_TERMINATE;
 	extEventSource.broadcastFlagsI( ( eventflags_t )EventFlag::StateChanged );
 	signalEventsI( InnerEventFlag::StopRequestFlag );
 	chSysRestoreStatusX( sysStatus );

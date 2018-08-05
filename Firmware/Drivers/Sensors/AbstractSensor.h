@@ -68,13 +68,19 @@ public:
 class AbstractBRSensor : public AbstractSensor // Byte related sensor
 {
 public:
+	AbstractBRSensor();
+
 	Type type() final override;
-	virtual void setIODevice( IODevice* ) = 0;
-	virtual IODevice* ioDevice() = 0;
+	virtual void setIODevice( IODevice* );
+	IODevice* ioDevice();
 
 protected:
-	static ByteRingIterator waitForResponse( IODevice* io, const char* response, uint32_t responseLen, sysinterval_t timeout );
+	ByteRingIterator waitForResponse( const char* response, uint32_t responseLen, sysinterval_t timeout );
+	bool waitForReadAvailable( uint32_t size, sysinterval_t timeout );
 
 private:
 	static void timerCallback( void* );
+
+protected:
+	IODevice* io;
 };

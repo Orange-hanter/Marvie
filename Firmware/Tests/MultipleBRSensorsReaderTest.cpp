@@ -12,8 +12,6 @@ public:
 	int id;
 	Sensor( int id ) : id( id ) {}
 	const char* name() const final override { return "Sensor"; }
-	void setIODevice( IODevice* ) final override {}
-	IODevice* ioDevice() final override { return nullptr; }
 };
 
 class GoodSensor : public Sensor

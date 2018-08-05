@@ -10,7 +10,6 @@ const uint8_t CE301Sensor::tariffsDataRequest[13] = { SOH, 'R', '1', STX, 'E', '
 
 CE301Sensor::CE301Sensor()
 {
-	io = nullptr;
 	address = 0;
 	baudrate = 9600;
 }
@@ -35,31 +34,25 @@ void CE301Sensor::setBaudrate( uint32_t baudrate )
 	this->baudrate = baudrate;
 }
 
-void CE301Sensor::setIODevice( IODevice* io )
-{
-	this->io = static_cast< UsartBasedDevice* >( io );
-}
-
-IODevice* CE301Sensor::ioDevice()
-{
-	return io;
-}
-
 CE301Sensor::Data* CE301Sensor::readData()
 {
 #define returnNoResponse( code ) { data.errType = SensorData::Error::NoResponseError; data.errCode = code; data.t = DateTimeService::currentDateTime(); return &data; }
 #define returnCrcError( code ) { data.errType = SensorData::Error::CrcError; data.errCode = code; data.t = DateTimeService::currentDateTime(); return &data; }
 
-	io->setDataFormat( UsartBasedDevice::B7E );
-	io->setStopBits( UsartBasedDevice::S1 );
-	io->setBaudRate( baudrate );
+	if( io->isSerialDevice() )
+	{
+		UsartBasedDevice* serialDevice = static_cast< UsartBasedDevice* >( io );
+		serialDevice->setDataFormat( UsartBasedDevice::B7E );
+		serialDevice->setStopBits( UsartBasedDevice::S1 );
+		serialDevice->setBaudRate( baudrate );
+	}
 
 	// Device address request
 	if( address == 0 )
 		io->write( deviceAddressRequestUnion, sizeof( deviceAddressRequestUnion ), TIME_INFINITE );
 	else
 		io->write( deviceAddressRequest, sizeof( deviceAddressRequest ), TIME_INFINITE );
-	ByteRingIterator end = waitForResponse( io, "\r\n", 2, TIME_S2I( 1 ) );
+	ByteRingIterator end = waitForResponse( "\r\n", 2, TIME_S2I( 1 ) );
 	if( !end.isValid() || *io->inputBuffer()->begin() != '/' )
 		returnNoResponse( 0 );
 	io->inputBuffer()->read( nullptr, io->readAvailable() );
@@ -69,7 +62,7 @@ CE301Sensor::Data* CE301Sensor::readData()
 	// Program mode request
 	io->write( programModeRequest, sizeof( programModeRequest ), TIME_INFINITE );
 	char tmp[1] = { ETX };
-	end = waitForResponse( io, tmp, 1, TIME_S2I( 1 ) );
+	end = waitForResponse( tmp, 1, TIME_S2I( 1 ) );
 	if( !end.isValid() || *io->inputBuffer()->begin() != SOH )
 		returnNoResponse( 1 );
 	io->inputBuffer()->read( nullptr, io->readAvailable() );
@@ -78,7 +71,7 @@ CE301Sensor::Data* CE301Sensor::readData()
 
 	// Tariffs data request
 	io->write( tariffsDataRequest, sizeof( tariffsDataRequest ), TIME_INFINITE );
-	end = waitForResponse( io, tmp, 1, TIME_S2I( 1 ) );
+	end = waitForResponse( tmp, 1, TIME_S2I( 1 ) );
 	ByteRingIterator it = ++io->inputBuffer()->begin();
 	if( !end.isValid() || *io->inputBuffer()->begin() != STX )
 		returnNoResponse( 2 );

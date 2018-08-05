@@ -6,7 +6,6 @@
 
 TestSensorA::TestSensorA()
 {
-	io = nullptr;
 	_text = nullptr;
 }
 
@@ -18,16 +17,6 @@ TestSensorA::~TestSensorA()
 const char* TestSensorA::name() const
 {
 	return sName();
-}
-
-void TestSensorA::setIODevice( IODevice* io )
-{
-	this->io = io;
-}
-
-IODevice* TestSensorA::ioDevice()
-{
-	return io;
 }
 
 void TestSensorA::setBaudrate( uint32_t baudrate )
@@ -64,7 +53,8 @@ TestSensorA::Data* TestSensorA::readData()
 	if( !io )
 		return &data;
 
-	static_cast< UsartBasedDevice* >( io )->setBaudRate( _baudrate );
+	if( io->isSerialDevice() )
+		static_cast< UsartBasedDevice* >( io )->setBaudRate( _baudrate );
 
 	if( _text )
 		io->write( ( const uint8_t* )_text, strlen( _text ), TIME_INFINITE );

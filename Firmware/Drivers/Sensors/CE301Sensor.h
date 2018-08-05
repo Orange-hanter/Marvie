@@ -25,8 +25,6 @@ public:
 	const char* name() const final override;
 	void setAddress( uint8_t address );
 	void setBaudrate( uint32_t baudrate );
-	void setIODevice( IODevice* ) final override;
-	IODevice* ioDevice() final override;
 
 	Data* readData() final override;
 	Data* sensorData() final override;
@@ -42,7 +40,6 @@ private:
 	static const uint8_t programModeRequest[6];
 	static const uint8_t tariffsDataRequest[13];
 
-	UsartBasedDevice* io;
 	uint8_t address;
 	uint32_t baudrate;
 	Data data;

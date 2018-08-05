@@ -18,8 +18,6 @@ public:
 
 	inline static const char* sName() { return "TestSensorA"; }
 	const char* name() const final override;
-	void setIODevice( IODevice* ) final override;
-	IODevice* ioDevice() final override;
 
 	void setBaudrate( uint32_t baudrate );
 	void setTextMessage( const char* text );
@@ -31,7 +29,6 @@ public:
 	uint32_t sensorDataSize() final override;
 
 private:
-	IODevice* io;
 	uint32_t _baudrate;
 	char* _text;
 	uint32_t _delay;

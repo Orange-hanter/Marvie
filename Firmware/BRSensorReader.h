@@ -1,17 +1,18 @@
 #pragma once
 
+#include "Core/BaseDynamicThread.h"
 #include "Drivers/Sensors/AbstractSensor.h"
 #include "cpp_wrappers/ch.hpp"
 
 using namespace chibios_rt;
 
-class BRSensorReader
+class BRSensorReader : protected BaseDynamicThread
 {
 public:
 	enum EventFlag : eventflags_t { StateChanged = 1, SensorDataUpdated = 2 };
 	enum class State { Stopped, Working, Stopping };
 
-	BRSensorReader();
+	BRSensorReader( uint32_t stackSize );
 	virtual ~BRSensorReader();
 
 	virtual bool startReading( tprio_t prio ) = 0;

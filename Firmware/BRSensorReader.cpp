@@ -1,6 +1,6 @@
 #include "BRSensorReader.h"
 
-BRSensorReader::BRSensorReader()
+BRSensorReader::BRSensorReader( uint32_t stackSize ) : BaseDynamicThread( stackSize )
 {
 	tState = State::Stopped;
 	wState = WorkingState::Connecting;
