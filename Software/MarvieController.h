@@ -90,7 +90,7 @@ private:
 
 	struct DeviceMemoryLoad;
 	void updateDeviceCpuLoad( float cpuLoad );
-	void updateDeviceMemoryLoad( const DeviceMemoryLoad& memoryLoad );
+	void updateDeviceMemoryLoad( const MarviePackets::MemoryLoad* memoryLoad );
 	void resetDeviceLoad();
 	void updateDeviceStatus( const MarviePackets::DeviceStatus* );
 	void resetDeviceStatus();
@@ -197,14 +197,27 @@ private:
 	VPortOverIpModel vPortsOverEthernetModel;
 	VPortsOverIpDelegate vPortsOverIpDelegate;
 
-	struct DeviceMemoryLoad
+	class MemStatistics : public QFrame
 	{
-		uint32_t totalRam;
-		uint32_t staticAllocatedRam;
-		uint32_t heapAllocatedRam;
-		unsigned long long sdCardCapacity;
-		unsigned long long sdCardFreeSpace;
-	};
+	public:
+		MemStatistics();
+
+		void setStatistics( uint32_t gmemMaxUsed, uint32_t gmemHeap, uint32_t gmemFragments, uint32_t gmemLargestFragment,
+							uint32_t ccmemMaxUsed, uint32_t ccmemHeap, uint32_t ccmemFragments, uint32_t ccmemLargestFragment );
+		void show( QPoint point );
+
+	private:
+		void focusOutEvent( QFocusEvent *event ) override;
+
+		QLabel* gMemMaxUsedLabel;
+		QLabel* gMemHeapLabel;
+		QLabel* gMemFragmentsLabel;
+		QLabel* gMemLargestLabel;
+		QLabel* ccMemMaxUsedLabel;
+		QLabel* ccMemHeapLabel;
+		QLabel* ccMemFragmentsLabel;
+		QLabel* ccMemLargestLabel;
+	}*memStat;
 
 	MonitoringDataModel monitoringDataModel;
 	QMenu* monitoringDataViewMenu;

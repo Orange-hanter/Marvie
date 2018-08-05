@@ -13,9 +13,19 @@ namespace MarviePackets
 	};
 	struct MemoryLoad
 	{
-		uint32_t totalRam;
-		uint32_t staticAllocatedRam;
-		uint32_t heapAllocatedRam;
+		uint32_t totalGRam;
+		uint32_t totalCcRam;
+
+		uint32_t freeGRam;
+		uint32_t gRamHeapSize;
+		uint32_t gRamHeapFragments;
+		uint32_t gRamHeapLargestFragmentSize;
+
+		uint32_t freeCcRam;
+		uint32_t ccRamHeapSize;
+		uint32_t ccRamHeapFragments;
+		uint32_t ccRamHeapLargestFragmentSize;
+
 		unsigned long long sdCardCapacity;
 		unsigned long long sdCardFreeSpace;
 	};

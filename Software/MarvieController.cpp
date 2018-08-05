@@ -147,7 +147,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	memoryLoadChart->setBackgroundVisible( false );
 	ui.memoryLoadChartView->setChart( memoryLoadChart );
 	ui.memoryLoadChartView->setRenderHint( QPainter::Antialiasing );
-	
+
 	QPieSeries* sdLoadSeries = new QPieSeries;
 	sdLoadSeries->append( new QPieSlice( "", 15 ) );
 	sdLoadSeries->append( new QPieSlice( "", 85 ) );
@@ -165,6 +165,23 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	ui.sdLoadChartView->setChart( sdLoadChart );
 	ui.sdLoadChartView->setRenderHint( QPainter::Antialiasing );
 
+	memStat = new MemStatistics;
+	class MemoryLoadChartEventFilter : public QObject
+	{
+	public:
+		MemStatistics* memStat;
+		MemoryLoadChartEventFilter( QObject* parent, MemStatistics* stat ) : QObject( parent ), memStat( stat ) {}
+		bool eventFilter( QObject* obj, QEvent *event )
+		{
+			if( event->type() == QEvent::MouseButtonPress && static_cast< QMouseEvent* >( event )->modifiers() && Qt::KeyboardModifier::ControlModifier )
+			{
+				QWidget* w = static_cast< QWidget* >( obj );
+				memStat->show( w->mapToGlobal( w->geometry().center() + QPoint( 0, w->geometry().height() / 2 ) ) );
+			}
+			return false;
+		}
+	};
+	ui.memoryLoadLabel->installEventFilter( new MemoryLoadChartEventFilter( ui.memoryLoadLabel, memStat ) );
 	resetDeviceLoad();
 
 	ui.monitoringDataTreeView->setModel( &monitoringDataModel );
@@ -1091,13 +1108,7 @@ void MarvieController::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
 	}
 	case MarviePackets::Type::MemoryLoadType:
 	{
-		DeviceMemoryLoad load;
-		const MarviePackets::MemoryLoad* pLoad = reinterpret_cast< const MarviePackets::MemoryLoad* >( data.constData() );
-		load.totalRam = pLoad->totalRam;
-		load.staticAllocatedRam = pLoad->staticAllocatedRam;
-		load.heapAllocatedRam = pLoad->heapAllocatedRam;
-		load.sdCardCapacity = pLoad->sdCardCapacity;
-		load.sdCardFreeSpace = pLoad->sdCardFreeSpace;
+		const MarviePackets::MemoryLoad* load = reinterpret_cast< const MarviePackets::MemoryLoad* >( data.constData() );
 		updateDeviceMemoryLoad( load );
 		break;
 	}
@@ -2392,18 +2403,24 @@ void MarvieController::updateDeviceCpuLoad( float cpuLoad )
 	ui.cpuLoadLabel->setText( QString( "CPU\n%1%" ).arg( cpuLoad ) );
 }
 
-void MarvieController::updateDeviceMemoryLoad( const DeviceMemoryLoad& deviceLoad )
+void MarvieController::updateDeviceMemoryLoad( const MarviePackets::MemoryLoad* load )
 {
-	static_cast< QPieSeries* >( ui.memoryLoadChartView->chart()->series()[0] )->slices()[0]->setValue( deviceLoad.heapAllocatedRam );
-	static_cast< QPieSeries* >( ui.memoryLoadChartView->chart()->series()[0] )->slices()[1]->setValue( deviceLoad.staticAllocatedRam - deviceLoad.heapAllocatedRam );
-	static_cast< QPieSeries* >( ui.memoryLoadChartView->chart()->series()[0] )->slices()[2]->setValue( deviceLoad.totalRam - deviceLoad.staticAllocatedRam );
-	ui.memoryLoadLabel->setText( QString( "Memory\n%1KB" ).arg( ( deviceLoad.heapAllocatedRam + 512 ) / 1024 ) );
+	uint32_t totalRam = load->totalGRam + load->totalCcRam;
+	uint32_t allocatedRam = totalRam - load->freeGRam - load->freeCcRam;
+	uint32_t heapRam = allocatedRam - load->gRamHeapSize - load->ccRamHeapSize;
 
-	if( deviceLoad.sdCardCapacity != 0 )
+	static_cast< QPieSeries* >( ui.memoryLoadChartView->chart()->series()[0] )->slices()[0]->setValue( heapRam );
+	static_cast< QPieSeries* >( ui.memoryLoadChartView->chart()->series()[0] )->slices()[1]->setValue( allocatedRam - heapRam );
+	static_cast< QPieSeries* >( ui.memoryLoadChartView->chart()->series()[0] )->slices()[2]->setValue( totalRam - allocatedRam );
+	ui.memoryLoadLabel->setText( QString( "Memory\n%1KB" ).arg( ( heapRam + 512 ) / 1024 ) );
+	memStat->setStatistics( load->totalGRam - load->freeGRam, load->gRamHeapSize, load->gRamHeapFragments, load->gRamHeapLargestFragmentSize,
+							load->totalCcRam - load->freeCcRam, load->ccRamHeapSize, load->ccRamHeapFragments, load->ccRamHeapLargestFragmentSize );
+
+	if( load->sdCardCapacity != 0 )
 	{
-		static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[0]->setValue( deviceLoad.sdCardCapacity - deviceLoad.sdCardFreeSpace );
-		static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[1]->setValue( deviceLoad.sdCardFreeSpace );
-		ui.sdLoadLabel->setText( QString( "SD\n%1MB" ).arg( ( deviceLoad.sdCardCapacity - deviceLoad.sdCardFreeSpace + 1024 * 1024 / 2 ) / 1024 / 1024 ) );
+		static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[0]->setValue( load->sdCardCapacity - load->sdCardFreeSpace );
+		static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[1]->setValue( load->sdCardFreeSpace );
+		ui.sdLoadLabel->setText( QString( "SD\n%1MB" ).arg( ( load->sdCardCapacity - load->sdCardFreeSpace + 1024 * 1024 / 2 ) / 1024 / 1024 ) );
 	}
 	else
 	{
@@ -2425,6 +2442,7 @@ void MarvieController::resetDeviceLoad()
 	static_cast< QPieSeries* >( ui.memoryLoadChartView->chart()->series()[0] )->slices()[1]->setValue( 0.0 );
 	static_cast< QPieSeries* >( ui.memoryLoadChartView->chart()->series()[0] )->slices()[2]->setValue( 100.0 );
 	ui.memoryLoadLabel->setText( "Memory\n0KB" );
+	memStat->setStatistics( 0, 0, 0, 0, 0, 0, 0, 0 );
 
 	static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[0]->setValue( 0.0 );
 	static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[1]->setValue( 100.0 );
@@ -2954,4 +2972,243 @@ bool MarvieController::VPortIdComboBoxEventFilter::eventFilter( QObject *obj, QE
 	}
 
 	return false;
+}
+
+MarvieController::MemStatistics::MemStatistics()
+{
+	QVBoxLayout *verticalLayout_3;
+	QLabel *label;
+	QVBoxLayout *verticalLayout;
+	QHBoxLayout *horizontalLayout;
+	QLabel *label_2;
+	QSpacerItem *horizontalSpacer;	
+	QHBoxLayout *horizontalLayout_2;
+	QLabel *label_3;
+	QSpacerItem *horizontalSpacer_2;
+	QHBoxLayout *horizontalLayout_3;
+	QLabel *label_4;
+	QSpacerItem *horizontalSpacer_3;
+	QHBoxLayout *horizontalLayout_4;
+	QLabel *label_5;
+	QSpacerItem *horizontalSpacer_4;
+	QLabel *label_10;
+	QVBoxLayout *verticalLayout_2;
+	QHBoxLayout *horizontalLayout_5;
+	QLabel *label_6;
+	QSpacerItem *horizontalSpacer_5;
+	QHBoxLayout *horizontalLayout_6;
+	QLabel *label_7;
+	QSpacerItem *horizontalSpacer_6;
+	QHBoxLayout *horizontalLayout_7;
+	QLabel *label_8;
+	QSpacerItem *horizontalSpacer_7;
+	QHBoxLayout *horizontalLayout_8;
+	QLabel *label_9;
+	QSpacerItem *horizontalSpacer_8;
+
+	resize( 135, 260 );
+	setWindowFlag( Qt::WindowFlags::enum_type::Popup );
+	setFrameShape( QFrame::Shape::StyledPanel );
+	setFrameShadow( QFrame::Shadow::Raised );
+
+	verticalLayout_3 = new QVBoxLayout( this );
+	verticalLayout_3->setObjectName( QStringLiteral( "verticalLayout_3" ) );
+	verticalLayout_3->setContentsMargins( 4, 4, 4, 4 );
+	label = new QLabel( this );
+	label->setObjectName( QStringLiteral( "label" ) );
+	verticalLayout_3->addWidget( label );
+
+	verticalLayout = new QVBoxLayout();
+	verticalLayout->setObjectName( QStringLiteral( "verticalLayout" ) );
+	verticalLayout->setContentsMargins( 20, -1, -1, -1 );
+	horizontalLayout = new QHBoxLayout();
+	horizontalLayout->setSpacing( 0 );
+	horizontalLayout->setObjectName( QStringLiteral( "horizontalLayout" ) );
+
+	label_2 = new QLabel( this );
+	label_2->setObjectName( QStringLiteral( "label_2" ) );
+	horizontalLayout->addWidget( label_2 );
+
+	horizontalSpacer = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	horizontalLayout->addItem( horizontalSpacer );
+
+	gMemMaxUsedLabel = new QLabel( this );
+	gMemMaxUsedLabel->setObjectName( QStringLiteral( "gMemMaxUsedLabel" ) );
+	horizontalLayout->addWidget( gMemMaxUsedLabel );
+
+	verticalLayout->addLayout( horizontalLayout );
+
+	horizontalLayout_2 = new QHBoxLayout();
+	horizontalLayout_2->setSpacing( 0 );
+	horizontalLayout_2->setObjectName( QStringLiteral( "horizontalLayout_2" ) );
+
+	label_3 = new QLabel( this );
+	label_3->setObjectName( QStringLiteral( "label_3" ) );
+	horizontalLayout_2->addWidget( label_3 );
+
+	horizontalSpacer_2 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	horizontalLayout_2->addItem( horizontalSpacer_2 );
+
+	gMemHeapLabel = new QLabel( this );
+	gMemHeapLabel->setObjectName( QStringLiteral( "gMemHeapLabel" ) );
+	horizontalLayout_2->addWidget( gMemHeapLabel );
+
+	verticalLayout->addLayout( horizontalLayout_2 );
+
+	horizontalLayout_3 = new QHBoxLayout();
+	horizontalLayout_3->setSpacing( 0 );
+	horizontalLayout_3->setObjectName( QStringLiteral( "horizontalLayout_3" ) );
+
+	label_4 = new QLabel( this );
+	label_4->setObjectName( QStringLiteral( "label_4" ) );
+	horizontalLayout_3->addWidget( label_4 );
+
+	horizontalSpacer_3 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	horizontalLayout_3->addItem( horizontalSpacer_3 );
+
+	gMemFragmentsLabel = new QLabel( this );
+	gMemFragmentsLabel->setObjectName( QStringLiteral( "gMemFragmentsLabel" ) );
+	horizontalLayout_3->addWidget( gMemFragmentsLabel );
+
+	verticalLayout->addLayout( horizontalLayout_3 );
+
+	horizontalLayout_4 = new QHBoxLayout();
+	horizontalLayout_4->setSpacing( 0 );
+	horizontalLayout_4->setObjectName( QStringLiteral( "horizontalLayout_4" ) );
+
+	label_5 = new QLabel( this );
+	label_5->setObjectName( QStringLiteral( "label_5" ) );
+	horizontalLayout_4->addWidget( label_5 );
+
+	horizontalSpacer_4 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	horizontalLayout_4->addItem( horizontalSpacer_4 );
+
+	gMemLargestLabel = new QLabel( this );
+	gMemLargestLabel->setObjectName( QStringLiteral( "gMemLargestLabel" ) );
+	horizontalLayout_4->addWidget( gMemLargestLabel );
+
+	verticalLayout->addLayout( horizontalLayout_4 );
+	verticalLayout_3->addLayout( verticalLayout );
+
+	label_10 = new QLabel( this );
+	label_10->setObjectName( QStringLiteral( "label_10" ) );
+	verticalLayout_3->addWidget( label_10 );
+
+	verticalLayout_2 = new QVBoxLayout();
+	verticalLayout_2->setObjectName( QStringLiteral( "verticalLayout_2" ) );
+	verticalLayout_2->setContentsMargins( 20, -1, -1, -1 );
+	horizontalLayout_5 = new QHBoxLayout();
+	horizontalLayout_5->setSpacing( 0 );
+	horizontalLayout_5->setObjectName( QStringLiteral( "horizontalLayout_5" ) );
+
+	label_6 = new QLabel( this );
+	label_6->setObjectName( QStringLiteral( "label_6" ) );
+	horizontalLayout_5->addWidget( label_6 );
+
+	horizontalSpacer_5 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	horizontalLayout_5->addItem( horizontalSpacer_5 );
+
+	ccMemMaxUsedLabel = new QLabel( this );
+	ccMemMaxUsedLabel->setObjectName( QStringLiteral( "ccMemMaxUsedLabel" ) );
+	horizontalLayout_5->addWidget( ccMemMaxUsedLabel );
+
+	verticalLayout_2->addLayout( horizontalLayout_5 );
+
+	horizontalLayout_6 = new QHBoxLayout();
+	horizontalLayout_6->setSpacing( 0 );
+	horizontalLayout_6->setObjectName( QStringLiteral( "horizontalLayout_6" ) );
+
+	label_7 = new QLabel( this );
+	label_7->setObjectName( QStringLiteral( "label_7" ) );
+	horizontalLayout_6->addWidget( label_7 );
+
+	horizontalSpacer_6 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	horizontalLayout_6->addItem( horizontalSpacer_6 );
+
+	ccMemHeapLabel = new QLabel( this );
+	ccMemHeapLabel->setObjectName( QStringLiteral( "ccMemHeapLabel" ) );
+	horizontalLayout_6->addWidget( ccMemHeapLabel );
+
+	verticalLayout_2->addLayout( horizontalLayout_6 );
+
+	horizontalLayout_7 = new QHBoxLayout();
+	horizontalLayout_7->setSpacing( 0 );
+	horizontalLayout_7->setObjectName( QStringLiteral( "horizontalLayout_7" ) );
+
+	label_8 = new QLabel( this );
+	label_8->setObjectName( QStringLiteral( "label_8" ) );
+	horizontalLayout_7->addWidget( label_8 );
+
+	horizontalSpacer_7 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	horizontalLayout_7->addItem( horizontalSpacer_7 );
+
+	ccMemFragmentsLabel = new QLabel( this );
+	ccMemFragmentsLabel->setObjectName( QStringLiteral( "ccMemFragmentsLabel" ) );
+	horizontalLayout_7->addWidget( ccMemFragmentsLabel );
+
+	verticalLayout_2->addLayout( horizontalLayout_7 );
+
+	horizontalLayout_8 = new QHBoxLayout();
+	horizontalLayout_8->setSpacing( 0 );
+	horizontalLayout_8->setObjectName( QStringLiteral( "horizontalLayout_8" ) );
+
+	label_9 = new QLabel( this );
+	label_9->setObjectName( QStringLiteral( "label_9" ) );
+	horizontalLayout_8->addWidget( label_9 );
+
+	horizontalSpacer_8 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	horizontalLayout_8->addItem( horizontalSpacer_8 );
+
+	ccMemLargestLabel = new QLabel( this );
+	ccMemLargestLabel->setObjectName( QStringLiteral( "ccMemLargestLabel" ) );
+	horizontalLayout_8->addWidget( ccMemLargestLabel );
+
+	verticalLayout_2->addLayout( horizontalLayout_8 );
+	verticalLayout_3->addLayout( verticalLayout_2 );
+
+	label->setText( "General memory:" );
+	label_2->setText( "Max used - " );
+	gMemMaxUsedLabel->setText( "0B" );
+	label_3->setText( "Heap - " );
+	gMemHeapLabel->setText( "0B" );
+	label_4->setText( "Fragments - " );
+	gMemFragmentsLabel->setText( "0" );
+	label_5->setText( "Largest - " );
+	gMemLargestLabel->setText( "0B" );
+	label_10->setText( "Core coupled memory:" );
+	label_6->setText( "Max used - " );
+	ccMemMaxUsedLabel->setText( "0B" );
+	label_7->setText( "Heap - " );
+	ccMemHeapLabel->setText( "0B" );
+	label_8->setText( "Fragments - " );
+	ccMemFragmentsLabel->setText( "0" );
+	label_9->setText( "Largest - " );
+	ccMemLargestLabel->setText( "0B" );
+}
+
+void MarvieController::MemStatistics::setStatistics( uint32_t gmemMaxUsed, uint32_t gmemHeap, uint32_t gmemFragments, uint32_t gmemLargestFragment, uint32_t ccmemMaxUsed, uint32_t ccmemHeap, uint32_t ccmemFragments, uint32_t ccmemLargestFragment )
+{
+	gMemMaxUsedLabel->setText( QString( "%1" ).arg( gmemMaxUsed ) );
+	gMemHeapLabel->setText( QString( "%1" ).arg( gmemHeap ) );
+	gMemFragmentsLabel->setText( QString( "%1" ).arg( gmemFragments ) );
+	gMemLargestLabel->setText( QString( "%1" ).arg( gmemLargestFragment ) );
+
+	ccMemMaxUsedLabel->setText( QString( "%1" ).arg( ccmemMaxUsed ) );
+	ccMemHeapLabel->setText( QString( "%1" ).arg( ccmemHeap ) );
+	ccMemFragmentsLabel->setText( QString( "%1" ).arg( ccmemFragments ) );
+	ccMemLargestLabel->setText( QString( "%1" ).arg( ccmemLargestFragment ) );
+}
+
+void MarvieController::MemStatistics::show( QPoint point )
+{
+	auto rect = geometry();
+	rect.moveCenter( point + QPoint( 0, height() / 2 ) );
+	setGeometry( rect );
+	QFrame::show();
+	setFocus();
+}
+
+void MarvieController::MemStatistics::focusOutEvent( QFocusEvent *event )
+{
+	hide();
 }

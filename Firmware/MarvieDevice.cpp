@@ -96,9 +96,16 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	syncConfigNum = ( uint32_t )-1;
 	datFiles[0] = datFiles[1] = datFiles[2] = nullptr;
 
-	memoryLoad.totalRam = 192 * 1024;
-	memoryLoad.staticAllocatedRam = 0;
-	memoryLoad.heapAllocatedRam = 0;
+	memoryLoad.totalGRam = 128 * 1024;
+	memoryLoad.totalCcRam = 64 * 1024;
+	memoryLoad.freeGRam = 0;
+	memoryLoad.gRamHeapFragments = 0;
+	memoryLoad.gRamHeapSize = 0;
+	memoryLoad.gRamHeapLargestFragmentSize = 0;
+	memoryLoad.freeCcRam = 0;
+	memoryLoad.ccRamHeapFragments = 0;
+	memoryLoad.ccRamHeapSize = 0;
+	memoryLoad.ccRamHeapLargestFragmentSize = 0;
 	memoryLoad.sdCardCapacity = 0;
 	memoryLoad.sdCardFreeSpace = 0;
 
@@ -317,11 +324,10 @@ void MarvieDevice::miskTasksThreadMain()
 		}
 		if( em & MiskTaskThreadEvent::MemoryTestEvent )
 		{
-			size_t totalFr[2];
-			chHeapStatus( nullptr, &totalFr[0], nullptr );
-			CCMemoryHeap::status( &totalFr[1], nullptr );
-			memoryLoad.staticAllocatedRam = memoryLoad.totalRam - chCoreGetStatusX() - CCMemoryAllocator::status();
-			memoryLoad.heapAllocatedRam = memoryLoad.staticAllocatedRam - totalFr[0] - totalFr[1];
+			memoryLoad.freeGRam = chCoreGetStatusX();
+			memoryLoad.freeCcRam = CCMemoryAllocator::status();
+			memoryLoad.gRamHeapFragments = chHeapStatus( nullptr, ( size_t* )&memoryLoad.gRamHeapSize, ( size_t* )&memoryLoad.gRamHeapLargestFragmentSize );
+			memoryLoad.ccRamHeapFragments = CCMemoryHeap::status( ( size_t* )&memoryLoad.ccRamHeapSize, ( size_t* )&memoryLoad.ccRamHeapLargestFragmentSize );
 			if( sdCardStatus == SdCardStatus::Working )
 			{
 				memoryLoad.sdCardCapacity = ( fatFs.n_fatent - 2 ) * fatFs.csize * 512;
