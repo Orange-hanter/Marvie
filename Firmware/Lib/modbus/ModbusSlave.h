@@ -1,4 +1,7 @@
+#pragma once
+
 #include "ModbusInterface.h"
+
 namespace ModbusPotato
 {
     /// <summary>
@@ -7,7 +10,9 @@ namespace ModbusPotato
     class CModbusSlave : public IFrameHandler
     {
     public:
-        CModbusSlave(ISlaveHandler* handler);
+        CModbusSlave(ISlaveHandler* handler = nullptr);
+
+		void set_handler( ISlaveHandler* handler );
         void frame_ready(IFramer* framer) override;
     private:
         uint8_t read_bit_input_rsp(IFramer* framer, bool discrete);

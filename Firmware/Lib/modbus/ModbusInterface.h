@@ -5,10 +5,11 @@
 // http://www.modbus.org/docs/Modbus_over_serial_line_V1_02.pdf
 // http://www.modbus.org/docs/PI_MBUS_300.pdf
 //
-#ifndef __ModbusPotato_Interface_h__
-#define __ModbusPotato_Interface_h__
+#pragma once
+
 #include <stddef.h>
 #include "ModbusTypes.h"
+
 namespace ModbusPotato
 {
 #ifdef ARDUINO
@@ -154,12 +155,12 @@ namespace ModbusPotato
         IFramer(IStream* stream, ITimeProvider* timer, uint8_t* buffer, size_t buffer_max)
             :   m_stream(stream)
             ,   m_timer(timer)
-            ,   m_buffer(buffer)
-            ,   m_buffer_max(buffer_max)
-            ,   m_buffer_len()
             ,   m_handler()
             ,   m_station_address()
             ,   m_frame_address()
+            ,   m_buffer(buffer)
+            ,   m_buffer_len()
+            ,   m_buffer_max(buffer_max)
         {}
 
         virtual ~IFramer() {}
@@ -622,4 +623,3 @@ namespace ModbusPotato
         }
     };
 }
-#endif

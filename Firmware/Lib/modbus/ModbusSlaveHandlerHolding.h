@@ -1,6 +1,7 @@
-#ifndef __ModbusSlaveHandlerHolding_h__
-#define __ModbusSlaveHandlerHolding_h__
+#pragma once
+
 #include "ModbusInterface.h"
+
 namespace ModbusPotato
 {
     /// <summary>
@@ -17,4 +18,3 @@ namespace ModbusPotato
         size_t m_len;
     };
 }
-#endif

@@ -1,17 +1,26 @@
 // This file contains simple type definitions such as enumerations.
 //
-#ifndef __ModbusPotato_Types_h__
-#define __ModbusPotato_Types_h__
+#pragma once
+
 #include <stdint.h>
-#ifdef ARDUINO
+#ifdef CHIBIOS
+#include "ch.h"
+#elif ARDUINO
 #include <Arduino.h>
 #elif _MSC_VER
 #include <Windows.h>
 #endif
-#define MODBUS_DATA_BUFFER_SIZE (255)
+
+#define MODBUS_RTU_DATA_BUFFER_SIZE   (256)
+#define MODBUS_ASCII_DATA_BUFFER_SIZE (513)
+#define MODBUS_IP_DATA_BUFFER_SIZE    (260)
+
 namespace ModbusPotato
 {
-#ifdef ARDUINO
+#ifdef CHIBIOS
+	// system tick type
+	typedef systime_t system_tick_t;
+#elif ARDUINO
     // system tick type
     typedef unsigned long system_tick_t;
 #elif _MSC_VER
@@ -65,4 +74,3 @@ namespace ModbusPotato
         };
     }
 }
-#endif

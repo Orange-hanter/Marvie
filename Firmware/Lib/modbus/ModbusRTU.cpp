@@ -57,7 +57,7 @@ namespace ModbusPotato
         ,   m_T1p5()
         ,   m_crc16_calc(&crc16_modbus)
     {
-        if (!m_stream || !m_timer || !m_buffer || m_buffer_max < 3)
+        if (!m_stream || !m_timer || !m_buffer || m_buffer_max < 5)
         {
             m_state = state_exception;
             return;
@@ -125,19 +125,19 @@ namespace ModbusPotato
     {
         // state machine for handling incoming data
         //
-        //                    -------------           -------------
-        //        +--Sent--->|   TX CRC    |    +--->|   TX Wait   |
-        //        |           -------------     |     -------------
+        //                                            -------------
+        //        +------------------           +--->|   TX Wait   |
+        //        |                 |           |     -------------
         //        |                 |           |           |
         //  -------------         Sent      TX Empty      T3.5                  start
-        // |   TX PDU    |          |           |           |                     |
+        // |  TX Frame   |          |           |           |                     |
         //  -------------           v           |           |                     v
         //        ^           -------------     |           v               -------------
         //        |          |  TX Drain   |----+    +------+<----T3.5-----|    Dump     |
         //      Sent          -------------          |                      ------------- 
         //        |                                  v                            ^
         //  -------------                      -------------                      |
-        // |   TX Addr   |   +--begin_send()--|    Idle     |----Invalid Char---->+
+        // | TX Addr wait|   +--begin_send()--|    Idle     |----Invalid Char---->+
         //  -------------    |                 -------------                      ^
         //        ^          |                   ^       |                        |
         //        |      +---+                   |  Addr. Match                   |
@@ -332,7 +332,7 @@ receive:
                 return poll(); // jump to the start of the function to re-evalutate entire switch statement
             }
             break;
-        case state_tx_addr: // transmitting remote station address [RTU]
+        case state_tx_addr_wait: // transmitting remote station address [RTU]
             {
                 // dump any incoming data
                 //
@@ -365,28 +365,12 @@ receive:
                 if (elapsed < (m_T3p5 + quantization_rounding_count))
                     return m_T3p5 + quantization_rounding_count - elapsed; // waiting to send
 
-                // try and write the remote station address
-                if (int ec = m_stream->write(&m_frame_address, 1))
-                {
-                    // check if something bad happened
-                    if (ec < 0)
-                    {
-                        m_state = state_exception;
-                        m_stream->communicationStatus(false, false);
-                        return 0; // fatal exception
-                    }
-
-                    // address sent; update the CRC while we send the frame address and move to the 'TX PDU' state
-                    m_checksum = m_crc16_calc(0xffff, &m_frame_address, 1);
-                    m_state = state_tx_pdu;
-                    m_buffer_tx_pos = 0;
-                    goto tx_pdu;
-                }
-
-                return 0; // waiting for room in the write buffer
+				m_buffer_tx_pos = 0;
+				m_state = state_tx_frame;
+				goto tx_frame;
             }
-        case state_tx_pdu: // transmitting frame PDU
-tx_pdu:
+        case state_tx_frame: // transmitting frame
+tx_frame:
             {
                 // send the next chunk
                 if (int ec = m_stream->write(m_buffer + m_buffer_tx_pos, m_buffer_len - m_buffer_tx_pos))
@@ -399,59 +383,18 @@ tx_pdu:
                         return 0; // fatal exception
                     }
 
-                    // update the CRC while we send the bytes and advance the buffer tx position
-                    m_checksum = m_crc16_calc(m_checksum, m_buffer + m_buffer_tx_pos, ec);
+                    // advance the buffer tx position
                     m_buffer_tx_pos += ec;
                 }
 
                 // dump our own echo
                 m_stream->read(NULL, (size_t)-1);
 
-                // check if we should start sending the CRC
+                // check if we should enter the 'TX Drain' state
                 if (m_buffer_tx_pos == m_buffer_len)
                 {
-                    // if so, enter the 'TX CRC' state
-                    m_state = state_tx_crc;
-                    m_buffer_tx_pos = 0;
-                    goto tx_crc; // enter the 'TX CRC' state
-                }
-
-                return 0; // waiting for room in the write buffer
-            }
-            break;
-        case state_tx_crc: // transmitting the frame CRC
-tx_crc:
-            {
-                // similiar to above, except we send the CRC instead of the data
-                while (m_buffer_tx_pos != CRC_LEN)
-                {
-                    // write the next byte in the CRC
-                    uint8_t ch = (uint8_t)m_checksum;
-                    int ec = m_stream->write(&ch, 1);
-                    if (!ec)
-                        break;
-
-                    // check if something bad happened
-                    if (ec < 0)
-                    {
-                        m_state = state_exception;
-                        m_stream->communicationStatus(false, false);
-                        return 0; // fatal exception
-                    }
-
-                    // advance the high byte of the CRC to the low byte and start again
-                    m_checksum >>= 8;
-                    m_buffer_tx_pos++;
-                }
-
-                // dump our own echo
-                m_stream->read(NULL, (size_t)-1);
-
-                // check if we should enter the 'TX Drain' state
-                if (m_buffer_tx_pos == CRC_LEN)
-                {
-                    m_state = state_tx_drain;
-                    goto tx_drain; // enter the 'TX Drain' state
+					m_state = state_tx_drain;
+					goto tx_drain; // enter the 'TX Drain' state
                 }
 
                 return 0; // waiting for room in the write buffer
@@ -524,7 +467,7 @@ tx_wait:
     void CModbusRTU::send()
     {
         // sanity check
-        if (m_buffer_len >= buffer_max())
+        if (m_buffer_len + 3 > buffer_max())
         {
             // buffer overflow - enter the 'exception' state
             m_state = state_exception;
@@ -535,8 +478,16 @@ tx_wait:
         {
         case state_queue: // buffer is ready
             {
-                // enter the transmit station address state
-                m_state = state_tx_addr;
+				for( int i = m_buffer_len; i >= 1; --i )
+					m_buffer[i] = m_buffer[i - 1];
+				m_buffer[0] = m_frame_address;
+				m_checksum = m_crc16_calc( 0xffff, m_buffer, m_buffer_len + 1 );
+				m_buffer[m_buffer_len + 1] = m_checksum;
+				m_buffer[m_buffer_len + 2] = m_checksum >> 8;
+				m_buffer_len += 3;
+
+                // enter the transmit wait station
+                m_state = state_tx_addr_wait;
                 m_stream->communicationStatus(false, true);
 
                 // enable the transmitter

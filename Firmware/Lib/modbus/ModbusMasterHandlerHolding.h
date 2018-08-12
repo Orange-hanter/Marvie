@@ -1,6 +1,7 @@
-#ifndef __ModbusMasterHandlerHolding_h__
-#define __ModbusMasterHandlerHolding_h__
+#pragma once
+
 #include "ModbusInterface.h"
+
 namespace ModbusPotato
 {
     /// <summary>
@@ -19,4 +20,3 @@ namespace ModbusPotato
         bool sanity_check (const uint16_t address, const size_t n) const;
     };
 }
-#endif

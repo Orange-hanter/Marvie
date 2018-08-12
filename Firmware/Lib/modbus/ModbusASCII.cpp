@@ -32,7 +32,7 @@ namespace ModbusPotato
         ,   m_last_ticks()
         ,   m_T1s()
     {
-        if (!m_stream || !m_timer || !m_buffer || m_buffer_max < 3)
+        if (!m_stream || !m_timer || !m_buffer || m_buffer_max < 11)
         {
             m_state = state_exception;
             return;
@@ -342,244 +342,32 @@ rx_cr:
                 return poll(); // jump to the start of the function to re-evalutate entire switch statement
             }
             break;
-        case state_tx_sof: // transmitting start of frame character [ASCII]
+        case state_tx_frame: // transmitting frame [ASCII]
             {
-                // try and write the start of frame character
-                uint8_t ch = ':';
-                if (int ec = m_stream->write(&ch, 1))
-                {
-                    // check if something bad happened
-                    if (ec < 0)
-                    {
-                        m_state = state_exception;
-                        m_stream->communicationStatus(false, false);
-                        return 0; // fatal exception
-                    }
+				// send the next chunk
+				if( int ec = m_stream->write( m_buffer + m_buffer_tx_pos, m_buffer_len - m_buffer_tx_pos ) )
+				{
+					// check if something bad happened
+					if( ec < 0 )
+					{
+						m_state = state_exception;
+						m_stream->communicationStatus( false, false );
+						return 0; // fatal exception
+					}
 
-                    // SOF; move to the 'TX ADDR HIGH' state
-                    m_state = state_tx_addr_high;
-                    goto tx_addr_high;
-                }
+					// advance the buffer tx position
+					m_buffer_tx_pos += ec;
+				}
 
-                return 0; // waiting for room in the write buffer
-            }
-        case state_tx_addr_high: // transmitting remote station address [ASCII]
-tx_addr_high:
-            {
-                // convert the high nibble of the station address to ASCII HEX
-                uint8_t ch = m_frame_address >> 4;
-                ch = BIN2ASC(ch);
+				// check if we done
+				if( m_buffer_tx_pos == m_buffer_len )
+				{
+					// done; move to the line feed character
+					m_state = state_tx_wait;
+					goto tx_wait;
+				}
 
-                // try and write the remote station address
-                if (int ec = m_stream->write(&ch, 1))
-                {
-                    // check if something bad happened
-                    if (ec < 0)
-                    {
-                        m_state = state_exception;
-                        m_stream->communicationStatus(false, false);
-                        return 0; // fatal exception
-                    }
-
-                    // high nibble of address sent; now send the low nibble
-                    m_checksum = m_frame_address;
-                    m_state = state_tx_addr_low;
-                    goto tx_addr_low;
-                }
-
-                return 0; // waiting for room in the write buffer
-            }
-            break;
-        case state_tx_addr_low: // transmitting remote station address [ASCII]
-tx_addr_low:
-            {
-                // convert the low nibble of the station address to ASCII HEX
-                uint8_t ch = m_frame_address & 0xf;
-                ch = BIN2ASC(ch);
-
-                // try and write the remote station address
-                if (int ec = m_stream->write(&ch, 1))
-                {
-                    // check if something bad happened
-                    if (ec < 0)
-                    {
-                        m_state = state_exception;
-                        m_stream->communicationStatus(false, false);
-                        return 0; // fatal exception
-                    }
-
-                    // low nibble of address sent; now send the high nibble of the first PDU byte
-                    m_state = state_tx_pdu_high;
-                    m_buffer_tx_pos = 0;
-                    goto tx_pdu_high;
-                }
-
-                return 0; // waiting for room in the write buffer
-            }
-            break;
-        case state_tx_pdu_high: // transmitting PDU [ASCII]
-tx_pdu_high:
-            {
-                // convert the high nibble of the next PDU byte to ASCII HEX
-                uint8_t ch = m_buffer[m_buffer_tx_pos] >> 4;
-                ch = BIN2ASC(ch);
-
-                // try and write the remote station address
-                if (int ec = m_stream->write(&ch, 1))
-                {
-                    // check if something bad happened
-                    if (ec < 0)
-                    {
-                        m_state = state_exception;
-                        m_stream->communicationStatus(false, false);
-                        return 0; // fatal exception
-                    }
-
-                    // high nibble of address sent; update checksum and send the low nibble
-                    m_checksum = (uint8_t)(m_checksum + m_buffer[m_buffer_tx_pos]);
-                    m_state = state_tx_pdu_low;
-                    goto tx_pdu_low;
-                }
-
-                return 0; // waiting for room in the write buffer
-            }
-            break;
-        case state_tx_pdu_low: // transmitting PDU [ASCII]
-tx_pdu_low:
-            {
-                // convert the low nibble of the next PDU byte to ASCII HEX
-                uint8_t ch = m_buffer[m_buffer_tx_pos] & 0xf;
-                ch = BIN2ASC(ch);
-
-                // try and write the remote station address
-                if (int ec = m_stream->write(&ch, 1))
-                {
-                    // check if something bad happened
-                    if (ec < 0)
-                    {
-                        m_state = state_exception;
-                        m_stream->communicationStatus(false, false);
-                        return 0; // fatal exception
-                    }
-
-                    // low nibble transmitted; move to the next byte in the PDU buffer
-                    m_buffer_tx_pos++;
-
-                    // check if we are finished
-                    if (m_buffer_tx_pos == m_buffer_len)
-                    {
-                        // negate the checksum (2's complement) so that everything will add to 0 at the receiving end
-                        m_checksum = (uint8_t)-(int8_t)m_checksum;
-
-                        // finished sending the PDU; now send the LRC high nibble
-                        m_state = state_tx_lrc_high;
-                        goto tx_lrc_high;
-                    }
-
-                    // low nibble of address sent; now send the high nibble of the next PDU byte
-                    m_state = state_tx_pdu_high;
-                    goto tx_pdu_high;
-                }
-
-                return 0; // waiting for room in the write buffer
-            }
-            break;
-        case state_tx_lrc_high: // transmitting LRC high [ASCII]
-tx_lrc_high:
-            {
-                // convert the high nibble of the LRC to ASCII HEX
-                uint8_t ch = m_checksum >> 4;
-                ch = BIN2ASC(ch);
-
-                // try and write the value
-                if (int ec = m_stream->write(&ch, 1))
-                {
-                    // check if something bad happened
-                    if (ec < 0)
-                    {
-                        m_state = state_exception;
-                        m_stream->communicationStatus(false, false);
-                        return 0; // fatal exception
-                    }
-
-                    // high nibble sent; now send the low nibble
-                    m_state = state_tx_lrc_low;
-                    goto tx_lrc_low;
-                }
-
-                return 0; // waiting for room in the write buffer
-            }
-            break;
-        case state_tx_lrc_low: // transmitting LRC low [ASCII]
-tx_lrc_low:
-            {
-                // convert the high nibble of the LRC to ASCII HEX
-                uint8_t ch = m_checksum & 0xf;
-                ch = BIN2ASC(ch);
-
-                // try and write the value
-                if (int ec = m_stream->write(&ch, 1))
-                {
-                    // check if something bad happened
-                    if (ec < 0)
-                    {
-                        m_state = state_exception;
-                        m_stream->communicationStatus(false, false);
-                        return 0; // fatal exception
-                    }
-
-                    // low nibble sent; now send the cr
-                    m_state = state_tx_cr;
-                    goto tx_cr;
-                }
-
-                return 0; // waiting for room in the write buffer
-            }
-            break;
-        case state_tx_cr: // transmitting carriage return character [ASCII]
-tx_cr:
-            {
-                // try and write the start of frame character
-                uint8_t ch = '\r';
-                if (int ec = m_stream->write(&ch, 1))
-                {
-                    // check if something bad happened
-                    if (ec < 0)
-                    {
-                        m_state = state_exception;
-                        m_stream->communicationStatus(false, false);
-                        return 0; // fatal exception
-                    }
-
-                    // done; move to the line feed character
-                    m_state = state_tx_lf;
-                    goto tx_lf;
-                }
-
-                return 0; // waiting for room in the write buffer
-            }
-            break;
-        case state_tx_lf: // transmitting carriage return character [ASCII]
-tx_lf:
-            {
-                // try and write the start of frame character
-                uint8_t ch = '\n';
-                if (int ec = m_stream->write(&ch, 1))
-                {
-                    // check if something bad happened
-                    if (ec < 0)
-                    {
-                        m_state = state_exception;
-                        m_stream->communicationStatus(false, false);
-                        return 0; // fatal exception
-                    }
-
-                    // done; move to the line feed character
-                    m_state = state_tx_wait;
-                    goto tx_wait;
-                }
-
-                return 0; // waiting for room in the write buffer
+				return 0; // waiting for room in the write buffer
             }
             break;
         case state_tx_wait: // waiting for the characters to finish transmitting [ASCII]
@@ -635,7 +423,7 @@ tx_wait:
     void CModbusASCII::send()
     {
         // sanity check
-        if (m_buffer_len >= buffer_max())
+        if (m_buffer_len * 2 + 7 > buffer_max())
         {
             // buffer overflow - enter the 'exception' state
             m_state = state_exception;
@@ -646,8 +434,37 @@ tx_wait:
         {
         case state_queue: // buffer is ready
             {
-                // enter the transmit start of frame state
-                m_state = state_tx_sof;
+				m_checksum = m_frame_address;
+				for( size_t i = 0; i < m_buffer_len; ++i )
+					m_checksum += m_buffer[i];
+				// negate the checksum (2's complement) so that everything will add to 0 at the receiving end
+				m_checksum = ( uint8_t )-( int8_t )m_checksum;
+
+				for( int i = m_buffer_len - 1, k = ( m_buffer_len - 1 ) * 2 + 3; i >= 0; --i, k -= 2 )
+				{
+					// convert the low nibble of the next PDU byte to ASCII HEX
+					uint8_t ch = m_buffer[i] >> 4;
+					m_buffer[k] = BIN2ASC( ch );
+					ch = m_buffer[i] & 0x0F;
+					m_buffer[k + 1] = BIN2ASC( ch );
+				}
+				m_buffer[0] = ':'; // the start of frame character
+				uint8_t ch = m_frame_address >> 4;
+				m_buffer[1] = BIN2ASC( ch );
+				ch = m_frame_address & 0x0F;
+				m_buffer[2] = BIN2ASC( ch );
+				m_buffer_len = m_buffer_len * 2 + 3;
+
+				ch = m_checksum >> 4;
+				m_buffer[m_buffer_len++] = BIN2ASC( ch );
+				ch = m_checksum & 0x0F;
+				m_buffer[m_buffer_len++] = BIN2ASC( ch );
+				m_buffer[m_buffer_len++] = 0x0D;
+				m_buffer[m_buffer_len++] = 0x0A;
+
+                // enter the frame transmit
+                m_state = state_tx_frame;
+				m_buffer_tx_pos = 0;
                 m_stream->communicationStatus(false, true);
 
                 // enable the transmitter

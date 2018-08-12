@@ -6,7 +6,13 @@ namespace ModbusPotato
     {
     }
 
-    void CModbusSlave::frame_ready(IFramer* framer)
+
+	void CModbusSlave::set_handler( ISlaveHandler* handler )
+	{
+		m_handler = handler;
+	}
+
+	void CModbusSlave::frame_ready( IFramer* framer )
     {
         // check if the function code is missing
         if (!framer->buffer_len())

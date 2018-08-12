@@ -1,6 +1,7 @@
-#ifndef __ModbusPotato_ModbusRTU_h__
-#define __ModbusPotato_ModbusRTU_h__
+#pragma once
+
 #include "ModbusInterface.h"
+
 namespace ModbusPotato
 {
     /// <summary>
@@ -68,9 +69,8 @@ namespace ModbusPotato
             state_queue,
             state_collision,
             state_receive,
-            state_tx_addr,
-            state_tx_pdu,
-            state_tx_crc,
+            state_tx_addr_wait,
+            state_tx_frame,        
             state_tx_drain,
             state_tx_wait,
         };
@@ -80,4 +80,3 @@ namespace ModbusPotato
         Crc16CalcFunc m_crc16_calc;
     };
 }
-#endif

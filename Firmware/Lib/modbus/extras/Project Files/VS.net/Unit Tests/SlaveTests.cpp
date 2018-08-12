@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "../../../../ModbusSlave.h"
-#include "../../../../ModbusSlaveHandlerBase.h"
+#include "../../../../ModbusInterface.h"
 #include <algorithm>
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -46,7 +46,7 @@ namespace UnitTests
         uint8_t m_buffer[256];
     };
 
-    class CSlaveHandler : public CModbusSlaveHandlerBase
+    class CSlaveHandler : public ISlaveHandler
     {
     public:
         CSlaveHandler()

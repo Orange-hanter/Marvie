@@ -1,6 +1,9 @@
+#pragma once
+
 #include <initializer_list>
 #include <iterator>
 #include "ModbusInterface.h"
+
 namespace ModbusPotato
 {
     /// <summary>
@@ -102,5 +105,5 @@ namespace ModbusPotato
 
         bool sanity_check(const size_t n, const size_t len);
         void send_and_wait(uint8_t slave, size_t len);
-};
+    };
 }

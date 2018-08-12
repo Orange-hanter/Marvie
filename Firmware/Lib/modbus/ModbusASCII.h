@@ -1,10 +1,11 @@
-#ifndef __ModbusPotato_ModbusASCII_h__
-#define __ModbusPotato_ModbusASCII_h__
+#pragma once
+
 #include "ModbusInterface.h"
+
 namespace ModbusPotato
 {
     /// <summary>
-    /// This class handles the RTU based protocol for Modbus.
+    /// This class handles the ASCII based protocol for Modbus.
     /// </summary>
     /// <remarks>
     /// See the IFramer interface for a complete description of the public
@@ -45,7 +46,7 @@ namespace ModbusPotato
             default_timeout = 1000, // default timeout, in milliseconds
         };
         uint8_t m_checksum;
-        uint8_t m_buffer_tx_pos;
+        uint16_t m_buffer_tx_pos;
         enum state_type
         {
             state_exception,
@@ -58,15 +59,7 @@ namespace ModbusPotato
             state_rx_pdu_high,
             state_rx_pdu_low,
             state_rx_cr,
-            state_tx_sof,
-            state_tx_addr_high,
-            state_tx_addr_low,
-            state_tx_pdu_high,
-            state_tx_pdu_low,
-            state_tx_lrc_high,
-            state_tx_lrc_low,
-            state_tx_cr,
-            state_tx_lf,
+            state_tx_frame,
             state_tx_wait,
         };
         state_type m_state;
@@ -74,4 +67,3 @@ namespace ModbusPotato
         system_tick_t m_T1s;
     };
 }
-#endif
