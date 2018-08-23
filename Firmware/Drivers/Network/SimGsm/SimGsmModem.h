@@ -1,16 +1,11 @@
 #pragma once
 
-#include "Core/BaseDynamicThread.h"
 #include "Core/ByteRingBuffer.h"
 #include "Core/NanoList.h"
 
-#include "Network/AbstractGsmModem.h"
-#include "Drivers/Interfaces/Usart.h"
+#include "Network/Modem.h"
 #include "Drivers/LogicOutput.h"
 
-#include "Network/AbstractUdpSocket.h"
-#include "Network/AbstractTcpSocket.h"
-#include "SimGsmTcpServer.h"
 #include "SimGsmATResponseParsers.h"
 
 #define SIMGSM_SOCKET_LIMIT      6
@@ -21,7 +16,7 @@ class SimGsmTcpServer;
 class SimGsmUdpSocket;
 class SimGsmTcpSocket;
 
-class SimGsm : private BaseDynamicThread, public AbstractGsmModem
+class SimGsmModem : public Modem
 {
 	friend class SimGsmSocketBase;
 	friend class SimGsmUdpSocket;
@@ -29,19 +24,8 @@ class SimGsm : private BaseDynamicThread, public AbstractGsmModem
 	friend class SimGsmTcpServer;
 
 public:
-	SimGsm( IOPort enablePort );
-	~SimGsm();
-
-	void setUsart( Usart* usart );
-	void setPinCode( uint32_t pinCode ) final override;
-	void setApn( const char* apn ) final override;
-
-	void startModem( tprio_t prio ) final override;
-	void stopModem() final override;
-	bool waitForStatusChange( sysinterval_t timeout = TIME_INFINITE ) final override;
-	ModemStatus status() final override;
-	ModemError modemError() final override;
-	IpAddress networkAddress() final override;
+	SimGsmModem( IOPort enablePort );
+	~SimGsmModem();
 
 	AbstractTcpServer* tcpServer( uint32_t index ) final override;
 
@@ -50,8 +34,6 @@ public:
 
 	AbstractTcpSocket* createTcpSocket() final override; // reentrant 
 	AbstractTcpSocket* createTcpSocket( uint32_t inputBufferSize, uint32_t outputBufferSize ) final override; // reentrant 
-
-	EvtSource* eventSource() final override;
 
 private:
 	void main() final override;
@@ -111,23 +93,15 @@ private:
 	int printCIPSEND( int linkId, uint32_t dataSize );
 
 private:
-	enum InnerEventFlag : eventflags_t { StopRequestFlag = 1, TimeoutEventFlag = 2, NewRequestEventFlag = 4, ModemPingEventFlag = 8 };
+	enum InnerEventFlag : eventmask_t { TimeoutEventFlag = 2, NewRequestEventFlag = 4, ModemPingEventFlag = 8 };
 	enum ErrorCode { NoError, TimeoutError, OverflowError, GeneralError, CMEError };
 	enum class SendRequestState { SetRemoteAddress, SendInit, SendData };
 
-	ModemStatus mStatus;
-	ModemError mError;
-	IpAddress netAddress;
-	EvtSource extEventSource;
 	EvtSource innerEventSource;
-	threads_queue_t waitingQueue;
 	virtual_timer_t responseTimer;
 	virtual_timer_t modemPingTimer;
 
-	Usart* usart;
 	LogicOutput enablePin;
-	uint32_t pinCode;
-	const char* apn;
 	IpAddress ip;
 	volatile bool pwrDown, crashFlag, callReady, smsReady;
 	SimGsmATResponseParsers::CPinParsingResult::Status cpinStatus;

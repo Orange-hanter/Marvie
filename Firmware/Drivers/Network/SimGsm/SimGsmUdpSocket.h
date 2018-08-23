@@ -4,8 +4,8 @@
 
 class SimGsmUdpSocket : protected SimGsmSocketBase, public AbstractUdpSocket
 {
-	friend class SimGsm;
-	SimGsmUdpSocket( SimGsm* simGsm, uint32_t inputBufferSize, uint32_t outputBufferSize );
+	friend class SimGsmModem;
+	SimGsmUdpSocket( SimGsmModem* simGsm, uint32_t inputBufferSize, uint32_t outputBufferSize );
 
 public:
 	~SimGsmUdpSocket();

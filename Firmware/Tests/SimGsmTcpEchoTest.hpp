@@ -1,9 +1,9 @@
-#include "Drivers/Network/SimGsm/SimGsm.h"
+#include "Drivers/Network/SimGsm/SimGsmModem.h"
 #include "Core/Assert.h"
 #include <string.h>
 
 static uint8_t ib[2048], ob[1024];
-static SimGsm* gsm;
+static SimGsmModem* gsm;
 
 int simGsmTcpEchoTest()
 {
@@ -14,11 +14,11 @@ int simGsmTcpEchoTest()
 	palSetPadMode( GPIOC, 6, PAL_MODE_ALTERNATE( GPIO_AF_USART6 ) );
 	palSetPadMode( GPIOC, 7, PAL_MODE_ALTERNATE( GPIO_AF_USART6 ) );
 
-	gsm = new SimGsm( IOPA8 );
+	gsm = new SimGsmModem( IOPA8 );
 	gsm->setUsart( usart );
 	gsm->setApn( "m2m30.velcom.by" );
 	gsm->startModem( NORMALPRIO );
-	gsm->waitForStatusChange();
+	gsm->waitForStateChange();
 
 	AbstractTcpServer* server = gsm->tcpServer( 0 );
 	server->setNewConnectionsBufferSize( 128, 128 );
@@ -78,8 +78,8 @@ int simGsmTcpEchoTest()
 				while( ( socket = server->nextPendingConnection() ) )
 					delete socket;
 
-				gsm->waitForStatusChange();
-				if( gsm->status() == ModemStatus::Stopped )
+				gsm->waitForStateChange();
+				if( gsm->state() == ModemState::Stopped )
 					assert( false ); //chSysHalt( "GG" );
 				server->listen( 502 );
 				continue;

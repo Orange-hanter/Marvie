@@ -4,7 +4,7 @@
 
 namespace SimGsmATResponseParsers
 {
-	enum ParserResultType { CPin, CallReady, SmsReady, PdpDeact, Receive, RemoteIp, Ip, Closed, Ok, ServerOk, ServerClose, SendInitOk, SendOk, SendFail, CloseOk, AlreadyConnect, ConnectOk, ConnectFail, Error, CMEError, PwrDown };
+	enum ParserResultType { CPin, CallReady, SmsReady, PdpDeact, Receive, RemoteIp, Ip, Closed, Ok, ServerOk, ServerClose, SendInitOk, SendOk, SendFail, CloseOk, AlreadyConnect, ConnectOk, ConnectFail, Error, CMEError, PwrDown, Connect };
 
 	class CPinParsingResult : public LexicalAnalyzer::ParsingResult
 	{

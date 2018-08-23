@@ -1,10 +1,11 @@
-#include "SimGsm.h"
+#include "SimGsmModem.h"
 #include "Support/Utility.h"
 #include "Core/Assert.h"
 #include <string.h>
 
 #include "SimGsmUdpSocket.h"
 #include "SimGsmTcpSocket.h"
+#include "SimGsmTcpServer.h"
 
 #define DEFAULT_INPUT_BUFFER_SIZE   32
 #define DEFAULT_OUTPUT_BUFFER_SIZE  0
@@ -31,23 +32,17 @@
 using namespace Utility;
 using namespace SimGsmATResponseParsers;
 
-SimGsm::SimGsm( IOPort port ) : BaseDynamicThread( 1280 ), lexicalAnalyzer( 21, 10 )
+SimGsmModem::SimGsmModem( IOPort port ) : Modem( 1280 ), lexicalAnalyzer( 21, 10 )
 {
-	mStatus = ModemStatus::Stopped;
-	mError = ModemError::NoError;
-	chThdQueueObjectInit( &waitingQueue );
 	chVTObjectInit( &responseTimer );
 	chVTObjectInit( &modemPingTimer );
 
-	usart = nullptr;
 #ifdef SIMGSM_USE_PWRKEY_PIN
 	enablePin.attach( port );
 	enablePin.on();
 #else
 	enablePin.attach( port, !uint32_t( SIMGSM_ENABLE_LEVEL ) );
 #endif
-	pinCode = 0;
-	apn = nullptr;
 	pwrDown = crashFlag = callReady = smsReady = false;
 	cpinStatus = CPinParsingResult::Status::Unknown;
 	sendReqErrorLinkId = -1;
@@ -150,85 +145,14 @@ SimGsm::SimGsm( IOPort port ) : BaseDynamicThread( 1280 ), lexicalAnalyzer( 21, 
 	lexicalAnalyzer.setCallback( [this]( LexicalAnalyzer::ParsingResult* res ) { lexicalAnalyzerCallback( res ); } );
 }
 
-SimGsm::~SimGsm()
+SimGsmModem::~SimGsmModem()
 {
 	stopModem();
-	waitForStatusChange();
+	waitForStateChange();
 	delete server;
 }
 
-void SimGsm::setUsart( Usart* usart )
-{
-	if( mStatus != ModemStatus::Stopped )
-		return;
-
-	this->usart = usart;
-	lexicalAnalyzer.setBuffer( usart->inputBuffer() );
-}
-
-void SimGsm::setPinCode( uint32_t pinCode )
-{
-	this->pinCode = pinCode;
-}
-
-void SimGsm::setApn( const char* apn )
-{
-	this->apn = apn;
-}
-
-void SimGsm::startModem( tprio_t prio )
-{
-	if( mStatus != ModemStatus::Stopped || !usart )
-		return;
-
-	mError = ModemError::NoError;
-	mStatus = ModemStatus::Initializing;
-	extEventSource.broadcastFlags( ( eventflags_t )ModemEvent::StatusChanged );
-	start( prio );
-}
-
-void SimGsm::stopModem()
-{
-	chSysLock();
-	if( mStatus == ModemStatus::Stopped || mStatus == ModemStatus::Stopping )
-	{
-		chSysUnlock();
-		return;
-	}
-	mStatus = ModemStatus::Stopping;
-	extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::StatusChanged );
-	innerEventSource.broadcastFlagsI( InnerEventFlag::StopRequestFlag );
-	chSchRescheduleS();
-	chSysUnlock();
-}
-
-bool SimGsm::waitForStatusChange( sysinterval_t timeout )
-{
-	msg_t msg = MSG_OK;
-	chSysLock();
-	if( mStatus == ModemStatus::Initializing || mStatus == ModemStatus::Stopping )
-		msg = chThdEnqueueTimeoutS( &waitingQueue, timeout );
-	chSysUnlock();
-
-	return msg == MSG_OK;
-}
-
-ModemStatus SimGsm::status()
-{
-	return mStatus;
-}
-
-ModemError SimGsm::modemError()
-{
-	return mError;
-}
-
-IpAddress SimGsm::networkAddress()
-{
-	return netAddress;
-}
-
-AbstractTcpServer* SimGsm::tcpServer( uint32_t index )
+AbstractTcpServer* SimGsmModem::tcpServer( uint32_t index )
 {
 	if( index != 0 )
 		return nullptr;
@@ -238,48 +162,44 @@ AbstractTcpServer* SimGsm::tcpServer( uint32_t index )
 	return server;
 }
 
-AbstractUdpSocket* SimGsm::createUdpSocket()
+AbstractUdpSocket* SimGsmModem::createUdpSocket()
 {
 	return new SimGsmUdpSocket( this, DEFAULT_INPUT_BUFFER_SIZE, DEFAULT_OUTPUT_BUFFER_SIZE );
 }
 
-AbstractUdpSocket* SimGsm::createUdpSocket( uint32_t inputBufferSize, uint32_t outputBufferSize )
+AbstractUdpSocket* SimGsmModem::createUdpSocket( uint32_t inputBufferSize, uint32_t outputBufferSize )
 {
 	return new SimGsmUdpSocket( this, inputBufferSize, outputBufferSize );
 }
 
-AbstractTcpSocket* SimGsm::createTcpSocket()
+AbstractTcpSocket* SimGsmModem::createTcpSocket()
 {
 	return new SimGsmTcpSocket( this, DEFAULT_INPUT_BUFFER_SIZE, DEFAULT_OUTPUT_BUFFER_SIZE );
 }
 
-AbstractTcpSocket* SimGsm::createTcpSocket( uint32_t inputBufferSize, uint32_t outputBufferSize )
+AbstractTcpSocket* SimGsmModem::createTcpSocket( uint32_t inputBufferSize, uint32_t outputBufferSize )
 {
 	return new SimGsmTcpSocket( this, inputBufferSize, outputBufferSize );
 }
 
-EvtSource* SimGsm::eventSource()
+void SimGsmModem::main()
 {
-	return &extEventSource;
-}
-
-void SimGsm::main()
-{
+	lexicalAnalyzer.setBuffer( usart->inputBuffer() );
 Start:
-	while( mStatus == ModemStatus::Initializing )
+	while( mState == ModemState::Initializing )
 	{
 		auto res = reinit();
 		if( res == InitResult::Ok )
 		{
 			chSysLock();
-			if( mStatus == ModemStatus::Stopping )
+			if( mState == ModemState::Stopping )
 			{
-				mStatus = ModemStatus::Stopped;
+				mState = ModemState::Stopped;
 				extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::StatusChanged );
 				chThdDequeueNextI( &waitingQueue, MSG_OK );
 				exitS( MSG_OK );
 			}
-			mStatus = ModemStatus::Working;
+			mState = ModemState::Working;
 			extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::StatusChanged );
 			chThdDequeueNextI( &waitingQueue, MSG_OK );
 			chSchRescheduleS();
@@ -289,7 +209,7 @@ Start:
 		{
 			chSysLock();
 			mError = ModemError::AuthenticationError;
-			mStatus = ModemStatus::Stopped;
+			mState = ModemState::Stopped;
 			extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::Error );
 			extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::StatusChanged );
 			chThdDequeueNextI( &waitingQueue, MSG_OK );
@@ -298,7 +218,7 @@ Start:
 	}
 
 	EvtListener usartListener, innerListener;
-	enum Event { UsartEvent = EVENT_MASK( 0 ), InnerEvent = EVENT_MASK( 1 ) };
+	enum Event : eventmask_t { UsartEvent = EVENT_MASK( 1 ), InnerEvent = EVENT_MASK( 2 ) };
 	usart->eventSource()->registerMaskWithFlags( &usartListener, UsartEvent, CHN_INPUT_AVAILABLE | CHN_OUTPUT_EMPTY );
 	innerEventSource.registerMask( &innerListener, InnerEvent );
 	lexicalAnalyzer.setUniversumStateEnabled( true );
@@ -309,20 +229,20 @@ Start:
 	chVTSet( &modemPingTimer, PING_DELAY, modemPingCallback, this );
 	innerEventSource.broadcastFlags( InnerEventFlag::NewRequestEventFlag ); // because the listener registration function is called after the status change
 
-	while( mStatus == ModemStatus::Working )
+	while( mState == ModemState::Working )
 	{
 		lexicalAnalyzer.processNewBytes();
 		if( crashFlag || usart->isInputBufferOverflowed() )
 		{
 Reinit:
 			chSysLock();
-			if( mStatus == ModemStatus::Stopping )
+			if( mState == ModemState::Stopping )
 			{
 				chSysUnlock();
 				break;
 			}
 			closeAllS();
-			mStatus = ModemStatus::Initializing;
+			mState = ModemState::Initializing;
 			extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::StatusChanged );
 			chSchRescheduleS();
 			chSysUnlock();
@@ -331,7 +251,7 @@ Reinit:
 			goto Start;
 		}
 
-		eventmask_t em = chEvtWaitAny( UsartEvent | InnerEvent );
+		eventmask_t em = chEvtWaitAny( StopRequestEvent | UsartEvent | InnerEvent );
 		if( em & UsartEvent )
 		{
 			eventflags_t flags = usartListener.getAndClearFlags();
@@ -362,13 +282,13 @@ Reinit:
 	shutdown();
 	chSysLock();
 	closeAllS();
-	mStatus = ModemStatus::Stopped;
+	mState = ModemState::Stopped;
 	extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::StatusChanged );
 	chThdDequeueNextI( &waitingQueue, MSG_OK );
 	exitS( MSG_OK );
 }
 
-SimGsm::InitResult SimGsm::reinit()
+SimGsmModem::InitResult SimGsmModem::reinit()
 {
 	if( apn == nullptr || usart == nullptr )
 		return InitResult::Fail;
@@ -413,22 +333,22 @@ GsmReinit:
 
 	waitForReadyFlags();
 
-	if( mStatus != ModemStatus::Initializing || executeSetting( CIPMUX_ANALYZER_STATE, "AT+CIPMUX=1\r\n" ) != 0 )
+	if( mState != ModemState::Initializing || executeSetting( CIPMUX_ANALYZER_STATE, "AT+CIPMUX=1\r\n" ) != 0 )
 		return InitResult::Fail;
 
 	str[printCSTT()] = 0;
-	if( mStatus != ModemStatus::Initializing || executeSetting( CSTT_ANALYZER_STATE, str, 1500, 3 ) != 0 )
+	if( mState != ModemState::Initializing || executeSetting( CSTT_ANALYZER_STATE, str, 1500, 3 ) != 0 )
 		return InitResult::Fail;
 
 	chThdSleepMilliseconds( 2000 );
 
-	if( mStatus != ModemStatus::Initializing || executeSetting( CIICR_ANALYZER_STATE, "AT+CIICR\r\n", 0, 1, TIME_S2I( 10 ) ) != 0 )
+	if( mState != ModemState::Initializing || executeSetting( CIICR_ANALYZER_STATE, "AT+CIICR\r\n", 0, 1, TIME_S2I( 10 ) ) != 0 )
 		return InitResult::Fail;
 
-	if( mStatus != ModemStatus::Initializing || executeSetting( CIFSR_ANALYZER_STATE, "AT+CIFSR\r\n" ) != 0 )
+	if( mState != ModemState::Initializing || executeSetting( CIFSR_ANALYZER_STATE, "AT+CIFSR\r\n" ) != 0 )
 		return InitResult::Fail;
 
-	if( mStatus != ModemStatus::Initializing || executeSetting( CIPSRIP_ANALYZER_STATE, "AT+CIPSRIP=1\r\n" ) != 0 )
+	if( mState != ModemState::Initializing || executeSetting( CIPSRIP_ANALYZER_STATE, "AT+CIPSRIP=1\r\n" ) != 0 )
 		return InitResult::Fail;
 
 	char udpMode[] = "AT+CIPUDPMODE=0,1\r\n";
@@ -443,7 +363,7 @@ GsmReinit:
 	return InitResult::Ok;
 }
 
-int SimGsm::executeSetting( uint32_t lexicalAnalyzerState, const char* cmd, uint32_t delayMs /*= 100*/, uint32_t repeateCount /*= 8*/, sysinterval_t timeout /*= TIME_S2I( 5 )*/ )
+int SimGsmModem::executeSetting( uint32_t lexicalAnalyzerState, const char* cmd, uint32_t delayMs /*= 100*/, uint32_t repeateCount /*= 8*/, sysinterval_t timeout /*= TIME_S2I( 5 )*/ )
 {
 	int res;
 	GeneralRequest req;
@@ -512,7 +432,7 @@ int SimGsm::executeSetting( uint32_t lexicalAnalyzerState, const char* cmd, uint
 	return res;
 }
 
-void SimGsm::waitForCPinOrPwrDown()
+void SimGsmModem::waitForCPinOrPwrDown()
 {
 	pwrDown = false;
 	cpinStatus = CPinParsingResult::Status::Unknown;
@@ -544,7 +464,7 @@ void SimGsm::waitForCPinOrPwrDown()
 	chVTReset( &timer );
 }
 
-void SimGsm::waitForReadyFlags()
+void SimGsmModem::waitForReadyFlags()
 {
 	callReady = smsReady = false;
 	lexicalAnalyzer.setState( INIT_ANALYZER_STATE );
@@ -575,7 +495,7 @@ void SimGsm::waitForReadyFlags()
 	chVTReset( &timer );
 }
 
-void SimGsm::lexicalAnalyzerCallback( LexicalAnalyzer::ParsingResult* res )
+void SimGsmModem::lexicalAnalyzerCallback( LexicalAnalyzer::ParsingResult* res )
 {
 	chVTSet( &modemPingTimer, PING_DELAY, modemPingCallback, this );
 	ParserResultType type = ( ParserResultType )res->type();
@@ -727,7 +647,7 @@ void SimGsm::lexicalAnalyzerCallback( LexicalAnalyzer::ParsingResult* res )
 	}
 }
 
-void SimGsm::generalRequestHandler( LexicalAnalyzer::ParsingResult* res )
+void SimGsmModem::generalRequestHandler( LexicalAnalyzer::ParsingResult* res )
 {
 	ParserResultType type = ( ParserResultType )res->type();
 	GeneralRequest* req = static_cast< GeneralRequest* >( currentRequest->value );
@@ -763,7 +683,7 @@ void SimGsm::generalRequestHandler( LexicalAnalyzer::ParsingResult* res )
 	}
 }
 
-void SimGsm::sendRequestHandler( LexicalAnalyzer::ParsingResult* res )
+void SimGsmModem::sendRequestHandler( LexicalAnalyzer::ParsingResult* res )
 {
 	ParserResultType type = ( ParserResultType )res->type();
 	SendRequest* req = static_cast< SendRequest* >( currentRequest->value );
@@ -820,7 +740,7 @@ void SimGsm::sendRequestHandler( LexicalAnalyzer::ParsingResult* res )
 	}
 }
 
-void SimGsm::startRequestHandler( LexicalAnalyzer::ParsingResult* res )
+void SimGsmModem::startRequestHandler( LexicalAnalyzer::ParsingResult* res )
 {
 	ParserResultType type = ( ParserResultType )res->type();
 	StartRequest* sreq = static_cast< StartRequest* >( currentRequest->value );
@@ -889,7 +809,7 @@ void SimGsm::startRequestHandler( LexicalAnalyzer::ParsingResult* res )
 	}
 }
 
-void SimGsm::closeRequestHandler( LexicalAnalyzer::ParsingResult* res )
+void SimGsmModem::closeRequestHandler( LexicalAnalyzer::ParsingResult* res )
 {
 	ParserResultType type = ( ParserResultType )res->type();
 	CloseRequest* creq = static_cast< CloseRequest* >( currentRequest->value );
@@ -918,7 +838,7 @@ void SimGsm::closeRequestHandler( LexicalAnalyzer::ParsingResult* res )
 	}
 }
 
-void SimGsm::serverRequestHandler( LexicalAnalyzer::ParsingResult* res )
+void SimGsmModem::serverRequestHandler( LexicalAnalyzer::ParsingResult* res )
 {
 	ParserResultType type = ( ParserResultType )res->type();
 	ServerRequest* req = static_cast< ServerRequest* >( currentRequest->value );
@@ -961,13 +881,13 @@ void SimGsm::serverRequestHandler( LexicalAnalyzer::ParsingResult* res )
 	}
 }
 
-void SimGsm::atRequestHandler( LexicalAnalyzer::ParsingResult* res )
+void SimGsmModem::atRequestHandler( LexicalAnalyzer::ParsingResult* res )
 {
 	atReq.use = false;
 	nextRequest();
 }
 
-bool SimGsm::addRequest( RequestNode* requestNode )
+bool SimGsmModem::addRequest( RequestNode* requestNode )
 {
 	chSysLock();
 	volatile bool res = addRequestS( requestNode );
@@ -977,10 +897,10 @@ bool SimGsm::addRequest( RequestNode* requestNode )
 	return res;
 }
 
-bool SimGsm::addRequestS( RequestNode* requestNode )
+bool SimGsmModem::addRequestS( RequestNode* requestNode )
 {
 	chDbgCheckClassS();
-	if( mStatus == ModemStatus::Initializing || mStatus == ModemStatus::Stopped )
+	if( mState == ModemState::Initializing || mState == ModemState::Stopped )
 		return false;
 	requestList.pushBack( requestNode );
 	if( currentRequest == nullptr )
@@ -989,7 +909,7 @@ bool SimGsm::addRequestS( RequestNode* requestNode )
 	return true;
 }
 
-void SimGsm::nextRequest()
+void SimGsmModem::nextRequest()
 {
 Next:
 	chSysLock();
@@ -1084,7 +1004,7 @@ Next:
 	}
 }
 
-void SimGsm::completePacketTransfer( bool errorFlag )
+void SimGsmModem::completePacketTransfer( bool errorFlag )
 {
 	chSysLock();
 	SendRequest* req = static_cast< SendRequest* >( currentRequest->value );
@@ -1157,7 +1077,7 @@ void SimGsm::completePacketTransfer( bool errorFlag )
 	chSysUnlock();
 }
 
-void SimGsm::moveSendRequestToBackS()
+void SimGsmModem::moveSendRequestToBackS()
 {
 	SendRequest* req = static_cast< SendRequest* >( currentRequest->value );
 	NanoList< Request* >::Iterator i;
@@ -1177,7 +1097,7 @@ void SimGsm::moveSendRequestToBackS()
 	requestList.insert( i, currentRequest );
 }
 
-bool SimGsm::openUdpSocket( AbstractUdpSocket* socket, uint16_t localPort )
+bool SimGsmModem::openUdpSocket( AbstractUdpSocket* socket, uint16_t localPort )
 {
 	StartRequest req( socket, localPort, IpAddress( 8, 8, 8, 8 ), 8888 );
 	RequestNode reqNode( &req );
@@ -1188,7 +1108,7 @@ bool SimGsm::openUdpSocket( AbstractUdpSocket* socket, uint16_t localPort )
 	return socket->isOpen();
 }
 
-bool SimGsm::openTcpSocket( AbstractTcpSocket* socket, IpAddress remoteAddress, uint16_t remotePort )
+bool SimGsmModem::openTcpSocket( AbstractTcpSocket* socket, IpAddress remoteAddress, uint16_t remotePort )
 {
 	StartRequest req( socket, 0, remoteAddress, remotePort );
 	RequestNode reqNode( &req );
@@ -1199,7 +1119,7 @@ bool SimGsm::openTcpSocket( AbstractTcpSocket* socket, IpAddress remoteAddress, 
 	return socket->isOpen();
 }
 
-uint32_t SimGsm::sendSocketData( AbstractUdpSocket* socket, const uint8_t* data, uint16_t size, IpAddress remoteAddress, uint16_t remotePort )
+uint32_t SimGsmModem::sendSocketData( AbstractUdpSocket* socket, const uint8_t* data, uint16_t size, IpAddress remoteAddress, uint16_t remotePort )
 {
 	if( size > MAX_UDP_PACKET_SIZE || size == 0 )
 		return 0;
@@ -1260,7 +1180,7 @@ uint32_t SimGsm::sendSocketData( AbstractUdpSocket* socket, const uint8_t* data,
 	return bs;
 }
 
-uint32_t SimGsm::sendSocketData( AbstractTcpSocket* socket, const uint8_t* data, uint16_t size )
+uint32_t SimGsmModem::sendSocketData( AbstractTcpSocket* socket, const uint8_t* data, uint16_t size )
 {
 	if( size == 0 )
 		return 0;
@@ -1325,7 +1245,7 @@ uint32_t SimGsm::sendSocketData( AbstractTcpSocket* socket, const uint8_t* data,
 	return bs;
 }
 
-void SimGsm::closeSocket( AbstractSocket* socket )
+void SimGsmModem::closeSocket( AbstractSocket* socket )
 {
 	CloseRequest req( socket );
 	RequestNode reqNode( &req );
@@ -1338,7 +1258,7 @@ void SimGsm::closeSocket( AbstractSocket* socket )
 	chSysUnlock();
 }
 
-bool SimGsm::serverStart( uint16_t port )
+bool SimGsmModem::serverStart( uint16_t port )
 {
 	ServerRequest req( port );
 	RequestNode reqNode( &req );
@@ -1349,7 +1269,7 @@ bool SimGsm::serverStart( uint16_t port )
 	return server->listening;
 }
 
-void SimGsm::serverStop()
+void SimGsmModem::serverStop()
 {
 	ServerRequest req( 0 );
 	RequestNode reqNode( &req );
@@ -1359,13 +1279,13 @@ void SimGsm::serverStop()
 	chSysUnlock();
 }
 
-void SimGsm::sendCommand( uint32_t len, sysinterval_t timeout )
+void SimGsmModem::sendCommand( uint32_t len, sysinterval_t timeout )
 {
 	chVTSet( &responseTimer, timeout, timeoutCallback, this );
 	send( ( const uint8_t* )str, len, nullptr, 0 );
 }
 
-void SimGsm::send( const uint8_t* dataFirst, uint32_t sizeFirst, const uint8_t* dataSecond, uint32_t sizeSecond )
+void SimGsmModem::send( const uint8_t* dataFirst, uint32_t sizeFirst, const uint8_t* dataSecond, uint32_t sizeSecond )
 {
 	assert( !dataSend[0] && !dataSend[1] );
 
@@ -1402,7 +1322,7 @@ void SimGsm::send( const uint8_t* dataFirst, uint32_t sizeFirst, const uint8_t* 
 	}
 }
 
-void SimGsm::nextSend()
+void SimGsmModem::nextSend()
 {
 	if( dataSend[0] )
 	{
@@ -1436,7 +1356,7 @@ void SimGsm::nextSend()
 	}
 }
 
-void SimGsm::closeAllS()
+void SimGsmModem::closeAllS()
 {
 	if( currentRequest )
 		chBSemResetI( &currentRequest->value->semaphore, false );
@@ -1461,14 +1381,14 @@ void SimGsm::closeAllS()
 	atReq.use = false;
 }
 
-void SimGsm::crash()
+void SimGsmModem::crash()
 {
 	lexicalAnalyzer.setState( 0 );
 	lexicalAnalyzer.setUniversumStateEnabled( false );
 	crashFlag = true;
 }
 
-void SimGsm::shutdown()
+void SimGsmModem::shutdown()
 {
 	ip = IpAddress();
 #ifdef SIMGSM_USE_PWRKEY_PIN
@@ -1496,21 +1416,21 @@ void SimGsm::shutdown()
 #endif
 }
 
-void SimGsm::timeoutCallback( void* p )
+void SimGsmModem::timeoutCallback( void* p )
 {
 	chSysLockFromISR();
-	reinterpret_cast< SimGsm* >( p )->innerEventSource.broadcastFlagsI( InnerEventFlag::TimeoutEventFlag );
+	reinterpret_cast< SimGsmModem* >( p )->innerEventSource.broadcastFlagsI( InnerEventFlag::TimeoutEventFlag );
 	chSysUnlockFromISR();
 }
 
-void SimGsm::modemPingCallback( void* p )
+void SimGsmModem::modemPingCallback( void* p )
 {
 	chSysLockFromISR();
-	reinterpret_cast< SimGsm* >( p )->innerEventSource.broadcastFlagsI( InnerEventFlag::ModemPingEventFlag );
+	reinterpret_cast< SimGsmModem* >( p )->innerEventSource.broadcastFlagsI( InnerEventFlag::ModemPingEventFlag );
 	chSysUnlockFromISR();
 }
 
-int SimGsm::reserveLink()
+int SimGsmModem::reserveLink()
 {
 	for( int i = SIMGSM_SOCKET_LIMIT - 1; i >= 0; --i )
 	{
@@ -1524,12 +1444,12 @@ int SimGsm::reserveLink()
 	return -1;
 }
 
-void SimGsm::dereserveLink( int id )
+void SimGsmModem::dereserveLink( int id )
 {
 	linkDesc[id].reserved = false;
 }
 
-int SimGsm::printCSTT()
+int SimGsmModem::printCSTT()
 {
 	const char* apn = this->apn;
 	memcpy( str, "AT+CSTT=\"", 9 );
@@ -1540,7 +1460,7 @@ int SimGsm::printCSTT()
 	return len + 12;
 }
 
-int SimGsm::printCPIN()
+int SimGsmModem::printCPIN()
 {
 	uint32_t pinCode = this->pinCode;
 	memcpy( str, "AT+CPIN=", 8 );
@@ -1550,7 +1470,7 @@ int SimGsm::printCPIN()
 	return cmd - str;
 }
 
-int SimGsm::printCLPORT( int linkId, uint16_t port )
+int SimGsmModem::printCLPORT( int linkId, uint16_t port )
 {
 	memcpy( str, "AT+CLPORT=0,\"UDP\",", 18 );
 	str[10] = linkId + '0';
@@ -1560,7 +1480,7 @@ int SimGsm::printCLPORT( int linkId, uint16_t port )
 	return cmd - str;
 }
 
-int SimGsm::printCIPCLOSE( int linkId )
+int SimGsmModem::printCIPCLOSE( int linkId )
 {
 	memcpy( str, "AT+CIPCLOSE=0,1\r\n", 17 );
 	str[12] = linkId + '0';
@@ -1568,7 +1488,7 @@ int SimGsm::printCIPCLOSE( int linkId )
 	return 17;
 }
 
-int SimGsm::printCIPUDPMODE2( int linkId, IpAddress addr, uint16_t port )
+int SimGsmModem::printCIPUDPMODE2( int linkId, IpAddress addr, uint16_t port )
 {
 	memcpy( str, "AT+CIPUDPMODE=0,2,\"", 19 );
 	str[14] = linkId + '0';
@@ -1585,7 +1505,7 @@ int SimGsm::printCIPUDPMODE2( int linkId, IpAddress addr, uint16_t port )
 	return cmd - str;
 }
 
-int SimGsm::printCIPSERVER( uint16_t port )
+int SimGsmModem::printCIPSERVER( uint16_t port )
 {
 	if( port )
 	{
@@ -1600,14 +1520,14 @@ int SimGsm::printCIPSERVER( uint16_t port )
 	return 16;
 }
 
-int SimGsm::printAT()
+int SimGsmModem::printAT()
 {
 	memcpy( str, "AT\r\n", 4 );
 
 	return 4;
 }
 
-int SimGsm::printCIPSTART( int linkId, SocketType type, IpAddress addr, uint16_t port )
+int SimGsmModem::printCIPSTART( int linkId, SocketType type, IpAddress addr, uint16_t port )
 {
 	if( type == SocketType::Udp )
 		memcpy( str, "AT+CIPSTART=0,\"UDP\",\"", 21 );
@@ -1627,7 +1547,7 @@ int SimGsm::printCIPSTART( int linkId, SocketType type, IpAddress addr, uint16_t
 	return cmd - str;
 }
 
-int SimGsm::printCIPSEND( int linkId, uint32_t dataSize )
+int SimGsmModem::printCIPSEND( int linkId, uint32_t dataSize )
 {
 	memcpy( str, "AT+CIPSEND=0,", 13 );
 	str[11] = linkId + '0';

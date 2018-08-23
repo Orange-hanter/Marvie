@@ -1,13 +1,13 @@
 #pragma once
 
-#include "SimGsm.h"
+#include "SimGsmModem.h"
 
 class SimGsmSocketBase
 {
-	friend class SimGsm;
+	friend class SimGsmModem;
 
 public:
-	SimGsmSocketBase( SimGsm* simGsm, uint32_t inputBufferSize, uint32_t outputBufferSize );
+	SimGsmSocketBase( SimGsmModem* simGsm, uint32_t inputBufferSize, uint32_t outputBufferSize );
 	~SimGsmSocketBase();
 
 protected:
@@ -16,7 +16,7 @@ protected:
 	void closeHelpS( SocketError error );
 
 protected:
-	SimGsm * gsm;
+	SimGsmModem * gsm;
 	SocketState sState;
 	SocketError sError;
 	EvtSource eSource;
@@ -25,7 +25,7 @@ protected:
 	int linkId;
 	struct SendStruct
 	{
-		SimGsm::SendRequest req;
-		SimGsm::RequestNode node;
+		SimGsmModem::SendRequest req;
+		SimGsmModem::RequestNode node;
 	}* ssend;
 };

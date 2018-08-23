@@ -25,3 +25,15 @@ void operator delete( void *p ) { if( p ) chHeapFree( p ); }
 void operator delete[]( void *p ) { if( p ) chHeapFree( p ); }
 void operator delete( void *p, unsigned int ) { if( p ) chHeapFree( p ); }
 void operator delete[]( void *p, unsigned int ) { if( p ) chHeapFree( p ); }
+
+extern "C"
+{
+	void* malloc( size_t nbytes )
+	{
+		return chHeapAlloc( nullptr, nbytes );
+	}
+	void free( void* ptr )
+	{
+		chHeapFree( ptr );
+	}
+}

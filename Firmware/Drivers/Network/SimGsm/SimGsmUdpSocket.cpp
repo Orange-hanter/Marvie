@@ -6,7 +6,7 @@
 #error "CH_CFG_INTERVALS_SIZE != CH_CFG_TIME_TYPES_SIZE"
 #endif
 
-SimGsmUdpSocket::SimGsmUdpSocket( SimGsm* simGsm, uint32_t inputBufferSize, uint32_t outputBufferSize ) : SimGsmSocketBase( simGsm, inputBufferSize, outputBufferSize )
+SimGsmUdpSocket::SimGsmUdpSocket( SimGsmModem* simGsm, uint32_t inputBufferSize, uint32_t outputBufferSize ) : SimGsmSocketBase( simGsm, inputBufferSize, outputBufferSize )
 {
 	cAddr = rAddr = IpAddress( 0, 0, 0, 0 );
 	cPort = rPort = 0;

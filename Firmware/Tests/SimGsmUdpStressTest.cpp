@@ -1,4 +1,4 @@
-#include "Drivers/Network/SimGsm/SimGsm.h"
+#include "Drivers/Network/SimGsm/SimGsmModem.h"
 #include "Core/Assert.h"
 #include <string.h>
 

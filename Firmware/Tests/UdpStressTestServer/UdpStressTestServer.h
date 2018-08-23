@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Network/UdpSocket.h"
 
 class UdpStressTestServer

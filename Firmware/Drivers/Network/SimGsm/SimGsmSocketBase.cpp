@@ -1,6 +1,6 @@
 #include "SimGsmSocketBase.h"
 
-SimGsmSocketBase::SimGsmSocketBase( SimGsm* simGsm, uint32_t inputBufferSize, uint32_t outputBufferSize ) : inBuffer( inputBufferSize )
+SimGsmSocketBase::SimGsmSocketBase( SimGsmModem* simGsm, uint32_t inputBufferSize, uint32_t outputBufferSize ) : inBuffer( inputBufferSize )
 {
 	gsm = simGsm;
 	if( outputBufferSize )

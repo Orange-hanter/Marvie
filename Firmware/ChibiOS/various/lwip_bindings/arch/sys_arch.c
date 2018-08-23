@@ -66,7 +66,42 @@ void sys_init(void) {
 
 }
 
-err_t sys_sem_new(sys_sem_t *sem, u8_t count) {
+err_t sys_mutex_new( sys_mutex_t *mutex ) {
+	*mutex = chHeapAlloc( NULL, sizeof( mutex_t ) );
+	if( *mutex == 0 ) {
+		SYS_STATS_INC( mutex.err );
+		return ERR_MEM;
+	}
+	else {
+		chMtxObjectInit( *mutex );
+		SYS_STATS_INC_USED( mutex );
+		return ERR_OK;
+	}
+}
+
+void sys_mutex_free( sys_mutex_t *mutex ) {
+	chHeapFree( *mutex );
+	*mutex = SYS_MUTEX_NULL;
+	SYS_STATS_DEC( mutex.used );
+}
+
+void sys_mutex_lock( sys_mutex_t *mutex ) {
+	chMtxLock( *mutex );
+}
+
+void sys_mutex_unlock( sys_mutex_t *mutex ) {
+	chMtxUnlock( *mutex );
+}
+
+int sys_mutex_valid( sys_mutex_t *mutex ) {
+	return *mutex != SYS_MUTEX_NULL;
+}
+
+void sys_mutex_set_invalid( sys_mutex_t *mutex ) {
+	*mutex = SYS_MUTEX_NULL;
+}
+
+err_t sys_sem_new( sys_sem_t *sem, u8_t count ) {
 
   *sem = chHeapAlloc(NULL, sizeof(semaphore_t));
   if (*sem == 0) {
@@ -229,15 +264,31 @@ void sys_arch_unprotect(sys_prot_t pval) {
   osalSysRestoreStatusX((syssts_t)pval);
 }
 
-u32_t sys_now(void) {
+u32_t sys_now( void ) {
+
+	static u32_t timeMs = 0;
+	static systime_t lastSysTime = 0;
+	systime_t dt = osalOsGetSystemTimeX() - lastSysTime;
+	u32_t dtMs;
 
 #if OSAL_ST_FREQUENCY == 1000
-  return (u32_t)osalOsGetSystemTimeX();
-#elif (OSAL_ST_FREQUENCY / 1000) >= 1 && (OSAL_ST_FREQUENCY % 1000) == 0
-  return ((u32_t)osalOsGetSystemTimeX() - 1) / (OSAL_ST_FREQUENCY / 1000) + 1;
-#elif (1000 / OSAL_ST_FREQUENCY) >= 1 && (1000 % OSAL_ST_FREQUENCY) == 0
-  return ((u32_t)osalOsGetSystemTimeX() - 1) * (1000 / OSAL_ST_FREQUENCY) + 1;
+	dtMs = dt;
+#elif ( OSAL_ST_FREQUENCY / 1000 ) >= 1 && ( OSAL_ST_FREQUENCY % 1000 ) == 0
+	dtMs = dt / ( OSAL_ST_FREQUENCY / 1000 );
+	dt = dtMs * ( OSAL_ST_FREQUENCY / 1000 );
+#elif ( 1000 / OSAL_ST_FREQUENCY ) >= 1 && ( 1000 % OSAL_ST_FREQUENCY ) == 0
+	dtMs = dt * ( 1000 / OSAL_ST_FREQUENCY );
+	dt = dtMs / ( 1000 / OSAL_ST_FREQUENCY );
 #else
-  return (u32_t)(((u64_t)(osalOsGetSystemTimeX() - 1) * 1000) / OSAL_ST_FREQUENCY) + 1;
+	dtMs = ( ( u64_t )dt * 1000 ) / OSAL_ST_FREQUENCY;
+	dt = ( ( u64_t )dtMs * OSAL_ST_FREQUENCY ) / 1000;
 #endif
+
+	timeMs += dtMs;
+	lastSysTime += dt;
+	return timeMs;
+}
+
+u32_t sys_jiffies(void) {
+	return sys_now();
 }

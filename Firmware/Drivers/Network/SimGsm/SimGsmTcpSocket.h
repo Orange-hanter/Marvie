@@ -4,8 +4,8 @@
 
 class SimGsmTcpSocket : protected SimGsmSocketBase, public AbstractTcpSocket
 {
-	friend class SimGsm;
-	SimGsmTcpSocket( SimGsm* simGsm, uint32_t inputBufferSize, uint32_t outputBufferSize );
+	friend class SimGsmModem;
+	SimGsmTcpSocket( SimGsmModem* simGsm, uint32_t inputBufferSize, uint32_t outputBufferSize );
 
 public:
 	~SimGsmTcpSocket();

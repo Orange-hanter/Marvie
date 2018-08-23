@@ -1,6 +1,6 @@
 #include "SimGsmTcpServer.h"
 
-SimGsmTcpServer::SimGsmTcpServer( SimGsm* gsm )
+SimGsmTcpServer::SimGsmTcpServer( SimGsmModem* gsm )
 {
 	this->gsm = gsm;
 	sError = SocketError::NoError;

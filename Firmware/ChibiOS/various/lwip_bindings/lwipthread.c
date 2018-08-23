@@ -283,9 +283,6 @@ static THD_FUNCTION(lwip_thread, p) {
 
   chRegSetThreadName(LWIP_THREAD_NAME);
 
-  /* Initializes the thing.*/
-  tcpip_init(NULL, NULL);
-
   /* TCP/IP parameters, runtime or compile time.*/
   if (p) {
     struct lwipthread_opts *opts = p;
@@ -325,15 +322,15 @@ static THD_FUNCTION(lwip_thread, p) {
   macStart(&ETHD1, &mac_config);
 
   /* Add interface. */
-  result = netifapi_netif_add(&thisif, &ip, &netmask, &gateway, NULL, ethernetif_init, tcpip_input);
-  if (result != ERR_OK)
+  LOCK_TCPIP_CORE();
+  if( !netif_add( &thisif, &ip, &netmask, &gateway, NULL, ethernetif_init, tcpip_input ) )
   {
-    chThdSleepMilliseconds(1000);     // Give some time to print any other diagnostics.
-    osalSysHalt("netif_add error");   // Not sure what else we can do if an error occurs here.
+	  chThdSleepMilliseconds( 1000 );     // Give some time to print any other diagnostics.
+	  osalSysHalt( "netif_add error" );   // Not sure what else we can do if an error occurs here.
   };
 
   netif_set_default(&thisif);
-
+  
   switch (addressMode)
   {
 #if LWIP_AUTOIP
@@ -346,6 +343,7 @@ static THD_FUNCTION(lwip_thread, p) {
       netif_set_up(&thisif);
       break;
   }
+  UNLOCK_TCPIP_CORE();
 
   /* Setup event sources.*/
   evtObjectInit(&evt, LWIP_LINK_POLL_INTERVAL);
@@ -364,20 +362,22 @@ static THD_FUNCTION(lwip_thread, p) {
       bool current_link_status = macPollLinkStatus(&ETHD1);
       if (current_link_status != netif_is_link_up(&thisif)) {
         if (current_link_status) {
-          tcpip_callback_with_block((tcpip_callback_fn) netif_set_link_up,
-                                     &thisif, 0);
+			LOCK_TCPIP_CORE();
+			netif_set_link_up( &thisif );
 #if LWIP_DHCP
           if (addressMode == NET_ADDRESS_DHCP)
             dhcp_start(&thisif);
 #endif
+		  UNLOCK_TCPIP_CORE();
         }
         else {
-          tcpip_callback_with_block((tcpip_callback_fn) netif_set_link_down,
-                                     &thisif, 0);
+			LOCK_TCPIP_CORE();
+			netif_set_link_down( &thisif );
 #if LWIP_DHCP
           if (addressMode == NET_ADDRESS_DHCP)
             dhcp_stop(&thisif);
 #endif
+		  UNLOCK_TCPIP_CORE();
         }
       }
     }

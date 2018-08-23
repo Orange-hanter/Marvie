@@ -1125,12 +1125,20 @@
 #define LWIP_NETIF_API                  0
 #endif
 
+ /**
+ * LWIP_NUM_NETIF_CLIENT_DATA: Number of clients that may store
+ * data in client_data member array of struct netif.
+ */
+#ifndef LWIP_NUM_NETIF_CLIENT_DATA
+#define LWIP_NUM_NETIF_CLIENT_DATA      1
+#endif
+
 /**
  * LWIP_NETIF_STATUS_CALLBACK==1: Support a callback function whenever an interface
  * changes its up/down status (i.e., due to DHCP IP acquistion)
  */
 #ifndef LWIP_NETIF_STATUS_CALLBACK
-#define LWIP_NETIF_STATUS_CALLBACK      0
+#define LWIP_NETIF_STATUS_CALLBACK      1
 #endif
 
 /**
@@ -1390,7 +1398,7 @@
  * Don't use it if you're not an active lwIP project member
  */
 #ifndef LWIP_TCPIP_CORE_LOCKING
-#define LWIP_TCPIP_CORE_LOCKING         0
+#define LWIP_TCPIP_CORE_LOCKING         1
 #endif
 
 /**
@@ -1398,7 +1406,7 @@
  * Don't use it if you're not an active lwIP project member
  */
 #ifndef LWIP_TCPIP_CORE_LOCKING_INPUT
-#define LWIP_TCPIP_CORE_LOCKING_INPUT   0
+#define LWIP_TCPIP_CORE_LOCKING_INPUT   1
 #endif
 
 /**
@@ -1625,7 +1633,7 @@
  * PPP_SUPPORT==1: Enable PPP.
  */
 #ifndef PPP_SUPPORT
-#define PPP_SUPPORT                     0
+#define PPP_SUPPORT                     1
 #endif
 
 /**
@@ -1698,6 +1706,13 @@
  */
 #ifndef MD5_SUPPORT
 #define MD5_SUPPORT                     0
+#endif
+
+ /**
+ * PPP_MD5_RANDM==1: Support MD5 random (see also CHAP).
+ */
+#ifndef PPP_MD5_RANDM
+#define PPP_MD5_RANDM                   1
 #endif
 
 /*

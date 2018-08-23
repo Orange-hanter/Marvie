@@ -1,7 +1,12 @@
 #include "TcpServer.h"
 #include "TcpSocket.h"
 #include "LwipSocketPrivate.h"
+#include "lwip/tcpip.h"
 #include "lwip/tcp.h"
+
+#if defined( LWIP_TCPIP_CORE_LOCKING ) && !defined( CH_CFG_USE_MUTEXES_RECURSIVE )
+#error "Need recursive mutexes"
+#endif
 
 BinarySemaphore TcpServer::sem( false );
 netconn* TcpServer::blockCon = nullptr;
@@ -59,8 +64,12 @@ TcpSocket* TcpServer::nextPendingConnection()
 			return nullptr;
 	}
 
+#ifdef LWIP_TCPIP_CORE_LOCKING
+	LOCK_TCPIP_CORE();
+#else
 	tprio_t prio = chThdSetPriority( TCPIP_THREAD_PRIO );
 	chThdYield();
+#endif
 	TcpSocket* tcpSocket;
 	if( newcon->socket == -1 )
 	{
@@ -74,8 +83,12 @@ TcpSocket* TcpServer::nextPendingConnection()
 			tcpSocket->setNetconn( newcon );
 	}
 	else
-		tcpSocket = ( TcpSocket* )newcon->socket;
+		tcpSocket = static_cast< TcpSocket* >( ( LwipSocketPrivate* )newcon->socket );
+#ifdef LWIP_TCPIP_CORE_LOCKING
+	UNLOCK_TCPIP_CORE();
+#else
 	chThdSetPriority( prio );
+#endif
 	newcon = nullptr;
 
 	return tcpSocket;
@@ -130,8 +143,12 @@ void TcpServer::deleteAll()
 	if( !con )
 		return;
 
+#ifdef LWIP_TCPIP_CORE_LOCKING
+	LOCK_TCPIP_CORE();
+#else
 	tprio_t prio = chThdSetPriority( TCPIP_THREAD_PRIO );
 	chThdYield();
+#endif
 
 	con->callback = nullptr;
 	if( newcon )
@@ -143,7 +160,11 @@ void TcpServer::deleteAll()
 			break;
 		deleteNewConP();
 	}
+#ifdef LWIP_TCPIP_CORE_LOCKING
+	UNLOCK_TCPIP_CORE();
+#else
 	chThdSetPriority( prio );
+#endif
 
 	netconn_delete( con );
 	con = nullptr;

@@ -1,14 +1,14 @@
 #pragma once
 
 #include "Network/AbstractTcpServer.h"
-#include "SimGsm.h"
+#include "SimGsmModem.h"
 
-class SimGsm;
+class SimGsmModem;
 
 class SimGsmTcpServer : public AbstractTcpServer
 {
-	friend class SimGsm;
-	SimGsmTcpServer( SimGsm* );
+	friend class SimGsmModem;
+	SimGsmTcpServer( SimGsmModem* );
 	~SimGsmTcpServer();
 
 public:
@@ -28,7 +28,7 @@ private:
 	void closeHelpS( SocketError error );
 
 private:
-	SimGsm * gsm;	
+	SimGsmModem * gsm;	
 	SocketError sError;
 	EvtSource eSource;
 	volatile bool listening;

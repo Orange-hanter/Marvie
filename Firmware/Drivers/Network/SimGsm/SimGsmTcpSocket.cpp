@@ -1,7 +1,7 @@
 #include "SimGsmTcpSocket.h"
 #include "Core/Assert.h"
 
-SimGsmTcpSocket::SimGsmTcpSocket( SimGsm* simGsm, uint32_t inputBufferSize, uint32_t outputBufferSize ) : SimGsmSocketBase( simGsm, inputBufferSize, outputBufferSize )
+SimGsmTcpSocket::SimGsmTcpSocket( SimGsmModem* simGsm, uint32_t inputBufferSize, uint32_t outputBufferSize ) : SimGsmSocketBase( simGsm, inputBufferSize, outputBufferSize )
 {
 
 }
