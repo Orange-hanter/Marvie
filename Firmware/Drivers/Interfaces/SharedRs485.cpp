@@ -6,7 +6,11 @@ SharedRs485::SharedRs485( SharedRs485Control* control, IOPort rePort, IOPort deP
 	this->control = control;
 	reOutput.attach( rePort );
 	deOutput.attach( dePort );
+	disableMode();
 	node.value = this;
+	_baudRate = 115200;
+	_dataFormat = B8N;
+	_stopBits = StopBits::S1;
 }
 
 SharedRs485::~SharedRs485()
@@ -25,6 +29,10 @@ bool SharedRs485::open()
 
 bool SharedRs485::open( uint32_t baudRate, DataFormat dataFormat /*= B8N*/, StopBits stopBits /*= StopBits::S1*/, Mode mode /*= Mode::RxTx*/, FlowControl hardwareFlowControl /*= FlowControl::None */ )
 {
+	_baudRate = baudRate;
+	_dataFormat = dataFormat;
+	_stopBits = stopBits;
+
 	control->sem.wait();
 	volatile bool res = control->usart->open( baudRate, dataFormat, stopBits, mode, hardwareFlowControl );
 	control->sem.signal();
@@ -38,7 +46,7 @@ void SharedRs485::enable()
 	control->sem.waitS();
 	if( control->current )
 		control->current->disableMode();
-	control->current = this;
+	setActive();
 	receiveMode();
 	control->sem.signalI();
 	chSchRescheduleS();
@@ -61,6 +69,8 @@ void SharedRs485::disable()
 
 void SharedRs485::setBaudRate( uint32_t baudRate )
 {
+	_baudRate = baudRate;
+
 	control->sem.wait();
 	control->usart->setBaudRate( baudRate );
 	control->sem.signal();
@@ -68,6 +78,8 @@ void SharedRs485::setBaudRate( uint32_t baudRate )
 
 void SharedRs485::setDataFormat( DataFormat dataFormat )
 {
+	_dataFormat = dataFormat;
+
 	control->sem.wait();
 	control->usart->setDataFormat( dataFormat );
 	control->sem.signal();
@@ -75,6 +87,8 @@ void SharedRs485::setDataFormat( DataFormat dataFormat )
 
 void SharedRs485::setStopBits( StopBits stopBits )
 {
+	_stopBits = stopBits;
+
 	control->sem.wait();
 	control->usart->setStopBits( stopBits );
 	control->sem.signal();
@@ -82,17 +96,17 @@ void SharedRs485::setStopBits( StopBits stopBits )
 
 uint32_t SharedRs485::baudRate()
 {
-	return control->usart->baudRate();
+	return _baudRate;
 }
 
 UsartBasedDevice::DataFormat SharedRs485::dataFormat()
 {
-	return control->usart->dataFormat();
+	return _dataFormat;
 }
 
 UsartBasedDevice::StopBits SharedRs485::stopBits()
 {
-	return control->usart->stopBits();
+	return _stopBits;
 }
 
 bool SharedRs485::isOpen() const
@@ -117,8 +131,6 @@ USART_TypeDef* SharedRs485::base()
 
 uint32_t SharedRs485::write( const uint8_t* data, uint32_t size, sysinterval_t timeout /*= TIME_INFINITE */ )
 {
-	assert( timeout == TIME_INFINITE );
-
 	uint32_t s;
 	EvtListener listener;
 
@@ -128,7 +140,7 @@ uint32_t SharedRs485::write( const uint8_t* data, uint32_t size, sysinterval_t t
 
 	if( control->current )
 		control->current->disableMode();
-	control->current = this;
+	setActive();
 	transmitMode();
 	s = control->usart->write( data, size, TIME_INFINITE );
 	chEvtWaitAny( 1 );
@@ -220,6 +232,14 @@ void SharedRs485::disableMode()
 {
 	reOutput.on();
 	deOutput.off();
+}
+
+void SharedRs485::setActive()
+{
+	control->current = this;
+	control->usart->setBaudRate( _baudRate );
+	control->usart->setDataFormat( _dataFormat );
+	control->usart->setStopBits( _stopBits );
 }
 
 //////////////////////////////////////////////////////////////////////////

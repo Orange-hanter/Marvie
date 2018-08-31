@@ -94,8 +94,6 @@ USART_TypeDef * Rs485::base()
 
 uint32_t Rs485::write( const uint8_t* data, uint32_t size, sysinterval_t timeout )
 {
-	assert( timeout == TIME_INFINITE );
-
 	uint32_t s;
 	EvtListener listener;
 	usart->eventSource()->registerMaskWithFlags( &listener, 1, CHN_TRANSMISSION_END );
@@ -113,6 +111,11 @@ uint32_t Rs485::write( const uint8_t* data, uint32_t size, sysinterval_t timeout
 uint32_t Rs485::read( uint8_t* data, uint32_t size, sysinterval_t timeout )
 {
 	return usart->read( data, size, timeout );
+}
+
+uint32_t Rs485::peek( uint32_t pos, uint8_t* data, uint32_t size )
+{
+	return usart->peek( pos, data, size );
 }
 
 uint32_t Rs485::readAvailable() const

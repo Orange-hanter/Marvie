@@ -2,10 +2,10 @@
 
 #include "Core/NanoList.h"
 #include "Drivers/LogicOutput.h"
-#include "Usart.h"
+#include "AbstractRs485.h"
 
 class SharedRs485Control;
-class SharedRs485 : public UsartBasedDevice
+class SharedRs485 : public AbstractRs485
 {
 	friend class SharedRs485Control;
 	SharedRs485( SharedRs485Control* control, IOPort rePort, IOPort dePort );
@@ -15,8 +15,8 @@ public:
 
 	bool open() final override;
 	bool open( uint32_t baudRate, DataFormat dataFormat = B8N, StopBits stopBits = StopBits::S1, Mode mode = Mode::RxTx, FlowControl hardwareFlowControl = FlowControl::None ) final override;
-	void enable();
-	void disable();
+	void enable() override;
+	void disable() override;
 	void setBaudRate( uint32_t baudRate ) final override;
 	void setDataFormat( DataFormat dataFormat ) final override;
 	void setStopBits( StopBits stopBits ) final override;
@@ -48,11 +48,15 @@ private:
 	inline void receiveMode();
 	inline void transmitMode();
 	inline void disableMode();
+	void setActive();
 
 private:
 	SharedRs485Control* control;
 	LogicOutput reOutput, deOutput;
 	NanoList< SharedRs485* >::Node node;
+	uint32_t _baudRate;
+	DataFormat _dataFormat;
+	StopBits _stopBits;
 };
 
 class SharedRs485Control
