@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="ModbusPotato::CModbusSlave">
+    <Position X="12.75" Y="7" Width="4" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAEIAABAAAAAEAAAAgAAAAAAAAAQAAgAEA=</HashCode>
+      <FileName>Lib\modbus\ModbusSlave.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_handler" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ModbusPotato::IFrameHandler">
+    <Position X="13.25" Y="5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Lib\modbus\ModbusInterface.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ModbusPotato::ISlaveHandler">
+    <Position X="12.75" Y="10.25" Width="5.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAQAAAAAAAAAQAIAAAJAAAAgAAAAAAAACA=</HashCode>
+      <FileName>Lib\modbus\ModbusInterface.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ModbusPotato::CModbusRTU">
+    <Position X="4.75" Y="9.5" Width="7.5" />
+    <NestedTypes>
+      <Enum Name="ModbusPotato::CModbusRTU::__unnamed_enum_1004_1" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Lib\modbus\ModbusRTU.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="ModbusPotato::CModbusRTU::state_type">
+        <TypeIdentifier>
+          <NewMemberFileName>Lib\modbus\ModbusRTU.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACFQAkgAAAAAAAEAMAAAAAQAAgoAAAAAAA=</HashCode>
+      <FileName>Lib\modbus\ModbusRTU.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ModbusPotato::IFramer">
+    <Position X="5.75" Y="3.75" Width="5.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAwAQCAAAEQAEgACAAoUAkAAAACAAAAQhCAAAAQA4=</HashCode>
+      <FileName>Lib\modbus\ModbusInterface.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_handler" />
+      <Field Name="m_stream" />
+      <Field Name="m_timer" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ModbusPotato::IStream">
+    <Position X="13" Y="2" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAAAAAAAACAAAAAAAAAEAAEAAQAAAAAgAAA=</HashCode>
+      <FileName>Lib\modbus\ModbusInterface.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ModbusPotato::ITimeProvider">
+    <Position X="7" Y="1.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIAAAAAAAAAAAIAAIAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Lib\modbus\ModbusInterface.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

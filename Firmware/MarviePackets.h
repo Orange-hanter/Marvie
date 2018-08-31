@@ -4,9 +4,14 @@
 
 namespace MarviePackets
 {
-	enum Type : uint8_t { CpuLoadType, MemoryLoadType, VPortStatusType, GetConfigXmlType, ConfigXmlMissingType, SyncStartType, SyncEndType, ConfigResetType, VPortCountType, DeviceStatusType, SensorErrorReportType, SetDateTimeType, FormatSdCardType, StopVPortsType, StartVPortsType, UpdateAllSensorsType, UpdateOneSensorType };
+	enum Type : uint8_t { FirmwareDescType, CpuLoadType, MemoryLoadType, VPortStatusType, GetConfigXmlType, ConfigXmlMissingType, SyncStartType, SyncEndType, ConfigResetType, VPortCountType, DeviceStatusType, EthernetStatusType, GsmStatusType, ServiceStatisticsType, SensorErrorReportType, SetDateTimeType, EjectSdCardType, FormatSdCardType, StopVPortsType, StartVPortsType, UpdateAllSensorsType, UpdateOneSensorType, RestartDeviceType, AnalogInputsDataType, DigitInputsDataType };
 	enum ComplexChannel { BootloaderChannel, FirmwareChannel, XmlConfigChannel, XmlConfigSyncChannel, SensorDataChannel, SupportedSensorsListChannel };
 
+	struct FirmwareDesc
+	{
+		char coreVersion[15 + 1];
+		char targetName[25 + 1];
+	};
 	struct CpuLoad 
 	{
 		float load;
@@ -47,7 +52,18 @@ namespace MarviePackets
 		enum class ConfigError : uint8_t { NoError, NoConfiglFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorsConfigError } configError;
 		enum class SdCardStatus : uint8_t { NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } sdCardStatus;
 		uint8_t errorSensorId;
-		uint32_t ethernetIp, gsmIp;
+	};
+	struct EthernetStatus
+	{
+		uint32_t ip;
+		uint32_t netmask;
+		uint32_t gateway;
+	};
+	struct GsmStatus
+	{
+		enum class State { Stopped, Initializing, Working, Stopping } state;
+		enum class Error { NoError, AuthenticationError, TimeoutError, UnknownError } error;
+		uint32_t ip;
 	};
 	struct SensorErrorReport 
 	{
@@ -56,5 +72,12 @@ namespace MarviePackets
 		enum class Error : uint8_t { CrcError, NoResponseError } error;
 		uint8_t errorCode;
 		DateTime dateTime;
+	};
+	struct ServiceStatistics
+	{
+		int16_t rawModbusClientsCount;
+		int16_t tcpModbusRtuClientsCount;
+		int16_t tcpModbusAsciiClientsCount;
+		int16_t tcpModbusIpClientsCount;
 	};
 };

@@ -712,6 +712,9 @@
 #ifndef __USFRACT_MIN__
 #define __USFRACT_MIN__ 0.0UHR
 #endif
+#ifndef CHIBIOS
+#define CHIBIOS 1
+#endif
 #ifndef __ULLACCUM_IBIT__
 #define __ULLACCUM_IBIT__ 32
 #endif

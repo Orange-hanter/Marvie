@@ -68,18 +68,34 @@ bool MarvieXmlConfigParsers::parseGsmModemConfig( XMLElement* node, GsmModemConf
 {
 	conf->pinCode = node->IntAttribute( "pinCode", 0 );
 	const char* v;
-	if( node->QueryStringAttribute( "vpn", &v ) == XML_NO_ATTRIBUTE )
+	if( node->QueryStringAttribute( "apn", &v ) == XML_NO_ATTRIBUTE )
 		return false;
 	int len = strlen( v );
 	if( len > 20 )
 		return false;
-	strncpy( conf->vpn, v, len );
-	conf->vpn[len] = 0;
+	strncpy( conf->apn, v, len );
+	conf->apn[len] = 0;
 
 	return true;
 }
 
 bool MarvieXmlConfigParsers::parseModbusRtuSlaveConfig( XMLElement* node, ModbusRtuSlaveConf* conf )
+{
+	const char* v;
+	if( node->QueryStringAttribute( "frameFormat", &v ) == XML_SUCCESS )
+		conf->format = toFrameFormat( v );
+	else
+		conf->format = UsartBasedDevice::B8N;
+	conf->baudrate = node->IntAttribute( "baudrate", 115200 );
+	int addr = node->IntAttribute( "address", -1 );
+	if( addr == -1 )
+		return false;
+	conf->address = ( uint32_t )addr;
+
+	return true;
+}
+
+bool MarvieXmlConfigParsers::parseModbusAsciiSlaveConfig( XMLElement* node, ModbusAsciiSlaveConf* conf )
 {
 	const char* v;
 	if( node->QueryStringAttribute( "frameFormat", &v ) == XML_SUCCESS )
@@ -168,6 +184,14 @@ MarvieXmlConfigParsers::ComPortConf** MarvieXmlConfigParsers::parseComPortsConfi
 				parseResult = parseModbusRtuSlaveConfig( confNode, static_cast< ModbusRtuSlaveConf* >( comPortsConfig[comNum] ) );
 				break;
 			}
+			else if( iAssignment == ComPortAssignment::ModbusAsciiSlave )
+			{
+				if( strcmp( confNode->Name(), "modbusAsciiSlave" ) )
+					continue;
+				comPortsConfig[comNum] = new ModbusAsciiSlaveConf;
+				parseResult = parseModbusAsciiSlaveConfig( confNode, static_cast< ModbusAsciiSlaveConf* >( comPortsConfig[comNum] ) );
+				break;
+			}
 			else if( iAssignment == ComPortAssignment::Multiplexer )
 			{
 				if( strcmp( confNode->Name(), "multiplexer" ) )
@@ -195,9 +219,25 @@ bool MarvieXmlConfigParsers::parseNetworkConfig( XMLElement* networkConfigNode, 
 	if( !networkConfigNode )
 		return false;
 	int port;
-	XMLElement* c0 = networkConfigNode->FirstChildElement( "staticIp" );
-	if( c0 )
-		conf->staticIp = IpAddress( c0->GetText() );
+	XMLElement* c0 = networkConfigNode->FirstChildElement( "ethernet" );
+	if( !c0 )
+		return false;
+	XMLElement* c1 = c0->FirstChildElement( "dhcp" );
+	if( !c1 )
+		return false;
+	conf->ethConf.dhcpEnable = strcmp( c1->GetText(), "enable" ) == 0;
+	c1 = c0->FirstChildElement( "ip" );
+	if( !c1 )
+		return false;
+	conf->ethConf.ip = IpAddress( c1->GetText() );
+	c1 = c0->FirstChildElement( "netmask" );
+	if( !c1 )
+		return false;
+	conf->ethConf.netmask = *( uint32_t* )IpAddress( c1->GetText() ).addr;
+	c1 = c0->FirstChildElement( "gateway" );
+	if( !c1 )
+		return false;
+	conf->ethConf.gateway = IpAddress( c1->GetText() );
 	c0 = networkConfigNode->FirstChildElement( "modbusRtuServer" );
 	if( c0 )
 	{

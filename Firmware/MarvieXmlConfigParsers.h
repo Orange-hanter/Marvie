@@ -10,7 +10,7 @@ namespace MarvieXmlConfigParsers
 {
 	using namespace tinyxml2;
 
-	enum class ComPortAssignment { VPort, GsmModem, ModbusRtuSlave, Multiplexer };
+	enum class ComPortAssignment { VPort, GsmModem, ModbusRtuSlave, ModbusAsciiSlave, Multiplexer };
 
 	struct ComPortConf
 	{
@@ -29,7 +29,13 @@ namespace MarvieXmlConfigParsers
 
 	struct NetworkConf
 	{
-		IpAddress staticIp;
+		struct EthernetConf 
+		{
+			volatile bool dhcpEnable;
+			IpAddress ip;
+			uint32_t netmask;
+			IpAddress gateway;
+		} ethConf;
 		uint16_t modbusRtuServerPort;
 		uint16_t modbusTcpServerPort;
 		uint16_t modbusAsciiServerPort;
@@ -49,12 +55,21 @@ namespace MarvieXmlConfigParsers
 		GsmModemConf() : ComPortConf( ComPortAssignment::GsmModem ) {}
 
 		uint32_t pinCode;
-		char vpn[20 + 1];
+		char apn[20 + 1];
 	};
 
 	struct ModbusRtuSlaveConf : public ComPortConf
 	{
 		ModbusRtuSlaveConf() : ComPortConf( ComPortAssignment::ModbusRtuSlave ) {}
+
+		UsartBasedDevice::DataFormat format;
+		uint32_t baudrate;
+		uint8_t address;
+	};
+
+	struct ModbusAsciiSlaveConf : public ComPortConf
+	{
+		ModbusAsciiSlaveConf() : ComPortConf( ComPortAssignment::ModbusAsciiSlave ) {}
 
 		UsartBasedDevice::DataFormat format;
 		uint32_t baudrate;
@@ -75,6 +90,7 @@ namespace MarvieXmlConfigParsers
 	bool parseVPortOverIpGroup( XMLElement* node, std::vector< VPortOverIpConf >* vPortOverIpList );
 	bool parseGsmModemConfig( XMLElement* node, GsmModemConf* conf );
 	bool parseModbusRtuSlaveConfig( XMLElement* node, ModbusRtuSlaveConf* conf );
+	bool parseModbusAsciiSlaveConfig( XMLElement* node, ModbusAsciiSlaveConf* conf );
 	bool parseMultiplexerConfig( XMLElement* node, MultiplexerConf* conf );
 	ComPortConf** parseComPortsConfig( XMLElement* comPortsConfigNode, const std::list< std::list< ComPortAssignment > >& comPortAssignments );
 	bool parseNetworkConfig( XMLElement* networkConfigNode, NetworkConf* conf );

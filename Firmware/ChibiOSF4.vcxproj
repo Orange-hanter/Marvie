@@ -94,6 +94,7 @@
     <None Include="ChibiOS\common\startup\ARMCMx\compilers\GCC\ld\STM32F407xE.ld" />
     <None Include="ClassDiagram.cd" />
     <None Include="ClassDiagram1.cd" />
+    <None Include="ModbusStack.cd" />
     <None Include="debug.mak" />
     <None Include="Makefile" />
     <None Include="release.mak" />
@@ -107,13 +108,16 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup>
+    <ClCompile Include="Apps\Modbus\ModbusDevice.cpp" />
+    <ClCompile Include="Apps\Modbus\ModbusServer.cpp" />
+    <ClCompile Include="Apps\Modbus\RawModbusServer.cpp" />
+    <ClCompile Include="Apps\Modbus\TcpModbusServer.cpp" />
     <ClCompile Include="board.c" />
     <ClCompile Include="ChibiOS\hal\ports\STM32\LLD\CRCv1\hal_crc_lld.c" />
     <ClCompile Include="ChibiOS\hal\src\hal_community.c" />
     <ClCompile Include="ChibiOS\hal\src\hal_crc.c" />
     <ClCompile Include="ChibiOS\various\crcsw.c" />
     <ClCompile Include="ChibiOS\various\lwip_bindings\arch\sys_arch.c" />
-    <ClCompile Include="ChibiOS\various\lwip_bindings\lwipthread.c" />
     <ClCompile Include="Core\BaseDynamicThread.cpp" />
     <ClCompile Include="Core\ByteRingBuffer.cpp" />
     <ClCompile Include="Core\CCMemoryAllocator.cpp" />
@@ -124,14 +128,17 @@
     <ClCompile Include="Core\NewDelete.cpp" />
     <ClCompile Include="Core\Object.cpp" />
     <ClCompile Include="Core\ObjectMemoryUtilizer.cpp" />
+    <ClCompile Include="Core\RtcBackupRegisters.cpp" />
     <ClCompile Include="Crc32HW.cpp" />
     <ClCompile Include="Drivers\Interfaces\Rs485.cpp" />
     <ClCompile Include="Drivers\Interfaces\SharedRs485.cpp" />
     <ClCompile Include="Drivers\Interfaces\Usart.cpp" />
     <ClCompile Include="Drivers\Interfaces\UsartBasedDevice.cpp" />
     <ClCompile Include="Drivers\LogicOutput.cpp" />
-    <ClCompile Include="Drivers\Network\SimGsm\SimGsm.cpp" />
+    <ClCompile Include="Drivers\Network\Ethernet\EthernetThread.cpp" />
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsmModem.cpp" />
     <ClCompile Include="Drivers\Network\SimGsm\SimGsmATResponseParsers.cpp" />
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsmPppModem.cpp" />
     <ClCompile Include="Drivers\Network\SimGsm\SimGsmSocketBase.cpp" />
     <ClCompile Include="Drivers\Network\SimGsm\SimGsmTcpServer.cpp" />
     <ClCompile Include="Drivers\Network\SimGsm\SimGsmTcpSocket.cpp" />
@@ -142,6 +149,7 @@
     <ClCompile Include="Drivers\Sensors\TestSensorB.cpp" />
     <ClCompile Include="Lib\fatfs\src\ff.c" />
     <ClCompile Include="Lib\fatfs\src\ffunicode.c" />
+    <ClCompile Include="Lib\modbus\ModbusIP.cpp" />
     <ClCompile Include="Lib\sha1\_Sha1.cpp" />
     <ClCompile Include="Lib\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="main.cpp" />
@@ -150,6 +158,8 @@
     <ClCompile Include="MarvieXmlConfigParsers.cpp" />
     <ClCompile Include="MLinkServer.cpp" />
     <ClCompile Include="NetworkSensorReader.cpp" />
+    <ClCompile Include="Network\AbstractPppModem.cpp" />
+    <ClCompile Include="Network\Modem.cpp" />
     <ClCompile Include="Network\AbstractTcpSocket.cpp" />
     <ClCompile Include="Network\AbstractUdpSocket.cpp" />
     <ClCompile Include="Network\IpAddress.cpp" />
@@ -278,6 +288,10 @@
     <ClCompile Include="Tests\SimGsmTcpEchoTest.hpp" />
     <ClCompile Include="Tests\UdpStressTestServer\UdpStressTestServer.cpp" />
     <ClCompile Include="Tests\XmlParserTest.hpp" />
+    <ClInclude Include="Apps\Modbus\ModbusDevice.h" />
+    <ClInclude Include="Apps\Modbus\ModbusServer.h" />
+    <ClInclude Include="Apps\Modbus\RawModbusServer.h" />
+    <ClInclude Include="Apps\Modbus\TcpModbusServer.h" />
     <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\cmsis_armcc.h" />
     <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\cmsis_armclang.h" />
     <ClInclude Include="ChibiOS\common\ext\ARM\CMSIS\Core\Include\cmsis_compiler.h" />
@@ -557,6 +571,10 @@
     <ClCompile Include="Lib\lwip\src\netif\ppp\polarssl\md4.c" />
     <ClCompile Include="Lib\lwip\src\netif\ppp\polarssl\md5.c" />
     <ClCompile Include="Lib\lwip\src\netif\ppp\polarssl\sha1.c" />
+    <ClInclude Include="Core\RtcBackupRegisters.h" />
+    <ClInclude Include="Drivers\Interfaces\AbstractRs485.h" />
+    <ClInclude Include="Drivers\Network\Ethernet\EthernetThread.h" />
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsmPppModem.h" />
     <ClInclude Include="httpd_opts.h" />
     <ClInclude Include="Lib\lwip\src\apps\httpd\fsdata.h" />
     <ClInclude Include="Lib\lwip\src\apps\httpd\httpd_structs.h" />
@@ -692,11 +710,29 @@
     <ClInclude Include="Lib\lwip\src\include\posix\errno.h" />
     <ClInclude Include="Lib\lwip\src\include\posix\netdb.h" />
     <ClInclude Include="Lib\lwip\src\include\posix\sys\socket.h" />
+    <ClInclude Include="Lib\modbus\ModbusIP.h" />
     <ClInclude Include="NetworkSensorReader.h" />
     <ClInclude Include="Network\LwipSocketPrivate.h" />
+    <ClInclude Include="Network\AbstractPppModem.h" />
     <ClInclude Include="Network\TcpServer.h" />
     <ClInclude Include="Network\TcpSocket.h" />
+    <ClInclude Include="Tests\ModbusServerTest.hpp" />
+    <ClInclude Include="Tests\ModbusTest.hpp" />
     <ClInclude Include="Tests\UdpStressTestServer\UdpStressTestServer.h" />
+    <ClCompile Include="Lib\modbus\ModbusASCII.cpp" />
+    <ClCompile Include="Lib\modbus\ModbusMaster.cpp" />
+    <ClCompile Include="Lib\modbus\ModbusMasterHandlerHolding.cpp" />
+    <ClCompile Include="Lib\modbus\ModbusRTU.cpp" />
+    <ClCompile Include="Lib\modbus\ModbusSlave.cpp" />
+    <ClCompile Include="Lib\modbus\ModbusSlaveHandlerHolding.cpp" />
+    <ClInclude Include="Lib\modbus\ModbusASCII.h" />
+    <ClInclude Include="Lib\modbus\ModbusInterface.h" />
+    <ClInclude Include="Lib\modbus\ModbusMaster.h" />
+    <ClInclude Include="Lib\modbus\ModbusMasterHandlerHolding.h" />
+    <ClInclude Include="Lib\modbus\ModbusRTU.h" />
+    <ClInclude Include="Lib\modbus\ModbusSlave.h" />
+    <ClInclude Include="Lib\modbus\ModbusSlaveHandlerHolding.h" />
+    <ClInclude Include="Lib\modbus\ModbusTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="board.h" />
@@ -704,7 +740,6 @@
     <ClInclude Include="ChibiOS\various\lwip_bindings\arch\cc.h" />
     <ClInclude Include="ChibiOS\various\lwip_bindings\arch\perf.h" />
     <ClInclude Include="ChibiOS\various\lwip_bindings\arch\sys_arch.h" />
-    <ClInclude Include="ChibiOS\various\lwip_bindings\lwipthread.h" />
     <ClInclude Include="ChibiOS\various\lwip_bindings\static_lwipopts.h" />
     <ClInclude Include="Core\AbstractByteRingBuffer.h" />
     <ClInclude Include="Core\AbstractReadable.h" />
@@ -734,7 +769,7 @@
     <ClInclude Include="Drivers\Interfaces\Usart.h" />
     <ClInclude Include="Drivers\Interfaces\UsartBasedDevice.h" />
     <ClInclude Include="Drivers\LogicOutput.h" />
-    <ClInclude Include="Drivers\Network\SimGsm\SimGsm.h" />
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsmModem.h" />
     <ClInclude Include="Drivers\Network\SimGsm\SimGsmATResponseParsers.h" />
     <ClInclude Include="Drivers\Network\SimGsm\SimGsmSocketBase.h" />
     <ClInclude Include="Drivers\Network\SimGsm\SimGsmTcpServer.h" />
@@ -761,8 +796,7 @@
     <ClInclude Include="mcuconf_community.h" />
     <ClInclude Include="MarviePackets.h" />
     <ClInclude Include="MLinkServer.h" />
-    <ClInclude Include="Network\AbstractGsmModem.h" />
-    <ClInclude Include="Network\AbstractModem.h" />
+    <ClInclude Include="Network\Modem.h" />
     <ClInclude Include="Network\AbstractSocket.h" />
     <ClInclude Include="Network\AbstractTcpServer.h" />
     <ClInclude Include="Network\AbstractTcpSocket.h" />

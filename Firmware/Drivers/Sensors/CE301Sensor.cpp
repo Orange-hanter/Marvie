@@ -36,8 +36,9 @@ void CE301Sensor::setBaudrate( uint32_t baudrate )
 
 CE301Sensor::Data* CE301Sensor::readData()
 {
-#define returnNoResponse( code ) { data.errType = SensorData::Error::NoResponseError; data.errCode = code; data.t = DateTimeService::currentDateTime(); return &data; }
-#define returnCrcError( code ) { data.errType = SensorData::Error::CrcError; data.errCode = code; data.t = DateTimeService::currentDateTime(); return &data; }
+	io->acquireDevice();
+#define returnNoResponse( code ) { data.errType = SensorData::Error::NoResponseError; data.errCode = code; data.t = DateTimeService::currentDateTime(); io->releseDevice(); return &data; }
+#define returnCrcError( code ) { data.errType = SensorData::Error::CrcError; data.errCode = code; data.t = DateTimeService::currentDateTime(); io->releseDevice(); return &data; }
 
 	if( io->isSerialDevice() )
 	{
@@ -93,6 +94,7 @@ CE301Sensor::Data* CE301Sensor::readData()
 	data.unlock();
 	io->inputBuffer()->read( nullptr, io->readAvailable() );
 
+	io->releseDevice();
 	return &data;
 }
 

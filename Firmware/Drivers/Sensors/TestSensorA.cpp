@@ -53,6 +53,7 @@ TestSensorA::Data* TestSensorA::readData()
 	if( !io )
 		return &data;
 
+	io->acquireDevice();
 	if( io->isSerialDevice() )
 		static_cast< UsartBasedDevice* >( io )->setBaudRate( _baudrate );
 
@@ -80,6 +81,7 @@ TestSensorA::Data* TestSensorA::readData()
 	data.t = DateTimeService::currentDateTime();
 	data.unlock();
 
+	io->releseDevice();
 	return &data;
 }
 

@@ -644,6 +644,30 @@
     <Filter Include="Header files\Tests\UdpStressTestServer">
       <UniqueIdentifier>{063fa441-44db-4c79-b555-65cd535e5a85}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header files\Lib\modbus">
+      <UniqueIdentifier>{d13dbb61-3f9d-4d87-b502-9d3d8d521166}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Lib\modbus">
+      <UniqueIdentifier>{21c4e3d5-17ce-4cfa-be17-d5adf2dfa8e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Apps">
+      <UniqueIdentifier>{6de57f4f-231d-4db9-bf35-c1c5796ce20c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Apps\Modbus">
+      <UniqueIdentifier>{d8a22996-bc86-4803-98b6-13c9bbf92da5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Apps">
+      <UniqueIdentifier>{129eafa6-81b3-4080-9887-f2a1afa0abfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Apps\Modbus">
+      <UniqueIdentifier>{77c99c60-fa17-48f9-bf80-c71d3d0bfc38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Drivers\Network\Ethernet">
+      <UniqueIdentifier>{58c9e868-ca1a-4abf-aba6-562055bef077}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Drivers\Network\Ethernet">
+      <UniqueIdentifier>{bc5ed9f8-5679-4a2d-880e-4afa4639ed59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
@@ -2206,6 +2230,49 @@
     <ClInclude Include="Lib\lwip\src\include\posix\sys\socket.h">
       <Filter>Header files\Lib\lwip\src\include\posix\sys</Filter>
     </ClInclude>
+    <ClCompile Include="Lib\modbus\ModbusASCII.cpp">
+      <Filter>Source files\Lib\modbus</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\modbus\ModbusMaster.cpp">
+      <Filter>Source files\Lib\modbus</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\modbus\ModbusMasterHandlerHolding.cpp">
+      <Filter>Source files\Lib\modbus</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\modbus\ModbusRTU.cpp">
+      <Filter>Source files\Lib\modbus</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\modbus\ModbusSlave.cpp">
+      <Filter>Source files\Lib\modbus</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\modbus\ModbusSlaveHandlerHolding.cpp">
+      <Filter>Source files\Lib\modbus</Filter>
+    </ClCompile>
+    <ClInclude Include="Lib\modbus\ModbusASCII.h">
+      <Filter>Header files\Lib\modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\modbus\ModbusInterface.h">
+      <Filter>Header files\Lib\modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\modbus\ModbusMaster.h">
+      <Filter>Header files\Lib\modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\modbus\ModbusMasterHandlerHolding.h">
+      <Filter>Header files\Lib\modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\modbus\ModbusRTU.h">
+      <Filter>Header files\Lib\modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\modbus\ModbusSlave.h">
+      <Filter>Header files\Lib\modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\modbus\ModbusSlaveHandlerHolding.h">
+      <Filter>Header files\Lib\modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\modbus\ModbusTypes.h">
+      <Filter>Header files\Lib\modbus</Filter>
+    </ClInclude>
+    <None Include="ModbusStack.cd" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="stm32.xml">
@@ -2239,9 +2306,6 @@
     </ClCompile>
     <ClCompile Include="Support\LexicalAnalyzer.cpp">
       <Filter>Source files\Support</Filter>
-    </ClCompile>
-    <ClCompile Include="Drivers\Network\SimGsm\SimGsm.cpp">
-      <Filter>Source files\Drivers\Network\SimGsm</Filter>
     </ClCompile>
     <ClCompile Include="Drivers\Network\SimGsm\SimGsmUdpSocket.cpp">
       <Filter>Source files\Drivers\Network\SimGsm</Filter>
@@ -2363,9 +2427,6 @@
     <ClCompile Include="ChibiOS\various\lwip_bindings\arch\sys_arch.c">
       <Filter>Source files\ChibiOS\various\lwip_bindings\arch</Filter>
     </ClCompile>
-    <ClCompile Include="ChibiOS\various\lwip_bindings\lwipthread.c">
-      <Filter>Source files\ChibiOS\various\lwip_bindings</Filter>
-    </ClCompile>
     <ClCompile Include="Lib\sha1\_Sha1.cpp">
       <Filter>Source files\Lib\sha1</Filter>
     </ClCompile>
@@ -2393,9 +2454,6 @@
     <ClCompile Include="Drivers\Interfaces\UsartBasedDevice.cpp">
       <Filter>Source files\Drivers\Interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="Tests\GsmPPPTest.hpp">
-      <Filter>Source files\Tests</Filter>
-    </ClCompile>
     <ClCompile Include="Tests\LwipEthernetTest.hpp">
       <Filter>Source files\Tests</Filter>
     </ClCompile>
@@ -2416,6 +2474,42 @@
     </ClCompile>
     <ClCompile Include="Tests\XmlParserTest.hpp">
       <Filter>Source files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\modbus\ModbusIP.cpp">
+      <Filter>Source files\Lib\modbus</Filter>
+    </ClCompile>
+    <ClCompile Include="Apps\Modbus\ModbusServer.cpp">
+      <Filter>Source files\Apps\Modbus</Filter>
+    </ClCompile>
+    <ClCompile Include="Apps\Modbus\RawModbusServer.cpp">
+      <Filter>Source files\Apps\Modbus</Filter>
+    </ClCompile>
+    <ClCompile Include="Apps\Modbus\TcpModbusServer.cpp">
+      <Filter>Source files\Apps\Modbus</Filter>
+    </ClCompile>
+    <ClCompile Include="Apps\Modbus\ModbusDevice.cpp">
+      <Filter>Source files\Apps\Modbus</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\GsmPPPTest.hpp">
+      <Filter>Source files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\Modem.cpp">
+      <Filter>Source files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\AbstractPppModem.cpp">
+      <Filter>Source files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsmPppModem.cpp">
+      <Filter>Source files\Drivers\Network\SimGsm</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Network\SimGsm\SimGsmModem.cpp">
+      <Filter>Source files\Drivers\Network\SimGsm</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Network\Ethernet\EthernetThread.cpp">
+      <Filter>Source files\Drivers\Network\Ethernet</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\RtcBackupRegisters.cpp">
+      <Filter>Source files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2452,9 +2546,6 @@
     <ClInclude Include="Drivers\Interfaces\UsartBasedDevice.h">
       <Filter>Header files\Drivers\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="Network\AbstractModem.h">
-      <Filter>Header files\Network</Filter>
-    </ClInclude>
     <ClInclude Include="Network\AbstractSocket.h">
       <Filter>Header files\Network</Filter>
     </ClInclude>
@@ -2476,9 +2567,6 @@
     <ClInclude Include="Core\AbstractWritable.h">
       <Filter>Header files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Network\AbstractGsmModem.h">
-      <Filter>Header files\Network</Filter>
-    </ClInclude>
     <ClInclude Include="Drivers\Network\SimGsm\SimGsmATResponseParsers.h">
       <Filter>Header files\Drivers\Network\SimGsm</Filter>
     </ClInclude>
@@ -2495,9 +2583,6 @@
       <Filter>Header files\Drivers\Network\SimGsm</Filter>
     </ClInclude>
     <ClInclude Include="Drivers\Network\SimGsm\SimGsmUdpSocket.h">
-      <Filter>Header files\Drivers\Network\SimGsm</Filter>
-    </ClInclude>
-    <ClInclude Include="Drivers\Network\SimGsm\SimGsm.h">
       <Filter>Header files\Drivers\Network\SimGsm</Filter>
     </ClInclude>
     <ClInclude Include="Core\NanoList.h">
@@ -2608,9 +2693,6 @@
     <ClInclude Include="Core\Concurrent.h">
       <Filter>Header files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="MarvieXmlConfigParsers.h">
-      <Filter>Header files\ChibiOS</Filter>
-    </ClInclude>
     <ClInclude Include="MarviePlatform.h">
       <Filter>Header files</Filter>
     </ClInclude>
@@ -2634,9 +2716,6 @@
     </ClInclude>
     <ClInclude Include="Drivers\Sensors\TestSensorB.h">
       <Filter>Header files\Drivers\Sensors</Filter>
-    </ClInclude>
-    <ClInclude Include="ChibiOS\various\lwip_bindings\lwipthread.h">
-      <Filter>Header files\ChibiOS\various\lwip_bindings</Filter>
     </ClInclude>
     <ClInclude Include="ChibiOS\various\lwip_bindings\static_lwipopts.h">
       <Filter>Header files\ChibiOS\various\lwip_bindings</Filter>
@@ -2676,6 +2755,51 @@
     </ClInclude>
     <ClInclude Include="NetworkSensorReader.h">
       <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests\ModbusTest.hpp">
+      <Filter>Source files\Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\modbus\ModbusIP.h">
+      <Filter>Header files\Lib\modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests\ModbusServerTest.hpp">
+      <Filter>Source files\Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="Apps\Modbus\ModbusDevice.h">
+      <Filter>Header files\Apps\Modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="Apps\Modbus\ModbusServer.h">
+      <Filter>Header files\Apps\Modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="Apps\Modbus\RawModbusServer.h">
+      <Filter>Header files\Apps\Modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\Modem.h">
+      <Filter>Header files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\AbstractPppModem.h">
+      <Filter>Header files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsmPppModem.h">
+      <Filter>Header files\Drivers\Network\SimGsm</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Network\SimGsm\SimGsmModem.h">
+      <Filter>Header files\Drivers\Network\SimGsm</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Network\Ethernet\EthernetThread.h">
+      <Filter>Header files\Drivers\Network\Ethernet</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\RtcBackupRegisters.h">
+      <Filter>Header files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Apps\Modbus\TcpModbusServer.h">
+      <Filter>Header files\Apps\Modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="MarvieXmlConfigParsers.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Interfaces\AbstractRs485.h">
+      <Filter>Header files\Drivers\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

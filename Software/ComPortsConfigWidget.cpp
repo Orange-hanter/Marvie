@@ -119,13 +119,14 @@ void ComPortsConfigWidget::setRelatedParameters( unsigned int id, const QVector<
 		findChild< QComboBox* >( QString( "%1.baudrate" ).arg( id ) )->setCurrentText( QString( "%1" ).arg( values[1].toInt() ) );
 		break;
 	case ComPortsConfigWidget::Assignment::ModbusRtuSlave:
+	case ComPortsConfigWidget::Assignment::ModbusAsciiSlave:
 		findChild< QComboBox* >( QString( "%1.format" ).arg( id ) )->setCurrentText( values[0].toString() );
 		findChild< QComboBox* >( QString( "%1.baudrate" ).arg( id ) )->setCurrentText( QString( "%1" ).arg( values[1].toInt() ) );
 		findChild< QSpinBox* >( QString( "%1.address" ).arg( id ) )->setValue( values[2].toInt() );
 		break;
 	case ComPortsConfigWidget::Assignment::GsmModem:
 		findChild< QLineEdit* >( QString( "%1.pinCode" ).arg( id ) )->setText( values[0].toString() );
-		findChild< QLineEdit* >( QString( "%1.vpn" ).arg( id ) )->setText( values[1].toString() );
+		findChild< QLineEdit* >( QString( "%1.apn" ).arg( id ) )->setText( values[1].toString() );
 		break;
 	case ComPortsConfigWidget::Assignment::Multiplexer:
 		for( int i = 0; i < 5; ++i )
@@ -160,13 +161,14 @@ QVector< QVariant > ComPortsConfigWidget::relatedParameters( unsigned int id )
 		prms.append( findChild< QComboBox* >( QString( "%1.baudrate" ).arg( id ) )->currentText().toInt() );
 		break;
 	case ComPortsConfigWidget::Assignment::ModbusRtuSlave:
+	case ComPortsConfigWidget::Assignment::ModbusAsciiSlave:
 		prms.append( findChild< QComboBox* >( QString( "%1.format" ).arg( id ) )->currentText() );
 		prms.append( findChild< QComboBox* >( QString( "%1.baudrate" ).arg( id ) )->currentText().toInt() );
 		prms.append( findChild< QSpinBox* >( QString( "%1.address" ).arg( id ) )->value() );
 		break;
 	case ComPortsConfigWidget::Assignment::GsmModem:
 		prms.append( findChild< QLineEdit* >( QString( "%1.pinCode" ).arg( id ) )->text() );
-		prms.append( findChild< QLineEdit* >( QString( "%1.vpn" ).arg( id ) )->text() );
+		prms.append( findChild< QLineEdit* >( QString( "%1.apn" ).arg( id ) )->text() );
 		break;
 	case ComPortsConfigWidget::Assignment::Multiplexer:
 		for( int i = 0; i < 5; ++i )
@@ -190,6 +192,8 @@ QString ComPortsConfigWidget::toString( Assignment a )
 		return "VPort";
 	case ComPortsConfigWidget::Assignment::ModbusRtuSlave:
 		return "ModbusRtuSlave";
+	case ComPortsConfigWidget::Assignment::ModbusAsciiSlave:
+		return "ModbusAsciiSlave";
 	case ComPortsConfigWidget::Assignment::GsmModem:
 		return "GsmModem";
 	case ComPortsConfigWidget::Assignment::Multiplexer:
@@ -205,6 +209,8 @@ ComPortsConfigWidget::Assignment ComPortsConfigWidget::toAssignment( QString s )
 		return Assignment::VPort;
 	else if( s == "ModbusRtuSlave" )
 		return Assignment::ModbusRtuSlave;
+	else if( s == "ModbusAsciiSlave" )
+		return Assignment::ModbusAsciiSlave;
 	else if( s == "GsmModem" )
 		return Assignment::GsmModem;
 	else if( s == "Multiplexer" )
@@ -239,6 +245,7 @@ void ComPortsConfigWidget::addContent( unsigned int id, QHBoxLayout* layout, Ass
 		break;
 	}
 	case ComPortsConfigWidget::Assignment::ModbusRtuSlave:
+	case ComPortsConfigWidget::Assignment::ModbusAsciiSlave:
 	{
 		layout->addWidget( new QLabel( "Format" ) );
 		QComboBox* comboBox = new QComboBox;
@@ -276,9 +283,9 @@ void ComPortsConfigWidget::addContent( unsigned int id, QHBoxLayout* layout, Ass
 		QObject::connect( edit, &QLineEdit::textChanged, this, &ComPortsConfigWidget::relatedParameterChanged );
 		layout->addWidget( edit );
 
-		layout->addWidget( new QLabel( "VPN" ) );
+		layout->addWidget( new QLabel( "APN" ) );
 		edit = new QLineEdit;
-		edit->setObjectName( QString( "%1.vpn" ).arg( id ) );
+		edit->setObjectName( QString( "%1.apn" ).arg( id ) );
 		QObject::connect( edit, &QLineEdit::textChanged, this, &ComPortsConfigWidget::relatedParameterChanged );
 		layout->addWidget( edit );
 

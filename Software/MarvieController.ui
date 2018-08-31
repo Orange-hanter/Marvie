@@ -1440,6 +1440,61 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 </spacer>
                </item>
                <item>
+                <layout class="QVBoxLayout" name="verticalLayout_23">
+                 <item>
+                  <widget class="QToolButton" name="deviceRestartButton">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>25</width>
+                     <height>25</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>25</width>
+                     <height>25</height>
+                    </size>
+                   </property>
+                   <property name="toolTip">
+                    <string>Restart device</string>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="MarvieController.qrc">
+                     <normaloff>:/MarvieController/icons/icons8-shutdown-52.png</normaloff>:/MarvieController/icons/icons8-shutdown-52.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>25</width>
+                     <height>25</height>
+                    </size>
+                   </property>
+                   <property name="autoRaise">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="verticalSpacer_13">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+               <item>
                 <layout class="QVBoxLayout" name="verticalLayout_18">
                  <item>
                   <widget class="QToolButton" name="startVPortsButton">
@@ -1587,7 +1642,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
              <property name="geometry">
               <rect>
                <x>10</x>
-               <y>210</y>
+               <y>250</y>
                <width>331</width>
                <height>27</height>
               </rect>
@@ -1669,7 +1724,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                <x>0</x>
                <y>0</y>
                <width>351</width>
-               <height>201</height>
+               <height>241</height>
               </rect>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_33">
@@ -1889,7 +1944,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                        </widget>
                       </item>
                       <item>
-                       <widget class="QToolButton" name="formatSdCardButton">
+                       <widget class="QToolButton" name="sdCardMenuButton">
                         <property name="enabled">
                          <bool>true</bool>
                         </property>
@@ -1913,7 +1968,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                         </property>
                         <property name="icon">
                          <iconset resource="MarvieController.qrc">
-                          <normaloff>:/MarvieController/icons/icons8-eraser-60.png</normaloff>:/MarvieController/icons/icons8-eraser-60.png</iconset>
+                          <normaloff>:/MarvieController/icons/icons8-down-button-48.png</normaloff>:/MarvieController/icons/icons8-down-button-48.png</iconset>
                         </property>
                         <property name="iconSize">
                          <size>
@@ -1944,17 +1999,193 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                       </item>
                      </layout>
                     </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_17">
+                  <property name="text">
+                   <string>Ethernet status:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_43">
+                  <property name="spacing">
+                   <number>6</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>1</number>
+                  </property>
+                  <item>
+                   <widget class="QWidget" name="widget_9" native="true">
+                    <property name="minimumSize">
+                     <size>
+                      <width>3</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>3</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="palette">
+                     <palette>
+                      <active>
+                       <colorrole role="Base">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>255</red>
+                          <green>255</green>
+                          <blue>255</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Window">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>255</red>
+                          <green>201</green>
+                          <blue>14</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                      </active>
+                      <inactive>
+                       <colorrole role="Base">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>255</red>
+                          <green>255</green>
+                          <blue>255</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Window">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>255</red>
+                          <green>201</green>
+                          <blue>14</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                      </inactive>
+                      <disabled>
+                       <colorrole role="Base">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>255</red>
+                          <green>201</green>
+                          <blue>14</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Window">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>255</red>
+                          <green>201</green>
+                          <blue>14</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                      </disabled>
+                     </palette>
+                    </property>
+                    <property name="autoFillBackground">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_22">
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_9">
+                     <layout class="QHBoxLayout" name="horizontalLayout_47">
                       <item>
                        <widget class="QLabel" name="lanIpLabel">
+                        <property name="minimumSize">
+                         <size>
+                          <width>47</width>
+                          <height>0</height>
+                         </size>
+                        </property>
                         <property name="text">
-                         <string>LAN IP: 0.0.0.0</string>
+                         <string>IP: 0.0.0.0</string>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <spacer name="horizontalSpacer_5">
+                       <spacer name="horizontalSpacer_41">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Expanding</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>5</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_48">
+                      <item>
+                       <widget class="QLabel" name="lanNetmaskLabel">
+                        <property name="minimumSize">
+                         <size>
+                          <width>47</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="text">
+                         <string>Netmask: 0.0.0.0</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_42">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Expanding</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>5</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_49">
+                      <item>
+                       <widget class="QLabel" name="lanGatewayLabel">
+                        <property name="minimumSize">
+                         <size>
+                          <width>47</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="text">
+                         <string>Gateway: 255.255.255.255</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_43">
                         <property name="orientation">
                          <enum>Qt::Horizontal</enum>
                         </property>
@@ -2248,16 +2479,16 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                   <item>
                    <layout class="QVBoxLayout" name="verticalLayout_21">
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_35">
+                     <layout class="QHBoxLayout" name="horizontalLayout_36">
                       <item>
-                       <widget class="QLabel" name="modbusRtuStatusLabel">
+                       <widget class="QLabel" name="modbusTcpStatusLabel">
                         <property name="text">
-                         <string>ModbusRTU: unknown</string>
+                         <string>ModbusTCP: unknown</string>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <spacer name="horizontalSpacer_30">
+                       <spacer name="horizontalSpacer_31">
                         <property name="orientation">
                          <enum>Qt::Horizontal</enum>
                         </property>
@@ -2272,16 +2503,16 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                      </layout>
                     </item>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_36">
+                     <layout class="QHBoxLayout" name="horizontalLayout_35">
                       <item>
-                       <widget class="QLabel" name="modbusTcpStatusLabel">
+                       <widget class="QLabel" name="modbusRtuStatusLabel">
                         <property name="text">
-                         <string>ModbusTCP: unknown</string>
+                         <string>ModbusRTU: unknown</string>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <spacer name="horizontalSpacer_31">
+                       <spacer name="horizontalSpacer_30">
                         <property name="orientation">
                          <enum>Qt::Horizontal</enum>
                         </property>
@@ -2484,7 +2715,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
         <widget class="QWidget" name="widget_8" native="true">
          <property name="minimumSize">
           <size>
-           <width>113</width>
+           <width>116</width>
            <height>0</height>
           </size>
          </property>
@@ -2958,7 +3189,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <x>0</x>
                 <y>0</y>
                 <width>227</width>
-                <height>380</height>
+                <height>458</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -3042,28 +3273,16 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                         <number>0</number>
                        </property>
                        <item>
-                        <widget class="QCheckBox" name="staticIpCheckBox">
-                         <property name="minimumSize">
-                          <size>
-                           <width>90</width>
-                           <height>0</height>
-                          </size>
-                         </property>
+                        <widget class="QRadioButton" name="staticIpRadioButton">
                          <property name="text">
                           <string>Static IP</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QLineEdit" name="staticIpLineEdit">
-                         <property name="maximumSize">
-                          <size>
-                           <width>110</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
+                        <widget class="QRadioButton" name="dhcpRadioButton">
                          <property name="text">
-                          <string>192.168.1.2</string>
+                          <string>DHCP</string>
                          </property>
                         </widget>
                        </item>
@@ -3084,8 +3303,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                      </widget>
                     </item>
                     <item>
-                     <widget class="QWidget" name="gsmModbusRtuGroupWidget_2" native="true">
-                      <layout class="QHBoxLayout" name="horizontalLayout_13">
+                     <widget class="QWidget" name="gsmModbusAsciiGroupWidget_4" native="true">
+                      <layout class="QHBoxLayout" name="horizontalLayout_38">
                        <property name="leftMargin">
                         <number>0</number>
                        </property>
@@ -3099,40 +3318,147 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                         <number>0</number>
                        </property>
                        <item>
-                        <widget class="QCheckBox" name="modbusRtuCheckBox">
+                        <widget class="QLabel" name="label_3">
                          <property name="minimumSize">
                           <size>
-                           <width>90</width>
+                           <width>50</width>
                            <height>0</height>
                           </size>
                          </property>
                          <property name="text">
-                          <string>ModbusRTU</string>
+                          <string>IP</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QLabel" name="label_9">
+                        <widget class="QLineEdit" name="staticIpLineEdit">
+                         <property name="maximumSize">
+                          <size>
+                           <width>100</width>
+                           <height>16777215</height>
+                          </size>
+                         </property>
                          <property name="text">
-                          <string>port</string>
+                          <string>192.168.1.2</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QSpinBox" name="modbusRtuSpinBox">
-                         <property name="minimum">
-                          <number>1</number>
+                        <spacer name="horizontalSpacer_33">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
                          </property>
-                         <property name="maximum">
-                          <number>65535</number>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
                          </property>
-                         <property name="value">
-                          <number>502</number>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QWidget" name="gsmModbusAsciiGroupWidget_6" native="true">
+                      <layout class="QHBoxLayout" name="horizontalLayout_40">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QLabel" name="label_18">
+                         <property name="minimumSize">
+                          <size>
+                           <width>50</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string>Netmask</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <spacer name="horizontalSpacer_9">
+                        <widget class="QLineEdit" name="netmaskLineEdit">
+                         <property name="maximumSize">
+                          <size>
+                           <width>100</width>
+                           <height>16777215</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string>255.255.255.0</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_35">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QWidget" name="gsmModbusAsciiGroupWidget_5" native="true">
+                      <layout class="QHBoxLayout" name="horizontalLayout_39">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QLabel" name="label_7">
+                         <property name="minimumSize">
+                          <size>
+                           <width>50</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string>Gateway</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLineEdit" name="gatewayLineEdit">
+                         <property name="maximumSize">
+                          <size>
+                           <width>100</width>
+                           <height>16777215</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string>192.168.1.1</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_34">
                          <property name="orientation">
                           <enum>Qt::Horizontal</enum>
                          </property>
@@ -3191,12 +3517,76 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                           <number>65535</number>
                          </property>
                          <property name="value">
-                          <number>503</number>
+                          <number>502</number>
                          </property>
                         </widget>
                        </item>
                        <item>
                         <spacer name="horizontalSpacer_10">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QWidget" name="gsmModbusRtuGroupWidget_2" native="true">
+                      <layout class="QHBoxLayout" name="horizontalLayout_13">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QCheckBox" name="modbusRtuCheckBox">
+                         <property name="minimumSize">
+                          <size>
+                           <width>90</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string>ModbusRTU</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="label_9">
+                         <property name="text">
+                          <string>port</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QSpinBox" name="modbusRtuSpinBox">
+                         <property name="minimum">
+                          <number>1</number>
+                         </property>
+                         <property name="maximum">
+                          <number>65535</number>
+                         </property>
+                         <property name="value">
+                          <number>503</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_9">
                          <property name="orientation">
                           <enum>Qt::Horizontal</enum>
                          </property>

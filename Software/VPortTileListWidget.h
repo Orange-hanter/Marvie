@@ -15,5 +15,5 @@ public:
 	VPortTileWidget* tile( uint index );
 
 private:
-	QVBoxLayout * layout;
+	QVBoxLayout* layout;
 };

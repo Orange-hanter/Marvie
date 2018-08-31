@@ -39,12 +39,15 @@ private slots:
 	void nextInterfaceButtonClicked();
 	void connectButtonClicked();
 
+	void deviceRestartButtonClicked();
 	void startVPortsButtonClicked();
 	void stopVPortsButtonClicked();
 	void updateAllSensorsButtonClicked();
 	void updateSensorButtonClicked();
 	void syncDateTimeButtonClicked();
-	void formatSdCardButtonClicked();
+	void sdCardMenuButtonClicked();
+
+	void sdCardMenuActionTriggered( QAction* action );
 
 	void monitoringDataViewMenuRequested( const QPoint& point );
 	void monitoringDataViewMenuActionTriggered( QAction* action );
@@ -93,7 +96,10 @@ private:
 	void updateDeviceMemoryLoad( const MarviePackets::MemoryLoad* memoryLoad );
 	void resetDeviceLoad();
 	void updateDeviceStatus( const MarviePackets::DeviceStatus* );
-	void resetDeviceStatus();
+	void updateEthernetStatus( const MarviePackets::EthernetStatus* );
+	void updateGsmStatus( const MarviePackets::GsmStatus* );
+	void updateServiceStatistics( const MarviePackets::ServiceStatistics* );
+	void resetDeviceInfo();
 
 	void updateSensorData( uint id, QString sensorName, const uint8_t* data );
 	void attachSensorRelatedMonitoringDataItems( MonitoringDataItem* sensorItem, QString sensorName );
@@ -219,6 +225,8 @@ private:
 		QLabel* ccMemLargestLabel;
 	}*memStat;
 
+	QMenu* sdCardMenu;
+
 	MonitoringDataModel monitoringDataModel;
 	QMenu* monitoringDataViewMenu;
 
@@ -231,6 +239,7 @@ private:
 
 	QVector< QString > deviceVPorts, deviceSensors, deviceSupportedSensors;
 	enum class DeviceState { Unknown, IncorrectConfiguration, Working, Reconfiguration } deviceState;
+	enum class SdCardStatus : uint8_t { Unknown, NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } deviceSdCardStatus;
 
 	Ui::MarvieControllerClass ui;
 };

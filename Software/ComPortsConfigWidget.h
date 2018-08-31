@@ -9,7 +9,7 @@ class ComPortsConfigWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	enum class Assignment { None, VPort, ModbusRtuSlave, GsmModem, Multiplexer };
+	enum class Assignment { None, VPort, ModbusRtuSlave, ModbusAsciiSlave, GsmModem, Multiplexer };
 
 	ComPortsConfigWidget( QWidget* parent = nullptr );
 	~ComPortsConfigWidget();
