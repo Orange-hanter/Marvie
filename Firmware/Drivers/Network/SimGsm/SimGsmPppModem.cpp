@@ -59,7 +59,7 @@ SimGsmPppModem::~SimGsmPppModem()
 
 bool SimGsmPppModem::startModem( tprio_t prio /*= NORMALPRIO */ )
 {
-	if( apn == nullptr )
+	if( mApn == nullptr )
 		return false;
 	return AbstractPppModem::startModem( prio );
 }
@@ -345,7 +345,7 @@ void SimGsmPppModem::lexicalAnalyzerCallback( LexicalAnalyzer::ParsingResult* re
 
 int SimGsmPppModem::printCPIN( char* str )
 {
-	uint32_t pinCode = this->pinCode;
+	uint32_t pinCode = this->mPinCode;
 	memcpy( str, "AT+CPIN=", 8 );
 	char* cmd = Utility::printInt( str + 8, pinCode );
 	*cmd++ = '\r', *cmd++ = '\n';
@@ -355,7 +355,7 @@ int SimGsmPppModem::printCPIN( char* str )
 
 int SimGsmPppModem::printCGDCONT( char* str )
 {
-	const char* apn = this->apn;
+	const char* apn = this->mApn;
 	memcpy( str, "AT+CGDCONT=1,\"IP\",\"", 19 );
 	size_t len = strlen( apn );
 	memcpy( str + 19, apn, len );

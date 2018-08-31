@@ -97,14 +97,25 @@ EthernetThread::LinkStatus EthernetThread::linkStatus()
 
 IpAddress EthernetThread::networkAddress()
 {
-	chSysLock();
+	syssts_t sysStatus = chSysGetStatusAndLockX();
 	if( linkStatus() == LinkStatus::Down )
 	{
-		chSysUnlock();
+		chSysRestoreStatusX( sysStatus );
 		return IpAddress();
 	}
 	uint32_t addr = PP_HTONL( thisif.ip_addr.addr );
-	chSysUnlock();
+	chSysRestoreStatusX( sysStatus );
+	return IpAddress( addr );
+}
+
+uint32_t EthernetThread::networkMask()
+{
+	return PP_HTONL( thisif.netmask.addr );
+}
+
+IpAddress EthernetThread::networkGateway()
+{
+	uint32_t addr = PP_HTONL( thisif.gw.addr );
 	return IpAddress( addr );
 }
 
@@ -246,6 +257,7 @@ End:
 	chSysLock();
 	eSource.broadcastFlagsI( StateChanged );
 	started = false;
+	exitS( MSG_OK );
 }
 
 void EthernetThread::lowLevelInit( netif *netif )

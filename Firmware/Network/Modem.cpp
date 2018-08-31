@@ -7,8 +7,8 @@ Modem::Modem( uint32_t stackSize ) : BaseDynamicThread( stackSize )
 	chThdQueueObjectInit( &waitingQueue );
 	usart = nullptr;
 
-	pinCode = 1111;
-	apn = nullptr;
+	mPinCode = 1111;
+	mApn = "";
 }
 
 Modem::~Modem()
@@ -79,12 +79,22 @@ IpAddress Modem::networkAddress()
 
 void Modem::setPinCode( uint32_t pinCode )
 {
-	this->pinCode = pinCode;
+	this->mPinCode = pinCode;
 }
 
 void Modem::setApn( const char* apn )
 {
-	this->apn = apn;
+	this->mApn = apn;
+}
+
+uint32_t Modem::pinCode()
+{
+	return mPinCode;
+}
+
+const char* Modem::apn()
+{
+	return mApn;
 }
 
 AbstractTcpServer* Modem::tcpServer( uint32_t index )

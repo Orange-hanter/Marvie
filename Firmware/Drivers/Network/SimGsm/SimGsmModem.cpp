@@ -290,7 +290,7 @@ Reinit:
 
 SimGsmModem::InitResult SimGsmModem::reinit()
 {
-	if( apn == nullptr || usart == nullptr )
+	if( mApn == nullptr || usart == nullptr )
 		return InitResult::Fail;
 
 #ifdef SIMGSM_USE_PWRKEY_PIN
@@ -1451,7 +1451,7 @@ void SimGsmModem::dereserveLink( int id )
 
 int SimGsmModem::printCSTT()
 {
-	const char* apn = this->apn;
+	const char* apn = this->mApn;
 	memcpy( str, "AT+CSTT=\"", 9 );
 	size_t len = strlen( apn );
 	memcpy( str + 9, apn, len );
@@ -1462,7 +1462,7 @@ int SimGsmModem::printCSTT()
 
 int SimGsmModem::printCPIN()
 {
-	uint32_t pinCode = this->pinCode;
+	uint32_t pinCode = this->mPinCode;
 	memcpy( str, "AT+CPIN=", 8 );
 	char* cmd = Utility::printInt( str + 8, pinCode );
 	*cmd++ = '\r', *cmd++ = '\n';

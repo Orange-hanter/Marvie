@@ -10,7 +10,7 @@ enum class ModemState { Stopped, Initializing, Working, Stopping };
 enum class ModemError { NoError, AuthenticationError, TimeoutError, UnknownError };
 enum class ModemEvent { Error = 1, StatusChanged = 2, NetworkAddressChanged = 4 };
 
-class Modem : public BaseDynamicThread
+class Modem : protected BaseDynamicThread
 {
 public:
 	Modem( uint32_t stackSize );
@@ -26,6 +26,8 @@ public:
 
 	void setPinCode( uint32_t pinCode );
 	void setApn( const char* apn );
+	uint32_t pinCode();
+	const char* apn();
 
 	virtual AbstractTcpServer* tcpServer( uint32_t index );
 
@@ -72,6 +74,6 @@ protected:
 	threads_queue_t waitingQueue;
 	Usart* usart;
 
-	uint32_t pinCode;
-	const char* apn;
+	uint32_t mPinCode;
+	const char* mApn;
 };

@@ -21,6 +21,7 @@ AbstractPppModem::~AbstractPppModem()
 	stopModem();
 	waitForStateChange();
 	LOCK_TCPIP_CORE();
+	pppPcb->ctx_cb = nullptr;
 	ppp_free( pppPcb );
 	netif_remove( &pppNetif );
 	UNLOCK_TCPIP_CORE();
@@ -147,6 +148,8 @@ End:
 
 u32_t AbstractPppModem::outputCallback( ppp_pcb *pcb, u8_t *data, u32_t len, void *ctx )
 {
+	if( ctx == nullptr )
+		return 0;
 	AbstractPppModem* modem = ( AbstractPppModem* )ctx;
 	return modem->usart->write( data, len, TIME_IMMEDIATE );
 }

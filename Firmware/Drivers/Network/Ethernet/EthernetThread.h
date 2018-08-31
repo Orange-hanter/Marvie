@@ -5,7 +5,7 @@
 #include <lwip/netifapi.h>
 #include "hal.h"
 
-class EthernetThread : public BaseDynamicThread
+class EthernetThread : private BaseDynamicThread
 {
 	EthernetThread();
 	~EthernetThread();
@@ -35,6 +35,8 @@ public:
 
 	LinkStatus linkStatus();
 	IpAddress networkAddress();
+	uint32_t networkMask();
+	IpAddress networkGateway();
 	void setAsDefault();
 
 	EvtSource* eventSource();
