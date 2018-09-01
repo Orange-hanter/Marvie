@@ -1,9 +1,10 @@
 #pragma once
 
 #include <QWidget>
+#include <QBoxLayout>
+#include <QMap>
 #include <QVector>
 #include <QVariant>
-#include <QBoxLayout>
 
 class ComPortsConfigWidget : public QWidget
 {
@@ -17,10 +18,10 @@ public:
 	void init( QVector< QVector< Assignment > > portAssignments );
 	int comPortsCount();
 	bool setAssignment( unsigned int id, Assignment assignment );
-	void setRelatedParameters( unsigned int id, const QVector< QVariant >& );
+	void setRelatedParameters( unsigned int id, const QMap< QString, QVariant >& );
 	Assignment assignment( unsigned int id );
 	QVector< Assignment > assignments();
-	QVector< QVariant > relatedParameters( unsigned int id );
+	QMap< QString, QVariant > relatedParameters( unsigned int id );
 
 signals:
 	void assignmentChanged( unsigned int id, Assignment previous, Assignment current );

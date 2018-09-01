@@ -23,6 +23,7 @@ QWidget * VPortsOverIpDelegate::createEditor( QWidget *parent, const QStyleOptio
 	if( index.column() == 0 )
 	{
 		QLineEdit* lineEdit = new QLineEdit( parent );
+		lineEdit->setFrame( false );
 		QRegExpValidator* validator = new QRegExpValidator( lineEdit );
 		validator->setRegExp( QRegExp( "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$" ) );
 		lineEdit->setValidator( validator );
@@ -31,6 +32,7 @@ QWidget * VPortsOverIpDelegate::createEditor( QWidget *parent, const QStyleOptio
 	else if( index.column() == 1 )
 	{
 		QSpinBox* spinBox = new QSpinBox( parent );
+		spinBox->setFrame( false );
 		spinBox->setMinimum( 1 );
 		spinBox->setMaximum( 65535 );
 		return spinBox;

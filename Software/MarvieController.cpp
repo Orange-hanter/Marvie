@@ -55,20 +55,16 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	sensorNameTimer.setInterval( 300 );
 	sensorNameTimer.setSingleShot( true );
 
-	popupSensorsListWidget = new QTreeWidget;
+	popupSensorsListWidget = new QListWidget;
 	popupSensorsListWidget->setWindowFlags( Qt::Popup );
 	popupSensorsListWidget->setFocusPolicy( Qt::NoFocus );
 	popupSensorsListWidget->setFocusProxy( ui.sensorNameEdit );
 	popupSensorsListWidget->setMouseTracking( true );
-	popupSensorsListWidget->setColumnCount( 1 );
-	popupSensorsListWidget->setUniformRowHeights( true );
-	popupSensorsListWidget->setRootIsDecorated( false );
 	popupSensorsListWidget->setEditTriggers( QTreeWidget::NoEditTriggers );
 	popupSensorsListWidget->setSelectionBehavior( QTreeWidget::SelectRows );
-	popupSensorsListWidget->setFrameStyle( QFrame::Box | QFrame::Plain );
+	popupSensorsListWidget->setFrameStyle( QFrame::StyledPanel );
 	popupSensorsListWidget->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 	popupSensorsListWidget->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
-	popupSensorsListWidget->header()->hide();
 	popupSensorsListWidget->installEventFilter( this );
 
 	ui.sensorSettingsTreeWidget->setColumnWidth( 0, 250 );
@@ -204,6 +200,17 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	monitoringDataViewMenu->addSeparator();
 	monitoringDataViewMenu->addAction( "Hexadecimal output" )->setCheckable( true );
 
+	sensorSettingsMenu = new QMenu( this );
+	sensorSettingsMenu->addAction( "Copy" );
+	sensorSettingsMenu->addSeparator();
+	sensorSettingsMenu->addAction( "Move up" );
+	sensorSettingsMenu->addAction( "Move down" );
+	sensorSettingsMenu->addSeparator();
+	sensorSettingsMenu->addAction( "Remove" );
+	sensorSettingsMenu->addSeparator();
+	sensorSettingsMenu->addAction( "Expand all" );
+	sensorSettingsMenu->addAction( "Collapse all" );
+
 	syncWindow = new SynchronizationWindow( this );
 	deviceState = DeviceState::Unknown;
 
@@ -271,12 +278,13 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	QObject::connect( ui.sensorNameEdit, &QLineEdit::returnPressed, this, &MarvieController::sensorNameEditReturnPressed );
 	QObject::connect( &sensorNameTimer, &QTimer::timeout, this, &MarvieController::sensorNameTimerTimeout );
 
-	QObject::connect( popupSensorsListWidget, &QTreeWidget::itemClicked, this, &MarvieController::sensorNameSearchCompleted );
+	QObject::connect( popupSensorsListWidget, &QListWidget::itemClicked, this, &MarvieController::sensorNameSearchCompleted );
 
 	QObject::connect( ui.sensorAddButton, &QToolButton::clicked, this, &MarvieController::sensorAddButtonClicked );
 	QObject::connect( ui.sensorRemoveButton, &QToolButton::clicked, this, &MarvieController::sensorRemoveButtonClicked );
-	QObject::connect( ui.sensorMoveUpButton, &QToolButton::clicked, this, &MarvieController::sensorMoveButtonClicked );
-	QObject::connect( ui.sensorMoveDownButton, &QToolButton::clicked, this, &MarvieController::sensorMoveButtonClicked );
+	QObject::connect( ui.sensorMoveUpButton, &QToolButton::clicked, this, &MarvieController::sensorMoveUpButtonClicked );
+	QObject::connect( ui.sensorMoveDownButton, &QToolButton::clicked, this, &MarvieController::sensorMoveDownButtonClicked );
+	QObject::connect( ui.sensorCopyButton, &QToolButton::clicked, this, &MarvieController::sensorCopyButtonClicked );
 	QObject::connect( ui.sensorsListClearButton, &QToolButton::clicked, this, &MarvieController::sensorsClearButtonClicked );
 
 	QObject::connect( ui.targetDeviceComboBox, &QComboBox::currentTextChanged, this, &MarvieController::targetDeviceChanged );
@@ -290,6 +298,9 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 
 	QObject::connect( ui.monitoringDataTreeView, &QTreeView::customContextMenuRequested, this, &MarvieController::monitoringDataViewMenuRequested );
 	QObject::connect( monitoringDataViewMenu, &QMenu::triggered, this, &MarvieController::monitoringDataViewMenuActionTriggered );
+
+	QObject::connect( ui.sensorSettingsTreeWidget, &QTreeView::customContextMenuRequested, this, &MarvieController::sensorSettingsMenuRequested );
+	QObject::connect( sensorSettingsMenu, &QMenu::triggered, this, &MarvieController::sensorSettingsMenuActionTriggered );
 
 	ui.rs232ComboBox->installEventFilter( this );
 
@@ -492,7 +503,12 @@ void MarvieController::settingsMenuButtonClicked()
 	{
 		if( buttons[i] == s )
 		{
-			ui.settingsStackedWidget->setCurrentIndex( i );
+			if( ui.settingsStackedWidget->currentIndex() != i )
+			{
+				if( s == ui.sensorsSettingsButton )
+					fixSensorVPortIds( false );
+				ui.settingsStackedWidget->setCurrentIndex( i );
+			}
 			buttons[i]->setChecked( true );
 		}
 		else
@@ -753,6 +769,27 @@ void MarvieController::monitoringDataViewMenuActionTriggered( QAction* action )
 		monitoringDataModel.setHexadecimalOutput( action->isChecked() );
 }
 
+void MarvieController::sensorSettingsMenuRequested( const QPoint& point )
+{
+	sensorSettingsMenu->popup( ui.sensorSettingsTreeWidget->viewport()->mapToGlobal( point ) );
+}
+
+void MarvieController::sensorSettingsMenuActionTriggered( QAction* action )
+{
+	if( action->text() == "Copy" )
+		sensorCopyButtonClicked();
+	else if( action->text() == "Move up" )
+		sensorMoveUpButtonClicked();
+	else if( action->text() == "Move down" )
+		sensorMoveDownButtonClicked();
+	else if( action->text() == "Remove" )
+		sensorRemoveButtonClicked();
+	else if( action->text() == "Expand all" )
+		ui.sensorSettingsTreeWidget->expandAll();
+	else if( action->text() == "Collapse all" )
+		ui.sensorSettingsTreeWidget->collapseAll();
+}
+
 void MarvieController::targetDeviceChanged( QString text )
 {
 	static QVector< QVector< ComPortsConfigWidget::Assignment > > qxPortAssignments = []()
@@ -954,28 +991,32 @@ void MarvieController::sensorNameEditReturnPressed()
 
 void MarvieController::sensorNameTimerTimeout()
 {
-	if( ui.sensorNameEdit->text().isEmpty() )
-		return;
-	QRegExp reg( ui.sensorNameEdit->text() );
-	reg.setCaseSensitivity( Qt::CaseInsensitive );
-	if( !reg.isValid() )
-		return;
-	QStringList supportedSensorsList = sensorDescMap.keys();
 	QStringList matches;
-	for( const auto& i : supportedSensorsList )
+	QStringList supportedSensorsList = sensorDescMap.keys();
+	if( !ui.sensorNameEdit->text().isEmpty() )
 	{
-		if( reg.indexIn( i ) != -1 )
-			matches.append( i );
-	}
-	qSort( matches.begin(), matches.end(), []( const QString& a, const QString& b )
-	{
-		return a.size() < b.size();
-	} );
+		QRegExp reg( ui.sensorNameEdit->text() );
+		reg.setCaseSensitivity( Qt::CaseInsensitive );
+		if( !reg.isValid() )
+			return;
 
-	if( matches.isEmpty() )
-		return;
+		for( const auto& i : supportedSensorsList )
+		{
+			if( reg.indexIn( i ) != -1 )
+				matches.append( i );
+		}
+		qSort( matches.begin(), matches.end(), []( const QString& a, const QString& b )
+		{
+			return a.size() < b.size();
+		} );
+
+		if( matches.isEmpty() )
+			return;
+		else
+			matches = matches.mid( 0, 10 );
+	}
 	else
-		matches = matches.mid( 0, 10 );
+		matches = supportedSensorsList;
 
 	const QPalette &pal = ui.sensorNameEdit->palette();
 	QColor color = pal.color( QPalette::Disabled, QPalette::WindowText );
@@ -985,16 +1026,15 @@ void MarvieController::sensorNameTimerTimeout()
 
 	for( const auto &i : matches )
 	{
-		auto item = new QTreeWidgetItem( popupSensorsListWidget );
-		item->setText( 0, i );
-		item->setTextColor( 0, color );
+		auto item = new QListWidgetItem( popupSensorsListWidget );
+		item->setText( i );
+		item->setTextColor( color );
 	}
 
-	popupSensorsListWidget->setCurrentItem( popupSensorsListWidget->topLevelItem( 0 ) );
-	popupSensorsListWidget->resizeColumnToContents( 0 );
+	popupSensorsListWidget->setCurrentRow( 0 );
 	popupSensorsListWidget->setUpdatesEnabled( true );
 
-	popupSensorsListWidget->move( ui.sensorNameEdit->mapToGlobal( QPoint( 0, ui.sensorNameEdit->height() ) ) );
+	popupSensorsListWidget->move( ui.sensorNameEdit->mapToGlobal( QPoint( 0, ui.sensorNameEdit->height() - 1 ) ) );
 	popupSensorsListWidget->setFocus();
 	popupSensorsListWidget->show();
 }
@@ -1004,11 +1044,11 @@ void MarvieController::sensorNameSearchCompleted()
 	sensorNameTimer.stop();
 	popupSensorsListWidget->hide();
 	ui.sensorNameEdit->setFocus();
-	QTreeWidgetItem *item = popupSensorsListWidget->currentItem();
+	QListWidgetItem *item = popupSensorsListWidget->currentItem();
 	if( item )
 	{
 		ui.sensorNameEdit->blockSignals( true );
-		ui.sensorNameEdit->setText( item->text( 0 ) );
+		ui.sensorNameEdit->setText( item->text() );
 		ui.sensorNameEdit->blockSignals( false );
 		//sensorAddButtonClicked();
 	}
@@ -1037,7 +1077,7 @@ void MarvieController::sensorRemoveButtonClicked()
 		ui.sensorSettingsTreeWidget->setCurrentIndex( ui.sensorSettingsTreeWidget->model()->index( ui.sensorSettingsTreeWidget->topLevelItemCount() - 1, 0 ) );
 }
 
-void MarvieController::sensorMoveButtonClicked()
+void MarvieController::sensorMoveUpButtonClicked()
 {
 	auto item = ui.sensorSettingsTreeWidget->currentItem();
 	if( !item || ui.sensorSettingsTreeWidget->topLevelItemCount() == 1 )
@@ -1045,30 +1085,48 @@ void MarvieController::sensorMoveButtonClicked()
 	if( item->parent() )
 		item = item->parent();
 	int index = ui.sensorSettingsTreeWidget->indexOfTopLevelItem( item );
-	if( sender() == ui.sensorMoveUpButton )
-	{
-		if( index == 0 )
-			return;
-		auto values = sensorSettingsValues( index );
-		QString sensorName = item->text( 0 ).split( ". " )[1];
-		bool exp = item->isExpanded();
-		setSensorSettingsNameNum( index - 1, index + 1 );
-		removeSensorSettings( index, false );
-		insertSensorSettings( index - 1, sensorName, values )->setExpanded( exp );
-		ui.sensorSettingsTreeWidget->setCurrentIndex( ui.sensorSettingsTreeWidget->model()->index( index - 1, 0 ) );
-	}
-	else
-	{
-		if( index == ui.sensorSettingsTreeWidget->topLevelItemCount() - 1 )
-			return;
-		auto values = sensorSettingsValues( index );
-		QString sensorName = item->text( 0 ).split( ". " )[1];
-		bool exp = item->isExpanded();
-		setSensorSettingsNameNum( index + 1, index + 1 );
-		removeSensorSettings( index, false );
-		insertSensorSettings( index + 1, sensorName, values )->setExpanded( exp );
-		ui.sensorSettingsTreeWidget->setCurrentIndex( ui.sensorSettingsTreeWidget->model()->index( index + 1, 0 ) );
-	}
+
+	if( index == 0 )
+		return;
+	auto values = sensorSettingsValues( index );
+	QString sensorName = item->text( 0 ).split( ". " )[1];
+	bool exp = item->isExpanded();
+	setSensorSettingsNameNum( index - 1, index + 1 );
+	removeSensorSettings( index, false );
+	insertSensorSettings( index - 1, sensorName, values )->setExpanded( exp );
+	ui.sensorSettingsTreeWidget->setCurrentIndex( ui.sensorSettingsTreeWidget->model()->index( index - 1, 0 ) );
+}
+
+void MarvieController::sensorMoveDownButtonClicked()
+{
+	auto item = ui.sensorSettingsTreeWidget->currentItem();
+	if( !item || ui.sensorSettingsTreeWidget->topLevelItemCount() == 1 )
+		return;
+	if( item->parent() )
+		item = item->parent();
+	int index = ui.sensorSettingsTreeWidget->indexOfTopLevelItem( item );
+
+	if( index == ui.sensorSettingsTreeWidget->topLevelItemCount() - 1 )
+		return;
+	auto values = sensorSettingsValues( index );
+	QString sensorName = item->text( 0 ).split( ". " )[1];
+	bool exp = item->isExpanded();
+	setSensorSettingsNameNum( index + 1, index + 1 );
+	removeSensorSettings( index, false );
+	insertSensorSettings( index + 1, sensorName, values )->setExpanded( exp );
+	ui.sensorSettingsTreeWidget->setCurrentIndex( ui.sensorSettingsTreeWidget->model()->index( index + 1, 0 ) );
+}
+
+void MarvieController::sensorCopyButtonClicked()
+{
+	auto index = ui.sensorSettingsTreeWidget->currentIndex();
+	if( !index.isValid() )
+		return;
+	if( index.parent().isValid() )
+		index = index.parent();
+	auto settings = sensorSettingsValues( index.row() );
+	QString sensorName = index.data().toString().split( ". " )[1];
+	insertSensorSettings( index.row() + 1, sensorName, settings, true );
 }
 
 void MarvieController::sensorsClearButtonClicked()
@@ -1894,15 +1952,76 @@ QByteArray MarvieController::generateSensorsXSD()
 		//root.appendChild( doc.createComment( "===============================================" ) );
 	}
 
-	return QByteArray( "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" ) + doc.toByteArray();
+	return saveCanonicalXML( doc ).toLocal8Bit();
 }
 
-QTreeWidgetItem* MarvieController::insertSensorSettings( int position, QString sensorName, QMap< QString, QString > sensorSettingsValues )
+class PeriodEdit : public QWidget
+{
+public:
+	PeriodEdit()
+	{
+		secSpinBox = new QSpinBox( this );
+		minSpinBox = new QSpinBox( this );
+		QObject::connect( secSpinBox, &QSpinBox::editingFinished, [this]()
+		{
+			auto v = secSpinBox->value();
+			secSpinBox->setValue( v % 60 );
+			minSpinBox->setValue( minSpinBox->value() + v / 60 );
+		} );
+
+		QHBoxLayout* layout = new QHBoxLayout( this );
+		layout->setContentsMargins( 0, 0, 0, 0 );
+		layout->setSpacing( 4 );
+		layout->addWidget( minSpinBox );
+		layout->addWidget( new QLabel( "min" ) );
+		layout->addWidget( secSpinBox );
+		layout->addWidget( new QLabel( "sec" ) );
+	}
+
+	void setRange( uint minSec, uint maxSec )
+	{
+		secSpinBox->setMinimum( minSec );
+		secSpinBox->setMaximum( maxSec );
+		minSpinBox->setMinimum( minSec / 60 );
+		minSpinBox->setMaximum( maxSec / 60 );
+	}
+
+	uint value()
+	{
+		return secSpinBox->value() + minSpinBox->value() * 60;
+	}
+	void setValue( uint sec )
+	{
+		secSpinBox->setValue( sec % 60 );
+		minSpinBox->setValue( sec / 60 );
+	}
+
+private:
+	QSpinBox* secSpinBox;
+	QSpinBox* minSpinBox;
+};
+
+QTreeWidgetItem* MarvieController::insertSensorSettings( int position, QString sensorName, QMap< QString, QString > sensorSettingsValues, bool needUpdateName /*= false*/ )
 {
 	assert( sensorDescMap.contains( sensorName ) );
 	auto& desc = sensorDescMap[sensorName].settings.prmList;
+	if( needUpdateName )
+	{
+		for( int i = ui.sensorSettingsTreeWidget->topLevelItemCount() - 1; i >= position; --i )
+		{
+			auto item = ui.sensorSettingsTreeWidget->topLevelItem( i );
+			QString sensorName = item->text( 0 ).split( ". " )[1];
+			item->setText( 0, QString( "%1. %2" ).arg( i + 1 + 1 ).arg( sensorName ) );
+			auto objects = ui.sensorSettingsTreeWidget->findChildren< QObject* >( QRegExp( QString( "%1\\*" ).arg( i + 1 ) ) );
+			for( auto& object : objects )
+			{
+				QString settingName = object->objectName().split( '*' )[1];
+				object->setObjectName( QString( "%1*%2" ).arg( i + 1 + 1 ).arg( settingName ) );
+			}
+		}
+	}
 	QTreeWidgetItem* topItem = new QTreeWidgetItem;
-	topItem->setSizeHint( 1, QSize( 1, 32 ) );
+	topItem->setSizeHint( 1, QSize( 1, 26 ) );
 	topItem->setText( 0, QString( "%1. %2" ).arg( position + 1 ).arg( sensorName ) );
 	ui.sensorSettingsTreeWidget->insertTopLevelItem( position, topItem );
 
@@ -1913,8 +2032,9 @@ QTreeWidgetItem* MarvieController::insertSensorSettings( int position, QString s
 
 		QWidget* widget = new QWidget;
 		QHBoxLayout* layout = new QHBoxLayout( widget );
-		layout->setContentsMargins( QMargins( 4, 4, 4, 4 ) );
+		layout->setContentsMargins( QMargins( 0, 0, 2, 0 ) );
 		layout->addWidget( content );
+		content->setFixedHeight( 24 );
 		content->setObjectName( QString( "%1*" ).arg( position + 1 ) + name );
 		ui.sensorSettingsTreeWidget->setItemWidget( item, 1, widget );
 	};
@@ -1940,19 +2060,17 @@ QTreeWidgetItem* MarvieController::insertSensorSettings( int position, QString s
 			baudrateComboBox->setCurrentIndex( 0 );
 		addContent( "baudrate", baudrateComboBox );
 
-		QSpinBox* spinBox = new QSpinBox;
-		spinBox->setMinimum( 0 );
-		spinBox->setMaximum( 86400 );
+		PeriodEdit* periodEdit = new PeriodEdit;
+		periodEdit->setRange( 0, 86400 );
 		if( sensorSettingsValues.contains( "normalPeriod" ) )
-			spinBox->setValue( sensorSettingsValues["normalPeriod"].toInt() );
-		addContent( "normalPeriod", spinBox );
+			periodEdit->setValue( sensorSettingsValues["normalPeriod"].toInt() );
+		addContent( "normalPeriod", periodEdit );
 
-		spinBox = new QSpinBox;
-		spinBox->setMinimum( 0 );
-		spinBox->setMaximum( 86400 );
+		periodEdit = new PeriodEdit;
+		periodEdit->setRange( 0, 86400 );
 		if( sensorSettingsValues.contains( "emergencyPeriod" ) )
-			spinBox->setValue( sensorSettingsValues["emergencyPeriod"].toInt() );
-		addContent( "emergencyPeriod", spinBox );
+			periodEdit->setValue( sensorSettingsValues["emergencyPeriod"].toInt() );
+		addContent( "emergencyPeriod", periodEdit );
 	}
 
 	for( const auto& i : desc )
@@ -2114,8 +2232,8 @@ QMap< QString, QString > MarvieController::sensorSettingsValues( int position )
 		comboBox = ui.sensorSettingsTreeWidget->findChild< QComboBox* >( ENAME( "baudrate" ) );
 		if( comboBox->currentIndex() != 0 )
 			map["baudrate"] = comboBox->currentText();
-		map["normalPeriod"] = QString( "%1" ).arg( ui.sensorSettingsTreeWidget->findChild< QSpinBox* >( ENAME( "normalPeriod" ) )->value() );
-		map["emergencyPeriod"] = QString( "%1" ).arg( ui.sensorSettingsTreeWidget->findChild< QSpinBox* >( ENAME( "emergencyPeriod" ) )->value() );
+		map["normalPeriod"] = QString( "%1" ).arg( ui.sensorSettingsTreeWidget->findChild< PeriodEdit* >( ENAME( "normalPeriod" ) )->value() );
+		map["emergencyPeriod"] = QString( "%1" ).arg( ui.sensorSettingsTreeWidget->findChild< PeriodEdit* >( ENAME( "emergencyPeriod" ) )->value() );
 	}
 
 	for( const auto& i : desc )
@@ -2154,6 +2272,28 @@ QMap< QString, QString > MarvieController::sensorSettingsValues( int position )
 	}
 
 	return map;
+}
+
+void MarvieController::fixSensorVPortIds( bool needUpdate )
+{
+	auto vPortNames = vPortFullNames();
+	auto list = ui.sensorSettingsTreeWidget->findChildren< QComboBox* >( QRegExp( "\\*vPortID" ) );
+	for( auto& i : list )
+	{
+		if( !i->currentText().isEmpty() && !vPortNames.contains( i->currentText() ) )
+		{
+			QString name = i->currentText().split( " : " )[1];
+			auto id = vPorts.indexOf( name );
+			if( id != -1 )
+			{
+				i->clear();
+				i->addItems( vPortNames );
+				i->setCurrentIndex( id );
+			}
+			else if( needUpdate )
+				i->clear();
+		}
+	}
 }
 
 QStringList MarvieController::vPortFullNames()
@@ -2259,46 +2399,47 @@ bool MarvieController::loadConfigFromXml( QByteArray xmlData )
 		if( c3.tagName() == "vPort" )
 		{
 			ui.comPortsConfigWidget->setAssignment( i, ComPortsConfigWidget::Assignment::VPort );
-			QVector< QVariant > prms;
-			prms.append( c3.attribute( "frameFormat", "B8N" ) );
-			prms.append( c3.attribute( "baudrate", "9600" ).toInt() );
+			QMap< QString, QVariant > prms;
+			prms.insert( "format", c3.attribute( "frameFormat", "B8N" ) );
+			prms.insert( "baudrate", c3.attribute( "baudrate", "9600" ).toInt() );
 			ui.comPortsConfigWidget->setRelatedParameters( i, prms );
 		}
 		else if( c3.tagName() == "modbusRtuSlave" )
 		{
 			ui.comPortsConfigWidget->setAssignment( i, ComPortsConfigWidget::Assignment::ModbusRtuSlave );
-			QVector< QVariant > prms;
-			prms.append( c3.attribute( "frameFormat", "B8N" ) );
-			prms.append( c3.attribute( "baudrate", "9600" ).toInt() );
-			prms.append( c3.attribute( "address", "0" ).toInt() );
+			QMap< QString, QVariant > prms;
+			prms.insert( "format", c3.attribute( "frameFormat", "B8N" ) );
+			prms.insert( "baudrate", c3.attribute( "baudrate", "9600" ).toInt() );
+			prms.insert( "address", c3.attribute( "address", "0" ).toInt() );
 			ui.comPortsConfigWidget->setRelatedParameters( i, prms );
 		}
 		else if( c3.tagName() == "modbusAsciiSlave" )
 		{
 			ui.comPortsConfigWidget->setAssignment( i, ComPortsConfigWidget::Assignment::ModbusAsciiSlave );
-			QVector< QVariant > prms;
-			prms.append( c3.attribute( "frameFormat", "B8N" ) );
-			prms.append( c3.attribute( "baudrate", "9600" ).toInt() );
-			prms.append( c3.attribute( "address", "0" ).toInt() );
+			QMap< QString, QVariant > prms;
+			prms.insert( "format", c3.attribute( "frameFormat", "B8N" ) );
+			prms.insert( "baudrate", c3.attribute( "baudrate", "9600" ).toInt() );
+			prms.insert( "address", c3.attribute( "address", "0" ).toInt() );
 			ui.comPortsConfigWidget->setRelatedParameters( i, prms );
 		}
 		else if( c3.tagName() == "gsmModem" )
 		{
 			ui.comPortsConfigWidget->setAssignment( i, ComPortsConfigWidget::Assignment::GsmModem );
-			QVector< QVariant > prms;
-			prms.append( c3.attribute( "pinCode", "" ) );
-			prms.append( c3.attribute( "apn", "" ) );
+			QMap< QString, QVariant > prms;
+			prms.insert( "pinCode", c3.attribute( "pinCode", "" ) );
+			prms.insert( "apn", c3.attribute( "apn", "" ) );
 			ui.comPortsConfigWidget->setRelatedParameters( i, prms );
 		}
 		else if( c3.tagName() == "multiplexer" )
 		{
 			ui.comPortsConfigWidget->setAssignment( i, ComPortsConfigWidget::Assignment::Multiplexer );
-			QVector< QVariant > prms;
+			QMap< QString, QVariant > prms;
+			int counter = 0;
 			auto c4 = c3.firstChildElement();
 			while( !c4.isNull() )
 			{
-				prms.append( c4.attribute( "frameFormat", "B8N" ) );
-				prms.append( c4.attribute( "baudrate", "9600" ).toInt() );
+				prms.insert( QString( "%1.format" ).arg( counter ), c4.attribute( "frameFormat", "B8N" ) );
+				prms.insert( QString( "%1.baudrate" ).arg( counter++ ), c4.attribute( "baudrate", "9600" ).toInt() );
 
 				c4 = c4.nextSiblingElement();
 			}
@@ -2369,6 +2510,8 @@ bool MarvieController::loadConfigFromXml( QByteArray xmlData )
 
 QByteArray MarvieController::saveConfigToXml()
 {
+	fixSensorVPortIds( true );
+
 	xmlMessageHandler.description.clear();
 	QStringList vPortNames = vPortFullNames();
 	auto vPortIdComboBoxObjectsList = ui.sensorSettingsTreeWidget->findChildren< QComboBox* >( QRegExp( "\\d+\\*vPortID" ) );
@@ -2416,8 +2559,8 @@ QByteArray MarvieController::saveConfigToXml()
 			auto c2 = doc.createElement( "vPort" );
 			c1.appendChild( c2 );
 			auto prms = ui.comPortsConfigWidget->relatedParameters( ( unsigned int )comCounter );
-			c2.setAttribute( "frameFormat", prms[0].toString() );
-			c2.setAttribute( "baudrate", prms[1].toInt() );
+			c2.setAttribute( "frameFormat", prms["format"].toString() );
+			c2.setAttribute( "baudrate", prms["baudrate"].toInt() );
 			break;
 		}
 		case ComPortsConfigWidget::Assignment::ModbusRtuSlave:
@@ -2425,9 +2568,9 @@ QByteArray MarvieController::saveConfigToXml()
 			auto c2 = doc.createElement( "modbusRtuSlave" );
 			c1.appendChild( c2 );
 			auto prms = ui.comPortsConfigWidget->relatedParameters( ( unsigned int )comCounter );
-			c2.setAttribute( "frameFormat", prms[0].toString() );
-			c2.setAttribute( "baudrate", prms[1].toInt() );
-			c2.setAttribute( "address", prms[2].toInt() );
+			c2.setAttribute( "frameFormat", prms["format"].toString() );
+			c2.setAttribute( "baudrate", prms["baudrate"].toInt() );
+			c2.setAttribute( "address", prms["address"].toInt() );
 			break;
 		}
 		case ComPortsConfigWidget::Assignment::ModbusAsciiSlave:
@@ -2435,9 +2578,9 @@ QByteArray MarvieController::saveConfigToXml()
 			auto c2 = doc.createElement( "modbusAsciiSlave" );
 			c1.appendChild( c2 );
 			auto prms = ui.comPortsConfigWidget->relatedParameters( ( unsigned int )comCounter );
-			c2.setAttribute( "frameFormat", prms[0].toString() );
-			c2.setAttribute( "baudrate", prms[1].toInt() );
-			c2.setAttribute( "address", prms[2].toInt() );
+			c2.setAttribute( "frameFormat", prms["format"].toString() );
+			c2.setAttribute( "baudrate", prms["baudrate"].toInt() );
+			c2.setAttribute( "address", prms["address"].toInt() );
 			break;
 		}
 		case ComPortsConfigWidget::Assignment::GsmModem:
@@ -2445,9 +2588,9 @@ QByteArray MarvieController::saveConfigToXml()
 			auto c2 = doc.createElement( "gsmModem" );
 			c1.appendChild( c2 );
 			auto prms = ui.comPortsConfigWidget->relatedParameters( ( unsigned int )comCounter );
-			c2.setAttribute( "apn", prms[1].toString() );
-			if( !prms[0].toString().isEmpty() )
-				c2.setAttribute( "pinCode", prms[0].toString() );
+			c2.setAttribute( "apn", prms["apn"].toString() );
+			if( !prms["pinCode"].toString().isEmpty() )
+				c2.setAttribute( "pinCode", prms["pinCode"].toString() );
 			break;
 		}
 		case ComPortsConfigWidget::Assignment::Multiplexer:
@@ -2459,8 +2602,8 @@ QByteArray MarvieController::saveConfigToXml()
 			{
 				auto c3 = doc.createElement( QString( "com%1" ).arg( i ) );
 				c2.appendChild( c3 );
-				c3.setAttribute( "frameFormat", prms[i * 2].toString() );
-				c3.setAttribute( "baudrate", prms[i * 2 + 1].toInt() );
+				c3.setAttribute( "frameFormat", prms[QString( "%1.format" ).arg( i )].toString() );
+				c3.setAttribute( "baudrate", prms[QString( "%1.baudrate" ).arg( i )].toInt() );
 			}
 			break;
 		}

@@ -52,6 +52,9 @@ private slots:
 	void monitoringDataViewMenuRequested( const QPoint& point );
 	void monitoringDataViewMenuActionTriggered( QAction* action );
 
+	void sensorSettingsMenuRequested( const QPoint& point );
+	void sensorSettingsMenuActionTriggered( QAction* action );
+
 	void targetDeviceChanged( QString );
 	void newConfigButtonClicked();
 	void importConfigButtonClicked();
@@ -69,7 +72,9 @@ private slots:
 	void sensorNameSearchCompleted();
 	void sensorAddButtonClicked();
 	void sensorRemoveButtonClicked();
-	void sensorMoveButtonClicked();
+	void sensorMoveUpButtonClicked();
+	void sensorMoveDownButtonClicked();
+	void sensorCopyButtonClicked();
 	void sensorsClearButtonClicked();
 
 	void mlinkStateChanged( MLinkClient::State );
@@ -82,10 +87,11 @@ private:
 	void sensorsInit();
 	QByteArray generateSensorsXSD();
 
-	QTreeWidgetItem* insertSensorSettings( int index, QString sensorName, QMap< QString, QString > sensorSettingsValues = QMap< QString, QString >() );
+	QTreeWidgetItem* insertSensorSettings( int index, QString sensorName, QMap< QString, QString > sensorSettingsValues = QMap< QString, QString >(), bool needUpdateName = false );
 	void removeSensorSettings( int index, bool needUpdateName );
 	void setSensorSettingsNameNum( int index, int num );
 	QMap< QString, QString > sensorSettingsValues( int index );
+	void fixSensorVPortIds( bool needUpdate );
 	QStringList vPortFullNames();
 
 	bool loadConfigFromXml( QByteArray xmlData );
@@ -231,7 +237,9 @@ private:
 	QMenu* monitoringDataViewMenu;
 
 	QTimer sensorNameTimer;
-	QTreeWidget* popupSensorsListWidget;
+	QListWidget* popupSensorsListWidget;
+
+	QMenu* sensorSettingsMenu;
 
 	QXmlSchemaValidator configValidator;
 

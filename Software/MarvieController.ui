@@ -926,7 +926,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
       <enum>QFrame::Raised</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="controlPage">
       <layout class="QHBoxLayout" name="horizontalLayout_26">
@@ -2891,7 +2891,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
        <item>
         <widget class="QStackedWidget" name="settingsStackedWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="mainSettingsPage">
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -3188,8 +3188,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>227</width>
-                <height>458</height>
+                <width>414</width>
+                <height>561</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -3846,29 +3846,6 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
               </widget>
              </item>
              <item>
-              <widget class="QToolButton" name="sensorListButton">
-               <property name="toolTip">
-                <string>All sensors</string>
-               </property>
-               <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-drag-list-up-26.png</normaloff>:/MarvieController/icons/icons8-drag-list-up-26.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>25</width>
-                 <height>25</height>
-                </size>
-               </property>
-               <property name="popupMode">
-                <enum>QToolButton::InstantPopup</enum>
-               </property>
-               <property name="autoRaise">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
               <widget class="QToolButton" name="sensorsListClearButton">
                <property name="maximumSize">
                 <size>
@@ -3956,6 +3933,35 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
               </widget>
              </item>
              <item>
+              <widget class="QToolButton" name="sensorCopyButton">
+               <property name="maximumSize">
+                <size>
+                 <width>30</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Copy</string>
+               </property>
+               <property name="icon">
+                <iconset resource="MarvieController.qrc">
+                 <normaloff>:/MarvieController/icons/icons8-copy-node-filled.png</normaloff>:/MarvieController/icons/icons8-copy-node-filled.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>30</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::InstantPopup</enum>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QToolButton" name="sensorRemoveButton">
                <property name="maximumSize">
                 <size>
@@ -4017,6 +4023,9 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
            </item>
            <item>
             <widget class="QTreeWidget" name="sensorSettingsTreeWidget">
+             <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+             </property>
              <property name="showDropIndicator" stdset="0">
               <bool>false</bool>
              </property>

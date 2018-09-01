@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
  <xs:include schemaLocation="Base.xsd"/>
  <xs:element name="sensorsConfig">
   <xs:complexType>
    <xs:sequence>
-    <xs:choice minOccurs="1" maxOccurs="unbounded">
+    <xs:choice maxOccurs="unbounded" minOccurs="1">
      <xs:element ref="CE301"/>
      <xs:element ref="SimpleSensor"/>
      <xs:element ref="TestSensorA"/>

@@ -55,5 +55,6 @@
         <file>icons/icons8-down-button-48.png</file>
         <file>icons/icons8-eject-48.png</file>
         <file>icons/icons8-shutdown-52.png</file>
+        <file>icons/icons8-copy-node-filled.png</file>
     </qresource>
 </RCC>

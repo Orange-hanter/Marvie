@@ -110,29 +110,40 @@ bool ComPortsConfigWidget::setAssignment( unsigned int id, Assignment assignment
 	return false;
 }
 
-void ComPortsConfigWidget::setRelatedParameters( unsigned int id, const QVector< QVariant >& values )
+void ComPortsConfigWidget::setRelatedParameters( unsigned int id, const QMap< QString, QVariant >& values )
 {
 	switch( assignmentsVect[id] )
 	{
 	case ComPortsConfigWidget::Assignment::VPort:
-		findChild< QComboBox* >( QString( "%1.format" ).arg( id ) )->setCurrentText( values[0].toString() );
-		findChild< QComboBox* >( QString( "%1.baudrate" ).arg( id ) )->setCurrentText( QString( "%1" ).arg( values[1].toInt() ) );
+		if( values.contains( "format" ) )
+			findChild< QComboBox* >( QString( "%1.format" ).arg( id ) )->setCurrentText( values["format"].toString() );
+		if( values.contains( "baudrate" ) )
+			findChild< QComboBox* >( QString( "%1.baudrate" ).arg( id ) )->setCurrentText( QString( "%1" ).arg( values["baudrate"].toInt() ) );
 		break;
 	case ComPortsConfigWidget::Assignment::ModbusRtuSlave:
 	case ComPortsConfigWidget::Assignment::ModbusAsciiSlave:
-		findChild< QComboBox* >( QString( "%1.format" ).arg( id ) )->setCurrentText( values[0].toString() );
-		findChild< QComboBox* >( QString( "%1.baudrate" ).arg( id ) )->setCurrentText( QString( "%1" ).arg( values[1].toInt() ) );
-		findChild< QSpinBox* >( QString( "%1.address" ).arg( id ) )->setValue( values[2].toInt() );
+		if( values.contains( "format" ) )
+			findChild< QComboBox* >( QString( "%1.format" ).arg( id ) )->setCurrentText( values["format"].toString() );
+		if( values.contains( "baudrate" ) )
+			findChild< QComboBox* >( QString( "%1.baudrate" ).arg( id ) )->setCurrentText( QString( "%1" ).arg( values["baudrate"].toInt() ) );
+		if( values.contains( "address" ) )
+			findChild< QSpinBox* >( QString( "%1.address" ).arg( id ) )->setValue( values["address"].toInt() );
 		break;
 	case ComPortsConfigWidget::Assignment::GsmModem:
-		findChild< QLineEdit* >( QString( "%1.pinCode" ).arg( id ) )->setText( values[0].toString() );
-		findChild< QLineEdit* >( QString( "%1.apn" ).arg( id ) )->setText( values[1].toString() );
+		if( values.contains( "pinCode" ) )
+			findChild< QLineEdit* >( QString( "%1.pinCode" ).arg( id ) )->setText( values["pinCode"].toString() );
+		if( values.contains( "apn" ) )
+			findChild< QLineEdit* >( QString( "%1.apn" ).arg( id ) )->setText( values["apn"].toString() );
 		break;
 	case ComPortsConfigWidget::Assignment::Multiplexer:
 		for( int i = 0; i < 5; ++i )
 		{
-			findChild< QComboBox* >( QString( "%1.%2.format" ).arg( id ).arg( i ) )->setCurrentText( values[i * 2].toString() );
-			findChild< QComboBox* >( QString( "%1.%2.baudrate" ).arg( id ).arg( i ) )->setCurrentText( QString( "%1" ).arg( values[i * 2 + 1].toInt() ) );
+			QString formatPrmName = QString( "%1.format" ).arg( i );
+			QString baudratePrmName = QString( "%1.baudrate" ).arg( i );
+			if( values.contains( formatPrmName ) )
+				findChild< QComboBox* >( QString( "%1.%2.format" ).arg( id ).arg( i ) )->setCurrentText( values[formatPrmName].toString() );
+			if( values.contains( baudratePrmName ) )
+				findChild< QComboBox* >( QString( "%1.%2.baudrate" ).arg( id ).arg( i ) )->setCurrentText( QString( "%1" ).arg( values[baudratePrmName].toInt() ) );
 		}
 		break;
 	default:
@@ -151,30 +162,30 @@ QVector< ComPortsConfigWidget::Assignment > ComPortsConfigWidget::assignments()
 	return assignmentsVect;
 }
 
-QVector< QVariant > ComPortsConfigWidget::relatedParameters( unsigned int id )
+QMap< QString, QVariant > ComPortsConfigWidget::relatedParameters( unsigned int id )
 {
-	QVector< QVariant > prms;
+	QMap< QString, QVariant > prms;
 	switch( assignmentsVect[id] )
 	{
 	case ComPortsConfigWidget::Assignment::VPort:
-		prms.append( findChild< QComboBox* >( QString( "%1.format" ).arg( id ) )->currentText() );
-		prms.append( findChild< QComboBox* >( QString( "%1.baudrate" ).arg( id ) )->currentText().toInt() );
+		prms.insert( "format", findChild< QComboBox* >( QString( "%1.format" ).arg( id ) )->currentText() );
+		prms.insert( "baudrate", findChild< QComboBox* >( QString( "%1.baudrate" ).arg( id ) )->currentText().toInt() );
 		break;
 	case ComPortsConfigWidget::Assignment::ModbusRtuSlave:
 	case ComPortsConfigWidget::Assignment::ModbusAsciiSlave:
-		prms.append( findChild< QComboBox* >( QString( "%1.format" ).arg( id ) )->currentText() );
-		prms.append( findChild< QComboBox* >( QString( "%1.baudrate" ).arg( id ) )->currentText().toInt() );
-		prms.append( findChild< QSpinBox* >( QString( "%1.address" ).arg( id ) )->value() );
+		prms.insert( "format", findChild< QComboBox* >( QString( "%1.format" ).arg( id ) )->currentText() );
+		prms.insert( "baudrate", findChild< QComboBox* >( QString( "%1.baudrate" ).arg( id ) )->currentText().toInt() );
+		prms.insert( "address", findChild< QSpinBox* >( QString( "%1.address" ).arg( id ) )->value() );
 		break;
 	case ComPortsConfigWidget::Assignment::GsmModem:
-		prms.append( findChild< QLineEdit* >( QString( "%1.pinCode" ).arg( id ) )->text() );
-		prms.append( findChild< QLineEdit* >( QString( "%1.apn" ).arg( id ) )->text() );
+		prms.insert( "pinCode", findChild< QLineEdit* >( QString( "%1.pinCode" ).arg( id ) )->text() );
+		prms.insert( "apn", findChild< QLineEdit* >( QString( "%1.apn" ).arg( id ) )->text() );
 		break;
 	case ComPortsConfigWidget::Assignment::Multiplexer:
 		for( int i = 0; i < 5; ++i )
 		{
-			prms.append( findChild< QComboBox* >( QString( "%1.%2.format" ).arg( id ).arg( i ) )->currentText() );
-			prms.append( findChild< QComboBox* >( QString( "%1.%2.baudrate" ).arg( id ).arg( i ) )->currentText().toInt() );
+			prms.insert( QString( "%1.format" ).arg( i ), findChild< QComboBox* >( QString( "%1.%2.format" ).arg( id ).arg( i ) )->currentText() );
+			prms.insert( QString( "%1.baudrate" ).arg( i ), findChild< QComboBox* >( QString( "%1.%2.baudrate" ).arg( id ).arg( i ) )->currentText().toInt() );
 		}
 		break;
 	default:
@@ -343,9 +354,11 @@ void ComPortsConfigWidget::removeContent( QLayout* layout )
 void ComPortsConfigWidget::assignmentComboBoxChanged( const QString& text )
 {
 	unsigned int id = sender()->objectName().toInt();
+	auto prms = relatedParameters( id );
 	addContent( id, findChild< QHBoxLayout* >( QString( "%1.content" ).arg( id ) ), toAssignment( text ) );
 	auto prev = assignmentsVect[id];
 	assignmentsVect[id] = toAssignment( text );
+	setRelatedParameters( id, prms );
 	assignmentChanged( id, prev, assignmentsVect[id] );
 }
 
