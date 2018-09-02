@@ -147,6 +147,7 @@
     <ClCompile Include="Drivers\Sensors\CE301Sensor.cpp" />
     <ClCompile Include="Drivers\Sensors\TestSensorA.cpp" />
     <ClCompile Include="Drivers\Sensors\TestSensorB.cpp" />
+    <ClCompile Include="Drivers\Sensors\TestSRSensorA.cpp" />
     <ClCompile Include="Lib\fatfs\src\ff.c" />
     <ClCompile Include="Lib\fatfs\src\ffunicode.c" />
     <ClCompile Include="Lib\modbus\ModbusIP.cpp" />
@@ -171,6 +172,7 @@
     <ClCompile Include="SensorService\SensorService.cpp" />
     <ClCompile Include="SensorService\TestSensorAType.cpp" />
     <ClCompile Include="SensorService\TestSensorBType.cpp" />
+    <ClCompile Include="SensorService\TestSRSensorAType.cpp" />
     <ClCompile Include="SingleBRSensorReader.cpp" />
     <ClCompile Include="BRSensorReader.cpp" />
     <ClCompile Include="MultipleBRSensorsReader.cpp" />
@@ -575,6 +577,7 @@
     <ClInclude Include="Drivers\Interfaces\AbstractRs485.h" />
     <ClInclude Include="Drivers\Network\Ethernet\EthernetThread.h" />
     <ClInclude Include="Drivers\Network\SimGsm\SimGsmPppModem.h" />
+    <ClInclude Include="Drivers\Sensors\TestSRSensorA.h" />
     <ClInclude Include="httpd_opts.h" />
     <ClInclude Include="Lib\lwip\src\apps\httpd\fsdata.h" />
     <ClInclude Include="Lib\lwip\src\apps\httpd\httpd_structs.h" />

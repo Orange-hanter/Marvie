@@ -2898,6 +2898,9 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
            <property name="spacing">
             <number>0</number>
            </property>
+           <property name="topMargin">
+            <number>3</number>
+           </property>
            <property name="rightMargin">
             <number>0</number>
            </property>
@@ -3189,7 +3192,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <x>0</x>
                 <y>0</y>
                 <width>414</width>
-                <height>561</height>
+                <height>567</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -3836,6 +3839,9 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
          </widget>
          <widget class="QWidget" name="sensorSettingsPage">
           <layout class="QVBoxLayout" name="verticalLayout_2">
+           <property name="topMargin">
+            <number>3</number>
+           </property>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_5">
              <item>
@@ -4025,6 +4031,9 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
             <widget class="QTreeWidget" name="sensorSettingsTreeWidget">
              <property name="contextMenuPolicy">
               <enum>Qt::CustomContextMenu</enum>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
              </property>
              <property name="showDropIndicator" stdset="0">
               <bool>false</bool>

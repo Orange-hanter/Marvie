@@ -28,23 +28,7 @@ namespace chibios_rt {
   /*------------------------------------------------------------------------*
    * chibios_rt::Timer                                                      *
    *------------------------------------------------------------------------*/
-
-  void Timer::setI(sysinterval_t time, vtfunc_t vtfunc, void *par) {
-
-    chVTSetI(&timer_ref, time, vtfunc, par);
-  }
-
-  void Timer::resetI() {
-
-    if (chVTIsArmedI(&timer_ref))
-      chVTDoResetI(&timer_ref);
-  }
-
-  bool Timer::isArmedI(void) {
-
-    return chVTIsArmedI(&timer_ref);
-  }
-
+	
   /*------------------------------------------------------------------------*
    * chibios_rt::ThreadStayPoint                                            *
    *------------------------------------------------------------------------*/

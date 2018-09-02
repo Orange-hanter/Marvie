@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<SettingsDesc target="SRSensor" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="file:// ../../Xml/schemas/SensorSettings.xsd">
+  <int default="0" min="0" max="15">channel</int>
+</SettingsDesc>

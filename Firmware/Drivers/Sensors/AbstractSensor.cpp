@@ -3,9 +3,24 @@
 
 #define SENSOR_TERMINATE_TEST_INTERVAL TIME_MS2I( 200 )
 
+AbstractSRSensor::AbstractSRSensor()
+{
+	signalProvider = nullptr;
+}
+
 AbstractSensor::Type AbstractSRSensor::type()
 {
 	return Type::SR;
+}
+
+void AbstractSRSensor::setInputSignalProvider( SignalProvider* signalProvider )
+{
+	this->signalProvider = signalProvider;
+}
+
+AbstractSRSensor::SignalProvider* AbstractSRSensor::inputSignalProvider()
+{
+	return signalProvider;
 }
 
 AbstractBRSensor::AbstractBRSensor()

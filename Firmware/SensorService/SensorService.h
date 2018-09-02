@@ -15,7 +15,7 @@ public:
 		AbstractSensor::Type type;
 		const char* name;
 		AbstractSensor* ( *allocator )( );
-		bool( *tuner )( AbstractSensor*, tinyxml2::XMLElement*, uint32_t defaultBaudrate );
+		bool( *tuner )( AbstractSensor*, tinyxml2::XMLElement*, uint32_t defaultValue );
 	};
 	typedef NanoList< SensorTypeDesc >::Node Node;
 
@@ -34,7 +34,7 @@ public:
 		return findByName( sensorName )->value.type;
 	}
 	AbstractSensor* allocate( const char* sensorName );
-	bool tune( AbstractSensor*, tinyxml2::XMLElement*, uint32_t defaultBaudrate = 0 );
+	bool tune( AbstractSensor*, tinyxml2::XMLElement*, uint32_t defaultValue = 0 );
 
 private:
 	Node* findByName( const char* sensorName );

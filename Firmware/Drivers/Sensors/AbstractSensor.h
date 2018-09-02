@@ -57,12 +57,17 @@ public:
 	{
 	public:
 		virtual float analogSignal( uint32_t block, uint32_t line ) = 0;
-		virtual bool binarySignal( uint32_t block, uint32_t line ) = 0;
+		virtual bool digitSignal( uint32_t block, uint32_t line ) = 0;
 	};
 
+	AbstractSRSensor();
+
 	Type type() final override;
-	virtual void setInputSignalProvider( SignalProvider* ) = 0;
-	virtual SignalProvider* inputSignalProvider() = 0;
+	void setInputSignalProvider( SignalProvider* );
+	SignalProvider* inputSignalProvider();
+
+protected:
+	SignalProvider* signalProvider;
 };
 
 class AbstractBRSensor : public AbstractSensor // Byte related sensor

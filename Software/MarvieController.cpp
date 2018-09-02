@@ -1429,7 +1429,8 @@ void MarvieController::mlinkNewComplexPacketAvailable( uint8_t channelId, QStrin
 	{
 		uint8_t sensorId = ( uint8_t )data.constData()[0];
 		uint8_t vPortId = ( uint8_t )data.constData()[1];
-		ui.vPortTileListWidget->tile( vPortId )->removeSensorReadError( sensorId );
+		if( vPortId < ui.vPortTileListWidget->tilesCount() )
+			ui.vPortTileListWidget->tile( vPortId )->removeSensorReadError( sensorId );
 		if( deviceSensors.isEmpty() )
 			updateSensorData( sensorId + 1, "", reinterpret_cast< const uint8_t* >( data.constData() + sizeof( uint8_t ) * 2 ) );
 		else
@@ -2072,6 +2073,15 @@ QTreeWidgetItem* MarvieController::insertSensorSettings( int position, QString s
 			periodEdit->setValue( sensorSettingsValues["emergencyPeriod"].toInt() );
 		addContent( "emergencyPeriod", periodEdit );
 	}
+	else /*if( sensorDescMap[sensorName].settings.target == SensorDesc::Settings::Target::SR )*/
+	{
+		QSpinBox* spinBox = new QSpinBox;
+		spinBox->setMaximum( 7 );
+		spinBox->setMinimum( 0 );
+		if( sensorSettingsValues.contains( "blockID" ) )
+			spinBox->setValue( sensorSettingsValues["blockID"].toInt() );		
+		addContent( "blockID", spinBox );
+	}
 
 	for( const auto& i : desc )
 	{
@@ -2234,6 +2244,10 @@ QMap< QString, QString > MarvieController::sensorSettingsValues( int position )
 			map["baudrate"] = comboBox->currentText();
 		map["normalPeriod"] = QString( "%1" ).arg( ui.sensorSettingsTreeWidget->findChild< PeriodEdit* >( ENAME( "normalPeriod" ) )->value() );
 		map["emergencyPeriod"] = QString( "%1" ).arg( ui.sensorSettingsTreeWidget->findChild< PeriodEdit* >( ENAME( "emergencyPeriod" ) )->value() );
+	}
+	else /*if( sensorDescMap[sensorName].settings.target == SensorDesc::Settings::Target::SR )*/
+	{
+		map["blockID"] = QString( "%1" ).arg( ui.sensorSettingsTreeWidget->findChild< QSpinBox* >( ENAME( "blockID" ) )->value() );
 	}
 
 	for( const auto& i : desc )
@@ -2695,6 +2709,12 @@ QByteArray MarvieController::saveConfigToXml()
 				c3 = doc.createElement( "emergencyPeriod" );
 				c2.appendChild( c3 );
 				c3.appendChild( doc.createTextNode( settingsValues["emergencyPeriod"] ) );
+			}
+			else if( settings.target == SensorDesc::Settings::Target::SR )
+			{
+				auto c3 = doc.createElement( "blockID" );
+				c2.appendChild( c3 );
+				c3.appendChild( doc.createTextNode( settingsValues["blockID"] ) );
 			}
 			for( const auto& i : settings.prmList )
 			{

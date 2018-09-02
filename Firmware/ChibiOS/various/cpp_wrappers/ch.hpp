@@ -295,14 +295,21 @@ namespace chibios_rt {
      *
      * @iclass
      */
-    inline void setI(sysinterval_t time, vtfunc_t vtfunc, void *par);
+	inline void setI( sysinterval_t time, vtfunc_t vtfunc, void *par )
+	{
+		chVTSetI( &timer_ref, time, vtfunc, par );
+	}
 
     /**
      * @brief   Resets the timer, if armed.
      *
      * @iclass
      */
-    inline void resetI();
+	inline void resetI()
+	{
+		if( chVTIsArmedI( &timer_ref ) )
+			chVTDoResetI( &timer_ref );
+	}
 
     /**
      * @brief   Returns the timer status.
@@ -312,7 +319,23 @@ namespace chibios_rt {
      *
      * @iclass
      */
-    inline bool isArmedI(void);
+	inline bool isArmedI( void )
+	{
+		return chVTIsArmedI( &timer_ref );
+	}
+
+	inline void set( sysinterval_t time, vtfunc_t vtfunc, void *par )
+	{
+		chVTSet( &timer_ref, time, vtfunc, par );
+	}
+	inline void reset()
+	{
+		chVTReset( &timer_ref );
+	}
+	inline bool isArmed( void )
+	{
+		return chVTIsArmed( &timer_ref );
+	}
   };
 
   /*------------------------------------------------------------------------*

@@ -7,6 +7,7 @@
     <xs:choice maxOccurs="unbounded" minOccurs="1">
      <xs:element ref="CE301"/>
      <xs:element ref="SimpleSensor"/>
+     <xs:element ref="TestSRSensorA"/>
      <xs:element ref="TestSensorA"/>
      <xs:element ref="TestSensorB"/>
     </xs:choice>
@@ -67,6 +68,24 @@
         <xs:restriction base="xs:int">
          <xs:enumeration value="0"/>
          <xs:enumeration value="1"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+     </xs:sequence>
+    </xs:extension>
+   </xs:complexContent>
+  </xs:complexType>
+ </xs:element>
+ <xs:element name="TestSRSensorA">
+  <xs:complexType>
+   <xs:complexContent>
+    <xs:extension base="srSensorBase">
+     <xs:sequence>
+      <xs:element name="channel">
+       <xs:simpleType>
+        <xs:restriction base="xs:int">
+         <xs:minInclusive value="0"/>
+         <xs:maxInclusive value="15"/>
         </xs:restriction>
        </xs:simpleType>
       </xs:element>

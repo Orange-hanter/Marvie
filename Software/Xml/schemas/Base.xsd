@@ -45,6 +45,13 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="blockID">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="7"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <!-- Complex types -->
   <xs:complexType name="brSensorBase">
     <xs:sequence>
@@ -56,6 +63,9 @@
   </xs:complexType>
 
   <xs:complexType name="srSensorBase">
+    <xs:sequence>
+      <xs:element name="blockID" type="blockID"/>
+    </xs:sequence>
   </xs:complexType>
 
 </xs:schema>

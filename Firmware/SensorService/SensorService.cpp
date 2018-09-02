@@ -57,12 +57,12 @@ AbstractSensor* SensorService::allocate( const char* sensorName )
 	return node->value.allocator();
 }
 
-bool SensorService::tune( AbstractSensor* sensor, tinyxml2::XMLElement* element, uint32_t defaultBaudrate )
+bool SensorService::tune( AbstractSensor* sensor, tinyxml2::XMLElement* element, uint32_t defaultValue )
 {
 	Node* node = findByName( sensor->name() );
 	if( !node )
 		return false;
-	node->value.tuner( sensor, element, defaultBaudrate );
+	node->value.tuner( sensor, element, defaultValue );
 	return true;
 }
 

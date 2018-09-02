@@ -29,7 +29,7 @@
 #define COM_USART_OUTPUT_BUFFER_SIZE  1024
 #define GSM_MODEM_OUTPUT_BUFFER       4096
 
-class MarvieDevice : public MLinkServer::ComplexDataCallback, private ModbusPotato::ISlaveHandler
+class MarvieDevice : private AbstractSRSensor::SignalProvider, private MLinkServer::ComplexDataCallback, private ModbusPotato::ISlaveHandler
 {
 	MarvieDevice();
 
@@ -49,12 +49,15 @@ private:
 	inline void formatSdCard();
 
 	void reconfig();
-	void configShutdownM();
+	void configShutdown();
 	void applyConfigM( char* xmlData, uint32_t len );
 	void removeConfigRelatedObject();
 	void removeConfigRelatedObjectM();
 
 	void copySensorDataToModbusRegisters( AbstractSensor* sensor );
+
+	float analogSignal( uint32_t block, uint32_t line ) final override;
+	bool digitSignal( uint32_t block, uint32_t line ) final override;
 
 	uint32_t onOpennig( uint8_t id, const char* name, uint32_t size ) final override;
 	bool newDataReceived( uint8_t id, const uint8_t* data, uint32_t size ) final override;
@@ -79,6 +82,7 @@ private:
 
 	ModbusPotato::modbus_exception_code::modbus_exception_code read_input_registers( uint16_t, uint16_t, uint16_t* ) override;
 
+	static void mainTaskThreadTimersCallback( void* p );
 	static void miskTaskThreadTimersCallback( void* p );
 	static void mLinkServerHandlerThreadTimersCallback( void* p );
 	static void adInputsReadThreadTimersCallback( void* p );
@@ -87,6 +91,17 @@ private:
 
 private:
 	static MarvieDevice* _inst;
+	enum Interval // in ms
+	{
+		SdTestInterval     = 100,
+		MemoryTestInterval = 1000,
+		StatusInterval     = 333,
+		SrSensorInterval   = 1000
+	};
+	enum ThreadPriority : tprio_t
+	{
+		EthernetThreadPrio = NORMALPRIO + 1
+	};
 	std::list< std::list< MarvieXmlConfigParsers::ComPortAssignment > > comPortAssignments;
 	LogicOutput analogInputAddress[4];
 	adcsample_t adcSamples[8];
@@ -143,9 +158,9 @@ private:
 	TcpModbusServer* tcpModbusRtuServer;
 	TcpModbusServer* tcpModbusAsciiServer;
 	TcpModbusServer* tcpModbusIpServer;
+	Mutex modbusRegistersMutex;
 	uint16_t* modbusRegisters;
 	uint32_t modbusRegistersCount;
-	Mutex modbusRegistersMutex;
 	// ======================================================================================
 	
 	BaseDynamicThread* mainThread, *miskTasksThread, *adInputsReadThread, *mLinkServerHandlerThread, *uiThread;
@@ -153,7 +168,7 @@ private:
 	Mutex configXmlFileMutex;
 
 	// Main thread resources =================================================================
-	enum MainThreadEvent { SdCardStatusChanged = 1, NewBootloaderDatFile = 2, NewFirmwareDatFile = 4, NewXmlConfigDatFile = 8, BrSensorReaderEvent = 16, EjectSdCardRequest = 32, FormatSdCardRequest = 64, RestartRequestEvent = 128 };
+	enum MainThreadEvent { SdCardStatusChanged = 1, NewBootloaderDatFile = 2, NewFirmwareDatFile = 4, NewXmlConfigDatFile = 8, StartSensorReaders = 16, StopSensorReaders = 32, BrSensorReaderEvent = 64, SrSensorsTimerEvent = 128, EjectSdCardRequest = 256, FormatSdCardRequest = 512, RestartRequestEvent = 1024 };
 	enum class DeviceState { /*Initialization,*/ Reconfiguration, Working, IncorrectConfiguration } deviceState;
 	enum class ConfigError { NoError, NoConfigFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorsConfigError } configError;
 	enum class SensorsConfigError { NoError, UnknownSensor, IncorrectSettings, BingingError } sensorsConfigError;
@@ -163,9 +178,10 @@ private:
 	FATFS fatFs;
 	FRESULT fsError;
 	SHA1::Digest configXmlHash;
+	Timer srSensorsUpdateTimer;
 
 	// MLink thread resources ================================================================
-	enum MLinkThreadEvent : eventmask_t { MLinkEvent = 1, CpuUsageMonitorEvent = 2, MemoryLoadEvent = 4, EthernetEvent = 8, GsmModemEvent = 16, ConfigChangedEvent = 32, ConfigResetEvent = 64, BrSensorUpdatedEvent = 128, StatusUpdateEvent = 256 };
+	enum MLinkThreadEvent : eventmask_t { MLinkEvent = 1, CpuUsageMonitorEvent = 2, MemoryLoadEvent = 4, EthernetEvent = 8, GsmModemEvent = 16, ConfigChangedEvent = 32, ConfigResetEvent = 64, SensorUpdateEvent = 128, StatusUpdateEvent = 256 };
 	MLinkServer* mLinkServer;
 	uint8_t mLinkBuffer[255];
 	Mutex datFilesMutex;
