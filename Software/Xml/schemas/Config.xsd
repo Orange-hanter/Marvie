@@ -55,6 +55,25 @@
     </xs:sequence>
   </xs:group>
 
+  <xs:element name="sensorReadingConfig">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="rs485MinInterval" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="value">
+              <xs:simpleType>
+                <xs:restriction base="xs:int">
+                  <xs:minInclusive value="0"/>
+                  <xs:maxInclusive value="60"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
   <xs:element name="modbusRtuSlave">
     <xs:complexType>
       <xs:attribute name="frameFormat" type="frameFormat"/>
@@ -155,13 +174,14 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="networkConfig" minOccurs="0" maxOccurs="1">
+        <xs:element name="networkConfig" minOccurs="1" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
               <xs:group ref="networkGroup"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element ref="sensorReadingConfig" minOccurs="1" maxOccurs="1"/>
         <xs:element ref="sensorsConfig" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
@@ -232,13 +252,14 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="networkConfig" minOccurs="0" maxOccurs="1">
+        <xs:element name="networkConfig" minOccurs="1" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
               <xs:group ref="networkGroup"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element ref="sensorReadingConfig" minOccurs="1" maxOccurs="1"/>
         <xs:element ref="sensorsConfig" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>

@@ -170,7 +170,7 @@ private:
 	// Main thread resources =================================================================
 	enum MainThreadEvent { SdCardStatusChanged = 1, NewBootloaderDatFile = 2, NewFirmwareDatFile = 4, NewXmlConfigDatFile = 8, StartSensorReaders = 16, StopSensorReaders = 32, BrSensorReaderEvent = 64, SrSensorsTimerEvent = 128, EjectSdCardRequest = 256, FormatSdCardRequest = 512, RestartRequestEvent = 1024 };
 	enum class DeviceState { /*Initialization,*/ Reconfiguration, Working, IncorrectConfiguration } deviceState;
-	enum class ConfigError { NoError, NoConfigFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorsConfigError } configError;
+	enum class ConfigError { NoError, NoConfigFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorReadingConfigError, SensorsConfigError } configError;
 	enum class SensorsConfigError { NoError, UnknownSensor, IncorrectSettings, BingingError } sensorsConfigError;
 	const char* errorSensorName;
 	uint32_t errorSensorId;

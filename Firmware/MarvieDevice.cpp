@@ -750,6 +750,16 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 		delete doc;
 		return;
 	}
+	SensorReadingConf sensorReadingConf;
+	if( !parseSensorReadingConfig( rootNode->FirstChildElement( "sensorReadingConfig" ), &sensorReadingConf ) )
+	{
+		deviceState = DeviceState::IncorrectConfiguration;
+		configError = ConfigError::SensorReadingConfigError;
+
+		delete doc;
+		return;
+	}
+
 	auto ethThd = EthernetThread::instance();
 	auto ethThdConf = ethThd->currentConfig();
 	if( ( networkConf.ethConf.dhcpEnable == true && ethThdConf.addressMode != EthernetThread::AddressMode::Dhcp ) ||
@@ -979,7 +989,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 					else
 					{
 						brSensorReaders[vPortId] = reader = new MultipleBRSensorsReader;
-						reader->setMinInterval( 0 );
+						reader->setMinInterval( TIME_S2I( sensorReadingConf.rs485MinInterval ) );
 					}
 					auto sensorElement = reader->createSensorElement( static_cast< AbstractBRSensor* >( sensor ), TIME_S2I( normapPeriod ), TIME_S2I( emergencyPeriod ) );
 					reader->addSensorElement( sensorElement );

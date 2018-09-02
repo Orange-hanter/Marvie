@@ -272,3 +272,16 @@ bool MarvieXmlConfigParsers::parseNetworkConfig( XMLElement* networkConfigNode, 
 
 	return true;
 }
+
+bool MarvieXmlConfigParsers::parseSensorReadingConfig( XMLElement* sensorReadingConfigNode, SensorReadingConf* conf )
+{
+	if( !sensorReadingConfigNode )
+		return false;
+	auto c0 = sensorReadingConfigNode->FirstChildElement( "rs485MinInterval" );
+	if( !c0 )
+		return false;
+	if( c0->QueryUnsignedAttribute( "value", ( unsigned int* )&conf->rs485MinInterval ) == XML_NO_ATTRIBUTE )
+		return false;
+
+	return true;
+}

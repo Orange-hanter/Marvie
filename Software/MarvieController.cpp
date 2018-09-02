@@ -883,6 +883,8 @@ void MarvieController::newConfigButtonClicked()
 
 	vPortsOverEthernetModel.removeRows( 0, vPortsOverEthernetModel.rowCount() );
 
+	ui.rs485MinIntervalSpinBox->setValue( 0 );
+
 	sensorsClearButtonClicked();
 }
 
@@ -2501,6 +2503,13 @@ bool MarvieController::loadConfigFromXml( QByteArray xmlData )
 		c2 = c2.nextSiblingElement();
 	}
 
+	c1 = configRoot.firstChildElement( "sensorReadingConfig" );
+	if( !c1.isNull() )
+	{
+		c2 = c1.firstChildElement( "rs485MinInterval" );
+		ui.rs485MinIntervalSpinBox->setValue( c2.attribute( "value" ).toInt() );
+	}
+
 	c1 = configRoot.firstChildElement( "sensorsConfig" );
 	if( c1.isNull() )
 		return true;
@@ -2626,8 +2635,8 @@ QByteArray MarvieController::saveConfigToXml()
 		}
 		++comCounter;
 	}
-
 	root.appendChild( doc.createComment( "==================================================================" ) );
+
 	{
 		auto c1 = doc.createElement( "networkConfig" );
 		root.appendChild( c1 );
@@ -2675,8 +2684,17 @@ QByteArray MarvieController::saveConfigToXml()
 			c2.setAttribute( "port", vPortsOverEthernetModel.data( vPortsOverEthernetModel.index( i, 1 ), Qt::DisplayRole ).toInt() );
 			c2.setAttribute( "ip", vPortsOverEthernetModel.data( vPortsOverEthernetModel.index( i, 0 ), Qt::DisplayRole ).toString() );
 		}
-		root.appendChild( doc.createComment( "==================================================================" ) );
 	}
+	root.appendChild( doc.createComment( "==================================================================" ) );
+
+	{
+		auto c1 = doc.createElement( "sensorReadingConfig" );
+		root.appendChild( c1 );
+		auto c2 = doc.createElement( "rs485MinInterval" );
+		c1.appendChild( c2 );
+		c2.setAttribute( "value", ui.rs485MinIntervalSpinBox->value() );
+	}
+	root.appendChild( doc.createComment( "==================================================================" ) );
 
 	if( ui.sensorSettingsTreeWidget->topLevelItemCount() )
 	{
@@ -2826,6 +2844,9 @@ void MarvieController::updateDeviceStatus( const MarviePackets::DeviceStatus* st
 			break;
 		case MarviePackets::DeviceStatus::ConfigError::NetworkConfigError:
 			ui.deviceStateLabel->setToolTip( "Network configuration error" );
+			break;
+		case MarviePackets::DeviceStatus::ConfigError::SensorReadingConfigError:
+			ui.deviceStateLabel->setToolTip( "Sensor reading configuration error" );
 			break;
 		case MarviePackets::DeviceStatus::ConfigError::SensorsConfigError:
 			ui.deviceStateLabel->setToolTip( "Sensors configuration error" );

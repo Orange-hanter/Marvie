@@ -42,6 +42,11 @@ namespace MarvieXmlConfigParsers
 		std::vector< VPortOverIpConf > vPortOverIpList;
 	};
 
+	struct SensorReadingConf
+	{
+		uint32_t rs485MinInterval;
+	};
+
 	struct VPortConf : public ComPortConf
 	{
 		VPortConf() : ComPortConf( ComPortAssignment::VPort ) {}
@@ -94,4 +99,5 @@ namespace MarvieXmlConfigParsers
 	bool parseMultiplexerConfig( XMLElement* node, MultiplexerConf* conf );
 	ComPortConf** parseComPortsConfig( XMLElement* comPortsConfigNode, const std::list< std::list< ComPortAssignment > >& comPortAssignments );
 	bool parseNetworkConfig( XMLElement* networkConfigNode, NetworkConf* conf );
+	bool parseSensorReadingConfig( XMLElement* sensorReadingConfigNode, SensorReadingConf* conf );
 }
