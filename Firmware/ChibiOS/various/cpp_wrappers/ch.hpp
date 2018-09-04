@@ -276,6 +276,8 @@ namespace chibios_rt {
      * @brief   Embedded @p VirtualTimer structure.
      */
     ::virtual_timer_t timer_ref;
+	
+	Timer();
 
     /**
      * @brief   Enables a virtual timer.

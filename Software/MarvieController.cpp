@@ -871,7 +871,7 @@ void MarvieController::newConfigButtonClicked()
 	targetDeviceChanged( ui.targetDeviceComboBox->currentText() );
 
 	ui.dhcpRadioButton->setChecked( true );
-	ui.staticIpLineEdit->setText( "192.168.1.2" );
+	ui.staticIpLineEdit->setText( "192.168.1.10" );
 	ui.netmaskLineEdit->setText( "255.255.255.0" );
 	ui.gatewayLineEdit->setText( "192.168.1.1" );
 	ui.modbusTcpCheckBox->setCheckState( Qt::Unchecked );
@@ -879,7 +879,7 @@ void MarvieController::newConfigButtonClicked()
 	ui.modbusRtuCheckBox->setCheckState( Qt::Unchecked );
 	ui.modbusRtuSpinBox->setValue( 503 );
 	ui.modbusAsciiCheckBox->setCheckState( Qt::Unchecked );
-	ui.modbusAsciiSpinBox->setValue( 502 );
+	ui.modbusAsciiSpinBox->setValue( 504 );
 
 	vPortsOverEthernetModel.removeRows( 0, vPortsOverEthernetModel.rowCount() );
 

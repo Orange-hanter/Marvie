@@ -96,6 +96,7 @@ void SingleBRSensorReader::main()
 	nextInterval = normalPriod;
 	nextTime = ( systime_t )( chVTGetSystemTimeX() + nextInterval );
 	chSysUnlock();
+	wState = BRSensorReader::WorkingState::Waiting;
 
 	while( tState == State::Working )
 	{

@@ -28,7 +28,7 @@ static bool testSRSensorATune( AbstractSensor* sensor, XMLElement* e, uint32_t d
 static SensorService::Node* simpleSensorType = []()
 {
 	static SensorService::Node node;
-	node.value.type = AbstractSensor::Type::BR;
+	node.value.type = AbstractSensor::Type::SR;
 	node.value.name = TestSRSensorA::sName();
 	node.value.allocator = testSRSensorAAllocate;
 	node.value.tuner = testSRSensorATune;

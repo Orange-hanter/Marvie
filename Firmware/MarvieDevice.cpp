@@ -542,7 +542,10 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 		if( mLinkServer->state() != MLinkServer::State::Connected )
 			continue;
 		if( em & MLinkThreadEvent::ConfigResetEvent )
+		{
 			mLinkServer->sendPacket( MarviePackets::Type::ConfigResetType, nullptr, 0 );
+			syncConfigNum = ( uint32_t )-1;
+		}
 		if( em & MLinkThreadEvent::ConfigChangedEvent )
 			mLinkSync( false );
 		if( em & MLinkThreadEvent::SensorUpdateEvent )
@@ -655,6 +658,7 @@ void MarvieDevice::reconfig()
 	if( deviceState == DeviceState::Working )
 	{
 		deviceState = DeviceState::Reconfiguration;
+		mLinkServerHandlerThread->signalEvents( MLinkThreadEvent::ConfigResetEvent );
 		configShutdown();
 	}
 	else
@@ -670,13 +674,14 @@ void MarvieDevice::reconfig()
 		configMutex.lock();
 		applyConfigM( xmlData, size );
 		configMutex.unlock();
+		if( deviceState == DeviceState::Working )
+			mLinkServerHandlerThread->signalEvents( ( eventmask_t )MLinkThreadEvent::ConfigChangedEvent );
 	}
 	else
 	{
 		configXmlHash = SHA1::Digest();
 		configError = ConfigError::NoConfigFile;
 		deviceState = DeviceState::IncorrectConfiguration;
-		mLinkServerHandlerThread->signalEvents( ( eventmask_t )MLinkThreadEvent::ConfigChangedEvent );
 	}
 }
 
@@ -1105,7 +1110,6 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 			srSensorsUpdateTimer.set( TIME_MS2I( SrSensorInterval ), mainTaskThreadTimersCallback, ( void* )MainThreadEvent::SrSensorsTimerEvent );
 
 		deviceState = DeviceState::Working;
-		mLinkServerHandlerThread->signalEvents( ( eventmask_t )MLinkThreadEvent::ConfigChangedEvent );
 	}
 	else
 	{

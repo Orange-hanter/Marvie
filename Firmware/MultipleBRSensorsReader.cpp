@@ -196,6 +196,7 @@ void MultipleBRSensorsReader::main()
 		signalEvents( InnerEventFlag::TimeoutFlag );
 	else
 		chVTSet( &timer, nextInterval, timerCallback, this );
+	wState = BRSensorReader::WorkingState::Waiting;
 
 	while( tState == State::Working )
 	{
