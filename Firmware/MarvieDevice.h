@@ -22,6 +22,8 @@
 #include "ff.h"
 #include "Apps/Modbus/RawModbusServer.h"
 #include "Apps/Modbus/TcpModbusServer.h"
+#include "Log/MarvieLog.h"
+#include "Log/FileLog.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -58,6 +60,7 @@ private:
 
 	float analogSignal( uint32_t block, uint32_t line ) final override;
 	bool digitSignal( uint32_t block, uint32_t line ) final override;
+	uint32_t digitSignals( uint32_t block ) final override;
 
 	uint32_t onOpennig( uint8_t id, const char* name, uint32_t size ) final override;
 	bool newDataReceived( uint8_t id, const uint8_t* data, uint32_t size ) final override;
@@ -93,10 +96,11 @@ private:
 	static MarvieDevice* _inst;
 	enum Interval // in ms
 	{
-		SdTestInterval     = 100,
-		MemoryTestInterval = 1000,
-		StatusInterval     = 333,
-		SrSensorInterval   = 1000
+		SdTestInterval            = 100,
+		MemoryTestInterval        = 1000,
+		StatusInterval            = 333,
+		SrSensorInterval          = 100,
+		SrSensorPeriodCounterLoad = 1000 / SrSensorInterval,
 	};
 	enum ThreadPriority : tprio_t
 	{
@@ -134,6 +138,7 @@ private:
 	};
 	RtcBackupRegisters backupRegs;
 	char apn[25] = {};
+	FileLog fileLog;
 
 	// ======================================================================================
 	Mutex configMutex;
@@ -145,12 +150,19 @@ private:
 	struct SensorInfo
 	{
 		AbstractSensor* sensor;
+		std::string sensorName;
 		uint16_t modbusStartRegNum;
 		uint16_t vPortId;
-		volatile bool updated;
+		uint32_t logPeriod;
+		uint32_t logTimeLeft;
+		DateTime dateTime;
+		volatile bool updatedForMLink;
+		volatile bool readyForMLink;
+		volatile bool readyForLog;
 	} *sensors;
 	BRSensorReader** brSensorReaders;
 	EvtListener* brSensorReaderListeners;
+	MarvieLog* marvieLog;
 	AbstractPppModem* gsmModem;
 	EvtListener gsmModemListener;
 	RawModbusServer* rawModbusServers;
@@ -168,9 +180,9 @@ private:
 	Mutex configXmlFileMutex;
 
 	// Main thread resources =================================================================
-	enum MainThreadEvent { SdCardStatusChanged = 1, NewBootloaderDatFile = 2, NewFirmwareDatFile = 4, NewXmlConfigDatFile = 8, StartSensorReaders = 16, StopSensorReaders = 32, BrSensorReaderEvent = 64, SrSensorsTimerEvent = 128, EjectSdCardRequest = 256, FormatSdCardRequest = 512, RestartRequestEvent = 1024 };
+	enum MainThreadEvent { SdCardStatusChanged = 1, NewBootloaderDatFile = 2, NewFirmwareDatFile = 4, NewXmlConfigDatFile = 8, StartSensorReaders = 16, StopSensorReaders = 32, BrSensorReaderEvent = 64, SrSensorsTimerEvent = 128, EjectSdCardRequest = 256, FormatSdCardRequest = 512, CleanMonitoringLogRequestEvent = 1024, CleanSystemLogRequestEvent = 2048, RestartRequestEvent = 4096 };
 	enum class DeviceState { /*Initialization,*/ Reconfiguration, Working, IncorrectConfiguration } deviceState;
-	enum class ConfigError { NoError, NoConfigFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorReadingConfigError, SensorsConfigError } configError;
+	enum class ConfigError { NoError, NoConfigFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorReadingConfigError, LogConfigError, SensorsConfigError } configError;
 	enum class SensorsConfigError { NoError, UnknownSensor, IncorrectSettings, BingingError } sensorsConfigError;
 	const char* errorSensorName;
 	uint32_t errorSensorId;
@@ -179,6 +191,8 @@ private:
 	FRESULT fsError;
 	SHA1::Digest configXmlHash;
 	Timer srSensorsUpdateTimer;
+	uint32_t srSensorPeriodCounter;
+	uint64_t monitoringLogSize;
 
 	// MLink thread resources ================================================================
 	enum MLinkThreadEvent : eventmask_t { MLinkEvent = 1, CpuUsageMonitorEvent = 2, MemoryLoadEvent = 4, EthernetEvent = 8, GsmModemEvent = 16, ConfigChangedEvent = 32, ConfigResetEvent = 64, SensorUpdateEvent = 128, StatusUpdateEvent = 256 };

@@ -20,6 +20,7 @@
 #include "../Firmware/MarviePackets.h"
 
 #include "ui_MarvieController.h"
+#include "ui_SdStatistics.h"
 
 class MarvieController : public FramelessWidget
 {
@@ -46,8 +47,10 @@ private slots:
 	void updateSensorButtonClicked();
 	void syncDateTimeButtonClicked();
 	void sdCardMenuButtonClicked();
+	void logMenuButtonClicked();
 
 	void sdCardMenuActionTriggered( QAction* action );
+	void logMenuActionTriggered( QAction* action );
 
 	void monitoringDataViewMenuRequested( const QPoint& point );
 	void monitoringDataViewMenuActionTriggered( QAction* action );
@@ -231,7 +234,22 @@ private:
 		QLabel* ccMemLargestLabel;
 	}*memStat;
 
-	QMenu* sdCardMenu;
+	class SdStatistics : public QFrame
+	{
+	public:
+		SdStatistics();
+
+		void setStatistics( uint64_t totalSize, uint64_t freeSize, uint64_t logSize );
+		void show( QPoint point );
+
+	private:
+		void focusOutEvent( QFocusEvent *event ) override;
+		QString printSize( uint64_t size );
+
+		Ui::SdStatisticsForm ui;
+	}*sdStat;
+
+	QMenu* sdCardMenu, *logMenu;
 
 	MonitoringDataModel monitoringDataModel;
 	QMenu* monitoringDataViewMenu;
@@ -248,6 +266,7 @@ private:
 	QVector< QString > deviceVPorts, deviceSensors, deviceSupportedSensors;
 	enum class DeviceState { Unknown, IncorrectConfiguration, Working, Reconfiguration } deviceState;
 	enum class SdCardStatus : uint8_t { Unknown, NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } deviceSdCardStatus;
+	enum class LogState : uint8_t { Unknown, Off, Stopped, Working, Archiving } deviceLogState;
 
 	Ui::MarvieControllerClass ui;
 };

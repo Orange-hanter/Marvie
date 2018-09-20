@@ -4,7 +4,7 @@
 
 namespace MarviePackets
 {
-	enum Type : uint8_t { FirmwareDescType, CpuLoadType, MemoryLoadType, VPortStatusType, GetConfigXmlType, ConfigXmlMissingType, SyncStartType, SyncEndType, ConfigResetType, VPortCountType, DeviceStatusType, EthernetStatusType, GsmStatusType, ServiceStatisticsType, SensorErrorReportType, SetDateTimeType, EjectSdCardType, FormatSdCardType, StopVPortsType, StartVPortsType, UpdateAllSensorsType, UpdateOneSensorType, RestartDeviceType, AnalogInputsDataType, DigitInputsDataType };
+	enum Type : uint8_t { FirmwareDescType, CpuLoadType, MemoryLoadType, VPortStatusType, GetConfigXmlType, ConfigXmlMissingType, SyncStartType, SyncEndType, ConfigResetType, VPortCountType, DeviceStatusType, EthernetStatusType, GsmStatusType, ServiceStatisticsType, SensorErrorReportType, SetDateTimeType, EjectSdCardType, FormatSdCardType, StopVPortsType, StartVPortsType, UpdateAllSensorsType, UpdateOneSensorType, RestartDeviceType, CleanMonitoringLogType, CleanSystemLogType, AnalogInputsDataType, DigitInputsDataType };
 	enum ComplexChannel { BootloaderChannel, FirmwareChannel, XmlConfigChannel, XmlConfigSyncChannel, SensorDataChannel, SupportedSensorsListChannel };
 
 	struct FirmwareDesc
@@ -33,6 +33,7 @@ namespace MarviePackets
 
 		unsigned long long sdCardCapacity;
 		unsigned long long sdCardFreeSpace;
+		unsigned long long logSize;
 	};
 	struct VPortStatus
 	{
@@ -49,8 +50,9 @@ namespace MarviePackets
 	{
 		DateTime dateTime;
 		enum class DeviceState : uint8_t { Reconfiguration, Working, IncorrectConfiguration } state;
-		enum class ConfigError : uint8_t { NoError, NoConfiglFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorReadingConfigError, SensorsConfigError } configError;
+		enum class ConfigError : uint8_t { NoError, NoConfiglFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorReadingConfigError, LogConfigError, SensorsConfigError } configError;
 		enum class SdCardStatus : uint8_t { NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } sdCardStatus;
+		enum class LogState : uint8_t { Off, Stopped, Working, Archiving } logState;
 		uint8_t errorSensorId;
 	};
 	struct EthernetStatus
@@ -61,7 +63,7 @@ namespace MarviePackets
 	};
 	struct GsmStatus
 	{
-		enum class State { Stopped, Initializing, Working, Stopping } state;
+		enum class State { Off, Stopped, Initializing, Working, Stopping } state;
 		enum class Error { NoError, AuthenticationError, TimeoutError, UnknownError } error;
 		uint32_t ip;
 	};

@@ -74,6 +74,61 @@
     </xs:complexType>
   </xs:element>
 
+  <xs:element name="logConfig">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="digitInputs" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="mode" use="required">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="disabled"/>
+                  <xs:enumeration value="byTime"/>
+                  <xs:enumeration value="byChange"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="period" type="logPeriod" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="analogInputs" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="mode" use="required">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="disabled"/>
+                  <xs:enumeration value="byTime"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="period" type="logPeriod" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="sensors" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="mode" use="required">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="disabled"/>
+                  <xs:enumeration value="enabled"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="maxSize" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:minInclusive value="1"/>
+            <xs:maxInclusive value="131072"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="overwriting" type="xs:boolean" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
   <xs:element name="modbusRtuSlave">
     <xs:complexType>
       <xs:attribute name="frameFormat" type="frameFormat"/>
@@ -182,6 +237,7 @@
           </xs:complexType>
         </xs:element>
         <xs:element ref="sensorReadingConfig" minOccurs="1" maxOccurs="1"/>
+        <xs:element ref="logConfig" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="sensorsConfig" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
@@ -260,6 +316,7 @@
           </xs:complexType>
         </xs:element>
         <xs:element ref="sensorReadingConfig" minOccurs="1" maxOccurs="1"/>
+        <xs:element ref="logConfig" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="sensorsConfig" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>

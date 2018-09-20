@@ -156,6 +156,9 @@
     <QtUic Include="MarvieController.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="SdStatistics.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_MarvieController.h">

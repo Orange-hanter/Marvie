@@ -285,3 +285,77 @@ bool MarvieXmlConfigParsers::parseSensorReadingConfig( XMLElement* sensorReading
 
 	return true;
 }
+
+bool MarvieXmlConfigParsers::parseLogConfig( XMLElement* logConfigNode, LogConf* conf )
+{
+	if( !logConfigNode )
+	{
+		conf->maxSize = 1024;
+		conf->overwriting = true;
+		conf->digitInputsMode = LogConf::DigitInputsMode::Disabled;
+		conf->analogInputsMode = LogConf::AnalogInputsMode::Disabled;
+		conf->sensorsMode = LogConf::SensorsMode::Disabled;
+		conf->digitInputsPeriod = 0;
+		conf->analogInputsPeriod = 0;
+
+		return true;
+	}
+
+	if( logConfigNode->QueryUnsignedAttribute( "maxSize", ( unsigned int* )&conf->maxSize ) == XML_NO_ATTRIBUTE )
+		return false;
+	if( logConfigNode->QueryBoolAttribute( "overwriting", &conf->overwriting ) == XML_NO_ATTRIBUTE )
+		return false;
+
+	auto c0 = logConfigNode->FirstChildElement( "digitInputs" );
+	const char* v;
+	if( c0->QueryStringAttribute( "mode", &v ) != XML_SUCCESS )
+		return false;
+	if( strcmp( v, "byTime" ) == 0 )
+	{
+		conf->digitInputsMode = LogConf::DigitInputsMode::ByTime;
+		if( c0->QueryUnsignedAttribute( "period", ( unsigned int* )&conf->digitInputsPeriod ) == XML_NO_ATTRIBUTE )
+			return false;
+	}
+	else if( strcmp( v, "byChange" ) == 0 )
+	{
+		conf->digitInputsMode = LogConf::DigitInputsMode::ByChange;
+		if( c0->QueryUnsignedAttribute( "period", ( unsigned int* )&conf->digitInputsPeriod ) == XML_NO_ATTRIBUTE )
+			return false;
+	}
+	else if( strcmp( v, "disabled" ) == 0 )
+	{
+		conf->digitInputsMode = LogConf::DigitInputsMode::Disabled;
+		conf->digitInputsPeriod = 0;
+	}
+	else
+		return false;
+
+	c0 = logConfigNode->FirstChildElement( "analogInputs" );
+	if( c0->QueryStringAttribute( "mode", &v ) != XML_SUCCESS )
+		return false;
+	if( strcmp( v, "byTime" ) == 0 )
+	{
+		conf->analogInputsMode = LogConf::AnalogInputsMode::ByTime;
+		if( c0->QueryUnsignedAttribute( "period", ( unsigned int* )&conf->analogInputsPeriod ) == XML_NO_ATTRIBUTE )
+			return false;
+	}
+	else if( strcmp( v, "disabled" ) == 0 )
+	{
+		conf->analogInputsMode = LogConf::AnalogInputsMode::Disabled;
+		conf->analogInputsPeriod = 0;
+	}
+	else
+		return false;
+
+	c0 = logConfigNode->FirstChildElement( "sensors" );
+	if( c0->QueryStringAttribute( "mode", &v ) != XML_SUCCESS )
+		return false;
+	if( strcmp( v, "enabled" ) == 0 )
+		conf->sensorsMode = LogConf::SensorsMode::Enabled;
+	else if( strcmp( v, "disabled" ) == 0 )
+		conf->sensorsMode = LogConf::SensorsMode::Disabled;
+	else
+		return false;
+
+	return true;
+}

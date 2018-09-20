@@ -926,7 +926,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
       <enum>QFrame::Raised</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="controlPage">
       <layout class="QHBoxLayout" name="horizontalLayout_26">
@@ -1642,7 +1642,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
              <property name="geometry">
               <rect>
                <x>10</x>
-               <y>250</y>
+               <y>280</y>
                <width>331</width>
                <height>27</height>
               </rect>
@@ -1724,7 +1724,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                <x>0</x>
                <y>0</y>
                <width>351</width>
-               <height>241</height>
+               <height>271</height>
               </rect>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_33">
@@ -1855,14 +1855,14 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                         </property>
                         <property name="minimumSize">
                          <size>
-                          <width>25</width>
-                          <height>25</height>
+                          <width>20</width>
+                          <height>20</height>
                          </size>
                         </property>
                         <property name="maximumSize">
                          <size>
-                          <width>25</width>
-                          <height>25</height>
+                          <width>20</width>
+                          <height>20</height>
                          </size>
                         </property>
                         <property name="toolTip">
@@ -1950,14 +1950,14 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                         </property>
                         <property name="minimumSize">
                          <size>
-                          <width>25</width>
-                          <height>25</height>
+                          <width>20</width>
+                          <height>20</height>
                          </size>
                         </property>
                         <property name="maximumSize">
                          <size>
-                          <width>25</width>
-                          <height>25</height>
+                          <width>20</width>
+                          <height>20</height>
                          </size>
                         </property>
                         <property name="toolTip">
@@ -1983,6 +1983,71 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                       </item>
                       <item>
                        <spacer name="horizontalSpacer_3">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Fixed</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>5</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_50">
+                      <item>
+                       <widget class="QLabel" name="logStateLabel">
+                        <property name="text">
+                         <string>Log: unknown</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QToolButton" name="logMenuButton">
+                        <property name="enabled">
+                         <bool>true</bool>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>20</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>20</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                        <property name="toolTip">
+                         <string>Format SD card</string>
+                        </property>
+                        <property name="text">
+                         <string/>
+                        </property>
+                        <property name="icon">
+                         <iconset resource="MarvieController.qrc">
+                          <normaloff>:/MarvieController/icons/icons8-down-button-48.png</normaloff>:/MarvieController/icons/icons8-down-button-48.png</iconset>
+                        </property>
+                        <property name="iconSize">
+                         <size>
+                          <width>25</width>
+                          <height>25</height>
+                         </size>
+                        </property>
+                        <property name="autoRaise">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_40">
                         <property name="orientation">
                          <enum>Qt::Horizontal</enum>
                         </property>
@@ -2107,12 +2172,6 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                      <layout class="QHBoxLayout" name="horizontalLayout_47">
                       <item>
                        <widget class="QLabel" name="lanIpLabel">
-                        <property name="minimumSize">
-                         <size>
-                          <width>47</width>
-                          <height>0</height>
-                         </size>
-                        </property>
                         <property name="text">
                          <string>IP: 0.0.0.0</string>
                         </property>
@@ -2140,12 +2199,6 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                      <layout class="QHBoxLayout" name="horizontalLayout_48">
                       <item>
                        <widget class="QLabel" name="lanNetmaskLabel">
-                        <property name="minimumSize">
-                         <size>
-                          <width>47</width>
-                          <height>0</height>
-                         </size>
-                        </property>
                         <property name="text">
                          <string>Netmask: 0.0.0.0</string>
                         </property>
@@ -2173,12 +2226,6 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                      <layout class="QHBoxLayout" name="horizontalLayout_49">
                       <item>
                        <widget class="QLabel" name="lanGatewayLabel">
-                        <property name="minimumSize">
-                         <size>
-                          <width>47</width>
-                          <height>0</height>
-                         </size>
-                        </property>
                         <property name="text">
                          <string>Gateway: 255.255.255.255</string>
                         </property>
@@ -3190,9 +3237,9 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
-                <width>414</width>
-                <height>567</height>
+                <y>-110</y>
+                <width>397</width>
+                <height>677</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -3893,6 +3940,398 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                        </item>
                        <item>
                         <spacer name="horizontalSpacer_39">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QWidget" name="networkConfigWidget_3" native="true">
+                 <layout class="QVBoxLayout" name="verticalLayout_26">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_20">
+                    <property name="font">
+                     <font>
+                      <pointsize>14</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Log config</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_32">
+                    <property name="leftMargin">
+                     <number>18</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QWidget" name="gsmModbusAsciiGroupWidget_17" native="true">
+                      <layout class="QHBoxLayout" name="horizontalLayout_56">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QLabel" name="label_4">
+                         <property name="text">
+                          <string>Max size</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QSpinBox" name="logMaxSizeSpinBox">
+                         <property name="suffix">
+                          <string> MB</string>
+                         </property>
+                         <property name="minimum">
+                          <number>1</number>
+                         </property>
+                         <property name="maximum">
+                          <number>131072</number>
+                         </property>
+                         <property name="singleStep">
+                          <number>10</number>
+                         </property>
+                         <property name="value">
+                          <number>1024</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QCheckBox" name="logOverwritingCheckBox">
+                         <property name="text">
+                          <string>Overwriting</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_50">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_31">
+                    <property name="leftMargin">
+                     <number>18</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QWidget" name="gsmModbusAsciiGroupWidget_16" native="true">
+                      <layout class="QHBoxLayout" name="horizontalLayout_55">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QLabel" name="label_29">
+                         <property name="minimumSize">
+                          <size>
+                           <width>96</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string>Digital inputs mode</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="digitalInputsLogModeComboBox">
+                         <property name="minimumSize">
+                          <size>
+                           <width>89</width>
+                           <height>23</height>
+                          </size>
+                         </property>
+                         <property name="currentIndex">
+                          <number>1</number>
+                         </property>
+                         <item>
+                          <property name="text">
+                           <string>Disabled</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>ByTime</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>ByChange</string>
+                          </property>
+                         </item>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="digitInputsLogLabel">
+                         <property name="text">
+                          <string>period</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QDoubleSpinBox" name="digitalInputsLogPeriodSpinBox">
+                         <property name="suffix">
+                          <string> sec</string>
+                         </property>
+                         <property name="decimals">
+                          <number>1</number>
+                         </property>
+                         <property name="minimum">
+                          <double>0.100000000000000</double>
+                         </property>
+                         <property name="maximum">
+                          <double>86400.000000000000000</double>
+                         </property>
+                         <property name="singleStep">
+                          <double>10.000000000000000</double>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_49">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_29">
+                    <property name="leftMargin">
+                     <number>18</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QWidget" name="gsmModbusAsciiGroupWidget_14" native="true">
+                      <layout class="QHBoxLayout" name="horizontalLayout_53">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QLabel" name="label_26">
+                         <property name="minimumSize">
+                          <size>
+                           <width>96</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string>Analog inputs mode</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="analogInputsLogModeComboBox">
+                         <property name="minimumSize">
+                          <size>
+                           <width>89</width>
+                           <height>23</height>
+                          </size>
+                         </property>
+                         <property name="currentIndex">
+                          <number>1</number>
+                         </property>
+                         <item>
+                          <property name="text">
+                           <string>Disabled</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>ByTime</string>
+                          </property>
+                         </item>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="analogInputsLogLabel">
+                         <property name="text">
+                          <string>period</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QSpinBox" name="analogInputsLogPeriodSpinBox">
+                         <property name="suffix">
+                          <string> sec</string>
+                         </property>
+                         <property name="minimum">
+                          <number>1</number>
+                         </property>
+                         <property name="maximum">
+                          <number>86400</number>
+                         </property>
+                         <property name="singleStep">
+                          <number>10</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_47">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_28">
+                    <property name="leftMargin">
+                     <number>18</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QWidget" name="gsmModbusAsciiGroupWidget_12" native="true">
+                      <layout class="QHBoxLayout" name="horizontalLayout_51">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QLabel" name="label_24">
+                         <property name="minimumSize">
+                          <size>
+                           <width>96</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string>Sensors mode</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="sensorsLogModeComboBox">
+                         <property name="minimumSize">
+                          <size>
+                           <width>89</width>
+                           <height>23</height>
+                          </size>
+                         </property>
+                         <property name="currentIndex">
+                          <number>1</number>
+                         </property>
+                         <item>
+                          <property name="text">
+                           <string>Disabled</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>Enabled</string>
+                          </property>
+                         </item>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_45">
                          <property name="orientation">
                           <enum>Qt::Horizontal</enum>
                          </property>

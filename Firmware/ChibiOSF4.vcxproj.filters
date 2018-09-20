@@ -668,6 +668,18 @@
     <Filter Include="Source files\Drivers\Network\Ethernet">
       <UniqueIdentifier>{bc5ed9f8-5679-4a2d-880e-4afa4639ed59}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source files\Log">
+      <UniqueIdentifier>{00dcbb64-a1c5-4e1f-967f-075de7eb73fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Log">
+      <UniqueIdentifier>{b5f4b3d8-51d6-4a4c-9a2f-502d5701878f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\FileSystem">
+      <UniqueIdentifier>{a9d326f7-11e0-407f-9bcf-451e5ab0b0c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\FileSystem">
+      <UniqueIdentifier>{16d749f2-64ab-48e9-b355-0a6ae9d57d23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
@@ -2517,6 +2529,27 @@
     <ClCompile Include="SensorService\TestSRSensorAType.cpp">
       <Filter>Source files\SensorService</Filter>
     </ClCompile>
+    <ClCompile Include="Log\FileLog.cpp">
+      <Filter>Source files\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\DateTime.cpp">
+      <Filter>Source files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSystem\File.cpp">
+      <Filter>Source files\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSystem\FileSystem.cpp">
+      <Filter>Source files\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSystem\Dir.cpp">
+      <Filter>Source files\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSystem\FileInfo.cpp">
+      <Filter>Source files\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Log\MarvieLog.cpp">
+      <Filter>Source files\Log</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mcuconf.h">
@@ -2809,6 +2842,33 @@
     </ClInclude>
     <ClInclude Include="Drivers\Sensors\TestSRSensorA.h">
       <Filter>Header files\Drivers\Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Log\FileLog.h">
+      <Filter>Header files\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSystem\FileSystem.h">
+      <Filter>Header files\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSystem\File.h">
+      <Filter>Header files\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSystem\Dir.h">
+      <Filter>Header files\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests\FileSystemTest.hpp">
+      <Filter>Source files\Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSystem\FileInfo.h">
+      <Filter>Header files\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Flags.h">
+      <Filter>Header files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests\MarvieLogSystemTest.hpp">
+      <Filter>Source files\Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="Log\MarvieLog.h">
+      <Filter>Header files\Log</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

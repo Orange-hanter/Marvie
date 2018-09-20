@@ -9,14 +9,26 @@
 #include "Drivers/Network/Ethernet/EthernetThread.h"
 
 #include "Core/RtcBackupRegisters.h"
+#include "Core/DateTimeService.h"
+
+#include "Tests/FileSystemTest.hpp"
+#include "Tests/MarvieLogSystemTest.hpp"
+
+#include <algorithm>
 
 int main()
 {
 	halInit();
 	chSysInit();
 
+	/*MarvieLogSystemTest::test();
+	while( true );*/
+
+	/*FileSystemTest::test();
+	while( true );*/
+
 	tcpip_init( nullptr, nullptr );
-	
+
 	ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );
 
 	MarvieDevice::instance()->exec();

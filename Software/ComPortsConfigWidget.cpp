@@ -57,13 +57,14 @@ void ComPortsConfigWidget::init( QVector< QVector< Assignment > > portAssignment
 		label->setFixedWidth( 35 );
 		hLayout->addWidget( label );
 		QComboBox* comboBox = new QComboBox;
+		comboBox->setFixedHeight( 23 );
 		comboBox->setObjectName( QString( "%1" ).arg( i ) );
 		for( const auto& i2 : portAssignments[i] )
 			comboBox->addItem( toString( i2 ) );
 		hLayout->addWidget( comboBox );
 		hLayout->addItem( new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum ) );
 		QObject::connect( comboBox, &QComboBox::currentTextChanged, this, &ComPortsConfigWidget::assignmentComboBoxChanged );
-		
+
 		QHBoxLayout* hContentLayout = new QHBoxLayout;
 		hContentLayout->setObjectName( QString( "%1.content" ).arg( i ) );
 		hContentLayout->setContentsMargins( QMargins( 35, 0, 0, 0 ) );
@@ -239,6 +240,7 @@ void ComPortsConfigWidget::addContent( unsigned int id, QHBoxLayout* layout, Ass
 		layout->addWidget( new QLabel( "Format" ) );
 		QComboBox* comboBox = new QComboBox;
 		comboBox->setObjectName( QString( "%1.format" ).arg( id ) );
+		comboBox->setFixedHeight( 23 );
 		comboBox->addItems( formatsList );
 		comboBox->setCurrentText( "B8N" );
 		QObject::connect( comboBox, &QComboBox::currentTextChanged, this, &ComPortsConfigWidget::relatedParameterChanged );
@@ -247,6 +249,7 @@ void ComPortsConfigWidget::addContent( unsigned int id, QHBoxLayout* layout, Ass
 		layout->addWidget( new QLabel( "Baudrate" ) );
 		comboBox = new QComboBox;
 		comboBox->setObjectName( QString( "%1.baudrate" ).arg( id ) );
+		comboBox->setFixedHeight( 23 );
 		comboBox->addItems( baudratesList );
 		comboBox->setCurrentText( "9600" );
 		QObject::connect( comboBox, &QComboBox::currentTextChanged, this, &ComPortsConfigWidget::relatedParameterChanged );
@@ -261,6 +264,7 @@ void ComPortsConfigWidget::addContent( unsigned int id, QHBoxLayout* layout, Ass
 		layout->addWidget( new QLabel( "Format" ) );
 		QComboBox* comboBox = new QComboBox;
 		comboBox->setObjectName( QString( "%1.format" ).arg( id ) );
+		comboBox->setFixedHeight( 23 );
 		comboBox->addItems( formatsList );
 		comboBox->setCurrentText( "B8N" );
 		QObject::connect( comboBox, &QComboBox::currentTextChanged, this, &ComPortsConfigWidget::relatedParameterChanged );
@@ -269,6 +273,7 @@ void ComPortsConfigWidget::addContent( unsigned int id, QHBoxLayout* layout, Ass
 		layout->addWidget( new QLabel( "Baudrate" ) );
 		comboBox = new QComboBox;
 		comboBox->setObjectName( QString( "%1.baudrate" ).arg( id ) );
+		comboBox->setFixedHeight( 23 );
 		comboBox->addItems( baudratesList );
 		comboBox->setCurrentText( "9600" );
 		QObject::connect( comboBox, &QComboBox::currentTextChanged, this, &ComPortsConfigWidget::relatedParameterChanged );
@@ -277,6 +282,7 @@ void ComPortsConfigWidget::addContent( unsigned int id, QHBoxLayout* layout, Ass
 		layout->addWidget( new QLabel( "Address" ) );
 		QSpinBox* spinBox = new QSpinBox;
 		spinBox->setObjectName( QString( "%1.address" ).arg( id ) );
+		spinBox->setFixedHeight( 23 );
 		spinBox->setMinimum( 0 );
 		spinBox->setMaximum( 255 );
 		QObject::connect( spinBox, static_cast< void( QSpinBox::* )( int ) >( &QSpinBox::valueChanged ), this, &ComPortsConfigWidget::relatedParameterChanged );
@@ -290,6 +296,7 @@ void ComPortsConfigWidget::addContent( unsigned int id, QHBoxLayout* layout, Ass
 		layout->addWidget( new QLabel( "Pin code" ) );
 		QLineEdit* edit = new QLineEdit;
 		edit->setObjectName( QString( "%1.pinCode" ).arg( id ) );
+		edit->setFixedHeight( 23 );
 		edit->setValidator( new QIntValidator( 0, 9999, edit ) );
 		QObject::connect( edit, &QLineEdit::textChanged, this, &ComPortsConfigWidget::relatedParameterChanged );
 		layout->addWidget( edit );
@@ -297,6 +304,7 @@ void ComPortsConfigWidget::addContent( unsigned int id, QHBoxLayout* layout, Ass
 		layout->addWidget( new QLabel( "APN" ) );
 		edit = new QLineEdit;
 		edit->setObjectName( QString( "%1.apn" ).arg( id ) );
+		edit->setFixedHeight( 23 );
 		QObject::connect( edit, &QLineEdit::textChanged, this, &ComPortsConfigWidget::relatedParameterChanged );
 		layout->addWidget( edit );
 
@@ -316,6 +324,7 @@ void ComPortsConfigWidget::addContent( unsigned int id, QHBoxLayout* layout, Ass
 			hLayout->addWidget( new QLabel( QString( "COM%1:  Format" ).arg( i ) ) );
 			QComboBox* comboBox = new QComboBox;
 			comboBox->setObjectName( QString( "%1.%2.format" ).arg( id ).arg( i ) );
+			comboBox->setFixedHeight( 23 );
 			comboBox->addItems( formatsList );
 			comboBox->setCurrentText( "B8N" );
 			QObject::connect( comboBox, &QComboBox::currentTextChanged, this, &ComPortsConfigWidget::relatedParameterChanged );
@@ -324,6 +333,7 @@ void ComPortsConfigWidget::addContent( unsigned int id, QHBoxLayout* layout, Ass
 			hLayout->addWidget( new QLabel( "Baudrate" ) );
 			comboBox = new QComboBox;
 			comboBox->setObjectName( QString( "%1.%2.baudrate" ).arg( id ).arg( i ) );
+			comboBox->setFixedHeight( 23 );
 			comboBox->addItems( baudratesList );
 			comboBox->setCurrentText( "9600" );
 			QObject::connect( comboBox, &QComboBox::currentTextChanged, this, &ComPortsConfigWidget::relatedParameterChanged );

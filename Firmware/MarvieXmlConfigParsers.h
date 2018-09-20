@@ -47,6 +47,17 @@ namespace MarvieXmlConfigParsers
 		uint32_t rs485MinInterval;
 	};
 
+	struct LogConf
+	{
+		uint32_t maxSize;
+		bool overwriting;
+		enum class DigitInputsMode : uint8_t { Disabled, ByTime, ByChange } digitInputsMode;
+		enum class AnalogInputsMode : uint8_t { Disabled, ByTime } analogInputsMode;
+		enum class SensorsMode : uint8_t { Disabled, Enabled } sensorsMode;
+		uint32_t digitInputsPeriod; // ms
+		uint32_t analogInputsPeriod; // ms
+	};
+
 	struct VPortConf : public ComPortConf
 	{
 		VPortConf() : ComPortConf( ComPortAssignment::VPort ) {}
@@ -100,4 +111,5 @@ namespace MarvieXmlConfigParsers
 	ComPortConf** parseComPortsConfig( XMLElement* comPortsConfigNode, const std::list< std::list< ComPortAssignment > >& comPortAssignments );
 	bool parseNetworkConfig( XMLElement* networkConfigNode, NetworkConf* conf );
 	bool parseSensorReadingConfig( XMLElement* sensorReadingConfigNode, SensorReadingConf* conf );
+	bool parseLogConfig( XMLElement* logConfigNode, LogConf* conf );
 }

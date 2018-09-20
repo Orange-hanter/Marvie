@@ -178,12 +178,34 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 		}
 	};
 	ui.memoryLoadLabel->installEventFilter( new MemoryLoadChartEventFilter( ui.memoryLoadLabel, memStat ) );
+	sdStat = new SdStatistics;
+	class SdLoadChartEventFilter : public QObject
+	{
+	public:
+		SdStatistics* sdStat;
+		SdLoadChartEventFilter( QObject* parent, SdStatistics* stat ) : QObject( parent ), sdStat( stat ) {}
+		bool eventFilter( QObject* obj, QEvent *event )
+		{
+			if( event->type() == QEvent::MouseButtonPress && static_cast< QMouseEvent* >( event )->modifiers() && Qt::KeyboardModifier::ControlModifier )
+			{
+				QWidget* w = static_cast< QWidget* >( obj );
+				sdStat->show( w->mapToGlobal( w->geometry().center() + QPoint( 0, w->geometry().height() / 2 ) ) );
+			}
+			return false;
+		}
+	};
+	ui.sdLoadLabel->installEventFilter( new SdLoadChartEventFilter( ui.sdLoadLabel, sdStat ) );
 	resetDeviceLoad();
 
 	sdCardMenu = new QMenu( this );
 	sdCardMenu->addAction( QIcon( ":/MarvieController/icons/icons8-eject-48.png" ), "Eject" );
 	sdCardMenu->addAction( QIcon( ":/MarvieController/icons/icons8-eraser-60.png" ), "Format" );
 	sdCardMenu->setFixedWidth( 100 );
+
+	logMenu = new QMenu( this );
+	logMenu->addAction( QIcon( ":/MarvieController/icons/icons8-eraser-60.png" ), "Clean monitoring log" );
+	logMenu->addAction( QIcon( ":/MarvieController/icons/icons8-eraser-60.png" ), "Clean system log" );
+	logMenu->setFixedWidth( 150 );
 
 	ui.monitoringDataTreeView->setModel( &monitoringDataModel );
 	ui.monitoringDataTreeView->header()->resizeSection( 0, 175 );
@@ -265,9 +287,24 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	QObject::connect( ui.updateSensorButton, &QToolButton::released, this, &MarvieController::updateSensorButtonClicked );
 	QObject::connect( ui.syncDateTimeButton, &QToolButton::released, this, &MarvieController::syncDateTimeButtonClicked );
 	QObject::connect( ui.sdCardMenuButton, &QToolButton::released, this, &MarvieController::sdCardMenuButtonClicked );
+	QObject::connect( ui.logMenuButton, &QToolButton::released, this, &MarvieController::logMenuButtonClicked );
 
 	QObject::connect( ui.addVPortOverIpButton, &QToolButton::released, this, &MarvieController::addVPortOverIpButtonClicked );
 	QObject::connect( ui.removeVPortOverIpButton, &QToolButton::released, this, &MarvieController::removeVPortOverIpButtonClicked );
+	QObject::connect( ui.digitalInputsLogModeComboBox, static_cast< void( QComboBox::* )( int ) >( &QComboBox::currentIndexChanged ), [this]( int index )
+	{
+		if( index == 0 )
+			ui.digitalInputsLogPeriodSpinBox->hide(), ui.digitInputsLogLabel->hide();
+		else
+			ui.digitalInputsLogPeriodSpinBox->show(), ui.digitInputsLogLabel->show();
+	} );
+	QObject::connect( ui.analogInputsLogModeComboBox, static_cast< void( QComboBox::* )( int ) >( &QComboBox::currentIndexChanged ), [this]( int index )
+	{
+		if( index == 0 )
+			ui.analogInputsLogPeriodSpinBox->hide(), ui.analogInputsLogLabel->hide();
+		else
+			ui.analogInputsLogPeriodSpinBox->show(), ui.analogInputsLogLabel->show();
+	} );
 
 	QObject::connect( ui.comPortsConfigWidget, &ComPortsConfigWidget::assignmentChanged, this, &MarvieController::comPortAssignmentChanged );
 	QObject::connect( &vPortsOverEthernetModel, &VPortOverIpModel::dataChanged, this, &MarvieController::updateVPortsList );
@@ -295,6 +332,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	QObject::connect( ui.downloadConfigButton, &QToolButton::clicked, this, &MarvieController::downloadConfigButtonClicked );
 
 	QObject::connect( sdCardMenu, &QMenu::triggered, this, &MarvieController::sdCardMenuActionTriggered );
+	QObject::connect( logMenu, &QMenu::triggered, this, &MarvieController::logMenuActionTriggered );
 
 	QObject::connect( ui.monitoringDataTreeView, &QTreeView::customContextMenuRequested, this, &MarvieController::monitoringDataViewMenuRequested );
 	QObject::connect( monitoringDataViewMenu, &QMenu::triggered, this, &MarvieController::monitoringDataViewMenuActionTriggered );
@@ -679,6 +717,13 @@ void MarvieController::sdCardMenuButtonClicked()
 	sdCardMenu->popup( ui.sdCardMenuButton->mapToGlobal( ui.sdCardMenuButton->rect().bottomLeft() ) );
 }
 
+void MarvieController::logMenuButtonClicked()
+{
+	logMenu->actions()[0]->setEnabled( deviceSdCardStatus == SdCardStatus::Working );
+	logMenu->actions()[1]->setEnabled( deviceSdCardStatus == SdCardStatus::Working );
+	logMenu->popup( ui.logMenuButton->mapToGlobal( ui.logMenuButton->rect().bottomLeft() ) );
+}
+
 void MarvieController::sdCardMenuActionTriggered( QAction* action )
 {
 	if( action->text() == "Eject" )
@@ -693,6 +738,28 @@ void MarvieController::sdCardMenuActionTriggered( QAction* action )
 		if( ret == QMessageBox::Discard )
 			return;
 		mlink.sendPacket( MarviePackets::Type::FormatSdCardType, QByteArray() );
+	}
+}
+
+void MarvieController::logMenuActionTriggered( QAction* action )
+{
+	if( action->text() == "Clean monitoring log" )
+	{
+		int ret = QMessageBox::question( nullptr, "Clean monitoring log",
+										 "This operation cannot be interrupted. Do you want to continue?",
+										 QMessageBox::Yes, QMessageBox::Discard );
+		if( ret == QMessageBox::Discard )
+			return;
+		mlink.sendPacket( MarviePackets::Type::CleanMonitoringLogType, QByteArray() );
+	}
+	else if( action->text() == "Clean system log" )
+	{
+		int ret = QMessageBox::question( nullptr, "Clean system log",
+										 "This operation cannot be interrupted. Do you want to continue?",
+										 QMessageBox::Yes, QMessageBox::Discard );
+		if( ret == QMessageBox::Discard )
+			return;
+		mlink.sendPacket( MarviePackets::Type::CleanSystemLogType, QByteArray() );
 	}
 }
 
@@ -884,6 +951,14 @@ void MarvieController::newConfigButtonClicked()
 	vPortsOverEthernetModel.removeRows( 0, vPortsOverEthernetModel.rowCount() );
 
 	ui.rs485MinIntervalSpinBox->setValue( 0 );
+
+	ui.logMaxSizeSpinBox->setValue( 1024 );
+	ui.logOverwritingCheckBox->setChecked( true );
+	ui.digitalInputsLogModeComboBox->setCurrentIndex( 0 );
+	ui.digitalInputsLogPeriodSpinBox->setValue( 1 );
+	ui.analogInputsLogModeComboBox->setCurrentIndex( 0 );
+	ui.analogInputsLogPeriodSpinBox->setValue( 10 );
+	ui.sensorsLogModeComboBox->setCurrentIndex( 0 );
 
 	sensorsClearButtonClicked();
 }
@@ -1212,6 +1287,7 @@ void MarvieController::mlinkStateChanged( MLinkClient::State s )
 	case MLinkClient::State::Connected:
 		ui.syncDateTimeButton->show();
 		ui.sdCardMenuButton->show();
+		ui.logMenuButton->show();
 
 		monitoringDataModel.resetData();
 		break;
@@ -2004,6 +2080,53 @@ private:
 	QSpinBox* minSpinBox;
 };
 
+class MsPeriodEdit : public QWidget
+{
+public:
+	MsPeriodEdit( int decimals = 1 )
+	{
+		secSpinBox = new QDoubleSpinBox( this );
+		secSpinBox->setDecimals( decimals );
+		minSpinBox = new QSpinBox( this );
+		QObject::connect( secSpinBox, &QSpinBox::editingFinished, [this]()
+		{
+			auto v = secSpinBox->value();
+			secSpinBox->setValue( ( int( v * 1000 ) % 60000 ) / 1000.0 );
+			minSpinBox->setValue( minSpinBox->value() + ( int )v / 60 );
+		} );
+
+		QHBoxLayout* layout = new QHBoxLayout( this );
+		layout->setContentsMargins( 0, 0, 0, 0 );
+		layout->setSpacing( 4 );
+		layout->addWidget( minSpinBox );
+		layout->addWidget( new QLabel( "min" ) );
+		layout->addWidget( secSpinBox );
+		layout->addWidget( new QLabel( "sec" ) );
+	}
+
+	void setRange( uint minMSec, uint maxMSec )
+	{
+		secSpinBox->setMinimum( minMSec / 1000 );
+		secSpinBox->setMaximum( maxMSec / 1000 );
+		minSpinBox->setMinimum( minMSec / 1000 / 60 );
+		minSpinBox->setMaximum( maxMSec / 1000 / 60 );
+	}
+
+	uint value()
+	{
+		return int( secSpinBox->value() * 1000 ) + minSpinBox->value() * 60;
+	}
+	void setValue( uint msec )
+	{
+		secSpinBox->setValue( ( msec % 60000 ) / 1000.0 );
+		minSpinBox->setValue( msec / 1000 / 60 );
+	}
+
+private:
+	QDoubleSpinBox * secSpinBox;
+	QSpinBox* minSpinBox;
+};
+
 QTreeWidgetItem* MarvieController::insertSensorSettings( int position, QString sensorName, QMap< QString, QString > sensorSettingsValues, bool needUpdateName /*= false*/ )
 {
 	assert( sensorDescMap.contains( sensorName ) );
@@ -2074,6 +2197,12 @@ QTreeWidgetItem* MarvieController::insertSensorSettings( int position, QString s
 		if( sensorSettingsValues.contains( "emergencyPeriod" ) )
 			periodEdit->setValue( sensorSettingsValues["emergencyPeriod"].toInt() );
 		addContent( "emergencyPeriod", periodEdit );
+
+		QLineEdit* lineEdit = new QLineEdit;
+		lineEdit->setMaxLength( 150 );
+		if( sensorSettingsValues.contains( "name" ) )
+			lineEdit->setText( sensorSettingsValues["name"] );
+		addContent( "name", lineEdit );
 	}
 	else /*if( sensorDescMap[sensorName].settings.target == SensorDesc::Settings::Target::SR )*/
 	{
@@ -2081,8 +2210,22 @@ QTreeWidgetItem* MarvieController::insertSensorSettings( int position, QString s
 		spinBox->setMaximum( 7 );
 		spinBox->setMinimum( 0 );
 		if( sensorSettingsValues.contains( "blockID" ) )
-			spinBox->setValue( sensorSettingsValues["blockID"].toInt() );		
+			spinBox->setValue( sensorSettingsValues["blockID"].toInt() );
 		addContent( "blockID", spinBox );
+
+		MsPeriodEdit* periodEdit = new MsPeriodEdit;
+		periodEdit->setRange( 100, 86400000 );
+		if( sensorSettingsValues.contains( "logPeriod" ) )
+			periodEdit->setValue( sensorSettingsValues["logPeriod"].toInt() );
+		else
+			periodEdit->setValue( 1000 );
+		addContent( "logPeriod", periodEdit );
+
+		QLineEdit* lineEdit = new QLineEdit;
+		lineEdit->setMaxLength( 150 );
+		if( sensorSettingsValues.contains( "name" ) )
+			lineEdit->setText( sensorSettingsValues["name"] );
+		addContent( "name", lineEdit );
 	}
 
 	for( const auto& i : desc )
@@ -2246,10 +2389,13 @@ QMap< QString, QString > MarvieController::sensorSettingsValues( int position )
 			map["baudrate"] = comboBox->currentText();
 		map["normalPeriod"] = QString( "%1" ).arg( ui.sensorSettingsTreeWidget->findChild< PeriodEdit* >( ENAME( "normalPeriod" ) )->value() );
 		map["emergencyPeriod"] = QString( "%1" ).arg( ui.sensorSettingsTreeWidget->findChild< PeriodEdit* >( ENAME( "emergencyPeriod" ) )->value() );
+		map["name"] = QString( "%1" ).arg( ui.sensorSettingsTreeWidget->findChild< QLineEdit* >( ENAME( "name" ) )->text() );
 	}
 	else /*if( sensorDescMap[sensorName].settings.target == SensorDesc::Settings::Target::SR )*/
 	{
 		map["blockID"] = QString( "%1" ).arg( ui.sensorSettingsTreeWidget->findChild< QSpinBox* >( ENAME( "blockID" ) )->value() );
+		map["logPeriod"] = QString( "%1" ).arg( ui.sensorSettingsTreeWidget->findChild< MsPeriodEdit* >( ENAME( "logPeriod" ) )->value() );
+		map["name"] = QString( "%1" ).arg( ui.sensorSettingsTreeWidget->findChild< QLineEdit* >( ENAME( "name" ) )->text() );
 	}
 
 	for( const auto& i : desc )
@@ -2510,6 +2656,36 @@ bool MarvieController::loadConfigFromXml( QByteArray xmlData )
 		ui.rs485MinIntervalSpinBox->setValue( c2.attribute( "value" ).toInt() );
 	}
 
+	c1 = configRoot.firstChildElement( "logConfig" );
+	if( !c1.isNull() )
+	{
+		ui.logMaxSizeSpinBox->setValue( c1.attribute( "maxSize" ).toInt() );
+		ui.logOverwritingCheckBox->setChecked( c1.attribute( "overwriting" ).replace( "true", "1" ).replace( "false", "0" ).toInt() );
+
+		c2 = c1.firstChildElement( "digitInputs" );
+		QString value = c2.attribute( "mode" );
+		if( value == "byTime" )
+		{
+			ui.digitalInputsLogModeComboBox->setCurrentText( "ByTime" );
+			ui.digitalInputsLogPeriodSpinBox->setValue( c2.attribute( "period" ).toInt() / 1000.0 );
+		}
+		else if( value == "byChange" )
+		{
+			ui.digitalInputsLogModeComboBox->setCurrentText( "ByChange" );
+			ui.digitalInputsLogPeriodSpinBox->setValue( c2.attribute( "period" ).toInt() / 1000.0 );
+		}
+
+		c2 = c1.firstChildElement( "analogInputs" );
+		if( c2.attribute( "mode" ) == "byTime" )
+		{
+			ui.analogInputsLogModeComboBox->setCurrentText( "ByTime" );
+			ui.analogInputsLogPeriodSpinBox->setValue( c2.attribute( "period" ).toInt() / 1000 );
+		}
+
+		if( c1.firstChildElement( "sensors" ).attribute( "mode" ) == "enabled" )
+			ui.sensorsLogModeComboBox->setCurrentText( "Enabled" );
+	}
+
 	c1 = configRoot.firstChildElement( "sensorsConfig" );
 	if( c1.isNull() )
 		return true;
@@ -2696,6 +2872,44 @@ QByteArray MarvieController::saveConfigToXml()
 	}
 	root.appendChild( doc.createComment( "==================================================================" ) );
 
+	{
+		auto c1 = doc.createElement( "logConfig" );
+		root.appendChild( c1 );
+		c1.setAttribute( "maxSize", ui.logMaxSizeSpinBox->value() );
+		c1.setAttribute( "overwriting", ui.logOverwritingCheckBox->isChecked() ? "true" : "false" );
+
+		auto c2 = doc.createElement( "digitInputs" );
+		c1.appendChild( c2 );
+		if( ui.digitalInputsLogModeComboBox->currentText() == "Disabled" )
+			c2.setAttribute( "mode", "disabled" );
+		else
+		{
+			c2.setAttribute( "period", int( ui.digitalInputsLogPeriodSpinBox->value() * 1000 ) );
+			if( ui.digitalInputsLogModeComboBox->currentText() == "ByTime" )
+				c2.setAttribute( "mode", "byTime" );
+			else if( ui.digitalInputsLogModeComboBox->currentText() == "ByChange" )
+				c2.setAttribute( "mode", "byChange" );
+		}
+
+		c2 = doc.createElement( "analogInputs" );
+		c1.appendChild( c2 );
+		if( ui.analogInputsLogModeComboBox->currentText() == "Disabled" )
+			c2.setAttribute( "mode", "disabled" );
+		else if( ui.analogInputsLogModeComboBox->currentText() == "ByTime" )
+		{
+			c2.setAttribute( "mode", "byTime" );
+			c2.setAttribute( "period", ui.analogInputsLogPeriodSpinBox->value() * 1000 );
+		}
+
+		c2 = doc.createElement( "sensors" );
+		c1.appendChild( c2 );
+		if( ui.sensorsLogModeComboBox->currentText() == "Disabled" )
+			c2.setAttribute( "mode", "disabled" );
+		else if( ui.sensorsLogModeComboBox->currentText() == "Enabled" )
+			c2.setAttribute( "mode", "enabled" );
+	}
+	root.appendChild( doc.createComment( "==================================================================" ) );
+
 	if( ui.sensorSettingsTreeWidget->topLevelItemCount() )
 	{
 		auto c1 = doc.createElement( "sensorsConfig" );
@@ -2727,12 +2941,24 @@ QByteArray MarvieController::saveConfigToXml()
 				c3 = doc.createElement( "emergencyPeriod" );
 				c2.appendChild( c3 );
 				c3.appendChild( doc.createTextNode( settingsValues["emergencyPeriod"] ) );
+
+				c3 = doc.createElement( "name" );
+				c2.appendChild( c3 );
+				c3.appendChild( doc.createTextNode( settingsValues["name"] ) );
 			}
 			else if( settings.target == SensorDesc::Settings::Target::SR )
 			{
 				auto c3 = doc.createElement( "blockID" );
 				c2.appendChild( c3 );
 				c3.appendChild( doc.createTextNode( settingsValues["blockID"] ) );
+
+				c3 = doc.createElement( "logPeriod" );
+				c2.appendChild( c3 );
+				c3.appendChild( doc.createTextNode( settingsValues["logPeriod"] ) );
+
+				c3 = doc.createElement( "name" );
+				c2.appendChild( c3 );
+				c3.appendChild( doc.createTextNode( settingsValues["name"] ) );
 			}
 			for( const auto& i : settings.prmList )
 			{
@@ -2793,6 +3019,7 @@ void MarvieController::updateDeviceMemoryLoad( const MarviePackets::MemoryLoad* 
 		static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[1]->setValue( 100.0 );
 		ui.sdLoadLabel->setText( "SD\nN/A" );
 	}
+	sdStat->setStatistics( load->sdCardCapacity, load->sdCardFreeSpace, load->logSize );
 }
 
 void MarvieController::resetDeviceLoad()
@@ -2812,6 +3039,7 @@ void MarvieController::resetDeviceLoad()
 	static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[0]->setValue( 0.0 );
 	static_cast< QPieSeries* >( ui.sdLoadChartView->chart()->series()[0] )->slices()[1]->setValue( 100.0 );
 	ui.sdLoadLabel->setText( "SD\n0MB" );
+	sdStat->setStatistics( 0, 0, 0 );
 }
 
 void MarvieController::updateDeviceStatus( const MarviePackets::DeviceStatus* status )
@@ -2847,6 +3075,9 @@ void MarvieController::updateDeviceStatus( const MarviePackets::DeviceStatus* st
 			break;
 		case MarviePackets::DeviceStatus::ConfigError::SensorReadingConfigError:
 			ui.deviceStateLabel->setToolTip( "Sensor reading configuration error" );
+			break;
+		case MarviePackets::DeviceStatus::ConfigError::LogConfigError:
+			ui.deviceStateLabel->setToolTip( "Log configuration error" );
 			break;
 		case MarviePackets::DeviceStatus::ConfigError::SensorsConfigError:
 			ui.deviceStateLabel->setToolTip( "Sensors configuration error" );
@@ -2890,6 +3121,29 @@ void MarvieController::updateDeviceStatus( const MarviePackets::DeviceStatus* st
 		deviceSdCardStatus = SdCardStatus::Unknown;
 		break;
 	}
+
+	switch( status->logState )
+	{
+	case MarviePackets::DeviceStatus::LogState::Off:
+		deviceLogState = LogState::Off;
+		ui.logStateLabel->setText( "Log: off" );
+		break;
+	case MarviePackets::DeviceStatus::LogState::Stopped:
+		deviceLogState = LogState::Off;
+		ui.logStateLabel->setText( "Log: stopped" );
+		break;
+	case MarviePackets::DeviceStatus::LogState::Working:
+		deviceLogState = LogState::Off;
+		ui.logStateLabel->setText( "Log: working" );
+		break;
+	case MarviePackets::DeviceStatus::LogState::Archiving:
+		deviceLogState = LogState::Off;
+		ui.logStateLabel->setText( "Log: archiving" );
+		break;
+	default:
+		deviceLogState = LogState::Unknown;
+		break;
+	}
 }
 
 QString printIp( uint32_t ip )
@@ -2923,6 +3177,9 @@ void MarvieController::updateGsmStatus( const MarviePackets::GsmStatus* status )
 		break;
 	case MarviePackets::GsmStatus::State::Stopping:
 		ui.gsmStateLabel->setText( "State: stopped" );
+		break;
+	case MarviePackets::GsmStatus::State::Off:
+		ui.gsmStateLabel->setText( "State: off" );
 		break;
 	default:
 		break;
@@ -2964,6 +3221,7 @@ void MarvieController::resetDeviceInfo()
 	// Device status
 	deviceState = DeviceState::Unknown;
 	deviceSdCardStatus = SdCardStatus::Unknown;
+	deviceLogState = LogState::Unknown;
 
 	ui.deviceDateTimeLabel->setText( "Time: unknown" );
 	ui.deviceStateLabel->setText( "State: unknown" );
@@ -2971,6 +3229,7 @@ void MarvieController::resetDeviceInfo()
 
 	ui.syncDateTimeButton->hide();
 	ui.sdCardMenuButton->hide();
+	ui.logMenuButton->hide();
 
 	// Ethernet status
 	ui.lanIpLabel->setText( "IP: 0.0.0.0" );
@@ -3254,14 +3513,14 @@ void MarvieController::insertTopLevelMonitoringDataItem( MonitoringDataItem* ite
 
 DateTime MarvieController::toDeviceDateTime( const QDateTime& dateTime )
 {
-	return DateTime( Date( dateTime.date().day(), dateTime.date().dayOfWeek(), dateTime.date().month(), dateTime.date().year() ),
-					 Time( dateTime.time().msec(), dateTime.time().second(), dateTime.time().minute(), dateTime.time().hour() ) );
+	return DateTime( Date( dateTime.date().year(), dateTime.date().month(), dateTime.date().day(), dateTime.date().dayOfWeek() ),
+					 Time( dateTime.time().hour(), dateTime.time().minute(), dateTime.time().second(), dateTime.time().msec() ) );
 }
 
 QDateTime MarvieController::toQtDateTime( const DateTime& dateTime )
 {
-	return QDateTime( QDate( dateTime.year(), dateTime.month(), dateTime.day() ),
-					  QTime( dateTime.hour(), dateTime.min(), dateTime.sec(), dateTime.msec() ) );
+	return QDateTime( QDate( dateTime.date().year(), dateTime.date().month(), dateTime.date().day() ),
+					  QTime( dateTime.time().hour(), dateTime.time().min(), dateTime.time().sec(), dateTime.time().msec() ) );
 }
 
 QString MarvieController::printDateTime( const QDateTime& dateTime )
@@ -3664,4 +3923,48 @@ void MarvieController::MemStatistics::show( QPoint point )
 void MarvieController::MemStatistics::focusOutEvent( QFocusEvent *event )
 {
 	hide();
+}
+
+MarvieController::SdStatistics::SdStatistics()
+{
+	ui.setupUi( this );
+
+	resize( 100, 75 );
+	setWindowFlag( Qt::WindowFlags::enum_type::Popup );
+	setFrameShape( QFrame::Shape::StyledPanel );
+	setFrameShadow( QFrame::Shadow::Raised );
+
+	setStatistics( 0, 0, 0 );
+}
+
+void MarvieController::SdStatistics::setStatistics( uint64_t totalSize, uint64_t freeSize, uint64_t logSize )
+{
+	ui.totalSizeLabel->setText( printSize( totalSize ) );
+	ui.freeSizeLabel->setText( printSize( freeSize ) );
+	ui.logSizeLabel->setText( printSize( logSize ) );
+}
+
+void MarvieController::SdStatistics::show( QPoint point )
+{
+	auto rect = geometry();
+	rect.moveCenter( point + QPoint( 0, height() / 2 ) );
+	setGeometry( rect );
+	QFrame::show();
+	setFocus();
+}
+
+void MarvieController::SdStatistics::focusOutEvent( QFocusEvent *event )
+{
+	hide();
+}
+
+QString MarvieController::SdStatistics::printSize( uint64_t size )
+{
+	if( size < 1024 )
+		return QString( "%1 B" ).arg( size );
+	if( size < 1024 * 1024 )
+		return QString( "%1.%2 KB" ).arg( size / 1024 ).arg( ( ( size + 1 ) % 1024 ) * 100 / 1024, 2, 10, QChar( '0' ) );
+	if( size < 1024 * 1024 * 1024 )
+		return QString( "%1.%2 MB" ).arg( size / 1024 / 1024 ).arg( ( ( size + 1 ) % ( 1024 * 1024 ) ) * 100 / ( 1024 * 1024 ), 2, 10, QChar( '0' ) );
+	return QString( "%1.%2 GB" ).arg( size / 1024 / 1024 / 1024 ).arg( ( ( size + 1 ) % ( 1024 * 1024 * 1024 ) ) * 100 / ( 1024 * 1024 * 1024 ), 2, 10, QChar( '0' ) );
 }

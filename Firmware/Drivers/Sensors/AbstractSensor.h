@@ -58,6 +58,7 @@ public:
 	public:
 		virtual float analogSignal( uint32_t block, uint32_t line ) = 0;
 		virtual bool digitSignal( uint32_t block, uint32_t line ) = 0;
+		virtual uint32_t digitSignals( uint32_t block ) = 0;
 	};
 
 	AbstractSRSensor();
