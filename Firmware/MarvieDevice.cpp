@@ -1757,10 +1757,12 @@ void MarvieDevice::sendDeviceStatus()
 	{
 		if( marvieLog->state() == MarvieLog::State::Working )
 			status.logState = MarviePackets::DeviceStatus::LogState::Working;
+		else if( marvieLog->state() == MarvieLog::State::Stopped )
+			status.logState = MarviePackets::DeviceStatus::LogState::Stopped;
+		else if( marvieLog->state() == MarvieLog::State::Stopping )
+			status.logState = MarviePackets::DeviceStatus::LogState::Stopping;
 		else if( marvieLog->state() == MarvieLog::State::Archiving )
 			status.logState = MarviePackets::DeviceStatus::LogState::Archiving;
-		else
-			status.logState = MarviePackets::DeviceStatus::LogState::Stopped;
 	}
 	else
 		status.logState = MarviePackets::DeviceStatus::LogState::Off;

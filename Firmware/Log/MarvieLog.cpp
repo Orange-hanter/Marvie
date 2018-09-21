@@ -180,9 +180,9 @@ void MarvieLog::updateSensor( AbstractSensor* sensor, const std::string* name )
 
 		uint32_t block = sensor->userData() / 64;
 		uint32_t bit = sensor->userData() % 64;
-		if( !( pendingFlags[block] & ( 1 << bit ) ) )
+		if( !( pendingFlags[block] & ( 1ULL << bit ) ) )
 		{
-			pendingFlags[block] |= ( 1 << bit );
+			pendingFlags[block] |= ( 1ULL << bit );
 			pendingSensors.push_back( SensorDesc( sensor, name ) );
 		}
 		mutex.unlock();
@@ -345,7 +345,7 @@ void MarvieLog::logAnalogInputs()
 
 void MarvieLog::logSensorData()
 {
-	while( true )
+	while( logState != State::Stopping )
 	{
 		mutex.lock();
 		std::size_t count = pendingSensors.size();
@@ -358,7 +358,7 @@ void MarvieLog::logSensorData()
 		AbstractSensor* sensor = pendingSensors.front().sensor;
 		const std::string* sensorName = pendingSensors.front().name;
 		pendingSensors.pop_front();
-		pendingFlags[sensor->userData() / 64] &= ~( 1 << ( sensor->userData() % 64 ) );
+		pendingFlags[sensor->userData() / 64] &= ~( 1ULL << ( sensor->userData() % 64 ) );
 		mutex.unlock();
 
 		uint32_t recordSize = 4 + sizeof( DateTime ) + sensor->sensorDataSize() + 4;
@@ -373,13 +373,6 @@ void MarvieLog::logSensorData()
 				continue;
 		}
 
-		auto sensorData = sensor->sensorData();
-		sensorData->lock();
-		if( !sensorData->isValid() )
-		{
-			sensorData->unlock();
-			continue;
-		}
 		DateTime dateTime = sensor->sensorData()->time();
 		sprintf( ( char* )buffer, "%d/%d/%d", ( int )dateTime.date().year(), ( int )dateTime.date().month(), ( int )dateTime.date().day() );
 		rootDir.mkpath( ( char* )buffer );
@@ -393,19 +386,25 @@ void MarvieLog::logSensorData()
 					 ( int )sensor->userData() + 1, sensor->name() );
 		if( file.open( ( char* )buffer, FileSystem::OpenAppend | FileSystem::Write ) )
 		{
-			buffer[0] = '_'; buffer[1] = 'l'; buffer[2] = 'o'; buffer[3] = 'g';
-			*( DateTime* )( buffer + 4 ) = dateTime;
+			auto sensorData = sensor->sensorData();
+			sensorData->lock();
+			if( sensorData->isValid() )
+			{
+				buffer[0] = '_'; buffer[1] = 'l'; buffer[2] = 'o'; buffer[3] = 'g';
+				*( DateTime* )( buffer + 4 ) = dateTime;
 
-			Crc32HW::acquire();
-			uint32_t crc = Crc32HW::crc32Byte( buffer, 4 + sizeof( DateTime ), ( uint8_t* )sensorData + sizeof( SensorData ), sensor->sensorDataSize() );
-			Crc32HW::release();
+				Crc32HW::acquire();
+				uint32_t crc = Crc32HW::crc32Byte( buffer, 4 + sizeof( DateTime ), ( uint8_t* )sensorData + sizeof( SensorData ), sensor->sensorDataSize() );
+				Crc32HW::release();
 
-			logSize += file.write( buffer, 4 + sizeof( DateTime ) );
-			logSize += file.write( ( uint8_t* )sensorData + sizeof( SensorData ), sensor->sensorDataSize() );
-			logSize += file.write( ( uint8_t* )&crc, 4 );
+				logSize += file.write( buffer, 4 + sizeof( DateTime ) );
+				logSize += file.write( ( uint8_t* )sensorData + sizeof( SensorData ), sensor->sensorDataSize() );
+				logSize += file.write( ( uint8_t* )&crc, 4 );
+			}
+
+			sensorData->unlock();
 			file.close();
 		}
-		sensorData->unlock();
 	}
 }
 

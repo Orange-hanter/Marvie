@@ -3140,6 +3140,10 @@ void MarvieController::updateDeviceStatus( const MarviePackets::DeviceStatus* st
 		deviceLogState = LogState::Off;
 		ui.logStateLabel->setText( "Log: archiving" );
 		break;
+	case MarviePackets::DeviceStatus::LogState::Stopping:
+		deviceLogState = LogState::Stopping;
+		ui.logStateLabel->setText( "Log: stopping" );
+		break;
 	default:
 		deviceLogState = LogState::Unknown;
 		break;

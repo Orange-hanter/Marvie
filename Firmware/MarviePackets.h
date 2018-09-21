@@ -52,7 +52,7 @@ namespace MarviePackets
 		enum class DeviceState : uint8_t { Reconfiguration, Working, IncorrectConfiguration } state;
 		enum class ConfigError : uint8_t { NoError, NoConfiglFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorReadingConfigError, LogConfigError, SensorsConfigError } configError;
 		enum class SdCardStatus : uint8_t { NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } sdCardStatus;
-		enum class LogState : uint8_t { Off, Stopped, Working, Archiving } logState;
+		enum class LogState : uint8_t { Off, Stopped, Working, Archiving, Stopping } logState;
 		uint8_t errorSensorId;
 	};
 	struct EthernetStatus

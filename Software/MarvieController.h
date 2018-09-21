@@ -266,7 +266,7 @@ private:
 	QVector< QString > deviceVPorts, deviceSensors, deviceSupportedSensors;
 	enum class DeviceState { Unknown, IncorrectConfiguration, Working, Reconfiguration } deviceState;
 	enum class SdCardStatus : uint8_t { Unknown, NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } deviceSdCardStatus;
-	enum class LogState : uint8_t { Unknown, Off, Stopped, Working, Archiving } deviceLogState;
+	enum class LogState : uint8_t { Unknown, Off, Stopped, Working, Archiving, Stopping } deviceLogState;
 
 	Ui::MarvieControllerClass ui;
 };
