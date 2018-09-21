@@ -2138,7 +2138,7 @@ QTreeWidgetItem* MarvieController::insertSensorSettings( int position, QString s
 			auto item = ui.sensorSettingsTreeWidget->topLevelItem( i );
 			QString sensorName = item->text( 0 ).split( ". " )[1];
 			item->setText( 0, QString( "%1. %2" ).arg( i + 1 + 1 ).arg( sensorName ) );
-			auto objects = ui.sensorSettingsTreeWidget->findChildren< QObject* >( QRegExp( QString( "%1\\*" ).arg( i + 1 ) ) );
+			auto objects = ui.sensorSettingsTreeWidget->findChildren< QObject* >( QRegExp( QString( "^%1\\*" ).arg( i + 1 ) ) );
 			for( auto& object : objects )
 			{
 				QString settingName = object->objectName().split( '*' )[1];
@@ -2367,7 +2367,7 @@ void MarvieController::setSensorSettingsNameNum( int index, int num )
 	auto mlist = item->text( 0 ).split( ". " );
 	QString sensorName = mlist[1];
 	item->setText( 0, QString( "%1. %2" ).arg( num ).arg( sensorName ) );
-	auto list = ui.sensorSettingsTreeWidget->findChildren< QObject* >( QRegExp( mlist[0] + "\\*" ) );
+	auto list = ui.sensorSettingsTreeWidget->findChildren< QObject* >( QRegExp( QString( "^" ) + mlist[0] + "\\*" ) );
 	for( auto i : list )
 		i->setObjectName( QString( "%1*" ).arg( num ) + i->objectName().split( '*' )[1] );
 }

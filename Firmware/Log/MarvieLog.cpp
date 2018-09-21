@@ -193,6 +193,8 @@ void MarvieLog::updateSensor( AbstractSensor* sensor, const std::string* name )
 
 void MarvieLog::main()
 {
+	for( auto& i : blockDescVect )
+		i.digitBlockData = 0xFFFFFFFF;
 	logSize = rootDir.contentSize();
 	if( logSize > maxSize && overwritingEnabled )
 		free( logSize - maxSize );
@@ -343,11 +345,11 @@ void MarvieLog::logAnalogInputs()
 
 void MarvieLog::logSensorData()
 {
-	std::size_t count;
-	do
+	while( true )
 	{
 		mutex.lock();
-		if( pendingSensors.empty() )
+		std::size_t count = pendingSensors.size();
+		if( count == 0 )
 		{
 			mutex.unlock();
 			return;
@@ -357,7 +359,6 @@ void MarvieLog::logSensorData()
 		const std::string* sensorName = pendingSensors.front().name;
 		pendingSensors.pop_front();
 		pendingFlags[sensor->userData() / 64] &= ~( 1 << ( sensor->userData() % 64 ) );
-		count = pendingSensors.size();
 		mutex.unlock();
 
 		uint32_t recordSize = 4 + sizeof( DateTime ) + sensor->sensorDataSize() + 4;
@@ -377,7 +378,7 @@ void MarvieLog::logSensorData()
 		if( !sensorData->isValid() )
 		{
 			sensorData->unlock();
-			return;
+			continue;
 		}
 		DateTime dateTime = sensor->sensorData()->time();
 		sprintf( ( char* )buffer, "%d/%d/%d", ( int )dateTime.date().year(), ( int )dateTime.date().month(), ( int )dateTime.date().day() );
@@ -405,7 +406,7 @@ void MarvieLog::logSensorData()
 			file.close();
 		}
 		sensorData->unlock();
-	} while( count );
+	}
 }
 
 bool MarvieLog::free( uint64_t size )
