@@ -273,12 +273,22 @@ void MarvieLog::logDigitInputs()
 			return;
 	}
 
+Begin:
 	DateTime dateTime = DateTimeService::currentDateTime();
 	sprintf( ( char* )buffer, "%d/%d/%d", ( int )dateTime.date().year(), ( int )dateTime.date().month(), ( int )dateTime.date().day() );
 	rootDir.mkpath( ( char* )buffer );
 	sprintf( ( char* )buffer, "%s/%d/%d/%d/dInputs.bin", rootDir.path().c_str(), ( int )dateTime.date().year(), ( int )dateTime.date().month(), ( int )dateTime.date().day() );
 	if( file.open( ( char* )buffer, FileSystem::OpenAppend | FileSystem::Write ) )
 	{
+		// in the case of prolonged open()
+		Date date = dateTime.date();
+		dateTime = DateTimeService::currentDateTime();
+		if( dateTime.date() != date )
+		{
+			file.close();
+			goto Begin;
+		}
+
 		buffer[0] = '_'; buffer[1] = 'l'; buffer[2] = 'o'; buffer[3] = 'g';
 		*( DateTime* )( buffer + 4 ) = dateTime;
 		buffer[4 + sizeof( DateTime )] = ( uint8_t )digitBlocksCount;
@@ -314,12 +324,22 @@ void MarvieLog::logAnalogInputs()
 			return;
 	}
 
+Begin:
 	DateTime dateTime = DateTimeService::currentDateTime();
 	sprintf( ( char* )buffer, "%d/%d/%d", ( int )dateTime.date().year(), ( int )dateTime.date().month(), ( int )dateTime.date().day() );
 	rootDir.mkpath( ( char* )buffer );
 	sprintf( ( char* )buffer, "%s/%d/%d/%d/aInputs.bin", rootDir.path().c_str(), ( int )dateTime.date().year(), ( int )dateTime.date().month(), ( int )dateTime.date().day() );
 	if( file.open( ( char* )buffer, FileSystem::OpenAppend | FileSystem::Write ) )
 	{
+		// in the case of prolonged open()
+		Date date = dateTime.date();
+		dateTime = DateTimeService::currentDateTime();
+		if( dateTime.date() != date )
+		{
+			file.close();
+			goto Begin;
+		}
+
 		buffer[0] = '_'; buffer[1] = 'l'; buffer[2] = 'o'; buffer[3] = 'g';
 		*( DateTime* )( buffer + 4 ) = dateTime;
 		*( uint8_t* )( buffer + 4 + sizeof( DateTime ) ) = analogChannelsCount;
@@ -370,6 +390,7 @@ void MarvieLog::logSensorData()
 				continue;
 		}
 
+Begin:
 		DateTime dateTime = sensor->sensorData()->time();
 		sprintf( ( char* )buffer, "%d/%d/%d", ( int )dateTime.date().year(), ( int )dateTime.date().month(), ( int )dateTime.date().day() );
 		rootDir.mkpath( ( char* )buffer );
@@ -385,6 +406,14 @@ void MarvieLog::logSensorData()
 		{
 			auto sensorData = sensor->sensorData();
 			sensorData->lock();
+			if( sensorData->time().date() != dateTime.date() )
+			{
+				sensorData->unlock();
+				file.close();
+				goto Begin;
+			}
+			dateTime = sensorData->time();
+
 			if( sensorData->isValid() )
 			{
 				buffer[0] = '_'; buffer[1] = 'l'; buffer[2] = 'o'; buffer[3] = 'g';
