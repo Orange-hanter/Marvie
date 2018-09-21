@@ -345,16 +345,13 @@ void MarvieLog::logAnalogInputs()
 
 void MarvieLog::logSensorData()
 {
-	while( logState != State::Stopping )
+	mutex.lock();
+	std::size_t count = pendingSensors.size();
+	mutex.unlock();
+
+	while( logState != State::Stopping && count-- )
 	{
 		mutex.lock();
-		std::size_t count = pendingSensors.size();
-		if( count == 0 )
-		{
-			mutex.unlock();
-			return;
-		}
-
 		AbstractSensor* sensor = pendingSensors.front().sensor;
 		const std::string* sensorName = pendingSensors.front().name;
 		pendingSensors.pop_front();

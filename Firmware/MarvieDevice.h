@@ -163,6 +163,7 @@ private:
 	BRSensorReader** brSensorReaders;
 	EvtListener* brSensorReaderListeners;
 	MarvieLog* marvieLog;
+	volatile bool sensorLogEnabled;
 	AbstractPppModem* gsmModem;
 	EvtListener gsmModemListener;
 	RawModbusServer* rawModbusServers;

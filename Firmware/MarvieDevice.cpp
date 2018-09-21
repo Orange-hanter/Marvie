@@ -144,6 +144,7 @@ MarvieDevice::MarvieDevice() : backupRegs( 20 ), configXmlDataSendingSemaphore( 
 	brSensorReaders = nullptr;
 	brSensorReaderListeners = nullptr;
 	marvieLog = nullptr;
+	sensorLogEnabled = false;
 	gsmModem = nullptr;
 	rawModbusServers = nullptr;
 	rawModbusServersCount = 0;
@@ -350,7 +351,8 @@ void MarvieDevice::mainThreadMain()
 						{
 							sensors[sensor->userData()].updatedForMLink = true;
 							copySensorDataToModbusRegisters( sensor );
-							marvieLog->updateSensor( sensor, &sensors[sensor->userData()].sensorName );
+							if( marvieLog && sensorLogEnabled )
+								marvieLog->updateSensor( sensor, &sensors[sensor->userData()].sensorName );
 							sensor = reader->nextUpdatedSensor();
 						}
 					}
@@ -359,7 +361,8 @@ void MarvieDevice::mainThreadMain()
 						AbstractBRSensor* sensor = static_cast< SingleBRSensorReader* >( brSensorReaders[i] )->nextSensor();
 						sensors[sensor->userData()].updatedForMLink = true;
 						copySensorDataToModbusRegisters( sensor );
-						marvieLog->updateSensor( sensor, &sensors[sensor->userData()].sensorName );
+						if( marvieLog && sensorLogEnabled )
+							marvieLog->updateSensor( sensor, &sensors[sensor->userData()].sensorName );
 					}
 					else
 					{
@@ -394,7 +397,7 @@ void MarvieDevice::mainThreadMain()
 						copySensorDataToModbusRegisters( sensors[i].sensor );
 					}
 
-					if( marvieLog )
+					if( marvieLog && sensorLogEnabled )
 					{
 						if( sensors[i].logTimeLeft == 0 )
 						{
@@ -791,6 +794,7 @@ void MarvieDevice::configShutdown()
 	}
 	if( marvieLog )
 		marvieLog->waitForStop();
+	sensorLogEnabled = false;
 	for( uint i = 0; i < rawModbusServersCount; ++i )
 		rawModbusServers[i].waitForStateChange();
 	if( tcpModbusRtuServer )
@@ -1178,6 +1182,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 
 	if( sensorsConfigError == SensorsConfigError::NoError )
 	{
+		sensorLogEnabled = logConf.sensorsMode != LogConf::SensorsMode::Disabled;
 		if( logConf.digitInputsMode != LogConf::DigitInputsMode::Disabled ||
 			logConf.analogInputsMode != LogConf::AnalogInputsMode::Disabled ||
 			logConf.sensorsMode != LogConf::SensorsMode::Disabled )
