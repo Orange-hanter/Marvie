@@ -108,6 +108,15 @@
     <ClCompile Include="SynchronizationWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MonitoringLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MonitoringDataTreeWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SensorDescription.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MarvieController.h">
@@ -177,6 +186,15 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="SensorErrorsModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MonitoringLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MonitoringDataTreeWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SensorDescription.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

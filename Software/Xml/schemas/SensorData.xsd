@@ -214,6 +214,7 @@
       <xs:sequence>
         <xs:group ref="auxGroup" minOccurs="1"/>
       </xs:sequence>
+      <xs:attribute name="size" type="xs:positiveInteger" use="optional"/>
     </xs:complexType>
   </xs:element>
 

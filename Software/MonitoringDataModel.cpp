@@ -263,10 +263,35 @@ bool MonitoringDataModel::removeColumns( int position, int columns, const QModel
 
 bool MonitoringDataModel::insertRows( int position, int rows, const QModelIndex &parent /*= QModelIndex() */ )
 {
-	return false;
+	MonitoringDataItem* parentItem;
+	if( parent.isValid() )
+		parentItem = static_cast< MonitoringDataItem* >( parent.internalPointer() );
+	else
+		parentItem = root;
+	if( parentItem->childCount() < position )
+		return false;
+
+	beginInsertRows( parent, position, position + rows - 1 );
+	while( rows-- )
+		parentItem->insertChild( position, new MonitoringDataItem( "" ) );
+	endInsertRows();
+
+	return true;
 }
 
 bool MonitoringDataModel::removeRows( int position, int rows, const QModelIndex &parent /*= QModelIndex() */ )
 {
-	return false;
+	MonitoringDataItem* parentItem;
+	if( parent.isValid() )
+		parentItem = static_cast< MonitoringDataItem* >( parent.internalPointer() );
+	else
+		parentItem = root;
+	if( parentItem->childCount() < position + rows )
+		return false;
+
+	beginRemoveRows( parent, position, position + rows - 1 );
+	parentItem->removeChilds( position, rows );
+	endRemoveRows();
+
+	return true;
 }

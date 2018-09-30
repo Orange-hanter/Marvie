@@ -63,7 +63,7 @@ private:
 	sysinterval_t aSignalPeriod;
 	struct SBlockDesc
 	{
-		SBlockDesc() {}
+		SBlockDesc() : analogCount( 0 ), digitCount( 0 ), digitBlockData( 0 ) {}
 		SBlockDesc( SignalBlockDesc desc ) : analogCount( desc.analogCount ), digitCount( desc.digitCount ), digitBlockData( 0 ) {}
 		uint16_t analogCount;
 		uint16_t digitCount;

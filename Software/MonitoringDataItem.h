@@ -25,6 +25,10 @@ public:
 	QString typeName();
 	static QString typeName( ValueType type );
 	MonitoringDataItem* child( int index );
+	QList< MonitoringDataItem* >::iterator childBegin();
+	QList< MonitoringDataItem* >::const_iterator childConstBegin() const;
+	QList< MonitoringDataItem* >::iterator childEnd();
+	QList< MonitoringDataItem* >::const_iterator childConstEnd() const;
 	MonitoringDataItem* parent();
 	int childCount();
 	int childIndex();
@@ -32,7 +36,10 @@ public:
 	void insertChild( int index, MonitoringDataItem* item );
 	void appendChild( MonitoringDataItem* item );
 	void removeChild( int index );
+	void removeChilds( int begin, int count );
 	void removeAllChildren();
+
+	void setName( QString name );
 
 	void setValue( bool value );
 	void setValue( char value );

@@ -64,6 +64,13 @@ namespace MarvieLogSystemTest
 		}
 	};
 
+	uint32_t numberOfSetBits( uint32_t i )
+	{
+		i = i - ( ( i >> 1 ) & 0x55555555 );
+		i = ( i & 0x33333333 ) + ( ( i >> 2 ) & 0x33333333 );
+		return ( ( ( i + ( i >> 4 ) ) & 0x0F0F0F0F ) * 0x01010101 ) >> 24;
+	}
+
 	int test()
 	{
 		DateTime dateTime = DateTimeService::currentDateTime();
@@ -107,8 +114,8 @@ namespace MarvieLogSystemTest
 
 		SignalProviderA signalProvider;
 		std::list < MarvieLog::SignalBlockDesc > list;
-		list.push_back( MarvieLog::SignalBlockDesc{ 16, 8 } );
-		list.push_back( MarvieLog::SignalBlockDesc{ 0, 8 } );
+		list.push_back( MarvieLog::SignalBlockDesc{ 16, 7 } );
+		list.push_back( MarvieLog::SignalBlockDesc{ 0, 6 } );
 		list.push_back( MarvieLog::SignalBlockDesc{ 16, 0 } );
 
 		MarvieLog* logSystem = new MarvieLog;
@@ -151,7 +158,7 @@ namespace MarvieLogSystemTest
 		logSystem->waitForStop();
 
 		Date date = DateTimeService::currentDateTime().date();
-		sprintf( buffer, "/LogTest/%d/%d/%d/dInputs.bin", ( int )date.year(), ( int )date.month(), ( int )date.day() );
+		sprintf( buffer, "/LogTest/%d/%d/%d/DI.bin", ( int )date.year(), ( int )date.month(), ( int )date.day() );
 		assert( file->open( buffer, FileSystem::Read | FileSystem::OpenExisting ) );
 
 		uint8_t* data = ( uint8_t* )buffer;
@@ -174,8 +181,9 @@ namespace MarvieLogSystemTest
 				dateTimeMark = *( DateTime * )( data + 4 );
 			}
 
-			uint8_t blockCount = *( uint8_t * )( data + 4 + sizeof( DateTime ) );
-			assert( blockCount == 2 );
+			uint8_t flags = *( uint8_t * )( data + 4 + sizeof( DateTime ) );
+			uint32_t blockCount = numberOfSetBits( flags );
+			assert( flags == 5 && blockCount == 2 );
 
 			Crc32HW::acquire();
 			uint32_t crc = Crc32HW::crc32Byte( data, 4 + sizeof( DateTime ) + 1 + sizeof( uint32_t ) * blockCount, 0xFFFFFFFF );
@@ -201,7 +209,7 @@ namespace MarvieLogSystemTest
 		}
 		file->close();
 
-		sprintf( buffer, "/LogTest/%d/%d/%d/aInputs.bin", ( int )date.year(), ( int )date.month(), ( int )date.day() );
+		sprintf( buffer, "/LogTest/%d/%d/%d/AI.bin", ( int )date.year(), ( int )date.month(), ( int )date.day() );
 		assert( file->open( buffer, FileSystem::Read | FileSystem::OpenExisting ) );
 		data = ( uint8_t* )buffer;
 		size = file->read( data, 1024 );
@@ -221,25 +229,30 @@ namespace MarvieLogSystemTest
 				dateTimeMark = *( DateTime * )( data + 4 );
 			}
 
-			uint8_t channelCount = *( uint8_t * )( data + 4 + sizeof( DateTime ) );
+			uint16_t desc = *( uint8_t * )( data + 4 + sizeof( DateTime ) );
+			uint16_t channelCount = 0;
+			for( uint32_t i = 0; i < 8; ++i )
+				channelCount += ( ( desc >> ( i * 2 ) ) & 0x03 ) * 8;
 			assert( channelCount == 16 );
 
 			Crc32HW::acquire();
-			uint32_t crc = Crc32HW::crc32Byte( data, 4 + sizeof( DateTime ) + 1 + sizeof( uint32_t ) * channelCount, 0xFFFFFFFF );
-			assert( crc == *( uint32_t * )( data + 4 + sizeof( DateTime ) + 1 + sizeof( uint32_t ) * channelCount ) );
+			uint32_t crc = Crc32HW::crc32Byte( data, 4 + sizeof( DateTime ) + 2 + sizeof( uint32_t ) * channelCount, 0xFFFFFFFF );
+			assert( crc == *( uint32_t * )( data + 4 + sizeof( DateTime ) + 2 + sizeof( uint32_t ) * channelCount ) );
 			Crc32HW::release();
 
 			for( int i = 0; i < 16; ++i )
 			{
-				float value = *( float * )( data + 4 + sizeof( DateTime ) + 1 + 4 * i );
-				if( i < 8 )
+				float value = *( float * )( data + 4 + sizeof( DateTime ) + 2 + 4 * i );
+				if( i == 7 || i == 15 || i == 14 )
+					assert( value == -1 )
+				else if( i < 8 )
 					assert( value == i )
 				else
 					assert( value == i - 8 + 100 );
 			}
 
-			data += 4 + sizeof( DateTime ) + 1 + sizeof( float ) * channelCount + 4;
-			size -= 4 + sizeof( DateTime ) + 1 + sizeof( float ) * channelCount + 4;
+			data += 4 + sizeof( DateTime ) + 2 + sizeof( float ) * channelCount + 4;
+			size -= 4 + sizeof( DateTime ) + 2 + sizeof( float ) * channelCount + 4;
 			++n;
 		}
 		assert( n == 3 );

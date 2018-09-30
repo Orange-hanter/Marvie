@@ -100,15 +100,15 @@ MarvieDevice::MarvieDevice() : backupRegs( 20 ), configXmlDataSendingSemaphore( 
 
 	// PA8 - CD
 	palSetPadMode( GPIOC, 8, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
-	//palSetPadMode( GPIOC, 9, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
-	//palSetPadMode( GPIOC, 10, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
-	//palSetPadMode( GPIOC, 11, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
+	palSetPadMode( GPIOC, 9, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
+	palSetPadMode( GPIOC, 10, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
+	palSetPadMode( GPIOC, 11, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
 	palSetPadMode( GPIOC, 12, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
 	palSetPadMode( GPIOD, 2, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
-	static SDCConfig sdcConfig;
-	sdcConfig.scratchpad = nullptr;
-	sdcConfig.bus_width = SDC_MODE_1BIT;
-	sdcStart( &SDCD1, &sdcConfig/*nullptr*/ );
+	//static SDCConfig sdcConfig;
+	//sdcConfig.scratchpad = nullptr;
+	//sdcConfig.bus_width = SDC_MODE_1BIT;
+	sdcStart( &SDCD1, /*&sdcConfig*/nullptr );
 	sdCardStatus = SdCardStatus::NotInserted;
 	sdCardInserted = false;
 	sdCardStatusEventPending = false;
@@ -180,12 +180,12 @@ MarvieDevice::MarvieDevice() : backupRegs( 20 ), configXmlDataSendingSemaphore( 
 
 	mLinkServer = new MLinkServer;
 	mLinkServer->setComplexDataReceiveCallback( this );
-	mLinkServer->setIODevice( comPorts[MarviePlatform::mLinkComPort] );
+	//mLinkServer->setIODevice( comPorts[MarviePlatform::mLinkComPort] );
 
-	/*UdpSocket* socket = new UdpSocket;
+	UdpSocket* socket = new UdpSocket;
 	socket->bind( 16021 );
 	socket->connect( IpAddress( 192, 168, 2, 1 ), 16032 );
-	mLinkServer->setIODevice( socket );*/
+	mLinkServer->setIODevice( socket );
 }
 
 MarvieDevice* MarvieDevice::instance()
@@ -1347,10 +1347,10 @@ float MarvieDevice::analogSignal( uint32_t block, uint32_t line )
 	{
 		if( line < MarviePlatform::analogInputsCount )
 			return analogInput[line];
-		return 0;
+		return -1;
 	}
 
-	return 0;
+	return -1;
 }
 
 bool MarvieDevice::digitSignal( uint32_t block, uint32_t line )

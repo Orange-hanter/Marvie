@@ -212,7 +212,7 @@ bool Dir::removeRecursively()
 	FILINFO* fno = new FILINFO;
 	if( fno == nullptr )
 	{
-		_err == Error::MemoryError;
+		_err = Error::MemoryError;
 		return false;
 	}
 	if( ( _err = _removeRecursively( _path, *fno ) ) == Error::NoError )
@@ -227,7 +227,7 @@ uint64_t Dir::contentSize()
 	FILINFO* fno = new FILINFO;
 	if( fno == nullptr )
 	{
-		_err == Error::MemoryError;
+		_err = Error::MemoryError;
 		return false;
 	}
 	uint64_t totalSize = 0;

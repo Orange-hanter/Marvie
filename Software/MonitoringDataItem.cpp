@@ -7,7 +7,7 @@ MonitoringDataItem::MonitoringDataItem( QString name ) : _name( name ), _type( V
 
 MonitoringDataItem::~MonitoringDataItem()
 {
-	qDeleteAll( _childItems );
+	removeAllChildren();
 	if( _parent )
 		_parent->_childItems.removeOne( this );
 }
@@ -99,6 +99,26 @@ MonitoringDataItem* MonitoringDataItem::child( int index )
 	return _childItems[index];
 }
 
+QList< MonitoringDataItem* >::iterator MonitoringDataItem::childBegin()
+{
+	return _childItems.begin();
+}
+
+QList< MonitoringDataItem* >::const_iterator MonitoringDataItem::childConstBegin() const
+{
+	return _childItems.constBegin();
+}
+
+QList< MonitoringDataItem* >::iterator MonitoringDataItem::childEnd()
+{
+	return _childItems.end();
+}
+
+QList< MonitoringDataItem* >::const_iterator MonitoringDataItem::childConstEnd() const
+{
+	return _childItems.constEnd();
+}
+
 MonitoringDataItem* MonitoringDataItem::parent()
 {
 	return _parent;
@@ -135,9 +155,34 @@ void MonitoringDataItem::removeChild( int index )
 	delete item;
 }
 
+void MonitoringDataItem::removeChilds( int begin, int count )
+{
+	if( begin >= _childItems.size() )
+		return;
+	if( count > _childItems.size() - begin || count < 0 )
+		count = _childItems.size() - begin;
+	int n = count;
+	for( int i = begin; n; ++i, --n )
+	{
+		_childItems[i]->_parent = nullptr;
+		delete _childItems[i];
+	}
+	_childItems.erase( _childItems.begin() + begin, _childItems.begin() + begin + count );
+}
+
 void MonitoringDataItem::removeAllChildren()
 {
-	qDeleteAll( _childItems );
+	for( auto child : _childItems )
+	{
+		child->_parent = nullptr;
+		delete child;
+	}
+	_childItems.clear();
+}
+
+void MonitoringDataItem::setName( QString name )
+{
+	_name = name;
 }
 
 void MonitoringDataItem::setValue( bool value )

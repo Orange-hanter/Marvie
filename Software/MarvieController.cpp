@@ -207,9 +207,8 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	logMenu->addAction( QIcon( ":/MarvieController/icons/icons8-eraser-60.png" ), "Clean system log" );
 	logMenu->setFixedWidth( 150 );
 
-	ui.monitoringDataTreeView->setModel( &monitoringDataModel );
-	ui.monitoringDataTreeView->header()->resizeSection( 0, 175 );
-	ui.monitoringDataTreeView->header()->resizeSection( 1, 175 );
+	ui.monitoringDataTreeView->setSensorDescriptionMap( &sensorDescMap );
+	ui.monitoringLogTreeWidget->setSensorDescriptionMap( &sensorDescMap );
 
 	monitoringDataViewMenu = new QMenu( this );
 	monitoringDataViewMenu->addAction( "Update" );
@@ -221,6 +220,24 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	monitoringDataViewMenu->addAction( "Collapse all" );
 	monitoringDataViewMenu->addSeparator();
 	monitoringDataViewMenu->addAction( "Hexadecimal output" )->setCheckable( true );
+
+	QList< MonitoringLog::SensorDesc > sList;
+	for( auto i = sensorDescMap.begin(); i != sensorDescMap.end(); ++i )
+	{
+		if( !i.value().data.root || i.value().data.size == !- 1 )
+			continue;
+		sList.append( MonitoringLog::SensorDesc{ i.key(), ( quint32 ) i.value().data.size } );
+	}
+	monitoringLog.setAvailableSensors( sList );
+
+	monitoringLogViewMenu = new QMenu( this );
+	monitoringLogViewMenu->addAction( "Copy value" );
+	monitoringLogViewMenu->addAction( "Copy row" );
+	monitoringLogViewMenu->addSeparator();
+	monitoringLogViewMenu->addAction( "Expand all" );
+	monitoringLogViewMenu->addAction( "Collapse all" );
+	monitoringLogViewMenu->addSeparator();
+	monitoringLogViewMenu->addAction( "Hexadecimal output" )->setCheckable( true );
 
 	sensorSettingsMenu = new QMenu( this );
 	sensorSettingsMenu->addAction( "Copy" );
@@ -266,6 +283,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 
 	QObject::connect( ui.controlButton, &QToolButton::released, this, &MarvieController::mainMenuButtonClicked );
 	QObject::connect( ui.monitoringButton, &QToolButton::released, this, &MarvieController::mainMenuButtonClicked );
+	QObject::connect( ui.logButton, &QToolButton::released, this, &MarvieController::mainMenuButtonClicked );
 	QObject::connect( ui.settingsButton, &QToolButton::released, this, &MarvieController::mainMenuButtonClicked );
 	QObject::connect( ui.mainSettingsButton, &QToolButton::released, this, &MarvieController::settingsMenuButtonClicked );
 	QObject::connect( ui.sensorsSettingsButton, &QToolButton::released, this, &MarvieController::settingsMenuButtonClicked );
@@ -288,6 +306,13 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	QObject::connect( ui.syncDateTimeButton, &QToolButton::released, this, &MarvieController::syncDateTimeButtonClicked );
 	QObject::connect( ui.sdCardMenuButton, &QToolButton::released, this, &MarvieController::sdCardMenuButtonClicked );
 	QObject::connect( ui.logMenuButton, &QToolButton::released, this, &MarvieController::logMenuButtonClicked );
+
+	QObject::connect( ui.monitoringLogOpenButton, &QPushButton::released, this, &MarvieController::monitoringLogOpenButtonClicked );
+	QObject::connect( ui.monitoringLogDateEdit, &QDateEdit::userDateChanged, this, &MarvieController::monitoringLogDateChanged );
+	QObject::connect( ui.monitoringLogTimeEdit, &QTimeEdit::userTimeChanged, this, &MarvieController::monitoringLogTimeChanged );
+	QObject::connect( ui.monitoringLogPrevEntryButton, &QToolButton::released, this, &MarvieController::monitoringLogMoveEntryButtonClicked );
+	QObject::connect( ui.monitoringLogNextEntryButton, &QToolButton::released, this, &MarvieController::monitoringLogMoveEntryButtonClicked );
+	QObject::connect( ui.monitoringLogTimeSlider, &QSlider::valueChanged, this, &MarvieController::monitoringLogSliderChanged );
 
 	QObject::connect( ui.addVPortOverIpButton, &QToolButton::released, this, &MarvieController::addVPortOverIpButtonClicked );
 	QObject::connect( ui.removeVPortOverIpButton, &QToolButton::released, this, &MarvieController::removeVPortOverIpButtonClicked );
@@ -337,6 +362,9 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	QObject::connect( ui.monitoringDataTreeView, &QTreeView::customContextMenuRequested, this, &MarvieController::monitoringDataViewMenuRequested );
 	QObject::connect( monitoringDataViewMenu, &QMenu::triggered, this, &MarvieController::monitoringDataViewMenuActionTriggered );
 
+	QObject::connect( ui.monitoringLogTreeWidget, &QTreeView::customContextMenuRequested, this, &MarvieController::monitoringLogViewMenuRequested );
+	QObject::connect( monitoringLogViewMenu, &QMenu::triggered, this, &MarvieController::monitoringLogViewMenuActionTriggered );
+
 	QObject::connect( ui.sensorSettingsTreeWidget, &QTreeView::customContextMenuRequested, this, &MarvieController::sensorSettingsMenuRequested );
 	QObject::connect( sensorSettingsMenu, &QMenu::triggered, this, &MarvieController::sensorSettingsMenuActionTriggered );
 
@@ -347,7 +375,6 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	//////////////////////////////////////////////////////////////////////////
 	//struct Data
 	//{
-	//	uint64_t dataTime;
 	//	int a;
 	//	int _reseved;
 	//	float b[3];
@@ -371,25 +398,32 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	//data.ch[1].str[0] = 'd'; data.ch[1].str[1] = 'e'; data.ch[1].str[2] = 'f';
 	//data.ch[1].m[0] = 6; data.ch[1].m[1] = 7;
 	////for( int i  = 0; i < 32; ++i )
-	//updateSensorData( 0, "SimpleSensor", reinterpret_cast< uint8_t* >( &data ) );
+	//ui.monitoringDataTreeView->updateSensorData( "1. SimpleSensor", "SimpleSensor", reinterpret_cast< uint8_t* >( &data ), QDateTime::currentDateTime() );
 
-	/*float ai[8];
-	for( int i = 0; i < ARRAYSIZE( ai ); ++i )
-		ai[i] = 0.1 * i;
-	updateAnalogData( 0, ai, ARRAYSIZE( ai ) );
-	uint16_t di = 0x4288;
-	updateDiscreteData( 0, di, 16 );*/
+	//float ai[8];
+	//for( int i = 0; i < ARRAYSIZE( ai ); ++i )
+	//	ai[i] = 0.1 * i;
+	//ui.monitoringDataTreeView->updateAnalogData( 0, ai, ARRAYSIZE( ai ) );
+	//uint16_t di = 0x4288;
+	//ui.monitoringDataTreeView->updateDiscreteData( 0, di, 16 );
 
-	/*updateSensorData( 15, "SimpleSensor", reinterpret_cast< uint8_t* >( &data ) );
+	//ui.monitoringDataTreeView->updateSensorData( "b.SimpleSensor", "SimpleSensor", reinterpret_cast< uint8_t* >( &data ), QDateTime::currentDateTime() );
+	//ui.monitoringDataTreeView->updateSensorData( "16. SimpleSensor", "SimpleSensor", reinterpret_cast< uint8_t* >( &data ), QDateTime::currentDateTime() );
 
-	updateAnalogData( 10, ai, ARRAYSIZE( ai ) );
-	updateDiscreteData( 13, di, 16 );
-	updateAnalogData( 15, ai, ARRAYSIZE( ai ) );
-	updateDiscreteData( 15, di, 16 );
-	updateAnalogData( 0, ai, ARRAYSIZE( ai ) );
-	updateDiscreteData( 5, di, 16 );
+	//ui.monitoringDataTreeView->updateAnalogData( 10, ai, ARRAYSIZE( ai ) );
+	//ui.monitoringDataTreeView->updateDiscreteData( 13, di, 16 );
+	//ui.monitoringDataTreeView->updateAnalogData( 15, ai, ARRAYSIZE( ai ) );
+	//ui.monitoringDataTreeView->updateDiscreteData( 15, di, 16 );
+	//ui.monitoringDataTreeView->updateAnalogData( 0, ai, ARRAYSIZE( ai ) );
+	//ui.monitoringDataTreeView->updateDiscreteData( 5, di, 16 );
 
-	updateSensorData( 9, "SimpleSensor", reinterpret_cast< uint8_t* >( &data ) );*/
+	//ui.monitoringDataTreeView->updateSensorData( "10. SimpleSensor", "SimpleSensor", reinterpret_cast< uint8_t* >( &data ), QDateTime::currentDateTime() );
+	//ui.monitoringDataTreeView->updateSensorData( "4. SimpleSensor", "SimpleSensor", reinterpret_cast< uint8_t* >( &data ), QDateTime::currentDateTime() );
+	//ui.monitoringDataTreeView->updateSensorData( "a.SimpleSensor", "SimpleSensor", reinterpret_cast< uint8_t* >( &data ), QDateTime::currentDateTime() );
+
+	//ui.monitoringDataTreeView->removeAnalogData();
+	//ui.monitoringDataTreeView->removeDiscreteData();
+	//ui.monitoringDataTreeView->removeSensorData( "a.SimpleSensor" );
 
 	/*ui.vPortTileListWidget->setTilesCount( 8 );
 	ui.vPortTileListWidget->tile( 0 )->setNextSensorRead( 0, "CE301", 61 );
@@ -519,7 +553,7 @@ bool MarvieController::eventFilter( QObject *obj, QEvent *event )
 
 void MarvieController::mainMenuButtonClicked()
 {
-	QToolButton* buttons[] = { ui.controlButton, ui.monitoringButton, ui.settingsButton };
+	QToolButton* buttons[] = { ui.controlButton, ui.monitoringButton, ui.logButton, ui.settingsButton };
 	QObject* s = sender();
 	for( int i = 0; i < sizeof( buttons ) / sizeof( *buttons ); ++i )
 	{
@@ -833,7 +867,221 @@ void MarvieController::monitoringDataViewMenuActionTriggered( QAction* action )
 	else if( action->text() == "Collapse all" )
 		ui.monitoringDataTreeView->collapseAll();
 	else if( action->text() == "Hexadecimal output" )
-		monitoringDataModel.setHexadecimalOutput( action->isChecked() );
+		ui.monitoringDataTreeView->setHexadecimalOutput( action->isChecked() );
+}
+
+void MarvieController::monitoringLogOpenButtonClicked()
+{
+	QSettings setting( "settings.ini", QSettings::Format::IniFormat );
+	QString path = QFileDialog::getExistingDirectory( this, "Open the monitoring log", setting.value( "monitoringLogDir", QDir::currentPath() ).toString() );
+	if( path.isEmpty() )
+		return;
+	setting.setValue( "monitoringLogDir", QDir::current().relativeFilePath( path ) );
+
+	if( monitoringLog.open( path ) )
+	{
+		setMonitoringLogWidgetGroupEnabled( true );
+		ui.monitoringLogDateEdit->blockSignals( true );
+		ui.monitoringLogDateEdit->setDateRange( monitoringLog.minimumDate(), monitoringLog.maximumDate() );
+		ui.monitoringLogPathEdit->setText( path );
+		ui.monitoringLogDateEdit->setDate( monitoringLog.maximumDate() );
+		ui.monitoringLogDateEdit->blockSignals( false );
+		monitoringLogDateChanged();
+	}
+	else
+	{
+		setMonitoringLogWidgetGroupEnabled( false );
+		ui.monitoringLogPathEdit->setText( "" );
+		ui.monitoringLogTreeWidget->clear();
+	}
+}
+
+void MarvieController::monitoringLogDateChanged()
+{
+	ui.monitoringLogTreeWidget->clear();
+	QVector< QTime > timestamps;
+	ui.monitoringLogTreeWidget->clear();
+	auto names = monitoringLog.availableGroupNames();
+	for( auto& name : names )
+	{
+		auto nameGroup = monitoringLog.nameGroup( name );
+		auto dayGroup = nameGroup.dayGroup( ui.monitoringLogDateEdit->date() );
+		timestamps.append( dayGroup.timestamps() );
+	}
+	qSort( timestamps );
+	monitoringLogTimestamps.clear();
+	ui.monitoringLogTimeSlider->blockSignals( true );
+	if( !timestamps.isEmpty() )
+	{
+		monitoringLogTimestamps.reserve( timestamps.size() );
+		auto v = timestamps.first();
+		monitoringLogTimestamps.append( v );
+		for( auto i = timestamps.begin() + 1; i != timestamps.end(); ++i )
+		{
+			if( *i != v )
+			{
+				monitoringLogTimestamps.append( *i );
+				v = *i;
+			}
+		}
+		ui.monitoringLogTimeSlider->setRange( 0, monitoringLogTimestamps.size() - 1 );
+		ui.monitoringLogTimeSlider->setValue( monitoringLogTimestamps.size() - 1 );
+		ui.monitoringLogTimeEdit->blockSignals( true );
+		ui.monitoringLogTimeEdit->setTime( monitoringLogTimestamps.back() );
+		ui.monitoringLogTimeEdit->blockSignals( false );
+		monitoringLogTimeChanged();
+	}
+	else
+	{
+		ui.monitoringLogTimeSlider->setRange( 0, 0 );
+		ui.monitoringLogTimeSlider->setValue( 0 );
+		ui.monitoringLogTimeEdit->blockSignals( true );
+		ui.monitoringLogTimeEdit->setTime( QTime( 0, 0, 0, 0 ) );
+		ui.monitoringLogTimeEdit->blockSignals( false );
+	}
+	ui.monitoringLogTimeSlider->blockSignals( false );
+}
+
+void MarvieController::monitoringLogTimeChanged()
+{
+	if( monitoringLogTimestamps.isEmpty() )
+	{
+		ui.monitoringLogTimeEdit->blockSignals( true );
+		ui.monitoringLogTimeEdit->setTime( QTime( 0, 0, 0, 0 ) );
+		ui.monitoringLogTimeEdit->blockSignals( false );
+		return;
+	}
+
+	QTime t = ui.monitoringLogTimeEdit->time();
+	QVector< QTime >::iterator i = qLowerBound( monitoringLogTimestamps.begin(), monitoringLogTimestamps.end(), t );
+	if( i != monitoringLogTimestamps.begin() && qAbs( t.msecsSinceStartOfDay() - ( *i ).msecsSinceStartOfDay() ) > qAbs( t.msecsSinceStartOfDay() - ( *( i - 1 ) ).msecsSinceStartOfDay() ) )
+		--i;
+	ui.monitoringLogTimeSlider->blockSignals( true );
+	ui.monitoringLogTimeSlider->setValue( i - monitoringLogTimestamps.begin() );
+	ui.monitoringLogTimeSlider->blockSignals( false );
+	auto names = monitoringLog.availableGroupNames();
+	for( auto& name : names )
+	{
+		auto nameGroup = monitoringLog.nameGroup( name );
+		auto dayGroup = nameGroup.dayGroup( ui.monitoringLogDateEdit->date() );
+		auto entryInfo = dayGroup.nearestEntry( *i );
+		if( !entryInfo.isValid() )
+			continue;
+		switch( entryInfo.entry()->type() )
+		{
+		case MonitoringLog::Entry::Type::DigitInputsEntry:
+		{
+			auto entry = entryInfo.entry().staticCast< MonitoringLog::DigitInputsEntry >();
+			for( quint32 i = 0; i < 8; ++i )
+			{
+				if( entry->isBlockPresent( i ) )
+					ui.monitoringLogTreeWidget->updateDiscreteData( i, entry->data( i ), 32, entryInfo.dateTime() );
+			}
+			break;
+		}
+		case MonitoringLog::Entry::Type::AnalogInputsEntry:
+		{
+			auto entry = entryInfo.entry().staticCast< MonitoringLog::AnalogInputsEntry >();
+			for( quint32 i = 0; i < 8; ++i )
+			{
+				const float* data = entry->data( i );
+				if( data )
+					ui.monitoringLogTreeWidget->updateAnalogData( i, data, entry->channelsCount( i ), entryInfo.dateTime() );
+			}
+			break;
+		}
+		case MonitoringLog::Entry::Type::SensorEntry:
+		{
+			auto entry = entryInfo.entry().staticCast< MonitoringLog::SensorEntry >();
+			QString sensorName = name.right( name.size() - name.lastIndexOf( '.' ) - 1 );
+			ui.monitoringLogTreeWidget->updateSensorData( name, sensorName, ( const uint8_t* )entry->data(), entryInfo.dateTime() );
+			break;
+		}
+		default:
+			break;
+		}
+	}
+	MonitoringDataItem* root = ui.monitoringLogTreeWidget->dataModel()->rootItem();
+	for( int i = 0; i < root->childCount(); )
+	{
+		MonitoringDataItem* child = root->child( i );
+		if( child->type() == MonitoringDataItem::ValueType::DateTime && child->value().toDateTime().time() > t )
+			ui.monitoringLogTreeWidget->dataModel()->removeRows( i, 1 );
+		else
+			++i;
+	}
+}
+
+void MarvieController::monitoringLogSliderChanged( int v )
+{
+	ui.monitoringLogTimeEdit->setTime( monitoringLogTimestamps[v] );
+}
+
+void MarvieController::monitoringLogMoveEntryButtonClicked()
+{
+	if( sender() == ui.monitoringLogPrevEntryButton )
+		ui.monitoringLogTimeSlider->setValue( ui.monitoringLogTimeSlider->value() - 1 );
+	else
+		ui.monitoringLogTimeSlider->setValue( ui.monitoringLogTimeSlider->value() + 1 );
+}
+
+void MarvieController::monitoringLogViewMenuRequested( const QPoint& point )
+{
+	monitoringLogViewMenu->popup( ui.monitoringLogTreeWidget->viewport()->mapToGlobal( point ) );
+}
+
+void MarvieController::monitoringLogViewMenuActionTriggered( QAction* action )
+{
+	if( action->text() == "Copy value" )
+	{
+		QModelIndex index = ui.monitoringLogTreeWidget->currentIndex();
+		if( !index.isValid() )
+			return;
+		QApplication::clipboard()->setText( index.sibling( index.row(), 1 ).data( Qt::DisplayRole ).toString() );
+	}
+	else if( action->text() == "Copy row" )
+	{
+		QModelIndex index = ui.monitoringLogTreeWidget->currentIndex();
+		if( !index.isValid() )
+			return;
+		QString fullName( index.sibling( index.row(), 0 ).data( Qt::DisplayRole ).toString() );
+		QString part = fullName;
+		QModelIndex parent = index.parent();
+		while( parent.isValid() )
+		{
+			if( part[0] != '[' )
+				fullName.insert( 0, '.' );
+			part = parent.data( Qt::DisplayRole ).toString();
+			fullName.insert( 0, part );
+			parent = parent.parent();
+		}
+		QApplication::clipboard()->setText( fullName + '\t' +
+											index.sibling( index.row(), 1 ).data( Qt::DisplayRole ).toString() + '\t' +
+											index.sibling( index.row(), 2 ).data( Qt::DisplayRole ).toString() );
+	}
+	else if( action->text() == "Expand all" )
+		ui.monitoringLogTreeWidget->expandAll();
+	else if( action->text() == "Collapse all" )
+		ui.monitoringLogTreeWidget->collapseAll();
+	else if( action->text() == "Hexadecimal output" )
+		ui.monitoringLogTreeWidget->setHexadecimalOutput( action->isChecked() );
+}
+
+void MarvieController::setMonitoringLogWidgetGroupEnabled( bool enabled )
+{
+	ui.monitoringLogDateLabel->setEnabled( enabled );
+	ui.monitoringLogDateEdit->setEnabled( enabled );
+	ui.monitoringLogTimeLabel->setEnabled( enabled );
+	ui.monitoringLogTimeEdit->setEnabled( enabled );
+	ui.monitoringLogPrevEntryButton->setEnabled( enabled );
+	ui.monitoringLogNextEntryButton->setEnabled( enabled );
+	ui.monitoringLogTimeSlider->setEnabled( enabled );
+	ui.monitoringLogTreeWidget->setEnabled( enabled );
+	if( !enabled )
+	{
+		ui.monitoringLogTimeSlider->setRange( 0, 100 );
+		ui.monitoringLogTimeSlider->setValue( 0 );
+	}
 }
 
 void MarvieController::sensorSettingsMenuRequested( const QPoint& point )
@@ -1289,7 +1537,7 @@ void MarvieController::mlinkStateChanged( MLinkClient::State s )
 		ui.sdCardMenuButton->show();
 		ui.logMenuButton->show();
 
-		monitoringDataModel.resetData();
+		ui.monitoringDataTreeView->clear();
 		break;
 	case MLinkClient::State::Disconnecting:
 		resetDeviceInfo();
@@ -1379,7 +1627,7 @@ void MarvieController::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
 				uint16_t id;
 				uint16_t count;
 			}* block = ( BlockDesc* )pData;
-			updateAnalogData( block->id, ( float* )( pData + sizeof( uint16_t ) * 2 ), block->count );
+			ui.monitoringDataTreeView->updateAnalogData( block->id, ( float* )( pData + sizeof( uint16_t ) * 2 ), block->count );
 			size -= sizeof( uint16_t ) * 2 + sizeof( float ) * block->count;
 			pData += sizeof( uint16_t ) * 2 + sizeof( float ) * block->count;
 		}
@@ -1397,7 +1645,7 @@ void MarvieController::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
 				uint16_t count;
 				uint32_t data;
 			}* block = ( BlockDesc* )pData;
-			updateDiscreteData( block->id, block->data, block->count );
+			ui.monitoringDataTreeView->updateDiscreteData( block->id, block->data, block->count );
 			size -= sizeof( BlockDesc );
 			pData += sizeof( BlockDesc );
 		}
@@ -1438,7 +1686,7 @@ void MarvieController::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
 	case MarviePackets::Type::SyncStartType:
 	{
 		ui.vPortTileListWidget->removeAllTiles();
-		monitoringDataModel.resetData();
+		ui.monitoringDataTreeView->clear();
 		deviceVPorts.clear();
 		deviceSensors.clear();
 		ui.deviceSensorsComboBox->clear();
@@ -1462,7 +1710,7 @@ void MarvieController::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
 	case MarviePackets::Type::ConfigResetType:
 	{
 		ui.vPortTileListWidget->removeAllTiles();
-		monitoringDataModel.resetData();
+		ui.monitoringDataTreeView->clear();
 		deviceVPorts.clear();
 		deviceSensors.clear();
 		ui.deviceSensorsComboBox->clear();
@@ -1510,9 +1758,13 @@ void MarvieController::mlinkNewComplexPacketAvailable( uint8_t channelId, QStrin
 		if( vPortId < ui.vPortTileListWidget->tilesCount() )
 			ui.vPortTileListWidget->tile( vPortId )->removeSensorReadError( sensorId );
 		if( deviceSensors.isEmpty() )
-			updateSensorData( sensorId + 1, "", reinterpret_cast< const uint8_t* >( data.constData() + sizeof( uint8_t ) * 2 ) );
+			ui.monitoringDataTreeView->updateSensorData( QString( "%1." ).arg( sensorId + 1 ), "",
+														 reinterpret_cast< const uint8_t* >( data.constData() + sizeof( uint8_t ) * 2 + sizeof( DateTime ) ),
+														 toQtDateTime( *reinterpret_cast< const DateTime* >( data.constData() + sizeof( uint8_t ) * 2 ) ) );
 		else
-			updateSensorData( sensorId + 1, deviceSensors[sensorId], reinterpret_cast< const uint8_t* >( data.constData() + sizeof( uint8_t ) * 2 ) );
+			ui.monitoringDataTreeView->updateSensorData( QString( "%1. %2" ).arg( sensorId + 1 ).arg( deviceSensors[sensorId] ), deviceSensors[sensorId],
+														 reinterpret_cast< const uint8_t* >( data.constData() + sizeof( uint8_t ) * 2 + sizeof( DateTime ) ),
+														 toQtDateTime( *reinterpret_cast< const DateTime* >( data.constData() + sizeof( uint8_t ) * 2 ) ) );
 	}
 }
 
@@ -1677,6 +1929,7 @@ void MarvieController::sensorsInit()
 			if( dataDescValidator.validate( data, QUrl::fromLocalFile( "GG42" ) ) && doc.setContent( data ) )
 			{
 				c0 = doc.firstChildElement( "DataDesc" );
+				desc.data.size = c0.attribute( "size", "-1" ).toInt();
 				c1 = c0.firstChildElement();
 				typedef QSharedPointer< SensorDesc::Data::Node > DataPointer;
 				static const std::function< int( SensorDesc::Data::Node* node, QDomElement c, int bias ) > parse = []( SensorDesc::Data::Node* node, QDomElement c, int bias ) -> int
@@ -1689,7 +1942,7 @@ void MarvieController::sensorsInit()
 							bias = biasAttr;
 						switch( type )
 						{
-						case MarvieController::SensorDesc::Data::Type::Array:
+						case SensorDesc::Data::Type::Array:
 						{
 							SensorDesc::Data::Type arrayType = SensorDesc::Data::toType( c.attribute( "type" ) );
 							int count = c.attribute( "count" ).toInt();
@@ -1702,14 +1955,14 @@ void MarvieController::sensorsInit()
 							node->childNodes.append( newNode );
 							break;
 						}
-						case MarvieController::SensorDesc::Data::Type::Group:
+						case SensorDesc::Data::Type::Group:
 						{
 							auto newNode = new SensorDesc::Data::Node( type, bias, c.attribute( "name" ) );
 							bias = parse( newNode, c.firstChildElement(), bias );
 							node->childNodes.append( newNode );
 							break;
 						}
-						case MarvieController::SensorDesc::Data::Type::GroupArray:
+						case SensorDesc::Data::Type::GroupArray:
 						{
 							int count = c.attribute( "count" ).toInt();
 							auto c2 = c.firstChildElement();
@@ -1724,7 +1977,7 @@ void MarvieController::sensorsInit()
 							node->childNodes.append( groupArrayNode );
 							break;
 						}
-						case MarvieController::SensorDesc::Data::Type::Unused:
+						case SensorDesc::Data::Type::Unused:
 							bias += c.attribute( "size" ).toInt();
 							break;
 						default:
@@ -1737,7 +1990,9 @@ void MarvieController::sensorsInit()
 					return bias;
 				};
 				SensorDesc::Data::Node* root = new SensorDesc::Data::Node( SensorDesc::Data::Type::Group, 0 );
-				parse( root, c1, 0 );
+				int bias = parse( root, c1, 0 );
+				if( desc.data.size == -1 )
+					desc.data.size = bias;
 				desc.data.root = DataPointer( root );
 			}
 		}
@@ -3250,271 +3505,6 @@ void MarvieController::resetDeviceInfo()
 	ui.modbusAsciiStatusLabel->setText( "ModbusASCII: unknown" );
 }
 
-template< typename T >
-QVector< T > getVector( const T* array, int size )
-{
-	QVector< T > v( size );
-	for( int i = 0; i < size; ++i )
-		v[i] = array[i];
-
-	return v;
-}
-
-void MarvieController::updateSensorData( uint id, QString sensorName, const uint8_t* data )
-{
-	QString itemName = QString( "%1. %2" ).arg( id ).arg( sensorName );
-	MonitoringDataItem* item = monitoringDataModel.findItem( itemName );
-	if( !item )
-	{
-		item = new MonitoringDataItem( itemName );
-		attachSensorRelatedMonitoringDataItems( item, sensorName );
-		insertTopLevelMonitoringDataItem( item );
-	}
-	item->setValue( toQtDateTime( *reinterpret_cast< const DateTime* >( data ) ) );
-
-	if( !sensorDescMap.contains( sensorName ) )
-		return;
-	auto desc = sensorDescMap[sensorName];
-	if( !desc.data.root )
-		return;
-#define BASE_SIZE sizeof( DateTime )
-	std::function< void( MonitoringDataItem* item, SensorDesc::Data::Node* node ) > set = [&set, data]( MonitoringDataItem* item, SensorDesc::Data::Node* node )
-	{
-		int itemChildIndex = 0;
-		for( auto i : node->childNodes )
-		{
-			switch( i->type )
-			{
-			case SensorDesc::Data::Type::Group:
-			{
-				set( item->child( itemChildIndex ), i );
-				break;
-			}
-			case SensorDesc::Data::Type::Array:
-			{
-				if( i->childNodes[0]->type == SensorDesc::Data::Type::Char )
-				{
-					QString s;
-					for( auto i2 : i->childNodes )
-					{
-						char c = data[i2->bias + BASE_SIZE];
-						if( c == 0 )
-							break;
-						s.append( c );
-					}
-					item->child( itemChildIndex )->setValue( s );
-				}
-				switch( i->childNodes[0]->type )
-				{
-				case SensorDesc::Data::Type::Int8:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const int8_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
-					break;
-				case SensorDesc::Data::Type::Uint8:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const uint8_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
-					break;
-				case SensorDesc::Data::Type::Int16:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const int16_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
-					break;
-				case SensorDesc::Data::Type::Uint16:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const uint16_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
-					break;
-				case SensorDesc::Data::Type::Int32:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const int32_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
-					break;
-				case SensorDesc::Data::Type::Uint32:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const uint32_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
-					break;
-				case SensorDesc::Data::Type::Int64:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const int64_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
-					break;
-				case SensorDesc::Data::Type::Uint64:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const uint64_t* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
-					break;
-				case SensorDesc::Data::Type::Float:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const float* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
-					break;
-				case SensorDesc::Data::Type::Double:
-					item->child( itemChildIndex )->setValue( getVector( reinterpret_cast< const double* >( data + i->bias + BASE_SIZE ), i->childNodes.size() ) );
-					break;
-				default:
-					break;
-				}
-				set( item->child( itemChildIndex ), i );
-				break;
-			}
-			case SensorDesc::Data::Type::Char:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< const char* >( data + i->bias + BASE_SIZE ) );
-				break;
-			case SensorDesc::Data::Type::Int8:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< const int8_t* >( data + i->bias + BASE_SIZE ) );
-				break;
-			case SensorDesc::Data::Type::Uint8:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< const uint8_t* >( data + i->bias + BASE_SIZE ) );
-				break;
-			case SensorDesc::Data::Type::Int16:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< const int16_t* >( data + i->bias + BASE_SIZE ) );
-				break;
-			case SensorDesc::Data::Type::Uint16:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< const uint16_t* >( data + i->bias + BASE_SIZE ) );
-				break;
-			case SensorDesc::Data::Type::Int32:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< const int32_t* >( data + i->bias + BASE_SIZE ) );
-				break;
-			case SensorDesc::Data::Type::Uint32:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< const uint32_t* >( data + i->bias + BASE_SIZE ) );
-				break;
-			case SensorDesc::Data::Type::Int64:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< const int64_t* >( data + i->bias + BASE_SIZE ) );
-				break;
-			case SensorDesc::Data::Type::Uint64:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< const uint64_t* >( data + i->bias + BASE_SIZE ) );
-				break;
-			case SensorDesc::Data::Type::Float:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< const float* >( data + i->bias + BASE_SIZE ) );
-				break;
-			case SensorDesc::Data::Type::Double:
-				item->child( itemChildIndex )->setValue( *reinterpret_cast< const double* >( data + i->bias + BASE_SIZE ) );
-				break;
-			default:
-				break;
-			}
-			++itemChildIndex;
-		}
-	};
-	set( item, desc.data.root.data() );
-	monitoringDataModel.topLevelItemDataUpdated( item->childIndex() );
-}
-
-void MarvieController::attachSensorRelatedMonitoringDataItems( MonitoringDataItem* sensorItem, QString sensorName )
-{
-	if( !sensorDescMap.contains( sensorName ) )
-		return;
-	auto desc = sensorDescMap[sensorName];
-	if( !desc.data.root )
-		return;
-
-	static std::function< void( MonitoringDataItem* item, SensorDesc::Data::Node* node ) > add = []( MonitoringDataItem* item, SensorDesc::Data::Node* node )
-	{
-		for( auto i : node->childNodes )
-		{
-			switch( i->type )
-			{
-			case SensorDesc::Data::Type::Group:
-			{
-				MonitoringDataItem* child = new MonitoringDataItem( i->name );
-				add( child, i );
-				item->appendChild( child );
-				break;
-			}
-			case SensorDesc::Data::Type::Array:
-			{
-				MonitoringDataItem* child = new MonitoringDataItem( i->name );
-				for( int i2 = 0; i2 < i->childNodes.size(); ++i2 )
-					child->appendChild( new MonitoringDataItem( QString( "[%1]" ).arg( i2 ) ) );
-				item->appendChild( child );
-				break;
-			}
-			default:
-			{
-				MonitoringDataItem* child = new MonitoringDataItem( i->name );
-				item->appendChild( child );
-				break;
-			}
-			}
-		}
-	};
-	add( sensorItem, desc.data.root.data() );
-}
-
-void MarvieController::updateAnalogData( uint id, float* data, uint count )
-{
-	QString itemName = QString( "AI[%1]" ).arg( id );
-	MonitoringDataItem* item = monitoringDataModel.findItem( itemName );
-	if( !item )
-	{
-		item = new MonitoringDataItem( itemName );
-		attachADRelatedMonitoringDataItems( item, count );
-		insertTopLevelMonitoringDataItem( item );
-	}
-
-	item->setValue( getVector( data, count ) );
-	for( int i = 0; i < item->childCount(); ++i )
-		item->child( i )->setValue( data[i] );
-	monitoringDataModel.topLevelItemDataUpdated( item->childIndex() );
-}
-
-void MarvieController::updateDiscreteData( uint id, uint64_t data, uint count )
-{
-	QString itemName = QString( "DI[%1]" ).arg( id );
-	MonitoringDataItem* item = monitoringDataModel.findItem( itemName );
-	if( !item )
-	{
-		item = new MonitoringDataItem( itemName );
-		attachADRelatedMonitoringDataItems( item, count );
-		insertTopLevelMonitoringDataItem( item );
-	}
-
-	if( count <= 8 )
-		item->setValue( ( uint8_t )data );
-	else if( count <= 16 )
-		item->setValue( ( uint16_t )data );
-	else if( count <= 32 )
-		item->setValue( ( uint32_t )data );
-	else
-		item->setValue( ( uint64_t )data );
-	for( int i = 0; i < item->childCount(); ++i )
-		item->child( i )->setValue( bool( data & ( 1 << i ) ) );
-	monitoringDataModel.topLevelItemDataUpdated( item->childIndex() );
-}
-
-void MarvieController::attachADRelatedMonitoringDataItems( MonitoringDataItem* item, uint count )
-{
-	for( int i = 0; i < count; ++i )
-		item->appendChild( new MonitoringDataItem( QString( "[%1]" ).arg( i ) ) );
-}
-
-void MarvieController::insertTopLevelMonitoringDataItem( MonitoringDataItem* item )
-{
-	enum ItemType { DI, AI, Sensor };
-	auto itemType = []( QString itemName, int& index )
-	{
-		if( itemName.indexOf( "AI" ) == 0 )
-		{
-			index = itemName.midRef( 3 ).split( ']' )[0].toInt();
-			return ItemType::AI;
-		}
-		if( itemName.indexOf( "DI" ) == 0 )
-		{
-			index = itemName.midRef( 3 ).split( ']' )[0].toInt();
-			return ItemType::DI;
-		}
-		index = itemName.split( '.' )[0].toInt();
-		return ItemType::Sensor;
-	};
-
-	int indexA;
-	ItemType typeA = itemType( item->name(), indexA );
-	int index = 0;
-	while( index < monitoringDataModel.rootItem()->childCount() )
-	{
-		int indexB;
-		ItemType typeB = itemType( monitoringDataModel.rootItem()->child( index )->name(), indexB );
-		if( typeA == typeB )
-		{
-			if( indexA < indexB )
-				break;
-		}
-		else
-		{
-			if( typeA < typeB )
-				break;
-		}
-		++index;
-	}
-
-	monitoringDataModel.insertTopLevelItem( index, item );
-}
-
 DateTime MarvieController::toDeviceDateTime( const QDateTime& dateTime )
 {
 	return DateTime( Date( dateTime.date().year(), dateTime.date().month(), dateTime.date().day(), dateTime.date().dayOfWeek() ),
@@ -3617,57 +3607,6 @@ void MarvieController::XmlMessageHandler::handleMessage( QtMsgType type, const Q
 
 	this->description = description;
 	this->sourceLocation = sourceLocation;
-}
-
-int MarvieController::SensorDesc::Data::typeSize( Type type )
-{
-	switch( type )
-	{
-	case Type::Char:
-	case Type::Int8:
-	case Type::Uint8:
-		return 1;
-	case Type::Int16:
-	case Type::Uint16:
-		return 2;
-	case Type::Int32:
-	case Type::Uint32:
-	case Type::Float:
-		return 4;
-	case Type::Int64:
-	case Type::Uint64:
-	case Type::Double:
-		return 8;
-	default:
-		assert( true );
-		return -1;
-	}
-}
-
-MarvieController::SensorDesc::Data::Type MarvieController::SensorDesc::Data::toType( QString typeName )
-{
-	static const QMap< QString, SensorDesc::Data::Type > map = []() -> QMap< QString, SensorDesc::Data::Type >
-	{
-		QMap< QString, SensorDesc::Data::Type > map;
-		map.insert( "char", SensorDesc::Data::Type::Char );
-		map.insert( "int8", SensorDesc::Data::Type::Int8 );
-		map.insert( "uint8", SensorDesc::Data::Type::Uint8 );
-		map.insert( "int16", SensorDesc::Data::Type::Int16 );
-		map.insert( "uint16", SensorDesc::Data::Type::Uint16 );
-		map.insert( "int32", SensorDesc::Data::Type::Int32 );
-		map.insert( "uint32", SensorDesc::Data::Type::Uint32 );
-		map.insert( "int64", SensorDesc::Data::Type::Int64 );
-		map.insert( "uint64", SensorDesc::Data::Type::Uint64 );
-		map.insert( "float", SensorDesc::Data::Type::Float );
-		map.insert( "double", SensorDesc::Data::Type::Double );
-		map.insert( "unused", SensorDesc::Data::Type::Unused );
-		map.insert( "group", SensorDesc::Data::Type::Group );
-		map.insert( "array", SensorDesc::Data::Type::Array );
-		map.insert( "groupArray", SensorDesc::Data::Type::GroupArray );
-		return map;
-	}( );
-	assert( map.contains( typeName ) );
-	return map[typeName];
 }
 
 bool MarvieController::VPortIdComboBoxEventFilter::eventFilter( QObject *obj, QEvent *event )

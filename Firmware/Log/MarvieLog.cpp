@@ -91,8 +91,10 @@ void MarvieLog::setSignalBlockDescList( const std::list< SignalBlockDesc >& list
 			++digitBlocksCount;
 		if( blockDescVect[i].analogCount )
 		{
+			if( blockDescVect[i].analogCount > 24 )
+				blockDescVect[i].analogCount = 24;
 			++analogBlocksCount;
-			analogChannelsCount += blockDescVect[i].analogCount;
+			analogChannelsCount += ( blockDescVect[i].analogCount + 7 ) & ~0x07;
 		}
 		++i;
 	}
@@ -202,9 +204,9 @@ void MarvieLog::main()
 	virtual_timer_t digitSignalTimer, analogSignalTimer;
 	chVTObjectInit( &digitSignalTimer );
 	chVTObjectInit( &analogSignalTimer );
-	if( dSignalPeriod )
+	if( dSignalPeriod && digitBlocksCount )
 		chVTSet( &digitSignalTimer, dSignalPeriod, dTimerCallback, this );
-	if( aSignalPeriod )
+	if( aSignalPeriod && analogBlocksCount )
 		chVTSet( &analogSignalTimer, aSignalPeriod, aTimerCallback, this );
 
 	while( logState != State::Stopping )
@@ -277,7 +279,7 @@ Begin:
 	DateTime dateTime = DateTimeService::currentDateTime();
 	sprintf( ( char* )buffer, "%d/%d/%d", ( int )dateTime.date().year(), ( int )dateTime.date().month(), ( int )dateTime.date().day() );
 	rootDir.mkpath( ( char* )buffer );
-	sprintf( ( char* )buffer, "%s/%d/%d/%d/dInputs.bin", rootDir.path().c_str(), ( int )dateTime.date().year(), ( int )dateTime.date().month(), ( int )dateTime.date().day() );
+	sprintf( ( char* )buffer, "%s/%d/%d/%d/DI.bin", rootDir.path().c_str(), ( int )dateTime.date().year(), ( int )dateTime.date().month(), ( int )dateTime.date().day() );
 	if( file.open( ( char* )buffer, FileSystem::OpenAppend | FileSystem::Write ) )
 	{
 		// in the case of prolonged open()
@@ -291,11 +293,13 @@ Begin:
 
 		buffer[0] = '_'; buffer[1] = 'l'; buffer[2] = 'o'; buffer[3] = 'g';
 		*( DateTime* )( buffer + 4 ) = dateTime;
-		buffer[4 + sizeof( DateTime )] = ( uint8_t )digitBlocksCount;
+		uint8_t& flags = buffer[4 + sizeof( DateTime )];
+		flags = 0;
 		for( uint32_t i = 0, count = 0; count < digitBlocksCount; ++i )
 		{
 			if( !blockDescVect[i].digitCount )
 				continue;
+			flags |= 1 << i;
 			blockDescVect[i].digitBlockData = signalProvider->digitSignals( i );
 			( ( uint32_t* )( buffer + 4 + sizeof( DateTime ) + 1 ) )[count] = blockDescVect[i].digitBlockData;
 			++count;
@@ -312,7 +316,7 @@ Begin:
 
 void MarvieLog::logAnalogInputs()
 {
-	uint32_t recordSize = 4 + sizeof( DateTime ) + 1 + analogChannelsCount * 4 + 4;
+	uint32_t recordSize = 4 + sizeof( DateTime ) + 2 + analogChannelsCount * 4 + 4;
 	if( logSize + recordSize > maxSize )
 	{
 		if( overwritingEnabled )
@@ -328,7 +332,7 @@ Begin:
 	DateTime dateTime = DateTimeService::currentDateTime();
 	sprintf( ( char* )buffer, "%d/%d/%d", ( int )dateTime.date().year(), ( int )dateTime.date().month(), ( int )dateTime.date().day() );
 	rootDir.mkpath( ( char* )buffer );
-	sprintf( ( char* )buffer, "%s/%d/%d/%d/aInputs.bin", rootDir.path().c_str(), ( int )dateTime.date().year(), ( int )dateTime.date().month(), ( int )dateTime.date().day() );
+	sprintf( ( char* )buffer, "%s/%d/%d/%d/AI.bin", rootDir.path().c_str(), ( int )dateTime.date().year(), ( int )dateTime.date().month(), ( int )dateTime.date().day() );
 	if( file.open( ( char* )buffer, FileSystem::OpenAppend | FileSystem::Write ) )
 	{
 		// in the case of prolonged open()
@@ -342,7 +346,8 @@ Begin:
 
 		buffer[0] = '_'; buffer[1] = 'l'; buffer[2] = 'o'; buffer[3] = 'g';
 		*( DateTime* )( buffer + 4 ) = dateTime;
-		*( uint8_t* )( buffer + 4 + sizeof( DateTime ) ) = analogChannelsCount;
+		uint16_t& desc = *( uint16_t* )( buffer + 4 + sizeof( DateTime ) );
+		desc = 0;
 
 		uint32_t offset = 0;
 		for( uint32_t i = 0; i < blockDescVect.size(); ++i )
@@ -350,12 +355,15 @@ Begin:
 			uint32_t count = blockDescVect[i].analogCount;
 			if( !count )
 				continue;
+			desc |= ( ( count + 7 ) >> 3 ) << ( i * 2 );
 			for( uint32_t line = 0; line < count; ++line )
-				( ( float* )( buffer + 4 + sizeof( DateTime ) + 1 ) )[offset++] = signalProvider->analogSignal( i, line );
+				( ( float* )( buffer + 4 + sizeof( DateTime ) + 2 ) )[offset++] = signalProvider->analogSignal( i, line );
 		}
+		while( offset < analogChannelsCount )
+			( ( float* )( buffer + 4 + sizeof( DateTime ) + 2 ) )[offset++] = -1;
 
 		Crc32HW::acquire();
-		*( uint32_t* )( buffer + 4 + sizeof( DateTime ) + 1 + analogChannelsCount * 4 ) = Crc32HW::crc32Byte( buffer, 4 + sizeof( DateTime ) + 1 + analogChannelsCount * 4, 0xFFFFFFFF );
+		*( uint32_t* )( buffer + 4 + sizeof( DateTime ) + 2 + analogChannelsCount * 4 ) = Crc32HW::crc32Byte( buffer, 4 + sizeof( DateTime ) + 2 + analogChannelsCount * 4, 0xFFFFFFFF );
 		Crc32HW::release();
 
 		logSize += file.write( buffer, recordSize );
