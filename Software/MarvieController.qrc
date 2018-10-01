@@ -1,63 +1,64 @@
 <RCC>
-  <qresource prefix="/MarvieController">
-    <file>icons/icons8-database-filled-100.png</file>
-    <file>icons/icons8-sort-down-filled-50.png</file>
-    <file>icons/icons8-sort-up-filled-50.png</file>
-    <file>Xml/schemas/SensorData.xsd</file>
-    <file>Xml/schemas/SensorSettings.xsd</file>
-    <file>icons/1459197028_save.png</file>
-    <file>icons/1459197289_folder.png</file>
-    <file>icons/icons8-bluetooth-2-filled-50.png</file>
-    <file>icons/icons8-bluetooth-2-filled-50-green.png</file>
-    <file>icons/icons8-bluetooth-2-filled-50-orange.png</file>
-    <file>icons/icons8-ethernet-on-filled-50.png</file>
-    <file>icons/icons8-ethernet-on-filled-50-green.png</file>
-    <file>icons/icons8-ethernet-on-filled-50-orange.png</file>
-    <file>icons/icons8-Gears Filled-100.png</file>
-    <file>icons/icons8-Heart Monitor Filled-100.png</file>
-    <file>icons/icons8-rs-232-female-filled-50.png</file>
-    <file>icons/icons8-rs-232-female-filled-50-green.png</file>
-    <file>icons/icons8-rs-232-female-filled-50-orange.png</file>
-    <file>icons/sort-down-filled.png</file>
-    <file>Xml/schemas/Base.xsd</file>
-    <file>icons/icons8-drag-list-up-50.png</file>
-    <file>icons/icons8-drag-list-up-26.png</file>
-    <file>icons/icons8-adjust-64.png</file>
-    <file>icons/icons8-Heart Monitor Filled-100-orange.png</file>
-    <file>icons/icons8-Gears Filled-100-orange.png</file>
-    <file>Xml/schemas/Config.xsd</file>
-    <file>icons/icons8-sum-90.png</file>
-    <file>icons/x.png</file>
-    <file>icons/icons8-export-90.png</file>
-    <file>icons/icons8-import-90.png</file>
-    <file>icons/icons8-upload-96.png</file>
-    <file>icons/icons8-file-90.png</file>
-    <file>icons/icons8-download-96.png</file>
-    <file>icons/icons8-add-node-filled-500.png</file>
-    <file>icons/icons8-delete-node-filled-500.png</file>
-    <file>icons/icons8-refresh-96.png</file>
-    <file>icons/icons8-add-node-filled.png</file>
-    <file>icons/icons8-delete-node-filled.png</file>
-    <file>icons/icons8-move-node-down-filled.png</file>
-    <file>icons/icons8-move-node-down-filled-500.png</file>
-    <file>icons/icons8-move-node-up-filled.png</file>
-    <file>icons/icons8-move-node-up-filled-500.png</file>
-    <file>icons/icons8-sort-down-26-blue.png</file>
-    <file>icons/icons8-checkmark-64.png</file>
-    <file>icons/icons8-chevron-right-filled-50.png</file>
-    <file>icons/icons8-error-48.png</file>
-    <file>icons/icons8-box-important-42.png</file>
-    <file>icons/icons8-cancel-26.png</file>
-    <file>Animations/loading.gif</file>
-    <file>icons/icons8-synchronize-60.png</file>
-    <file>icons/icons8-play-60.png</file>
-    <file>icons/icons8-stop-48.png</file>
-    <file>icons/icons8-end-32.png</file>
-    <file>icons/icons8-update-left-rotation-64.png</file>
-    <file>icons/icons8-eraser-60.png</file>
-    <file>icons/icons8-down-button-48.png</file>
-    <file>icons/icons8-eject-48.png</file>
-    <file>icons/icons8-shutdown-52.png</file>
-    <file>icons/icons8-copy-node-filled.png</file>
-  </qresource>
+    <qresource prefix="/MarvieController">
+        <file>icons/icons8-database-filled-100.png</file>
+        <file>icons/icons8-sort-down-filled-50.png</file>
+        <file>icons/icons8-sort-up-filled-50.png</file>
+        <file>Xml/schemas/SensorData.xsd</file>
+        <file>Xml/schemas/SensorSettings.xsd</file>
+        <file>icons/1459197028_save.png</file>
+        <file>icons/1459197289_folder.png</file>
+        <file>icons/icons8-bluetooth-2-filled-50.png</file>
+        <file>icons/icons8-bluetooth-2-filled-50-green.png</file>
+        <file>icons/icons8-bluetooth-2-filled-50-orange.png</file>
+        <file>icons/icons8-ethernet-on-filled-50.png</file>
+        <file>icons/icons8-ethernet-on-filled-50-green.png</file>
+        <file>icons/icons8-ethernet-on-filled-50-orange.png</file>
+        <file>icons/icons8-Gears Filled-100.png</file>
+        <file>icons/icons8-Heart Monitor Filled-100.png</file>
+        <file>icons/icons8-rs-232-female-filled-50.png</file>
+        <file>icons/icons8-rs-232-female-filled-50-green.png</file>
+        <file>icons/icons8-rs-232-female-filled-50-orange.png</file>
+        <file>icons/sort-down-filled.png</file>
+        <file>Xml/schemas/Base.xsd</file>
+        <file>icons/icons8-drag-list-up-50.png</file>
+        <file>icons/icons8-drag-list-up-26.png</file>
+        <file>icons/icons8-adjust-64.png</file>
+        <file>icons/icons8-Heart Monitor Filled-100-orange.png</file>
+        <file>icons/icons8-Gears Filled-100-orange.png</file>
+        <file>Xml/schemas/Config.xsd</file>
+        <file>icons/icons8-sum-90.png</file>
+        <file>icons/x.png</file>
+        <file>icons/icons8-export-90.png</file>
+        <file>icons/icons8-import-90.png</file>
+        <file>icons/icons8-upload-96.png</file>
+        <file>icons/icons8-file-90.png</file>
+        <file>icons/icons8-download-96.png</file>
+        <file>icons/icons8-add-node-filled-500.png</file>
+        <file>icons/icons8-delete-node-filled-500.png</file>
+        <file>icons/icons8-refresh-96.png</file>
+        <file>icons/icons8-add-node-filled.png</file>
+        <file>icons/icons8-delete-node-filled.png</file>
+        <file>icons/icons8-move-node-down-filled.png</file>
+        <file>icons/icons8-move-node-down-filled-500.png</file>
+        <file>icons/icons8-move-node-up-filled.png</file>
+        <file>icons/icons8-move-node-up-filled-500.png</file>
+        <file>icons/icons8-sort-down-26-blue.png</file>
+        <file>icons/icons8-checkmark-64.png</file>
+        <file>icons/icons8-chevron-right-filled-50.png</file>
+        <file>icons/icons8-error-48.png</file>
+        <file>icons/icons8-box-important-42.png</file>
+        <file>icons/icons8-cancel-26.png</file>
+        <file>Animations/loading.gif</file>
+        <file>icons/icons8-synchronize-60.png</file>
+        <file>icons/icons8-play-60.png</file>
+        <file>icons/icons8-stop-48.png</file>
+        <file>icons/icons8-end-32.png</file>
+        <file>icons/icons8-update-left-rotation-64.png</file>
+        <file>icons/icons8-eraser-60.png</file>
+        <file>icons/icons8-down-button-48.png</file>
+        <file>icons/icons8-eject-48.png</file>
+        <file>icons/icons8-shutdown-52.png</file>
+        <file>icons/icons8-copy-node-filled.png</file>
+        <file>icons/icons8-log-in-circle.png</file>
+    </qresource>
 </RCC>

@@ -1475,7 +1475,7 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 					delete xmlData;
 					delete channel;
 					configXmlDataSendingSemaphore.signal();
-				}, 512, NORMALPRIO );
+				}, 1024, NORMALPRIO );
 			}
 		}
 		else

@@ -630,7 +630,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
         </size>
        </property>
        <property name="toolTip">
-        <string>Settings</string>
+        <string>Log</string>
        </property>
        <property name="styleSheet">
         <string notr="true">QToolButton { border: none; }
@@ -642,7 +642,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
        </property>
        <property name="icon">
         <iconset resource="MarvieController.qrc">
-         <normaloff>:/MarvieController/icons/icons8-database-filled-100.png</normaloff>:/MarvieController/icons/icons8-database-filled-100.png</iconset>
+         <normaloff>:/MarvieController/icons/icons8-log-in-circle.png</normaloff>:/MarvieController/icons/icons8-log-in-circle.png</iconset>
        </property>
        <property name="iconSize">
         <size>

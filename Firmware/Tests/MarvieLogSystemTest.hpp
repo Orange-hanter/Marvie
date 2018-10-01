@@ -2,6 +2,7 @@
 #include "Log/MarvieLog.h"
 #include "hal.h"
 #include "Crc32HW.h"
+#include <math.h>
 
 namespace MarvieLogSystemTest
 {
@@ -177,7 +178,7 @@ namespace MarvieLogSystemTest
 			else
 			{
 				int64_t dt = dateTimeMark.msecsTo( *( DateTime * )( data + 4 ) );
-				assert( dt >= 3000 && dt <= 3500 );
+				assert( abs( dt - 3000 ) < 150 );
 				dateTimeMark = *( DateTime * )( data + 4 );
 			}
 
@@ -225,7 +226,7 @@ namespace MarvieLogSystemTest
 			else
 			{
 				int64_t dt = dateTimeMark.msecsTo( *( DateTime * )( data + 4 ) );
-				assert( dt >= 2000 && dt <= 2500 );
+				assert( abs( dt - 2000 ) < 150 );
 				dateTimeMark = *( DateTime * )( data + 4 );
 			}
 
@@ -276,7 +277,7 @@ namespace MarvieLogSystemTest
 				else
 				{
 					int64_t dt = dateTimeMark.msecsTo( *( DateTime * )( data + 4 ) );
-					assert( dt >= 2000 && dt <= 2500 );
+					assert( abs( dt - 2000 ) < 150 );
 					dateTimeMark = *( DateTime * )( data + 4 );
 				}
 

@@ -295,13 +295,14 @@ Begin:
 		*( DateTime* )( buffer + 4 ) = dateTime;
 		uint8_t& flags = buffer[4 + sizeof( DateTime )];
 		flags = 0;
+		uint32_t* data = ( uint32_t* )( buffer + 4 + sizeof( DateTime ) + 1 );
 		for( uint32_t i = 0, count = 0; count < digitBlocksCount; ++i )
 		{
 			if( !blockDescVect[i].digitCount )
 				continue;
 			flags |= 1 << i;
 			blockDescVect[i].digitBlockData = signalProvider->digitSignals( i );
-			( ( uint32_t* )( buffer + 4 + sizeof( DateTime ) + 1 ) )[count] = blockDescVect[i].digitBlockData;
+			data[count] = blockDescVect[i].digitBlockData;
 			++count;
 		}
 
@@ -350,17 +351,19 @@ Begin:
 		desc = 0;
 
 		uint32_t offset = 0;
+		float* data = ( float* )( buffer + 4 + sizeof( DateTime ) + 2 );
 		for( uint32_t i = 0; i < blockDescVect.size(); ++i )
 		{
 			uint32_t count = blockDescVect[i].analogCount;
 			if( !count )
 				continue;
-			desc |= ( ( count + 7 ) >> 3 ) << ( i * 2 );
+			uint32_t n = ( count + 7 ) & ~0x07;
+			desc |= ( n >> 3 ) << ( i * 2 );
 			for( uint32_t line = 0; line < count; ++line )
-				( ( float* )( buffer + 4 + sizeof( DateTime ) + 2 ) )[offset++] = signalProvider->analogSignal( i, line );
+				data[offset++] = signalProvider->analogSignal( i, line );
+			for( uint32_t i = count; i < n; ++i )
+				data[offset++] = -1;
 		}
-		while( offset < analogChannelsCount )
-			( ( float* )( buffer + 4 + sizeof( DateTime ) + 2 ) )[offset++] = -1;
 
 		Crc32HW::acquire();
 		*( uint32_t* )( buffer + 4 + sizeof( DateTime ) + 2 + analogChannelsCount * 4 ) = Crc32HW::crc32Byte( buffer, 4 + sizeof( DateTime ) + 2 + analogChannelsCount * 4, 0xFFFFFFFF );
