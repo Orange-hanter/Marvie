@@ -1,4 +1,5 @@
 #include "Rs485.h"
+#include "Core/ServiceEvent.h"
 #include "Core/Assert.h"
 
 Rs485::Rs485( Usart* usart, IOPort rePort, IOPort dePort )
@@ -96,13 +97,16 @@ uint32_t Rs485::write( const uint8_t* data, uint32_t size, sysinterval_t timeout
 {
 	uint32_t s;
 	EvtListener listener;
-	usart->eventSource()->registerMaskWithFlags( &listener, 1, CHN_TRANSMISSION_END );
-	chEvtGetAndClearEvents( 1 );
+	usart->eventSource()->registerMaskWithFlags( &listener, DataServiceEvent, CHN_TRANSMISSION_END );
+	chEvtGetAndClearEvents( DataServiceEvent );
 
 	transmitMode();
+	tprio_t prio = chThdSetPriority( HIGHPRIO - 1 );
 	s = usart->write( data, size, TIME_INFINITE );
-	chEvtWaitAny( 1 );
+	chEvtWaitAny( DataServiceEvent );
 	receiveMode();
+	chThdSetPriority( prio );
+
 	usart->eventSource()->unregister( &listener );
 
 	return s;

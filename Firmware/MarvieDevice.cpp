@@ -199,9 +199,9 @@ MarvieDevice* MarvieDevice::instance()
 void MarvieDevice::exec()
 {
 	mainThread               = Concurrent::run( [this]() { mainThreadMain(); },               2560, NORMALPRIO );
-	miskTasksThread          = Concurrent::run( [this]() { miskTasksThreadMain(); },          1024, NORMALPRIO );
+	miskTasksThread          = Concurrent::run( [this]() { miskTasksThreadMain(); },          2048, NORMALPRIO );
 	adInputsReadThread       = Concurrent::run( [this]() { adInputsReadThreadMain(); },       512,  NORMALPRIO + 2 );
-	mLinkServerHandlerThread = Concurrent::run( [this]() { mLinkServerHandlerThreadMain(); }, 1024, NORMALPRIO );
+	mLinkServerHandlerThread = Concurrent::run( [this]() { mLinkServerHandlerThreadMain(); }, 2048, NORMALPRIO );
 	uiThread                 = Concurrent::run( [this]() { uiThreadMain(); },                 1024, NORMALPRIO );
 
 	//mLinkServer->startListening( NORMALPRIO );

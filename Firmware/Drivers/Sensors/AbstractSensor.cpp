@@ -1,4 +1,5 @@
 #include "AbstractSensor.h"
+#include "Core/ServiceEvent.h"
 #include "hal.h"
 
 #define SENSOR_TERMINATE_TEST_INTERVAL TIME_MS2I( 200 )
@@ -49,8 +50,7 @@ ByteRingIterator AbstractBRSensor::waitForResponse( const char* response, uint32
 	ByteRingIterator i, respBegin;
 	i = respBegin = io->inputBuffer()->begin();
 
-	enum Event : eventmask_t { IODeviceEvent = EVENT_MASK( 0 ), InnerEvent = EVENT_MASK( 1 ) };
-	chEvtGetAndClearEvents( IODeviceEvent | InnerEvent );
+	chEvtGetAndClearEvents( DataServiceEvent | TimeoutServiceEvent );
 
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
@@ -60,7 +60,7 @@ ByteRingIterator AbstractBRSensor::waitForResponse( const char* response, uint32
 	chVTSet( &timer, nextInterval, timerCallback, chThdGetSelfX() );
 
 	EvtListener ioDeviceListener;
-	io->eventSource()->registerMaskWithFlags( &ioDeviceListener, IODeviceEvent, CHN_INPUT_AVAILABLE );
+	io->eventSource()->registerMaskWithFlags( &ioDeviceListener, DataServiceEvent, CHN_INPUT_AVAILABLE );
 	while( true )
 	{
 		ByteRingIterator end = io->inputBuffer()->end();
@@ -78,8 +78,8 @@ ByteRingIterator AbstractBRSensor::waitForResponse( const char* response, uint32
 				i = ++respBegin;
 			}
 		}
-		eventmask_t em = chEvtWaitAny( IODeviceEvent | InnerEvent );
-		if( em & InnerEvent )
+		eventmask_t em = chEvtWaitAny( DataServiceEvent | TimeoutServiceEvent );
+		if( em & TimeoutServiceEvent )
 		{
 			timeout -= nextInterval;
 			if( timeout == 0 || chThdShouldTerminateX() )
@@ -90,15 +90,12 @@ ByteRingIterator AbstractBRSensor::waitForResponse( const char* response, uint32
 				nextInterval = timeout;
 			chVTSet( &timer, nextInterval, timerCallback, chThdGetSelfX() );
 		}
-		if( em & IODeviceEvent )
-			ioDeviceListener.getAndClearFlags();
 	}
 
 Leave:
 	io->eventSource()->unregister( &ioDeviceListener );
 	chVTReset( &timer );
 
-	// chEvtGetAndClearEvents( IODeviceEvent | InnerEvent );
 	if( pos == responseLen )
 		return respBegin;
 	return ByteRingIterator();
@@ -126,6 +123,6 @@ bool AbstractBRSensor::waitForReadAvailable( uint32_t size, sysinterval_t timeou
 void AbstractBRSensor::timerCallback( void* p )
 {
 	chSysLockFromISR();
-	chEvtSignalI( reinterpret_cast< thread_t* >( p ), EVENT_MASK( 1 ) ); // InnerEvent
+	chEvtSignalI( reinterpret_cast< thread_t* >( p ), TimeoutServiceEvent );
 	chSysUnlockFromISR();
 }

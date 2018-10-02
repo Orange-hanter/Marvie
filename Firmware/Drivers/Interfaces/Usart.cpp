@@ -1,4 +1,5 @@
 #include "Usart.h"
+#include "Core/ServiceEvent.h"
 
 static Usart* usarts[8] = {};
 int usartId( SerialDriver* sd )
@@ -271,15 +272,14 @@ bool Usart::waitForBytesWritten( sysinterval_t timeout )
 	if( timeout == TIME_IMMEDIATE )
 		return false;
 
-	enum Event : eventmask_t { UsartEvent = EVENT_MASK( 0 ), TimeoutEvent = EVENT_MASK( 1 ) };
-	chEvtGetAndClearEvents( UsartEvent | TimeoutEvent );
+	chEvtGetAndClearEvents( DataServiceEvent | TimeoutServiceEvent );
 
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
 	chVTSet( &timer, timeout, timerCallback, chThdGetSelfX() );
 
 	EvtListener listener;
-	eventSource()->registerMaskWithFlags( &listener, UsartEvent, CHN_TRANSMISSION_END );
+	eventSource()->registerMaskWithFlags( &listener, DataServiceEvent, CHN_TRANSMISSION_END );
 
 	chSysLock();
 	if( oqIsEmptyI( &sd->oqueue ) && sd->usart->SR & USART_SR_TC )
@@ -291,11 +291,11 @@ bool Usart::waitForBytesWritten( sysinterval_t timeout )
 	}
 	chSysUnlock();
 
-	eventmask_t em = chEvtWaitAny( UsartEvent | TimeoutEvent );
+	eventmask_t em = chEvtWaitAny( DataServiceEvent | TimeoutServiceEvent );
 	eventSource()->unregister( &listener );
 	chVTReset( &timer );
 
-	if( em & TimeoutEvent )
+	if( em & TimeoutServiceEvent )
 		return false;
 	return true;
 }
@@ -309,28 +309,24 @@ bool Usart::waitForReadAvailable( uint32_t size, sysinterval_t timeout )
 	if( timeout == TIME_IMMEDIATE )
 		return false;
 
-	enum Event : eventmask_t { UsartEvent = EVENT_MASK( 0 ), TimeoutEvent = EVENT_MASK( 1 ) };
-	chEvtGetAndClearEvents( UsartEvent | TimeoutEvent );
+	chEvtGetAndClearEvents( DataServiceEvent | TimeoutServiceEvent );
 
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
 	chVTSet( &timer, timeout, timerCallback, chThdGetSelfX() );
 
 	EvtListener usartListener;
-	eventSource()->registerMaskWithFlags( &usartListener, UsartEvent, CHN_INPUT_AVAILABLE );
+	eventSource()->registerMaskWithFlags( &usartListener, DataServiceEvent, CHN_INPUT_AVAILABLE );
 	while( readAvailable() < size )
 	{
-		eventmask_t em = chEvtWaitAny( UsartEvent | TimeoutEvent );
-		if( em & TimeoutEvent )
+		eventmask_t em = chEvtWaitAny( DataServiceEvent | TimeoutServiceEvent );
+		if( em & TimeoutServiceEvent )
 			break;
-		if( em & UsartEvent )
-			usartListener.getAndClearFlags();
 	}
 
 	eventSource()->unregister( &usartListener );
 	chVTReset( &timer );
 
-	// chEvtGetAndClearEvents( UsartEvent | InnerEvent );
 	return readAvailable() >= size;
 }
 
@@ -416,7 +412,7 @@ EvtSource* Usart::eventSource()
 void Usart::timerCallback( void* p )
 {
 	chSysLockFromISR();
-	chEvtSignalI( reinterpret_cast< thread_t* >( p ), EVENT_MASK( 1 ) ); // TimeoutEvent
+	chEvtSignalI( reinterpret_cast< thread_t* >( p ), TimeoutServiceEvent );
 	chSysUnlockFromISR();
 }
 

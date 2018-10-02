@@ -1,4 +1,5 @@
 #include "SharedRs485.h"
+#include "Core/ServiceEvent.h"
 #include "Core/Assert.h"
 
 SharedRs485::SharedRs485( SharedRs485Control* control, IOPort rePort, IOPort dePort )
@@ -135,16 +136,18 @@ uint32_t SharedRs485::write( const uint8_t* data, uint32_t size, sysinterval_t t
 	EvtListener listener;
 
 	control->sem.wait();
-	control->usart->eventSource()->registerMaskWithFlags( &listener, 1, CHN_TRANSMISSION_END );
-	chEvtGetAndClearEvents( 1 );
+	control->usart->eventSource()->registerMaskWithFlags( &listener, DataServiceEvent, CHN_TRANSMISSION_END );
+	chEvtGetAndClearEvents( DataServiceEvent );
 
 	if( control->current )
 		control->current->disableMode();
 	setActive();
 	transmitMode();
+	tprio_t prio = chThdSetPriority( HIGHPRIO - 1 );
 	s = control->usart->write( data, size, TIME_INFINITE );
-	chEvtWaitAny( 1 );
+	chEvtWaitAny( DataServiceEvent );
 	receiveMode();
+	chThdSetPriority( prio );
 
 	control->usart->eventSource()->unregister( &listener );
 	control->sem.signal();

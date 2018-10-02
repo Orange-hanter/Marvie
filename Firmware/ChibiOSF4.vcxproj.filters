@@ -2870,5 +2870,8 @@
     <ClInclude Include="Log\MarvieLog.h">
       <Filter>Header files\Log</Filter>
     </ClInclude>
+    <ClInclude Include="Core\ServiceEvent.h">
+      <Filter>Header files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
