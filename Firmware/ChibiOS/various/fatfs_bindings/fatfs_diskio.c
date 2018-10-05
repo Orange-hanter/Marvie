@@ -239,7 +239,7 @@ DRESULT disk_ioctl (
         return RES_OK;
 #endif
     case GET_BLOCK_SIZE:
-        *((DWORD *)buff) = 256; /* 512b blocks in one erase block */
+        *((DWORD *)buff) = 512; /* 512b blocks in one erase block */
         return RES_OK;
 #if FF_USE_TRIM
     case CTRL_TRIM:

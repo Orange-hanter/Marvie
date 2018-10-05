@@ -2,6 +2,7 @@
 
 #include "cpp_wrappers/ch.hpp"
 #include "FileSystem/File.h"
+#include <string.h>
 
 class FileLog
 {
@@ -13,6 +14,7 @@ public:
 	void close();
 
 	void addRecorg( const char* data, uint32_t lenght );
+	inline void addRecorg( const char* data ) { addRecorg( data, strlen( data ) ); }
 	void clean();
 
 private:

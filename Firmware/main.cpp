@@ -13,19 +13,41 @@
 
 #include "Tests/FileSystemTest.hpp"
 #include "Tests/MarvieLogSystemTest.hpp"
+#include "Tests/PowerDownTest.hpp"
 
 #include <algorithm>
 
 int main()
 {
+	/*for( int i = 0x10000000; i < 0x10000000 + 64 * 1024; i += 4 )
+		*( uint32_t* )i = 0;*/
 	halInit();
 	chSysInit();
+	
+	/*PowerDownTest::test();
+	while( true );*/
 
 	/*MarvieLogSystemTest::test();
 	while( true );*/
 
 	/*FileSystemTest::test();
 	while( true );*/
+
+	enum IWDGPrescaler
+	{
+		IWDGPrescaler4   = 0,
+		IWDGPrescaler8   = 1,
+		IWDGPrescaler16  = 2,
+		IWDGPrescaler32  = 3,
+		IWDGPrescaler64  = 4,
+		IWDGPrescaler128 = 5,
+		IWDGPrescaler256 = 6,
+	};
+	static WDGConfig wdgConfig;
+	wdgConfig.pr = IWDGPrescaler256;
+	wdgConfig.rlr = 0x0FFF;
+	wdgStart( &WDGD1, &wdgConfig );
+	wdgReset( &WDGD1 );
 
 	tcpip_init( nullptr, nullptr );
 

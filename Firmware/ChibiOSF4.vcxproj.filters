@@ -2873,5 +2873,8 @@
     <ClInclude Include="Core\ServiceEvent.h">
       <Filter>Header files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Tests\PowerDownTest.hpp">
+      <Filter>Source files\Tests</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

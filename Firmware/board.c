@@ -241,8 +241,8 @@ bool sdc_lld_is_card_inserted(SDCDriver *sdcp) {
 
   (void)sdcp;
   /* TODO: Fill the implementation.*/
-  //return !palReadPad( GPIOA, 8 );
-  return true;
+  return palReadPad( GPIOC, 11 );
+  //return true;
 }
 
 /**

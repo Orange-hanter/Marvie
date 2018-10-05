@@ -120,6 +120,17 @@
  */
 #define CH_CFG_NO_IDLE_THREAD               FALSE
 
+ /**
+ * @brief   Stack size for the system idle thread.
+ * @details This size depends on the idle thread implementation, usually
+ *          the idle thread should take no more space than those reserved
+ *          by @p PORT_INT_REQUIRED_STACK.
+ * @note    In this port it is set to 16 because the idle thread does have
+ *          a stack frame when compiling without optimizations. You may
+ *          reduce this value to zero when compiling with optimizations.
+ */
+#define PORT_IDLE_THREAD_STACK_SIZE         128
+
 /** @} */
 
 /*===========================================================================*/
@@ -572,6 +583,7 @@
  */
 #define CH_CFG_IDLE_LOOP_HOOK() {                                           \
   /* Idle loop code here.*/                                                 \
+  idleLoopHook();                                                           \
 }
 
 /**

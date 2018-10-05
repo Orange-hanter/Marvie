@@ -45,7 +45,7 @@
 #endif
 
 #if !defined(STM32_HSECLK)
-#define STM32_HSECLK                8000000U
+#define STM32_HSECLK                24000000U
 #endif
 
 /*
@@ -62,8 +62,8 @@
  /*
  * Ethernet PHY type.
  */
-#define BOARD_PHY_ID            MII_LAN8720_ID//0x00008201
-#define BOARD_PHY_RMII
+#define BOARD_PHY_ID            /*MII_LAN8720_ID*/0x00008201
+//#define BOARD_PHY_RMII
 
 /*
  * IO pins assignments.

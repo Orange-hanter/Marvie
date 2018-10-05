@@ -47,6 +47,7 @@ private:
 	void mLinkServerHandlerThreadMain();
 	void uiThreadMain();
 
+	void logFailure();
 	void ejectSdCard();
 	inline void formatSdCard();
 
@@ -92,6 +93,9 @@ private:
 	static void adcCallback( ADCDriver *adcp, adcsample_t *buffer, size_t n );
 	static void adcErrorCallback( ADCDriver *adcp, adcerror_t err );
 
+public:
+	static void faultHandler();
+
 private:
 	static MarvieDevice* _inst;
 	enum Interval // in ms
@@ -123,7 +127,7 @@ private:
 	uint8_t* comUsartOutputBuffers[MarviePlatform::comUsartsCount];
 	uint32_t buffer[1024];
 	SHA1 sha;
-	struct Backup
+	struct SettingsBackup
 	{
 		struct Flags
 		{
@@ -136,7 +140,29 @@ private:
 			IpAddress gateway;
 		} eth;
 	};
-	RtcBackupRegisters backupRegs;
+	struct FailureDescBackup
+	{
+		enum Type : uint32_t
+		{
+			None = 0,
+			Reset = 1,
+			NMI = 2,
+			HardFault = 3,
+			MemManage = 4,
+			BusFault = 5,
+			UsageFault = 6,
+		} type;
+		uint32_t flags;
+		uint32_t busAddress;
+		uint32_t pc;
+		uint32_t lr;
+	};
+	enum
+	{
+		SettingsBackupOffset = 0,
+		FailureDescBackupOffset = sizeof( SettingsBackup ) / 4 + 1
+	};
+	RtcBackupRegisters settingsBackupRegs;
 	char apn[25] = {};
 	FileLog fileLog;
 
@@ -185,7 +211,7 @@ private:
 	enum class DeviceState { /*Initialization,*/ Reconfiguration, Working, IncorrectConfiguration } deviceState;
 	enum class ConfigError { NoError, NoConfigFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorReadingConfigError, LogConfigError, SensorsConfigError } configError;
 	enum class SensorsConfigError { NoError, UnknownSensor, IncorrectSettings, BingingError } sensorsConfigError;
-	const char* errorSensorName;
+	const char* errorSensorTypeName;
 	uint32_t errorSensorId;
 	enum class SdCardStatus { NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } sdCardStatus;
 	FATFS fatFs;

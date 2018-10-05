@@ -12,7 +12,7 @@ using namespace MarvieXmlConfigParsers;
 
 MarvieDevice* MarvieDevice::_inst = nullptr;
 
-MarvieDevice::MarvieDevice() : backupRegs( 20 ), configXmlDataSendingSemaphore( false )
+MarvieDevice::MarvieDevice() : settingsBackupRegs( sizeof( SettingsBackup ) / 4 + 1, SettingsBackupOffset ), configXmlDataSendingSemaphore( false )
 {
 	MarviePlatform::comPortAssignments( comPortAssignments );
 
@@ -99,16 +99,16 @@ MarvieDevice::MarvieDevice() : backupRegs( 20 ), configXmlDataSendingSemaphore( 
 	palSetPad( GPIOD, 1 );
 
 	// PA8 - CD
-	palSetPadMode( GPIOC, 8, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
-	palSetPadMode( GPIOC, 9, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
-	palSetPadMode( GPIOC, 10, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
-	palSetPadMode( GPIOC, 11, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
-	palSetPadMode( GPIOC, 12, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
-	palSetPadMode( GPIOD, 2, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );
-	//static SDCConfig sdcConfig;
-	//sdcConfig.scratchpad = nullptr;
-	//sdcConfig.bus_width = SDC_MODE_1BIT;
-	sdcStart( &SDCD1, /*&sdcConfig*/nullptr );
+	palSetPadMode( GPIOC, 8, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );    // D0
+	//palSetPadMode( GPIOC, 9, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );  // D1
+	//palSetPadMode( GPIOC, 10, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST ); // D2
+	palSetPadMode( GPIOC, 11, PAL_MODE_INPUT | PAL_STM32_OSPEED_HIGHEST );               // D3/CD
+	palSetPadMode( GPIOC, 12, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );   // CLK
+	palSetPadMode( GPIOD, 2, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );    // CMD
+	static SDCConfig sdcConfig;
+	sdcConfig.scratchpad = nullptr;
+	sdcConfig.bus_width = SDC_MODE_1BIT;
+	sdcStart( &SDCD1, &sdcConfig/*nullptr*/ );
 	sdCardStatus = SdCardStatus::NotInserted;
 	sdCardInserted = false;
 	sdCardStatusEventPending = false;
@@ -117,20 +117,20 @@ MarvieDevice::MarvieDevice() : backupRegs( 20 ), configXmlDataSendingSemaphore( 
 
 	crcStart( &CRCD1, nullptr );
 
-	Backup& backup = ( Backup& )backupRegs.value( 0 );
-	if( !backupRegs.isValid() )
+	SettingsBackup& backup = ( SettingsBackup& )settingsBackupRegs.value( 0 );
+	if( !settingsBackupRegs.isValid() )
 	{
 		backup.flags.ethernetDhcp = true;
 		backup.eth.ip = IpAddress( 192, 168, 2, 10 );
 		backup.eth.netmask = 0xFFFFFF00;
 		backup.eth.gateway = IpAddress( 192, 168, 2, 1 );
-		backupRegs.setValid();
+		settingsBackupRegs.setValid();
 	}
 
 	deviceState = DeviceState::IncorrectConfiguration;
 	configError = ConfigError::NoError;
 	sensorsConfigError = SensorsConfigError::NoError;
-	errorSensorName = nullptr;
+	errorSensorTypeName = nullptr;
 	errorSensorId = 0;
 	srSensorPeriodCounter = SrSensorPeriodCounterLoad;
 	monitoringLogSize = 0;
@@ -181,11 +181,6 @@ MarvieDevice::MarvieDevice() : backupRegs( 20 ), configXmlDataSendingSemaphore( 
 	mLinkServer = new MLinkServer;
 	mLinkServer->setComplexDataReceiveCallback( this );
 	//mLinkServer->setIODevice( comPorts[MarviePlatform::mLinkComPort] );
-
-	UdpSocket* socket = new UdpSocket;
-	socket->bind( 16021 );
-	socket->connect( IpAddress( 192, 168, 2, 1 ), 16032 );
-	mLinkServer->setIODevice( socket );
 }
 
 MarvieDevice* MarvieDevice::instance()
@@ -279,6 +274,7 @@ void MarvieDevice::mainThreadMain()
 							sdCardStatus = SdCardStatus::Working;
 							Dir( "/Log" ).mkdir();
 							fileLog.open( "/Log/log.txt" );
+							logFailure();
 							monitoringLogSize = Dir( "/Log/BinaryLog" ).contentSize();
 							if( marvieLog )
 								marvieLog->startLogging( LOWPRIO );
@@ -487,8 +483,8 @@ void MarvieDevice::miskTasksThreadMain()
 			memoryLoad.ccRamHeapFragments = CCMemoryHeap::status( ( size_t* )&memoryLoad.ccRamHeapSize, ( size_t* )&memoryLoad.ccRamHeapLargestFragmentSize );
 			if( sdCardStatus == SdCardStatus::Working )
 			{
-				memoryLoad.sdCardCapacity = ( fatFs.n_fatent - 2 ) * fatFs.csize * 512;
-				memoryLoad.sdCardFreeSpace = fatFs.free_clst * fatFs.csize * 512;
+				memoryLoad.sdCardCapacity = ( unsigned long long )( fatFs.n_fatent - 2 ) * fatFs.csize * 512;
+				memoryLoad.sdCardFreeSpace = ( unsigned long long )fatFs.free_clst * fatFs.csize * 512;
 				chSysLock();
 				if( marvieLog )
 					memoryLoad.logSize = marvieLog->size();
@@ -575,6 +571,12 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 	CpuUsageMonitor::instance()->eventSource()->registerMask( &cpuUsageMonitorListener, MLinkThreadEvent::CpuUsageMonitorEvent );
 	EthernetThread::instance()->eventSource()->registerMask( &ethThreadListener, MLinkThreadEvent::EthernetEvent );
 
+	UdpSocket* socket = new UdpSocket;
+	auto conf = EthernetThread::instance()->currentConfig();
+	socket->bind( conf.ipAddress, 16021 );
+	socket->connect( conf.gateway, 16032 );
+	mLinkServer->setIODevice( socket );
+
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
 
@@ -585,6 +587,18 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 	while( true )
 	{
 		eventmask_t em = chEvtWaitAny( ALL_EVENTS );
+		if( em & MLinkThreadEvent::EthernetEvent )
+		{
+			if( ethThreadListener.getAndClearFlags() & EthernetThread::Event::NetworkAddressChanged )
+			{
+				mLinkServer->stopListening();
+				mLinkServer->waitForStateChanged();
+				auto conf = EthernetThread::instance()->currentConfig();
+				socket->bind( conf.ipAddress, 16021 );
+				socket->connect( conf.gateway, 16032 );
+				mLinkServer->startListening( NORMALPRIO );
+			}
+		}
 		if( em & MLinkThreadEvent::MLinkEvent )
 		{
 			eventflags_t flags = mLinkListener.getAndClearFlags();
@@ -689,6 +703,20 @@ void MarvieDevice::uiThreadMain()
 	chThdSuspendS( &ref );
 }
 
+void MarvieDevice::logFailure()
+{
+	FailureDescBackup& backup = ( FailureDescBackup& )*( &RTC->BKP0R + FailureDescBackupOffset );
+	if( backup.type != FailureDescBackup::Type::None )
+	{
+		char* str = ( char* )buffer;
+		sprintf( str, "System was restored after a hardware failure [%#x %#x %#x %#x %#x]",
+				 ( unsigned int )backup.type, ( unsigned int )backup.flags, 
+				 ( unsigned int )backup.busAddress, ( unsigned int )backup.pc, ( unsigned int )backup.lr );
+		fileLog.addRecorg( str );
+		backup.type = FailureDescBackup::Type::None;
+	}
+}
+
 void MarvieDevice::ejectSdCard()
 {
 	if( sdCardStatus != SdCardStatus::NotInserted )
@@ -718,6 +746,7 @@ void MarvieDevice::formatSdCard()
 
 		removeOpenDatFiles();
 		fileLog.close();
+		monitoringLogSize = 0;
 		if( f_mkfs( "/", FM_FAT32, 4096, buffer, 1024 ) == FR_OK && f_mkdir( "/Temp" ) == FR_OK )
 		{
 			sdCardStatus = SdCardStatus::Working;
@@ -871,12 +900,12 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 		networkConf.ethConf.netmask != ethThdConf.netmask ||
 		networkConf.ethConf.gateway != ethThdConf.gateway )
 	{
-		Backup& backup = ( Backup& )backupRegs.value( 0 );
+		SettingsBackup& backup = ( SettingsBackup& )settingsBackupRegs.value( 0 );
 		backup.flags.ethernetDhcp = networkConf.ethConf.dhcpEnable;
 		backup.eth.ip = networkConf.ethConf.ip;
 		backup.eth.netmask = networkConf.ethConf.netmask;
 		backup.eth.gateway = networkConf.ethConf.gateway;
-		backupRegs.setValid();
+		settingsBackupRegs.setValid();
 
 		ethThdConf.addressMode = networkConf.ethConf.dhcpEnable ? EthernetThread::AddressMode::Dhcp : EthernetThread::AddressMode::Static;
 		ethThdConf.ipAddress = networkConf.ethConf.ip;
@@ -996,7 +1025,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 	sensorsConfigError = SensorsConfigError::NoError;
 	volatile bool srSensorsEnabled = false;
 	srSensorPeriodCounter = SrSensorPeriodCounterLoad;
-	errorSensorName = nullptr;
+	errorSensorTypeName = nullptr;
 	errorSensorId = 0;
 	XMLElement* sensorsNode = rootNode->FirstChildElement( "sensorsConfig" );
 	if( sensorsNode )
@@ -1028,7 +1057,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 		sensorNode = sensorsNode->FirstChildElement();
 		while( sensorNode )
 		{
-			errorSensorName = sensorNode->Name();
+			errorSensorTypeName = sensorNode->Name();
 			errorSensorId = sensorsCount;
 			auto desc = SensorService::instance()->sensorTypeDesc( sensorNode->Name() );
 			if( !desc )
@@ -1047,7 +1076,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 					break;
 				}
 
-				if( vPortBindings[vPortId] != VPortBinding::Rs485 && brSensorReaders[vPortId] ) // FIX?
+				if( vPortsCount <= vPortId || ( vPortBindings[vPortId] != VPortBinding::Rs485 && brSensorReaders[vPortId] ) ) // FIX?
 				{
 					sensorsConfigError = SensorsConfigError::BingingError;
 					break;
@@ -2084,4 +2113,55 @@ void MarvieDevice::adcCallback( ADCDriver *adcp, adcsample_t *buffer, size_t n )
 void MarvieDevice::adcErrorCallback( ADCDriver *adcp, adcerror_t err )
 {
 	chThdResumeI( &MarvieDevice::instance()->adInputsReadThreadRef, MSG_RESET );
+}
+
+void MarvieDevice::faultHandler()
+{
+	FailureDescBackup& backup = ( FailureDescBackup& )*( &RTC->BKP0R + FailureDescBackupOffset );
+	backup.type = ( FailureDescBackup::Type )__get_IPSR();
+	backup.flags = SCB->CFSR;
+	port_extctx* ctx = ( port_extctx* )__get_PSP();
+	backup.pc = ( uint32_t )ctx->pc;
+	backup.lr = ( uint32_t )ctx->lr_thd;
+	if( backup.type == FailureDescBackup::Type::HardFault || backup.type == FailureDescBackup::Type::BusFault )
+		backup.busAddress = SCB->BFAR;
+	else if( backup.type == FailureDescBackup::Type::MemManage )
+		backup.busAddress = SCB->MMFAR;
+	else
+		backup.busAddress = 0;
+	assert( false );
+	NVIC_SystemReset();
+}
+
+extern "C"
+{
+	void idleLoopHook()
+	{
+		wdgReset( &WDGD1 );
+	}
+
+	void NMI_Handler()
+	{
+		MarvieDevice::faultHandler();
+	}
+
+	void HardFault_Handler()
+	{
+		MarvieDevice::faultHandler();
+	}
+
+	void BusFault_Handler()
+	{
+		MarvieDevice::faultHandler();
+	}
+
+	void MemManage_Handler()
+	{
+		MarvieDevice::faultHandler();
+	}
+
+	void UsageFault_Handler()
+	{
+		MarvieDevice::faultHandler();
+	}
 }
