@@ -191,7 +191,8 @@ private:
 	MarvieLog* marvieLog;
 	volatile bool sensorLogEnabled;
 	AbstractPppModem* gsmModem;
-	EvtListener gsmModemListener;
+	EvtListener gsmModemMainThreadListener;
+	EvtListener gsmModemMLinkThreadListener;
 	RawModbusServer* rawModbusServers;
 	uint32_t rawModbusServersCount;
 	TcpModbusServer* tcpModbusRtuServer;
@@ -207,7 +208,7 @@ private:
 	Mutex configXmlFileMutex;
 
 	// Main thread resources =================================================================
-	enum MainThreadEvent { SdCardStatusChanged = 1, NewBootloaderDatFile = 2, NewFirmwareDatFile = 4, NewXmlConfigDatFile = 8, StartSensorReaders = 16, StopSensorReaders = 32, BrSensorReaderEvent = 64, SrSensorsTimerEvent = 128, EjectSdCardRequest = 256, FormatSdCardRequest = 512, CleanMonitoringLogRequestEvent = 1024, CleanSystemLogRequestEvent = 2048, RestartRequestEvent = 4096 };
+	enum MainThreadEvent : eventmask_t { SdCardStatusChanged = 1, NewBootloaderDatFile = 2, NewFirmwareDatFile = 4, NewXmlConfigDatFile = 8, StartSensorReaders = 16, StopSensorReaders = 32, BrSensorReaderEvent = 64, SrSensorsTimerEvent = 128, EjectSdCardRequest = 256, FormatSdCardRequest = 512, CleanMonitoringLogRequestEvent = 1024, CleanSystemLogRequestEvent = 2048, RestartRequestEvent = 4096, GsmModemEvent = 8192 };
 	enum class DeviceState { /*Initialization,*/ Reconfiguration, Working, IncorrectConfiguration } deviceState;
 	enum class ConfigError { NoError, NoConfigFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorReadingConfigError, LogConfigError, SensorsConfigError } configError;
 	enum class SensorsConfigError { NoError, UnknownSensor, IncorrectSettings, BingingError } sensorsConfigError;

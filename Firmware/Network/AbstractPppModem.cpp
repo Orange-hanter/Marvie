@@ -88,7 +88,7 @@ Start:
 			chSysLock();
 			if( mState == ModemState::Initializing )
 			{
-				setModemStateS( ModemState::Working );				
+				setModemStateS( ModemState::Working );
 				chSchRescheduleS();
 			}
 			chSysUnlock();

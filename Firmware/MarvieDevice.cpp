@@ -274,6 +274,8 @@ void MarvieDevice::mainThreadMain()
 							sdCardStatus = SdCardStatus::Working;
 							Dir( "/Log" ).mkdir();
 							fileLog.open( "/Log/log.txt" );
+							if( configNum == 0 )
+								fileLog.addRecorg( "System start" );
 							logFailure();
 							monitoringLogSize = Dir( "/Log/BinaryLog" ).contentSize();
 							if( marvieLog )
@@ -304,6 +306,7 @@ void MarvieDevice::mainThreadMain()
 				f_unlink( "/config.xml" );
 				if( f_close( file ) == FR_OK && f_rename( path, "/config.xml" ) == FR_OK )
 				{
+					fileLog.addRecorg( "New configuration is downloaded" );
 					configXmlFileMutex.unlock();
 					reconfig();
 				}
@@ -413,6 +416,25 @@ void MarvieDevice::mainThreadMain()
 				srSensorPeriodCounter = SrSensorPeriodCounterLoad;
 			if( mLinkSensorUpdated )
 				mLinkServerHandlerThread->signalEvents( MLinkThreadEvent::SensorUpdateEvent );
+		}
+		if( em & MainThreadEvent::GsmModemEvent )
+		{
+			eventflags_t flags = gsmModemMainThreadListener.getAndClearFlags();
+			if( gsmModem )
+			{
+				if( flags & ( eventflags_t )ModemEvent::StatusChanged || flags & ( eventflags_t )ModemEvent::NetworkAddressChanged )
+				{
+					if( gsmModem->state() == ModemState::Initializing )
+						fileLog.addRecorg( "Start gsm modem initializing" );
+					else if( gsmModem->state() == ModemState::Working )
+					{
+						char* str = ( char* )buffer;
+						IpAddress ip = gsmModem->networkAddress();
+						sprintf( str, "Gsm modem online [%d.%d.%d.%d]", ip.addr[3], ip.addr[2], ip.addr[1], ip.addr[0] );
+						fileLog.addRecorg( str );
+					}
+				}
+			}
 		}
 		if( em & MainThreadEvent::RestartRequestEvent )
 		{
@@ -786,15 +808,18 @@ void MarvieDevice::reconfig()
 		configMutex.unlock();
 		if( deviceState == DeviceState::Working )
 		{
-			
+			fileLog.addRecorg( "Configuration successfully applied" );
 			mLinkServerHandlerThread->signalEvents( ( eventmask_t )MLinkThreadEvent::ConfigChangedEvent );
 		}
+		else
+			fileLog.addRecorg( "Configuration error" );
 	}
 	else
 	{
 		configXmlHash = SHA1::Digest();
 		configError = ConfigError::NoConfigFile;
 		deviceState = DeviceState::IncorrectConfiguration;
+		fileLog.addRecorg( "Configuration is missing" );
 	}
 }
 
@@ -940,9 +965,10 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 			gsmUsart->setDataFormat( UsartBasedDevice::B8N );
 			gsmUsart->setStopBits( UsartBasedDevice::S1 );
 			gsmModem->setUsart( gsmUsart );
-			gsmModem->eventSource()->registerMask( &gsmModemListener, MLinkThreadEvent::GsmModemEvent );
+			gsmModem->eventSource()->registerMask( &gsmModemMainThreadListener, MainThreadEvent::GsmModemEvent );
+			gsmModem->eventSource()->registerMask( &gsmModemMLinkThreadListener, MLinkThreadEvent::GsmModemEvent );
 			/* Hack! */
-			gsmModemListener.ev_listener.listener = mLinkServerHandlerThread->thread_ref;
+			gsmModemMLinkThreadListener.ev_listener.listener = mLinkServerHandlerThread->thread_ref;
 			/* You didn't see anything */
 		}
 		if( gsmModem->pinCode() != gsmConf->pinCode || strcmp( gsmModem->apn(), gsmConf->apn ) != 0 )
@@ -959,7 +985,8 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 	{
 		gsmModem->stopModem();
 		gsmModem->waitForStateChange();
-		gsmModem->eventSource()->unregister( &gsmModemListener );
+		gsmModem->eventSource()->unregister( &gsmModemMLinkThreadListener );
+		gsmModem->eventSource()->unregister( &gsmModemMainThreadListener );
 		delete gsmModem;
 		gsmModem = nullptr;
 	}
