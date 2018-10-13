@@ -30,6 +30,6 @@ public:
 	virtual bool isSerialDevice();
 
 	virtual void acquireDevice() {}
-	virtual void releseDevice() {}
+	virtual void releaseDevice() {}
 	virtual EvtSource* eventSource() = 0;
 };

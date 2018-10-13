@@ -214,7 +214,7 @@ void SharedRs485::acquireDevice()
 	control->mutex.lock();
 }
 
-void SharedRs485::releseDevice()
+void SharedRs485::releaseDevice()
 {
 	control->mutex.unlock();
 }

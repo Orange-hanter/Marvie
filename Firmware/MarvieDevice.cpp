@@ -417,7 +417,7 @@ void MarvieDevice::mainThreadMain()
 			if( mLinkSensorUpdated )
 				mLinkServerHandlerThread->signalEvents( MLinkThreadEvent::SensorUpdateEvent );
 		}
-		if( em & MainThreadEvent::GsmModemEvent )
+		if( em & MainThreadEvent::GsmModemMainEvent )
 		{
 			eventflags_t flags = gsmModemMainThreadListener.getAndClearFlags();
 			if( gsmModem )
@@ -965,7 +965,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 			gsmUsart->setDataFormat( UsartBasedDevice::B8N );
 			gsmUsart->setStopBits( UsartBasedDevice::S1 );
 			gsmModem->setUsart( gsmUsart );
-			gsmModem->eventSource()->registerMask( &gsmModemMainThreadListener, MainThreadEvent::GsmModemEvent );
+			gsmModem->eventSource()->registerMask( &gsmModemMainThreadListener, MainThreadEvent::GsmModemMainEvent );
 			gsmModem->eventSource()->registerMask( &gsmModemMLinkThreadListener, MLinkThreadEvent::GsmModemEvent );
 			/* Hack! */
 			gsmModemMLinkThreadListener.ev_listener.listener = mLinkServerHandlerThread->thread_ref;

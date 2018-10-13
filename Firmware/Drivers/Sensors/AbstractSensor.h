@@ -81,6 +81,7 @@ public:
 	IODevice* ioDevice();
 
 protected:
+	void sleep( sysinterval_t timeout );
 	ByteRingIterator waitForResponse( const char* response, uint32_t responseLen, sysinterval_t timeout );
 	bool waitForReadAvailable( uint32_t size, sysinterval_t timeout );
 

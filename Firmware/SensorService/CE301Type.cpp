@@ -10,10 +10,16 @@ static AbstractSensor* ce301Allocate()
 
 static bool ce301Tune( AbstractSensor* sensor, XMLElement* e, uint32_t defaultBaudrate )
 {
-	XMLElement* c0 = e->FirstChildElement( "address" );
+	XMLElement* c0 = e->FirstChildElement( "baudrate" );
+	if( c0 )
+		defaultBaudrate = c0->UnsignedText( defaultBaudrate );
+	static_cast< CE301Sensor* >( sensor )->setBaudrate( defaultBaudrate );
+
+	c0 = e->FirstChildElement( "address" );
 	if( !c0 )
 		return false;
 	static_cast< CE301Sensor* >( sensor )->setAddress( c0->IntText( 0 ) );
+
 	return true;
 }
 
@@ -26,4 +32,4 @@ static SensorService::Node* ce301Type = []()
 	node.value.tuner = ce301Tune;
 	SensorService::registerSensorType( &node );
 	return &node;
-}( );
+}();

@@ -81,7 +81,7 @@ TestSensorA::Data* TestSensorA::readData()
 	data.t = DateTimeService::currentDateTime();
 	data.unlock();
 
-	io->releseDevice();
+	io->releaseDevice();
 	return &data;
 }
 

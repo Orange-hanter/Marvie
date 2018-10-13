@@ -42,7 +42,7 @@ public:
 
 	EvtSource* eventSource();
 	void acquireDevice();
-	void releseDevice();
+	void releaseDevice();
 
 private:
 	inline void receiveMode();

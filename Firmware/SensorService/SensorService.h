@@ -14,7 +14,7 @@ public:
 	{
 		AbstractSensor::Type type;
 		const char* name;
-		AbstractSensor* ( *allocator )( );
+		AbstractSensor* ( *allocator )();
 		bool( *tuner )( AbstractSensor*, tinyxml2::XMLElement*, uint32_t defaultValue );
 	};
 	typedef NanoList< SensorTypeDesc >::Node Node;

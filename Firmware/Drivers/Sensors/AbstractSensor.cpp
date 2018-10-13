@@ -44,6 +44,21 @@ IODevice* AbstractBRSensor::ioDevice()
 	return io;
 }
 
+void AbstractBRSensor::sleep( sysinterval_t timeout )
+{
+	sysinterval_t nextInterval = 0;
+	while( timeout )
+	{
+		if( chThdShouldTerminateX() )
+			return;
+		if( timeout > SENSOR_TERMINATE_TEST_INTERVAL )
+			nextInterval = SENSOR_TERMINATE_TEST_INTERVAL;
+		else
+			nextInterval = timeout;
+		timeout -= nextInterval;
+	}
+}
+
 ByteRingIterator AbstractBRSensor::waitForResponse( const char* response, uint32_t responseLen, sysinterval_t timeout )
 {
 	uint32_t pos = 0;

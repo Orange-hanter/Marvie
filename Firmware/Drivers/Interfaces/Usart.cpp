@@ -245,6 +245,8 @@ uint32_t Usart::write( const uint8_t* data, uint32_t size, sysinterval_t timeout
 
 uint32_t Usart::read( uint8_t* data, uint32_t size, sysinterval_t timeout )
 {
+	if( size == 0 )
+		return 0;
 	return iqReadTimeout( &sd->iqueue, data, size, timeout );
 }
 
@@ -418,6 +420,9 @@ void Usart::timerCallback( void* p )
 
 uint32_t Usart::InputBuffer::read( uint8_t* data, uint32_t len )
 {
+	if( len == 0 )
+		return 0;
+
 	chSysLock();
 	len = iqReadI( &usart->sd->iqueue, data, len );
 	chSysUnlock();

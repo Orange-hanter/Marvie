@@ -146,6 +146,7 @@
     <ClCompile Include="Drivers\Network\SimGsm\SimGsmUdpSocket.cpp" />
     <ClCompile Include="Drivers\Sensors\AbstractSensor.cpp" />
     <ClCompile Include="Drivers\Sensors\CE301Sensor.cpp" />
+    <ClCompile Include="Drivers\Sensors\Tem104Sensor.cpp" />
     <ClCompile Include="Drivers\Sensors\TestSensorA.cpp" />
     <ClCompile Include="Drivers\Sensors\TestSensorB.cpp" />
     <ClCompile Include="Drivers\Sensors\TestSRSensorA.cpp" />
@@ -177,6 +178,7 @@
     <ClCompile Include="Network\UdpSocket.cpp" />
     <ClCompile Include="SensorService\CE301Type.cpp" />
     <ClCompile Include="SensorService\SensorService.cpp" />
+    <ClCompile Include="SensorService\Tem104Type.cpp" />
     <ClCompile Include="SensorService\TestSensorAType.cpp" />
     <ClCompile Include="SensorService\TestSensorBType.cpp" />
     <ClCompile Include="SensorService\TestSRSensorAType.cpp" />
@@ -586,6 +588,7 @@
     <ClInclude Include="Drivers\Interfaces\AbstractRs485.h" />
     <ClInclude Include="Drivers\Network\Ethernet\EthernetThread.h" />
     <ClInclude Include="Drivers\Network\SimGsm\SimGsmPppModem.h" />
+    <ClInclude Include="Drivers\Sensors\Tem104Sensor.h" />
     <ClInclude Include="Drivers\Sensors\TestSRSensorA.h" />
     <ClInclude Include="FileSystem\Dir.h" />
     <ClInclude Include="FileSystem\File.h" />

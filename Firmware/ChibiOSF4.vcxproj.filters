@@ -2550,6 +2550,12 @@
     <ClCompile Include="Log\MarvieLog.cpp">
       <Filter>Source files\Log</Filter>
     </ClCompile>
+    <ClCompile Include="Drivers\Sensors\Tem104Sensor.cpp">
+      <Filter>Source files\Drivers\Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="SensorService\Tem104Type.cpp">
+      <Filter>Source files\SensorService</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mcuconf.h">
@@ -2875,6 +2881,9 @@
     </ClInclude>
     <ClInclude Include="Tests\PowerDownTest.hpp">
       <Filter>Source files\Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Sensors\Tem104Sensor.h">
+      <Filter>Header files\Drivers\Sensors</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
