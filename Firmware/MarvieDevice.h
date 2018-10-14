@@ -95,6 +95,7 @@ private:
 
 public:
 	static void faultHandler();
+	static void systemHaltHook( const char* reason );
 
 private:
 	static MarvieDevice* _inst;
@@ -145,17 +146,30 @@ private:
 		enum Type : uint32_t
 		{
 			None = 0,
-			Reset = 1,
-			NMI = 2,
-			HardFault = 3,
-			MemManage = 4,
-			BusFault = 5,
-			UsageFault = 6,
+			SystemHalt,
+			Reset,
+			NMI,
+			HardFault,
+			MemManage,
+			BusFault,
+			UsageFault,
 		} type;
-		uint32_t flags;
-		uint32_t busAddress;
-		uint32_t pc;
-		uint32_t lr;
+		union Union
+		{
+			struct FailureDesc
+			{
+				uint32_t flags;
+				uint32_t busAddress;
+				uint32_t pc;
+				uint32_t lr;
+			} failure;
+			struct SystemHaltMessage 
+			{
+				char msg[16];
+			} message;
+		} u;
+		uint32_t threadAddress;
+		char threadName[4];
 	};
 	enum
 	{

@@ -730,10 +730,24 @@ void MarvieDevice::logFailure()
 	FailureDescBackup& backup = ( FailureDescBackup& )*( &RTC->BKP0R + FailureDescBackupOffset );
 	if( backup.type != FailureDescBackup::Type::None )
 	{
+		char threadName[5];
+		threadName[4] = 0;
+		strncpy( threadName, backup.threadName, 4 );
 		char* str = ( char* )buffer;
-		sprintf( str, "System was restored after a hardware failure [%#x %#x %#x %#x %#x]",
-				 ( unsigned int )backup.type, ( unsigned int )backup.flags, 
-				 ( unsigned int )backup.busAddress, ( unsigned int )backup.pc, ( unsigned int )backup.lr );
+		if( backup.type == FailureDescBackup::Type::SystemHalt )
+		{
+			constexpr size_t size = sizeof( FailureDescBackup::Union::SystemHaltMessage::msg );
+			char msg[size + 1];
+			msg[size] = 0;
+			strncpy( msg, backup.u.message.msg, size );
+			sprintf( str, "System was restored after a system halt [%#x %s %s]",
+					 ( unsigned int )backup.threadAddress, threadName, msg );
+		}
+		else
+			sprintf( str, "System was restored after a hardware failure [%#x %#x %#x %#x %#x %#x %s]",
+					 ( unsigned int )backup.type, ( unsigned int )backup.u.failure.flags,
+					 ( unsigned int )backup.u.failure.busAddress, ( unsigned int )backup.u.failure.pc, ( unsigned int )backup.u.failure.lr,
+					 ( unsigned int )backup.threadAddress, threadName );
 		fileLog.addRecorg( str );
 		backup.type = FailureDescBackup::Type::None;
 	}
@@ -1219,7 +1233,6 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 				static_cast< AbstractSRSensor* >( sensor )->setInputSignalProvider( this );
 				if( !desc->tuner( sensor, sensorNode, 0 ) )
 				{
-					delete sensor;
 					sensorsConfigError = SensorsConfigError::IncorrectSettings;
 					break;
 				}
@@ -2145,23 +2158,44 @@ void MarvieDevice::adcErrorCallback( ADCDriver *adcp, adcerror_t err )
 void MarvieDevice::faultHandler()
 {
 	FailureDescBackup& backup = ( FailureDescBackup& )*( &RTC->BKP0R + FailureDescBackupOffset );
-	backup.type = ( FailureDescBackup::Type )__get_IPSR();
-	backup.flags = SCB->CFSR;
+	backup.type = ( FailureDescBackup::Type )( __get_IPSR() + 1 );
+	backup.u.failure.flags = SCB->CFSR;
 	port_extctx* ctx = ( port_extctx* )__get_PSP();
-	backup.pc = ( uint32_t )ctx->pc;
-	backup.lr = ( uint32_t )ctx->lr_thd;
+	backup.u.failure.pc = ( uint32_t )ctx->pc;
+	backup.u.failure.lr = ( uint32_t )ctx->lr_thd;
 	if( backup.type == FailureDescBackup::Type::HardFault || backup.type == FailureDescBackup::Type::BusFault )
-		backup.busAddress = SCB->BFAR;
+		backup.u.failure.busAddress = SCB->BFAR;
 	else if( backup.type == FailureDescBackup::Type::MemManage )
-		backup.busAddress = SCB->MMFAR;
+		backup.u.failure.busAddress = SCB->MMFAR;
 	else
-		backup.busAddress = 0;
+		backup.u.failure.busAddress = 0;
+	backup.threadAddress = ( uint32_t )currp;
+	strncpy( backup.threadName, "none", 4 ); // fix this!
+	assert( false );
+	NVIC_SystemReset();
+}
+
+void MarvieDevice::systemHaltHook( const char* reason )
+{
+	FailureDescBackup& backup = ( FailureDescBackup& )*( &RTC->BKP0R + FailureDescBackupOffset );
+	backup.type = FailureDescBackup::Type::SystemHalt;
+	size_t len = strlen( reason );
+	if( len > sizeof( backup.u.message.msg ) )
+		len = sizeof( backup.u.message.msg );
+	strncpy( backup.u.message.msg, reason, len );
+	backup.threadAddress = ( uint32_t )currp;
+	strncpy( backup.threadName, "none", 4 ); // fix this!
 	assert( false );
 	NVIC_SystemReset();
 }
 
 extern "C"
 {
+	void systemHaltHook( const char *reason )
+	{
+		MarvieDevice::systemHaltHook( reason );
+	}
+
 	void idleLoopHook()
 	{
 		wdgReset( &WDGD1 );
