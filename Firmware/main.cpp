@@ -2,18 +2,19 @@
 
 //uint8_t data[513] __attribute__( ( section( ".ram4" ) ) );
 
-#include "Tests/GsmPPPTest.hpp"
-#include "Tests/ModbusTest.hpp"
-#include "Tests/ModbusServerTest.hpp"
-#include "Tests/UdpStressTestServer/UdpStressTestServer.h"
 #include "Drivers/Network/Ethernet/EthernetThread.h"
 
 #include "Core/RtcBackupRegisters.h"
 #include "Core/DateTimeService.h"
 
+#include "Tests/GsmPPPTest.hpp"
+#include "Tests/ModbusTest.hpp"
+#include "Tests/ModbusServerTest.hpp"
+#include "Tests/UdpStressTestServer/UdpStressTestServer.h"
 #include "Tests/FileSystemTest.hpp"
 #include "Tests/MarvieLogSystemTest.hpp"
 #include "Tests/PowerDownTest.hpp"
+#include "Tests/SdDataUploader.hpp"
 
 #include <algorithm>
 
@@ -23,6 +24,9 @@ int main()
 		*( uint32_t* )i = 0;*/
 	halInit();
 	chSysInit();
+
+	/*SdDataUploader::main();
+	while( true );*/
 	
 	/*PowerDownTest::test();
 	while( true );*/
@@ -143,8 +147,6 @@ End:
 	gsmPPPTest();
 	while( true );
 
-	
-	MarvieDevice::instance()->exec();
 
 	return 0;
 }

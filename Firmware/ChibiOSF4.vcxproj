@@ -147,6 +147,7 @@
     <ClCompile Include="Drivers\Sensors\AbstractSensor.cpp" />
     <ClCompile Include="Drivers\Sensors\CE301Sensor.cpp" />
     <ClCompile Include="Drivers\Sensors\Tem104Sensor.cpp" />
+    <ClCompile Include="Drivers\Sensors\Tem05MSensor.cpp" />
     <ClCompile Include="Drivers\Sensors\TestSensorA.cpp" />
     <ClCompile Include="Drivers\Sensors\TestSensorB.cpp" />
     <ClCompile Include="Drivers\Sensors\TestSRSensorA.cpp" />
@@ -588,6 +589,7 @@
     <ClInclude Include="Drivers\Interfaces\AbstractRs485.h" />
     <ClInclude Include="Drivers\Network\Ethernet\EthernetThread.h" />
     <ClInclude Include="Drivers\Network\SimGsm\SimGsmPppModem.h" />
+    <ClInclude Include="Drivers\Sensors\Tem05MSensor.h" />
     <ClInclude Include="Drivers\Sensors\Tem104Sensor.h" />
     <ClInclude Include="Drivers\Sensors\TestSRSensorA.h" />
     <ClInclude Include="FileSystem\Dir.h" />
@@ -742,6 +744,7 @@
     <ClInclude Include="Tests\ModbusServerTest.hpp" />
     <ClInclude Include="Tests\ModbusTest.hpp" />
     <ClInclude Include="Tests\PowerDownTest.hpp" />
+    <ClInclude Include="Tests\SdDataUploader.hpp" />
     <ClInclude Include="Tests\UdpStressTestServer\UdpStressTestServer.h" />
     <ClCompile Include="Lib\modbus\ModbusASCII.cpp" />
     <ClCompile Include="Lib\modbus\ModbusMaster.cpp" />

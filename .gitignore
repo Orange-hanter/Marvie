@@ -15,3 +15,8 @@ Software/Debug/
 Software/GeneratedFiles/
 Software/x64/
 Software/.vs/
+Software/Tests/SdDataDownloader/SdDataDownloader/x64/
+Software/Tests/SdDataDownloader/SdDataDownloader/GeneratedFiles/
+Software/Tests/SdDataDownloader/x64/
+Software/Tests/SdDataDownloader/.vs/
+Software/settings.ini

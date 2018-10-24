@@ -2556,6 +2556,9 @@
     <ClCompile Include="SensorService\Tem104Type.cpp">
       <Filter>Source files\SensorService</Filter>
     </ClCompile>
+    <ClCompile Include="Drivers\Sensors\Tem05MSensor.cpp">
+      <Filter>Source files\Drivers\Sensors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mcuconf.h">
@@ -2884,6 +2887,12 @@
     </ClInclude>
     <ClInclude Include="Drivers\Sensors\Tem104Sensor.h">
       <Filter>Header files\Drivers\Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Sensors\Tem05MSensor.h">
+      <Filter>Header files\Drivers\Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests\SdDataUploader.hpp">
+      <Filter>Source files\Tests</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
