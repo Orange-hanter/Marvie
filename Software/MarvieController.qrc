@@ -60,5 +60,7 @@
         <file>icons/icons8-shutdown-52.png</file>
         <file>icons/icons8-copy-node-filled.png</file>
         <file>icons/icons8-log-in-circle.png</file>
+        <file>icons/icons8-chevron-left-filled-50.png</file>
+        <file>icons/icons8-export-csv-filled-50.png</file>
     </qresource>
 </RCC>

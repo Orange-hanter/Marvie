@@ -117,6 +117,12 @@
     <ClCompile Include="SensorDescription.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SensorModbusDesc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ModbusRegMapModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MarvieController.h">
@@ -150,6 +156,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="SynchronizationWindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ModbusRegMapModel.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -195,6 +204,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SensorDescription.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SensorModbusDesc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

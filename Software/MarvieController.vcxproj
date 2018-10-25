@@ -123,12 +123,14 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MarvieController.cpp" />
     <ClCompile Include="MLinkClient.cpp" />
+    <ClCompile Include="ModbusRegMapModel.cpp" />
     <ClCompile Include="MonitoringDataItem.cpp" />
     <ClCompile Include="MonitoringDataModel.cpp" />
     <ClCompile Include="MonitoringDataTreeWidget.cpp" />
     <ClCompile Include="MonitoringLog.cpp" />
     <ClCompile Include="SensorDescription.cpp" />
     <ClCompile Include="SensorErrorsModel.cpp" />
+    <ClCompile Include="SensorModbusDesc.cpp" />
     <ClCompile Include="SynchronizationWindow.cpp" />
     <ClCompile Include="thirdparty\FramelessWindow\FramelessWindow.cpp" />
     <ClCompile Include="thirdparty\FramelessWindow\WindowButtonsWidget.cpp" />
@@ -192,6 +194,13 @@
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtBluetooth;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtXmlPatterns;$(QTDIR)\include\QtPrintSupport</IncludePath>
       <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_BLUETOOTH_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;QT_WIDGETS_LIB;QT_XML_LIB;QT_XMLPATTERNS_LIB;QT_PRINTSUPPORT_LIB</Define>
     </QtMoc>
+    <QtMoc Include="ModbusRegMapModel.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtBluetooth;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtXmlPatterns;$(QTDIR)\include\QtPrintSupport</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_DLL;QT_BLUETOOTH_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;QT_WIDGETS_LIB;QT_XML_LIB;QT_XMLPATTERNS_LIB;QT_PRINTSUPPORT_LIB</Define>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtBluetooth;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtXmlPatterns;$(QTDIR)\include\QtPrintSupport</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_BLUETOOTH_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;QT_WIDGETS_LIB;QT_XML_LIB;QT_XMLPATTERNS_LIB;QT_PRINTSUPPORT_LIB</Define>
+    </QtMoc>
+    <ClInclude Include="SensorModbusDesc.h" />
     <ClInclude Include="MonitoringDataTreeWidget.h" />
     <ClInclude Include="MonitoringLog.h" />
     <ClInclude Include="SensorDescription.h" />

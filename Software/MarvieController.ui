@@ -975,7 +975,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
       <enum>QFrame::Raised</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="controlPage">
       <layout class="QHBoxLayout" name="horizontalLayout_26">
@@ -3353,7 +3353,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
        <item>
         <widget class="QStackedWidget" name="settingsStackedWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="mainSettingsPage">
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -3653,7 +3653,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>360</width>
+                <width>397</width>
                 <height>677</height>
                </rect>
               </property>
@@ -5014,6 +5014,119 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                <string>Value</string>
               </property>
              </column>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="modbusRegMapPage">
+          <layout class="QVBoxLayout" name="verticalLayout_34">
+           <property name="topMargin">
+            <number>3</number>
+           </property>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_42">
+             <item>
+              <widget class="QToolButton" name="backToSensorsLisstButton">
+               <property name="maximumSize">
+                <size>
+                 <width>30</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Back</string>
+               </property>
+               <property name="icon">
+                <iconset resource="MarvieController.qrc">
+                 <normaloff>:/MarvieController/icons/icons8-chevron-left-filled-50.png</normaloff>:/MarvieController/icons/icons8-chevron-left-filled-50.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>30</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::InstantPopup</enum>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QToolButton" name="exportModbusRegMapToCsvButton">
+               <property name="maximumSize">
+                <size>
+                 <width>30</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Export to CSV</string>
+               </property>
+               <property name="icon">
+                <iconset resource="MarvieController.qrc">
+                 <normaloff>:/MarvieController/icons/icons8-export-csv-filled-50.png</normaloff>:/MarvieController/icons/icons8-export-csv-filled-50.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>30</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::InstantPopup</enum>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QTreeView" name="modbusRegMapTreeView">
+             <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="editTriggers">
+              <set>QAbstractItemView::NoEditTriggers</set>
+             </property>
+             <property name="showDropIndicator" stdset="0">
+              <bool>false</bool>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <property name="selectionMode">
+              <enum>QAbstractItemView::NoSelection</enum>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectColumns</enum>
+             </property>
+             <property name="uniformRowHeights">
+              <bool>true</bool>
+             </property>
+             <property name="headerHidden">
+              <bool>false</bool>
+             </property>
             </widget>
            </item>
           </layout>

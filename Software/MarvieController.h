@@ -13,6 +13,7 @@
 #include "VPortOverIpModel.h"
 #include "VPortsOverIpDelegate.h"
 #include "MonitoringDataModel.h"
+#include "ModbusRegMapModel.h"
 #include "MonitoringLog.h"
 #include "SynchronizationWindow.h"
 
@@ -67,6 +68,9 @@ private slots:
 	void sensorSettingsMenuRequested( const QPoint& point );
 	void sensorSettingsMenuActionTriggered( QAction* action );
 
+	void modbusRegMapMenuRequested( const QPoint& point );
+	void modbusRegMapMenuActionTriggered( QAction* action );
+
 	void targetDeviceChanged( QString );
 	void newConfigButtonClicked();
 	void importConfigButtonClicked();
@@ -88,6 +92,8 @@ private slots:
 	void sensorMoveDownButtonClicked();
 	void sensorCopyButtonClicked();
 	void sensorsClearButtonClicked();
+
+	void exportModbusRegMapToCsvButtonClicked();
 
 	void mlinkStateChanged( MLinkClient::State );
 	void mlinkNewPacketAvailable( uint8_t type, QByteArray data );
@@ -139,6 +145,8 @@ private:
 	} xmlMessageHandler;
 	
 	QMap< QString, SensorDesc > sensorDescMap;
+	QMap< QString, SensorModbusDesc > sensorModbusDescMap;
+	ModbusRegMapModel modbusRegMapModel;
 
 	QVector< QString > vPorts, loadedXmlSensors;
 
@@ -201,6 +209,7 @@ private:
 	QListWidget* popupSensorsListWidget;
 
 	QMenu* sensorSettingsMenu;
+	QMenu* modbusRegMapMenu;
 
 	QXmlSchemaValidator configValidator;
 

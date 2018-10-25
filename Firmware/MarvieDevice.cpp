@@ -120,7 +120,7 @@ MarvieDevice::MarvieDevice() : settingsBackupRegs( sizeof( SettingsBackup ) / 4 
 	SettingsBackup& backup = ( SettingsBackup& )settingsBackupRegs.value( 0 );
 	if( !settingsBackupRegs.isValid() )
 	{
-		backup.flags.ethernetDhcp = true;
+		backup.flags.ethernetDhcp = false;
 		backup.eth.ip = IpAddress( 192, 168, 2, 10 );
 		backup.eth.netmask = 0xFFFFFF00;
 		backup.eth.gateway = IpAddress( 192, 168, 2, 1 );
@@ -2097,18 +2097,63 @@ void MarvieDevice::removeOpenDatFiles()
 
 ModbusPotato::modbus_exception_code::modbus_exception_code MarvieDevice::read_input_registers( uint16_t address, uint16_t count, uint16_t* result )
 {
-	modbusRegistersMutex.lock();
-	if( count > modbusRegistersCount || address >= modbusRegistersCount || ( size_t )( address + count ) > modbusRegistersCount )
+	//constexpr uint16_t marvieRegBegin = 0;
+	constexpr uint16_t digitInputRegBegin = 200;
+	constexpr uint16_t analogInputRegBegin = 216;
+	constexpr uint16_t sensorRegBegin = 600;
+
+	// Temp
+	for( ; address < digitInputRegBegin && count; address++, count-- )
+		*result++ = 0;
+
+	if( address >= digitInputRegBegin )
 	{
-		modbusRegistersMutex.unlock();
-		return ModbusPotato::modbus_exception_code::illegal_data_address;
+		for( ; address < analogInputRegBegin && count; address++, count-- )
+		{
+			if( address == digitInputRegBegin )
+				*result++ = ( ( uint16_t* )digitInputs )[0];
+			else if( address == digitInputRegBegin + 1 )
+				*result++ = ( ( uint16_t* )digitInputs )[1];
+			else
+				*result++ = 0;
+		}
 	}
 
-	// copy the values
-	for( ; count; address++, count-- )
-		*result++ = modbusRegisters[address];
+	if( address >= analogInputRegBegin )
+	{
+		if( address < sensorRegBegin && ( address & 0x01 ) ) // not aligned
+			return ModbusPotato::modbus_exception_code::illegal_data_address;
+		for( ; address < sensorRegBegin && count >= 2; address += 2, count -= 2 )
+		{
+			uint16_t addr = ( address - analogInputRegBegin ) / 2;
+			if( addr < MarviePlatform::analogInputsCount )
+			{
+				float data = analogInput[addr];
+				*result++ = ( ( uint16_t* )&data )[0];
+				*result++ = ( ( uint16_t* )&data )[1];
+			}
+			else
+				*result++ = 0, *result++ = 0;
+		}
+	}
 
-	modbusRegistersMutex.unlock();
+	if( address >= sensorRegBegin )
+	{
+		address -= sensorRegBegin;
+		modbusRegistersMutex.lock();
+		if( count > modbusRegistersCount || address >= modbusRegistersCount || ( size_t )( address + count ) > modbusRegistersCount )
+		{
+			modbusRegistersMutex.unlock();
+			return ModbusPotato::modbus_exception_code::illegal_data_address;
+		}
+
+		// copy the values
+		for( ; count; address++, count-- )
+			*result++ = modbusRegisters[address];
+
+		modbusRegistersMutex.unlock();
+	}
+
 	return ModbusPotato::modbus_exception_code::ok;
 }
 

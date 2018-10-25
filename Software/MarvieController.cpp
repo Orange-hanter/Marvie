@@ -76,7 +76,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 
 	ui.vPortsOverIpTableView->setModel( &vPortsOverEthernetModel );
 	ui.vPortsOverIpTableView->setItemDelegate( &vPortsOverIpDelegate );
-	ui.vPortsOverIpTableView->horizontalHeader()->setSectionResizeMode( QHeaderView::ResizeMode::Fixed  );
+	ui.vPortsOverIpTableView->horizontalHeader()->setSectionResizeMode( QHeaderView::ResizeMode::Fixed );
 	ui.vPortsOverIpTableView->horizontalHeader()->resizeSection( 0, 100 );
 	ui.vPortsOverIpTableView->horizontalHeader()->resizeSection( 1, 50 );
 	ui.vPortsOverIpTableView->verticalHeader()->setSectionResizeMode( QHeaderView::ResizeMode::Fixed );
@@ -97,7 +97,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	cpuLoadChart->setBackgroundVisible( false );
 	ui.cpuLoadChartView->setChart( cpuLoadChart );
 	ui.cpuLoadChartView->setRenderHint( QPainter::Antialiasing );
-	
+
 	QSplineSeries* cpuLoadSplineSeries = new QSplineSeries;
 	for( int i = 0; i < 10 * 3; ++i )
 		cpuLoadSplineSeries->append( i * 0.3333333, ( qrand() % 100 ) );
@@ -165,7 +165,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	class MemoryLoadChartEventFilter : public QObject
 	{
 	public:
-		MemStatistics* memStat;
+		MemStatistics * memStat;
 		MemoryLoadChartEventFilter( QObject* parent, MemStatistics* stat ) : QObject( parent ), memStat( stat ) {}
 		bool eventFilter( QObject* obj, QEvent *event )
 		{
@@ -182,7 +182,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	class SdLoadChartEventFilter : public QObject
 	{
 	public:
-		SdStatistics* sdStat;
+		SdStatistics * sdStat;
 		SdLoadChartEventFilter( QObject* parent, SdStatistics* stat ) : QObject( parent ), sdStat( stat ) {}
 		bool eventFilter( QObject* obj, QEvent *event )
 		{
@@ -210,6 +210,12 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	ui.monitoringDataTreeView->setSensorDescriptionMap( &sensorDescMap );
 	ui.monitoringLogTreeWidget->setSensorDescriptionMap( &sensorDescMap );
 
+	modbusRegMapModel.setSensorModbusDescMap( &sensorModbusDescMap );
+	ui.modbusRegMapTreeView->setModel( &modbusRegMapModel );
+	ui.modbusRegMapTreeView->header()->resizeSection( 0, 240 );
+	ui.modbusRegMapTreeView->header()->resizeSection( 1, 85 );
+	ui.modbusRegMapTreeView->header()->resizeSection( 2, 75 );
+
 	monitoringDataViewMenu = new QMenu( this );
 	monitoringDataViewMenu->addAction( "Update" );
 	monitoringDataViewMenu->addSeparator();
@@ -226,7 +232,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	{
 		if( !i.value().data.root || i.value().data.size == !- 1 )
 			continue;
-		sList.append( MonitoringLog::SensorDesc{ i.key(), ( quint32 ) i.value().data.size } );
+		sList.append( MonitoringLog::SensorDesc{ i.key(), ( quint32 )i.value().data.size } );
 	}
 	monitoringLog.setAvailableSensors( sList );
 
@@ -249,6 +255,15 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	sensorSettingsMenu->addSeparator();
 	sensorSettingsMenu->addAction( "Expand all" );
 	sensorSettingsMenu->addAction( "Collapse all" );
+	sensorSettingsMenu->addSeparator();
+	sensorSettingsMenu->addAction( "Create an address map" );
+
+	modbusRegMapMenu = new QMenu( this );
+	modbusRegMapMenu->addAction( "Expand all" );
+	modbusRegMapMenu->addAction( "Collapse all" );
+	modbusRegMapMenu->addSeparator();
+	modbusRegMapMenu->addAction( "Hexadecimal output" )->setCheckable( true );
+	modbusRegMapMenu->addAction( "Relative offset" )->setCheckable( true );
 
 	syncWindow = new SynchronizationWindow( this );
 	deviceState = DeviceState::Unknown;
@@ -342,19 +357,22 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 
 	QObject::connect( popupSensorsListWidget, &QListWidget::itemClicked, this, &MarvieController::sensorNameSearchCompleted );
 
-	QObject::connect( ui.sensorAddButton, &QToolButton::clicked, this, &MarvieController::sensorAddButtonClicked );
-	QObject::connect( ui.sensorRemoveButton, &QToolButton::clicked, this, &MarvieController::sensorRemoveButtonClicked );
-	QObject::connect( ui.sensorMoveUpButton, &QToolButton::clicked, this, &MarvieController::sensorMoveUpButtonClicked );
-	QObject::connect( ui.sensorMoveDownButton, &QToolButton::clicked, this, &MarvieController::sensorMoveDownButtonClicked );
-	QObject::connect( ui.sensorCopyButton, &QToolButton::clicked, this, &MarvieController::sensorCopyButtonClicked );
-	QObject::connect( ui.sensorsListClearButton, &QToolButton::clicked, this, &MarvieController::sensorsClearButtonClicked );
+	QObject::connect( ui.sensorAddButton, &QToolButton::released, this, &MarvieController::sensorAddButtonClicked );
+	QObject::connect( ui.sensorRemoveButton, &QToolButton::released, this, &MarvieController::sensorRemoveButtonClicked );
+	QObject::connect( ui.sensorMoveUpButton, &QToolButton::released, this, &MarvieController::sensorMoveUpButtonClicked );
+	QObject::connect( ui.sensorMoveDownButton, &QToolButton::released, this, &MarvieController::sensorMoveDownButtonClicked );
+	QObject::connect( ui.sensorCopyButton, &QToolButton::released, this, &MarvieController::sensorCopyButtonClicked );
+	QObject::connect( ui.sensorsListClearButton, &QToolButton::released, this, &MarvieController::sensorsClearButtonClicked );
+
+	QObject::connect( ui.backToSensorsLisstButton, &QToolButton::released, this, [this]() { ui.settingsStackedWidget->setCurrentWidget( ui.sensorSettingsPage ); } );
+	QObject::connect( ui.exportModbusRegMapToCsvButton, &QToolButton::released, this, &MarvieController::exportModbusRegMapToCsvButtonClicked );
 
 	QObject::connect( ui.targetDeviceComboBox, &QComboBox::currentTextChanged, this, &MarvieController::targetDeviceChanged );
-	QObject::connect( ui.newConfigButton, &QToolButton::clicked, this, &MarvieController::newConfigButtonClicked );
-	QObject::connect( ui.importConfigButton, &QToolButton::clicked, this, &MarvieController::importConfigButtonClicked );
-	QObject::connect( ui.exportConfigButton, &QToolButton::clicked, this, &MarvieController::exportConfigButtonClicked );
-	QObject::connect( ui.uploadConfigButton, &QToolButton::clicked, this, &MarvieController::uploadConfigButtonClicked );
-	QObject::connect( ui.downloadConfigButton, &QToolButton::clicked, this, &MarvieController::downloadConfigButtonClicked );
+	QObject::connect( ui.newConfigButton, &QToolButton::released, this, &MarvieController::newConfigButtonClicked );
+	QObject::connect( ui.importConfigButton, &QToolButton::released, this, &MarvieController::importConfigButtonClicked );
+	QObject::connect( ui.exportConfigButton, &QToolButton::released, this, &MarvieController::exportConfigButtonClicked );
+	QObject::connect( ui.uploadConfigButton, &QToolButton::released, this, &MarvieController::uploadConfigButtonClicked );
+	QObject::connect( ui.downloadConfigButton, &QToolButton::released, this, &MarvieController::downloadConfigButtonClicked );
 
 	QObject::connect( sdCardMenu, &QMenu::triggered, this, &MarvieController::sdCardMenuActionTriggered );
 	QObject::connect( logMenu, &QMenu::triggered, this, &MarvieController::logMenuActionTriggered );
@@ -367,6 +385,9 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 
 	QObject::connect( ui.sensorSettingsTreeWidget, &QTreeView::customContextMenuRequested, this, &MarvieController::sensorSettingsMenuRequested );
 	QObject::connect( sensorSettingsMenu, &QMenu::triggered, this, &MarvieController::sensorSettingsMenuActionTriggered );
+
+	QObject::connect( ui.modbusRegMapTreeView, &QTreeView::customContextMenuRequested, this, &MarvieController::modbusRegMapMenuRequested );
+	QObject::connect( modbusRegMapMenu, &QMenu::triggered, this, &MarvieController::modbusRegMapMenuActionTriggered );
 
 	ui.rs232ComboBox->installEventFilter( this );
 
@@ -1103,6 +1124,36 @@ void MarvieController::sensorSettingsMenuActionTriggered( QAction* action )
 		ui.sensorSettingsTreeWidget->expandAll();
 	else if( action->text() == "Collapse all" )
 		ui.sensorSettingsTreeWidget->collapseAll();
+	else if( action->text() == "Create an address map" )
+	{
+		modbusRegMapModel.resetData();
+		quint32 offset = 600;
+		for( int i = 0; i < ui.sensorSettingsTreeWidget->topLevelItemCount(); ++i )
+		{
+			QString name = ui.sensorSettingsTreeWidget->topLevelItem( i )->data( 0, Qt::DisplayRole ).toString();
+			QString typeName = name.split( ". " )[1];
+			modbusRegMapModel.appendSensor( name, typeName, offset );
+			offset += sensorDescMap[typeName].data.size + sizeof( DateTime );
+		}
+		ui.settingsStackedWidget->setCurrentWidget( ui.modbusRegMapPage );
+	}
+}
+
+void MarvieController::modbusRegMapMenuRequested( const QPoint& point )
+{
+	modbusRegMapMenu->popup( ui.modbusRegMapTreeView->viewport()->mapToGlobal( point ) );
+}
+
+void MarvieController::modbusRegMapMenuActionTriggered( QAction* action )
+{
+	if( action->text() == "Expand all" )
+		ui.modbusRegMapTreeView->expandAll();
+	else if( action->text() == "Collapse all" )
+		ui.modbusRegMapTreeView->collapseAll();
+	else if( action->text() == "Hexadecimal output" )
+		modbusRegMapModel.setHexadecimalOutput( action->isChecked() );
+	else if( action->text() == "Relative offset" )
+		modbusRegMapModel.setRelativeOffset( action->isChecked() );
 }
 
 void MarvieController::targetDeviceChanged( QString text )
@@ -1457,6 +1508,39 @@ void MarvieController::sensorCopyButtonClicked()
 void MarvieController::sensorsClearButtonClicked()
 {
 	ui.sensorSettingsTreeWidget->clear();
+}
+
+void MarvieController::exportModbusRegMapToCsvButtonClicked()
+{
+	QSettings setting( "settings.ini", QSettings::Format::IniFormat );
+	QString name = QFileDialog::getSaveFileName( this, "Export a modbus map to csv", setting.value( "modbusMapDir", QDir::currentPath() ).toString(), "CSV files (*.csv)" );
+	if( name.isEmpty() )
+		return;
+	setting.setValue( "modbusMapDir", QDir( name ).absolutePath().remove( QDir( name ).dirName() ) );
+
+	QFile file( name );
+	file.open( QIODevice::WriteOnly );
+	file.write( "Name;Offset;Type\n\n" );
+	int sensorCount = modbusRegMapModel.rowCount();
+	for( int iSensor = 0; iSensor < sensorCount; ++iSensor )
+	{
+		QString name = modbusRegMapModel.index( iSensor, 0 ).data( Qt::DisplayRole ).toString();
+		file.write( name.toUtf8() );
+		file.write( ";" );
+		file.write( modbusRegMapModel.index( iSensor, 1 ).data( Qt::DisplayRole ).toString().toUtf8() );
+		file.write( ";\n" );
+
+		QModelIndex parent = modbusRegMapModel.index( iSensor, 0 );
+		QModelIndex child = modbusRegMapModel.index( 0, 0, parent );
+		int childCount = modbusRegMapModel.rowCount( parent );
+		for( int iChild = 0; iChild < childCount; ++iChild )
+		{
+			file.write( ( name + "." + child.sibling( iChild, 0 ).data( Qt::DisplayRole ).toString() ).toUtf8() );
+			file.write( ( ";" + child.sibling( iChild, 1 ).data( Qt::DisplayRole ).toString() ).toUtf8() );
+			file.write( ( ";" + child.sibling( iChild, 2 ).data( Qt::DisplayRole ).toString() + "\n" ).toUtf8() );
+		}
+		file.write( "\n" );
+	}
 }
 
 void MarvieController::mlinkStateChanged( MLinkClient::State s )
@@ -1995,6 +2079,77 @@ void MarvieController::sensorsInit()
 					desc.data.size = bias;
 				desc.data.root = DataPointer( root );
 			}
+
+			auto& modbusDesc = sensorModbusDescMap[i];
+			static const std::function< void( QString name, const SensorDesc::Data::Node* node, SensorModbusDesc* desc ) > unroll = []( QString name, const SensorDesc::Data::Node* node, SensorModbusDesc* desc )
+			{
+				int type = -1;
+				switch( node->type )
+				{
+				case SensorDesc::Data::Type::Char:
+					type = ( int )SensorModbusDesc::Type::Char;
+					break;
+				case SensorDesc::Data::Type::Int8:
+					type = ( int )SensorModbusDesc::Type::Int8;
+					break;
+				case SensorDesc::Data::Type::Uint8:
+					type = ( int )SensorModbusDesc::Type::UInt8;
+					break;
+				case SensorDesc::Data::Type::Int16:
+					type = ( int )SensorModbusDesc::Type::Int16;
+					break;
+				case SensorDesc::Data::Type::Uint16:
+					type = ( int )SensorModbusDesc::Type::UInt16;
+					break;
+				case SensorDesc::Data::Type::Int32:
+					type = ( int )SensorModbusDesc::Type::Int32;
+					break;
+				case SensorDesc::Data::Type::Uint32:
+					type = ( int )SensorModbusDesc::Type::UInt32;
+					break;
+				case SensorDesc::Data::Type::Int64:
+					type = ( int )SensorModbusDesc::Type::Int64;
+					break;
+				case SensorDesc::Data::Type::Uint64:
+					type = ( int )SensorModbusDesc::Type::UInt64;
+					break;
+				case SensorDesc::Data::Type::Float:
+					type = ( int )SensorModbusDesc::Type::Float;
+					break;
+				case SensorDesc::Data::Type::Double:
+					type = ( int )SensorModbusDesc::Type::Double;
+					break;
+				default:
+					break;
+				}
+				if( type != -1 )
+				{
+					desc->addElement( name + ( name.size() && node->name.front() != '[' ? "." : "" ) + node->name, node->bias + sizeof( DateTime ), ( SensorModbusDesc::Type )type );
+					return;
+				}
+
+				for( auto child : node->childNodes )
+				{
+					switch( child->type )
+					{
+					case SensorDesc::Data::Type::Array:
+					case SensorDesc::Data::Type::GroupArray:
+					{
+						for( int i = 0; i < child->childNodes.size(); ++i )
+							unroll( name + ( name.size() ? "." : "" ) + child->name, child->childNodes.at( i ), desc );
+						break;
+					}
+					case SensorDesc::Data::Type::Group:
+						unroll( name + ( name.size() && child->name.front() != '[' ? "." : "" ) + child->name, child, desc );
+						break;
+					default:
+						unroll( name, child, desc );
+						break;
+					}
+				}
+			};
+			modbusDesc.addElement( "dateTime", 0, SensorModbusDesc::Type::DateTime );
+			unroll( "", desc.data.root.data(), &modbusDesc );
 		}
 
 		sensorDescMap[i] = desc;
