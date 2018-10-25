@@ -55,7 +55,10 @@ void CpuUsageMonitor::timerCallback( void* p )
 		m->idleLast = t;
 	}
 
-	m->cpuUsage = 100 - ( RTC2MS( STM32_SYSCLK, ( m->idleSum ) ) >> 1 );
+	if( m->idleSum )
+		m->cpuUsage = 100 - ( RTC2MS( STM32_SYSCLK, ( m->idleSum ) ) >> 1 );
+	else
+		m->cpuUsage = 100;
 
 	m->idleSum = 0;
 	chVTSetI( &m->timer, TIME_MS2I( 200 ), timerCallback, p );

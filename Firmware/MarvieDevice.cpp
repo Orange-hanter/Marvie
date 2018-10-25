@@ -264,8 +264,11 @@ void MarvieDevice::mainThreadMain()
 				else
 				{
 					fsError = f_mount( &fatFs, "/", 1 );
-					if( fsError == FR_OK && fatFs.fs_type == FS_FAT32 )
+					if( fsError == FR_OK && fatFs.fs_type == FM_EXFAT )
 					{
+						DWORD nclst;
+						FATFS* fs;
+						f_getfree( "0:", &nclst, &fs );
 						fsError = clearDir( "/Temp" );
 						if( fsError == FR_NO_PATH )
 							fsError = f_mkdir( "/Temp" );
@@ -783,8 +786,11 @@ void MarvieDevice::formatSdCard()
 		removeOpenDatFiles();
 		fileLog.close();
 		monitoringLogSize = 0;
-		if( f_mkfs( "/", FM_FAT32, 4096, buffer, 1024 ) == FR_OK && f_mkdir( "/Temp" ) == FR_OK )
+		if( f_mkfs( "/", FM_EXFAT, 4096, buffer, 1024 ) == FR_OK && f_mkdir( "/Temp" ) == FR_OK )
 		{
+			DWORD nclst;
+			FATFS* fs;
+			f_getfree( "0:", &nclst, &fs );
 			sdCardStatus = SdCardStatus::Working;
 			Dir( "/Log" ).mkdir();
 			fileLog.open( "/Log/log.txt" );
