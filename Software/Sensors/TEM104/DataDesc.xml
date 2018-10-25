@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<DataDesc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="file:// ../../Xml/schemas/SensorData.xsd">
+  <group name="Instant">
+    <groupArray count="4">
+      <group name="Channel">
+        <array type="float" count="4">tmp</array>
+        <array type="float" count="4">prs</array>
+        <array type="float" count="4">ro</array>
+        <array type="float" count="4">hent</array>
+        <array type="float" count="4">rshv</array>
+        <array type="float" count="4">rshm</array>
+        <array type="float" count="4">pwr</array>
+        <uint8>tekerr</uint8>
+        <unused size="1"/>
+        <uint16>teherr</uint16>
+      </group>
+    </groupArray>
+  </group>
+ 
+  <group name="Integrated">
+    <array type="uint8" count="4">date</array>
+    <array type="uint8" count="4">prevDate</array>
+    <uint32>TRab</uint32>
+    <unused size="4"/>
+    <groupArray count="4">
+      <group name="Channel">
+        <double>intV</double>
+        <double>intM</double>
+        <double>intQ</double>
+        <uint32>TNar</uint32>
+        <uint32>Tmin</uint32>
+        <uint32>Tmax</uint32>
+        <uint32>Tdt</uint32>
+        <uint32>Ttn</uint32>
+        <uint16>teherr</uint16>
+        <uint8>tekerr</uint8>
+        <unused size="1"/>
+        <array type="uint16" count="3" >t</array>
+        <unused size="2"/>
+        <array type="uint8" count="3">p</array>
+        <unused size="1"/>
+        <float>rshv</float>
+      </group>
+    </groupArray>
+  </group>
+</DataDesc>
