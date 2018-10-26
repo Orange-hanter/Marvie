@@ -210,8 +210,8 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	ui.monitoringDataTreeView->setSensorDescriptionMap( &sensorDescMap );
 	ui.monitoringLogTreeWidget->setSensorDescriptionMap( &sensorDescMap );
 
-	modbusRegMapModel.setSensorModbusDescMap( &sensorModbusDescMap );
-	ui.modbusRegMapTreeView->setModel( &modbusRegMapModel );
+	sensorFieldAddressMapModel.setSensorUnfoldedDescMap( &sensorUnfoldedDescMap );
+	ui.modbusRegMapTreeView->setModel( &sensorFieldAddressMapModel );
 	ui.modbusRegMapTreeView->header()->resizeSection( 0, 228 );
 	ui.modbusRegMapTreeView->header()->resizeSection( 1, 85 );
 	ui.modbusRegMapTreeView->header()->resizeSection( 2, 75 );
@@ -1139,13 +1139,13 @@ void MarvieController::sensorSettingsMenuActionTriggered( QAction* action )
 		ui.sensorSettingsTreeWidget->collapseAll();
 	else if( action->text() == "Create an address map" )
 	{
-		modbusRegMapModel.resetData();
+		sensorFieldAddressMapModel.resetData();
 		quint32 offset = 1200;
 		for( int i = 0; i < ui.sensorSettingsTreeWidget->topLevelItemCount(); ++i )
 		{
 			QString name = ui.sensorSettingsTreeWidget->topLevelItem( i )->data( 0, Qt::DisplayRole ).toString();
 			QString typeName = name.split( ". " )[1];
-			modbusRegMapModel.appendSensor( name, typeName, offset );
+			sensorFieldAddressMapModel.appendSensor( name, typeName, offset );
 			offset += sensorDescMap[typeName].data.size + sizeof( DateTime );
 		}
 		ui.settingsStackedWidget->setCurrentWidget( ui.modbusRegMapPage );
@@ -1164,15 +1164,15 @@ void MarvieController::modbusRegMapMenuActionTriggered( QAction* action )
 	else if( action->text() == "Collapse all" )
 		ui.modbusRegMapTreeView->collapseAll();
 	if( action->text() == "Bytes" )
-		modbusRegMapModel.setDisplayOffsetUnits( ModbusRegMapModel::OffsetUnits::Bytes );
+		sensorFieldAddressMapModel.setDisplayOffsetUnits( SensorFieldAddressMapModel::OffsetUnits::Bytes );
 	if( action->text() == "Words" )
-		modbusRegMapModel.setDisplayOffsetUnits( ModbusRegMapModel::OffsetUnits::Words );
+		sensorFieldAddressMapModel.setDisplayOffsetUnits( SensorFieldAddressMapModel::OffsetUnits::Words );
 	if( action->text() == "DWords" )
-		modbusRegMapModel.setDisplayOffsetUnits( ModbusRegMapModel::OffsetUnits::DWords );
+		sensorFieldAddressMapModel.setDisplayOffsetUnits( SensorFieldAddressMapModel::OffsetUnits::DWords );
 	else if( action->text() == "Hexadecimal output" )
-		modbusRegMapModel.setHexadecimalOutput( action->isChecked() );
+		sensorFieldAddressMapModel.setHexadecimalOutput( action->isChecked() );
 	else if( action->text() == "Relative offset" )
-		modbusRegMapModel.setRelativeOffset( action->isChecked() );
+		sensorFieldAddressMapModel.setRelativeOffset( action->isChecked() );
 }
 
 void MarvieController::targetDeviceChanged( QString text )
@@ -1540,18 +1540,18 @@ void MarvieController::exportModbusRegMapToCsvButtonClicked()
 	QFile file( name );
 	file.open( QIODevice::WriteOnly );
 	file.write( "Name;Offset;Type\n\n" );
-	int sensorCount = modbusRegMapModel.rowCount();
+	int sensorCount = sensorFieldAddressMapModel.rowCount();
 	for( int iSensor = 0; iSensor < sensorCount; ++iSensor )
 	{
-		QString name = modbusRegMapModel.index( iSensor, 0 ).data( Qt::DisplayRole ).toString();
+		QString name = sensorFieldAddressMapModel.index( iSensor, 0 ).data( Qt::DisplayRole ).toString();
 		file.write( name.toUtf8() );
 		file.write( ";" );
-		file.write( modbusRegMapModel.index( iSensor, 1 ).data( Qt::DisplayRole ).toString().toUtf8() );
+		file.write( sensorFieldAddressMapModel.index( iSensor, 1 ).data( Qt::DisplayRole ).toString().toUtf8() );
 		file.write( ";\n" );
 
-		QModelIndex parent = modbusRegMapModel.index( iSensor, 0 );
-		QModelIndex child = modbusRegMapModel.index( 0, 0, parent );
-		int childCount = modbusRegMapModel.rowCount( parent );
+		QModelIndex parent = sensorFieldAddressMapModel.index( iSensor, 0 );
+		QModelIndex child = sensorFieldAddressMapModel.index( 0, 0, parent );
+		int childCount = sensorFieldAddressMapModel.rowCount( parent );
 		for( int iChild = 0; iChild < childCount; ++iChild )
 		{
 			file.write( ( name + "." + child.sibling( iChild, 0 ).data( Qt::DisplayRole ).toString() ).toUtf8() );
@@ -2099,51 +2099,51 @@ void MarvieController::sensorsInit()
 				desc.data.root = DataPointer( root );
 			}
 
-			auto& modbusDesc = sensorModbusDescMap[i];
-			static const std::function< void( QString name, const SensorDesc::Data::Node* node, SensorModbusDesc* desc ) > unroll = []( QString name, const SensorDesc::Data::Node* node, SensorModbusDesc* desc )
+			auto& modbusDesc = sensorUnfoldedDescMap[i];
+			static const std::function< void( QString name, const SensorDesc::Data::Node* node, SensorUnfoldedDesc* desc ) > unroll = []( QString name, const SensorDesc::Data::Node* node, SensorUnfoldedDesc* desc )
 			{
 				int type = -1;
 				switch( node->type )
 				{
 				case SensorDesc::Data::Type::Char:
-					type = ( int )SensorModbusDesc::Type::Char;
+					type = ( int )SensorUnfoldedDesc::Type::Char;
 					break;
 				case SensorDesc::Data::Type::Int8:
-					type = ( int )SensorModbusDesc::Type::Int8;
+					type = ( int )SensorUnfoldedDesc::Type::Int8;
 					break;
 				case SensorDesc::Data::Type::Uint8:
-					type = ( int )SensorModbusDesc::Type::UInt8;
+					type = ( int )SensorUnfoldedDesc::Type::Uint8;
 					break;
 				case SensorDesc::Data::Type::Int16:
-					type = ( int )SensorModbusDesc::Type::Int16;
+					type = ( int )SensorUnfoldedDesc::Type::Int16;
 					break;
 				case SensorDesc::Data::Type::Uint16:
-					type = ( int )SensorModbusDesc::Type::UInt16;
+					type = ( int )SensorUnfoldedDesc::Type::Uint16;
 					break;
 				case SensorDesc::Data::Type::Int32:
-					type = ( int )SensorModbusDesc::Type::Int32;
+					type = ( int )SensorUnfoldedDesc::Type::Int32;
 					break;
 				case SensorDesc::Data::Type::Uint32:
-					type = ( int )SensorModbusDesc::Type::UInt32;
+					type = ( int )SensorUnfoldedDesc::Type::Uint32;
 					break;
 				case SensorDesc::Data::Type::Int64:
-					type = ( int )SensorModbusDesc::Type::Int64;
+					type = ( int )SensorUnfoldedDesc::Type::Int64;
 					break;
 				case SensorDesc::Data::Type::Uint64:
-					type = ( int )SensorModbusDesc::Type::UInt64;
+					type = ( int )SensorUnfoldedDesc::Type::Uint64;
 					break;
 				case SensorDesc::Data::Type::Float:
-					type = ( int )SensorModbusDesc::Type::Float;
+					type = ( int )SensorUnfoldedDesc::Type::Float;
 					break;
 				case SensorDesc::Data::Type::Double:
-					type = ( int )SensorModbusDesc::Type::Double;
+					type = ( int )SensorUnfoldedDesc::Type::Double;
 					break;
 				default:
 					break;
 				}
 				if( type != -1 )
 				{
-					desc->addElement( name + ( name.size() && node->name.front() != '[' ? "." : "" ) + node->name, node->bias + sizeof( DateTime ), ( SensorModbusDesc::Type )type );
+					desc->addElement( name + ( name.size() && node->name.front() != '[' ? "." : "" ) + node->name, node->bias + sizeof( DateTime ), ( SensorUnfoldedDesc::Type )type );
 					return;
 				}
 
@@ -2167,7 +2167,7 @@ void MarvieController::sensorsInit()
 					}
 				}
 			};
-			modbusDesc.addElement( "dateTime", 0, SensorModbusDesc::Type::DateTime );
+			modbusDesc.addElement( "dateTime", 0, SensorUnfoldedDesc::Type::DateTime );
 			unroll( "", desc.data.root.data(), &modbusDesc );
 		}
 

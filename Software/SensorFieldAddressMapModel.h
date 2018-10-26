@@ -3,19 +3,19 @@
 #include <QAbstractItemModel>
 #include <QSharedPointer>
 #include <QMap>
-#include "SensorModbusDesc.h"
+#include "SensorUnfoldedDesc.h"
 
-class ModbusRegMapModel : public QAbstractItemModel
+class SensorFieldAddressMapModel : public QAbstractItemModel
 {
 	Q_OBJECT
 
 public:
 	enum class OffsetUnits { Bytes, Words, DWords };
 
-	ModbusRegMapModel();
-	~ModbusRegMapModel();
+	SensorFieldAddressMapModel();
+	~SensorFieldAddressMapModel();
 
-	void setSensorModbusDescMap( QMap< QString, SensorModbusDesc >* sensorModbusDescMap );
+	void setSensorUnfoldedDescMap( QMap< QString, SensorUnfoldedDesc >* descMap );
 	void setHexadecimalOutput( bool enabled );
 	void setRelativeOffset( bool enabled );
 	void setDisplayOffsetUnits( OffsetUnits units );
@@ -49,7 +49,7 @@ private:
 		quint32 offset;
 	};
 	QList< Item > items;
-	QMap< QString, SensorModbusDesc >* descMap;
+	QMap< QString, SensorUnfoldedDesc >* descMap;
 	bool hexadecimal, relativeOffset;
 	OffsetUnits units;
 };

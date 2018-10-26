@@ -1,58 +1,58 @@
-#include "SensorModbusDesc.h"
+#include "SensorUnfoldedDesc.h"
 #include <assert.h>
 
-SensorModbusDesc::SensorModbusDesc()
+SensorUnfoldedDesc::SensorUnfoldedDesc()
 {
 
 }
 
-SensorModbusDesc::~SensorModbusDesc()
+SensorUnfoldedDesc::~SensorUnfoldedDesc()
 {
 
 }
 
-void SensorModbusDesc::addElement( QString name, quint32 offset, Type type )
+void SensorUnfoldedDesc::addElement( QString name, quint32 offset, Type type )
 {
 	elements.append( Element( name, offset, type ) );
 }
 
-int SensorModbusDesc::elementCount() const
+int SensorUnfoldedDesc::elementCount() const
 {
 	return elements.size();
 }
 
-QString SensorModbusDesc::elementName( quint32 index ) const
+QString SensorUnfoldedDesc::elementName( quint32 index ) const
 {
 	return elements.at( ( int )index ).name;
 }
 
-quint32 SensorModbusDesc::elementOffset( quint32 index ) const
+quint32 SensorUnfoldedDesc::elementOffset( quint32 index ) const
 {
 	return elements.at( ( int )index ).offset;
 }
 
-SensorModbusDesc::Type SensorModbusDesc::elementType( quint32 index ) const
+SensorUnfoldedDesc::Type SensorUnfoldedDesc::elementType( quint32 index ) const
 {
 	return elements.at( ( int )index ).type;
 }
 
-int SensorModbusDesc::typeSize( Type type )
+int SensorUnfoldedDesc::typeSize( Type type )
 {
 	switch( type )
 	{
 	case Type::Char:
 	case Type::Int8:
-	case Type::UInt8:
+	case Type::Uint8:
 		return 1;
 	case Type::Int16:
-	case Type::UInt16:
+	case Type::Uint16:
 		return 2;
 	case Type::Int32:
-	case Type::UInt32:
+	case Type::Uint32:
 	case Type::Float:
 		return 4;
 	case Type::Int64:
-	case Type::UInt64:
+	case Type::Uint64:
 	case Type::Double:
 	case Type::DateTime:
 		return 8;
@@ -62,7 +62,7 @@ int SensorModbusDesc::typeSize( Type type )
 	}
 }
 
-QString SensorModbusDesc::toString( Type type )
+QString SensorUnfoldedDesc::toString( Type type )
 {
 	switch( type )
 	{
@@ -70,19 +70,19 @@ QString SensorModbusDesc::toString( Type type )
 		return "Char";
 	case Type::Int8:
 		return "Int8";
-	case Type::UInt8:
+	case Type::Uint8:
 		return "UInt8";
 	case Type::Int16:
 		return "Int16";
-	case Type::UInt16:
+	case Type::Uint16:
 		return "UInt16";
 	case Type::Int32:
 		return "Int32";
-	case Type::UInt32:
+	case Type::Uint32:
 		return "UInt32";
 	case Type::Int64:
 		return "Int64";
-	case Type::UInt64:
+	case Type::Uint64:
 		return "UInt64";
 	case Type::Float:
 		return "Float";

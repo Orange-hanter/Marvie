@@ -1,41 +1,41 @@
-#include "ModbusRegMapModel.h"
+#include "SensorFieldAddressMapModel.h"
 
-ModbusRegMapModel::ModbusRegMapModel()
+SensorFieldAddressMapModel::SensorFieldAddressMapModel()
 {
 	hexadecimal = false;
 	relativeOffset = false;
 	units = OffsetUnits::Bytes;
 }
 
-ModbusRegMapModel::~ModbusRegMapModel()
+SensorFieldAddressMapModel::~SensorFieldAddressMapModel()
 {
 
 }
 
-void ModbusRegMapModel::setSensorModbusDescMap( QMap< QString, SensorModbusDesc >* sensorModbusDescMap )
+void SensorFieldAddressMapModel::setSensorUnfoldedDescMap( QMap< QString, SensorUnfoldedDesc >* descMap )
 {
-	descMap = sensorModbusDescMap;
+	this->descMap = descMap;
 }
 
-void ModbusRegMapModel::setHexadecimalOutput( bool enabled )
+void SensorFieldAddressMapModel::setHexadecimalOutput( bool enabled )
 {
 	hexadecimal = enabled;
 	dataChanged( index( 0, 1 ), index( items.size(), 1 ) );
 }
 
-void ModbusRegMapModel::setRelativeOffset( bool enabled )
+void SensorFieldAddressMapModel::setRelativeOffset( bool enabled )
 {
 	relativeOffset = enabled;
 	dataChanged( index( 0, 1 ), index( items.size(), 1 ) );
 }
 
-void ModbusRegMapModel::setDisplayOffsetUnits( OffsetUnits units )
+void SensorFieldAddressMapModel::setDisplayOffsetUnits( OffsetUnits units )
 {
 	this->units = units;
 	dataChanged( index( 0, 1 ), index( items.size(), 1 ) );
 }
 
-void ModbusRegMapModel::appendSensor( QString name, QString sensorTypeName, quint32 offset )
+void SensorFieldAddressMapModel::appendSensor( QString name, QString sensorTypeName, quint32 offset )
 {
 	if( !descMap->contains( sensorTypeName ) )
 		return;
@@ -46,14 +46,14 @@ void ModbusRegMapModel::appendSensor( QString name, QString sensorTypeName, quin
 	endInsertRows();*/
 }
 
-void ModbusRegMapModel::resetData()
+void SensorFieldAddressMapModel::resetData()
 {
 	beginResetModel();
 	items.clear();
 	endResetModel();
 }
 
-QVariant ModbusRegMapModel::data( const QModelIndex &index, int role ) const
+QVariant SensorFieldAddressMapModel::data( const QModelIndex &index, int role ) const
 {
 	if( !index.isValid() || role != Qt::DisplayRole && role != Qt::EditRole )
 		return QVariant();
@@ -88,13 +88,13 @@ QVariant ModbusRegMapModel::data( const QModelIndex &index, int role ) const
 		if( index.internalId() == ( quintptr )-1 )
 			return QString();
 		const auto type = descMap->value( items.at( ( int )index.internalId() ).sensorTypeName ).elementType( index.row() );
-		return SensorModbusDesc::toString( type ).toLower();
+		return SensorUnfoldedDesc::toString( type ).toLower();
 	}
 
 	return QVariant();
 }
 
-QVariant ModbusRegMapModel::headerData( int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole */ ) const
+QVariant SensorFieldAddressMapModel::headerData( int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole */ ) const
 {
 	if( orientation == Qt::Horizontal && role == Qt::DisplayRole )
 	{
@@ -109,7 +109,7 @@ QVariant ModbusRegMapModel::headerData( int section, Qt::Orientation orientation
 	return QVariant();
 }
 
-QModelIndex ModbusRegMapModel::index( int row, int column, const QModelIndex &parent /*= QModelIndex() */ ) const
+QModelIndex SensorFieldAddressMapModel::index( int row, int column, const QModelIndex &parent /*= QModelIndex() */ ) const
 {
 	if( !parent.isValid() )
 	{
@@ -126,14 +126,14 @@ QModelIndex ModbusRegMapModel::index( int row, int column, const QModelIndex &pa
 		return QModelIndex();
 }
 
-QModelIndex ModbusRegMapModel::parent( const QModelIndex &index ) const
+QModelIndex SensorFieldAddressMapModel::parent( const QModelIndex &index ) const
 {
 	if( !index.isValid() || index.internalId() == ( quintptr )-1 )
 		return QModelIndex();
 	return createIndex( ( int )index.internalId(), 0, ( quintptr )-1 );
 }
 
-int ModbusRegMapModel::rowCount( const QModelIndex &parent /*= QModelIndex() */ ) const
+int SensorFieldAddressMapModel::rowCount( const QModelIndex &parent /*= QModelIndex() */ ) const
 {
 	if( !parent.isValid() )
 		return items.size();
@@ -142,42 +142,42 @@ int ModbusRegMapModel::rowCount( const QModelIndex &parent /*= QModelIndex() */ 
 	return 0;
 }
 
-int ModbusRegMapModel::columnCount( const QModelIndex &parent /*= QModelIndex() */ ) const
+int SensorFieldAddressMapModel::columnCount( const QModelIndex &parent /*= QModelIndex() */ ) const
 {
 	return 3;
 }
 
-Qt::ItemFlags ModbusRegMapModel::flags( const QModelIndex &index ) const
+Qt::ItemFlags SensorFieldAddressMapModel::flags( const QModelIndex &index ) const
 {
 	return QAbstractItemModel::flags( index );
 }
 
-bool ModbusRegMapModel::setData( const QModelIndex &index, const QVariant &value, int role /*= Qt::EditRole */ )
+bool SensorFieldAddressMapModel::setData( const QModelIndex &index, const QVariant &value, int role /*= Qt::EditRole */ )
 {
 	return false;
 }
 
-bool ModbusRegMapModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant &value, int role /*= Qt::EditRole */ )
+bool SensorFieldAddressMapModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant &value, int role /*= Qt::EditRole */ )
 {
 	return false;
 }
 
-bool ModbusRegMapModel::insertColumns( int position, int columns, const QModelIndex &parent /*= QModelIndex() */ )
+bool SensorFieldAddressMapModel::insertColumns( int position, int columns, const QModelIndex &parent /*= QModelIndex() */ )
 {
 	return false;
 }
 
-bool ModbusRegMapModel::removeColumns( int position, int columns, const QModelIndex &parent /*= QModelIndex() */ )
+bool SensorFieldAddressMapModel::removeColumns( int position, int columns, const QModelIndex &parent /*= QModelIndex() */ )
 {
 	return false;
 }
 
-bool ModbusRegMapModel::insertRows( int position, int rows, const QModelIndex &parent /*= QModelIndex() */ )
+bool SensorFieldAddressMapModel::insertRows( int position, int rows, const QModelIndex &parent /*= QModelIndex() */ )
 {
 	return false;
 }
 
-bool ModbusRegMapModel::removeRows( int position, int rows, const QModelIndex &parent /*= QModelIndex() */ )
+bool SensorFieldAddressMapModel::removeRows( int position, int rows, const QModelIndex &parent /*= QModelIndex() */ )
 {
 	return false;
 }

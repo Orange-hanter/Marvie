@@ -13,7 +13,7 @@
 #include "VPortOverIpModel.h"
 #include "VPortsOverIpDelegate.h"
 #include "MonitoringDataModel.h"
-#include "ModbusRegMapModel.h"
+#include "SensorFieldAddressMapModel.h"
 #include "MonitoringLog.h"
 #include "SynchronizationWindow.h"
 
@@ -145,8 +145,8 @@ private:
 	} xmlMessageHandler;
 	
 	QMap< QString, SensorDesc > sensorDescMap;
-	QMap< QString, SensorModbusDesc > sensorModbusDescMap;
-	ModbusRegMapModel modbusRegMapModel;
+	QMap< QString, SensorUnfoldedDesc > sensorUnfoldedDescMap;
+	SensorFieldAddressMapModel sensorFieldAddressMapModel;
 
 	QVector< QString > vPorts, loadedXmlSensors;
 

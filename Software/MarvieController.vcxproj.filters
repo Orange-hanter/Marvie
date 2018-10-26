@@ -117,10 +117,10 @@
     <ClCompile Include="SensorDescription.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SensorModbusDesc.cpp">
+    <ClCompile Include="SensorFieldAddressMapModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ModbusRegMapModel.cpp">
+    <ClCompile Include="SensorUnfoldedDesc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -158,7 +158,7 @@
     <QtMoc Include="SynchronizationWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="ModbusRegMapModel.h">
+    <QtMoc Include="SensorFieldAddressMapModel.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -206,7 +206,7 @@
     <ClInclude Include="SensorDescription.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SensorModbusDesc.h">
+    <ClInclude Include="SensorUnfoldedDesc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

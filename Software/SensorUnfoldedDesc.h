@@ -2,13 +2,13 @@
 
 #include <QStringList>
 
-class SensorModbusDesc
+class SensorUnfoldedDesc
 {
 public:
-	enum class Type { Char, Int8, UInt8, Int16, UInt16, Int32, UInt32, Int64, UInt64, Float, Double, DateTime };
+	enum class Type { Char, Int8, Uint8, Int16, Uint16, Int32, Uint32, Int64, Uint64, Float, Double, DateTime };
 
-	SensorModbusDesc();
-	~SensorModbusDesc();
+	SensorUnfoldedDesc();
+	~SensorUnfoldedDesc();
 
 	void addElement( QString name, quint32 offset, Type type );
 	int elementCount() const;
