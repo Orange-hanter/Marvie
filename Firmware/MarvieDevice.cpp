@@ -1306,6 +1306,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 				tcpModbusRtuServer->setFrameType( ModbusDevice::FrameType::Rtu );
 				tcpModbusRtuServer->setSlaveHandler( this );
 				tcpModbusRtuServer->setPort( modbusRtuServerPort );
+				tcpModbusRtuServer->setMaxClientsCount( 4 );
 				tcpModbusRtuServer->startServer();
 			}
 			if( modbusAsciiServerPort )
@@ -1314,6 +1315,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 				tcpModbusAsciiServer->setFrameType( ModbusDevice::FrameType::Ascii );
 				tcpModbusAsciiServer->setSlaveHandler( this );
 				tcpModbusAsciiServer->setPort( modbusAsciiServerPort );
+				tcpModbusAsciiServer->setMaxClientsCount( 4 );
 				tcpModbusAsciiServer->startServer();
 			}
 			if( modbusIpServerPort )
@@ -1322,6 +1324,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 				tcpModbusIpServer->setFrameType( ModbusDevice::FrameType::Ip );
 				tcpModbusIpServer->setSlaveHandler( this );
 				tcpModbusIpServer->setPort( modbusIpServerPort );
+				tcpModbusIpServer->setMaxClientsCount( 4 );
 				tcpModbusIpServer->startServer();
 			}
 		}
@@ -2117,9 +2120,9 @@ ModbusPotato::modbus_exception_code::modbus_exception_code MarvieDevice::read_in
 		for( ; address < analogInputRegBegin && count; address++, count-- )
 		{
 			if( address == digitInputRegBegin )
-				*result++ = ( ( uint16_t* )digitInputs )[0];
+				*result++ = ( ( uint16_t* )&digitInputs )[0];
 			else if( address == digitInputRegBegin + 1 )
-				*result++ = ( ( uint16_t* )digitInputs )[1];
+				*result++ = ( ( uint16_t* )&digitInputs )[1];
 			else
 				*result++ = 0;
 		}

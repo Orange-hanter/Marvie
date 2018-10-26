@@ -25,9 +25,16 @@ public:
 	static NanoList< SensorTypeDesc >::Iterator endSensorsList();
 	static SensorService* instance();
 
+	inline bool contains( const char* sensorName )
+	{
+		return findByName( sensorName ) != nullptr;
+	}
 	inline const SensorTypeDesc* sensorTypeDesc( const char* sensorName )
 	{
-		return &findByName( sensorName )->value;
+		const auto node = findByName( sensorName );
+		if( node )
+			return &node->value;
+		return nullptr;
 	}
 	inline AbstractSensor::Type sensorType( const char* sensorName )
 	{

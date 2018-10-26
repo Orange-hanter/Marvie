@@ -38,6 +38,7 @@ public:
 			uint8_t date[4];        // Время и дата записи (ЧЧ ДД ММ ГГ)
 			uint8_t prev_date[4];   // Время и дата предыдущей записи( ЧЧ ДД ММ ГГ )
 			uint32_t TRab;          // время работы прибора при поданном питании
+			uint32_t reserved;
 			struct Ch
 			{
 				double intV;	    // Интегратор объема по каналу
@@ -72,7 +73,7 @@ public:
 	uint32_t sensorDataSize() final override;
 
 private:
-	SensorData::Error waitResponse();
+	SensorData::Error waitResponse( uint32_t size );
 	void parseTimerResponse();
 	void parseRamResponse( uint32_t ch );
 	template < typename T > uint8_t checksum( T, T ) const;

@@ -10,12 +10,15 @@ class ModbusRegMapModel : public QAbstractItemModel
 	Q_OBJECT
 
 public:
+	enum class OffsetUnits { Bytes, Words, DWords };
+
 	ModbusRegMapModel();
 	~ModbusRegMapModel();
 
 	void setSensorModbusDescMap( QMap< QString, SensorModbusDesc >* sensorModbusDescMap );
 	void setHexadecimalOutput( bool enabled );
 	void setRelativeOffset( bool enabled );
+	void setDisplayOffsetUnits( OffsetUnits units );
 
 	void appendSensor( QString name, QString sensorTypeName, quint32 offset );
 	void resetData();
@@ -48,4 +51,5 @@ private:
 	QList< Item > items;
 	QMap< QString, SensorModbusDesc >* descMap;
 	bool hexadecimal, relativeOffset;
+	OffsetUnits units;
 };

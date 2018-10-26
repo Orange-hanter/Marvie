@@ -4,6 +4,7 @@ ModbusRegMapModel::ModbusRegMapModel()
 {
 	hexadecimal = false;
 	relativeOffset = false;
+	units = OffsetUnits::Bytes;
 }
 
 ModbusRegMapModel::~ModbusRegMapModel()
@@ -25,6 +26,12 @@ void ModbusRegMapModel::setHexadecimalOutput( bool enabled )
 void ModbusRegMapModel::setRelativeOffset( bool enabled )
 {
 	relativeOffset = enabled;
+	dataChanged( index( 0, 1 ), index( items.size(), 1 ) );
+}
+
+void ModbusRegMapModel::setDisplayOffsetUnits( OffsetUnits units )
+{
+	this->units = units;
 	dataChanged( index( 0, 1 ), index( items.size(), 1 ) );
 }
 
@@ -68,6 +75,10 @@ QVariant ModbusRegMapModel::data( const QModelIndex &index, int role ) const
 			if( !relativeOffset )
 				offset += items.at( ( int )index.internalId() ).offset;
 		}
+		if( units == OffsetUnits::Words )
+			offset /= 2;
+		else if( units == OffsetUnits::DWords )
+			offset /= 4;
 		if( hexadecimal )
 			return QString( "0x" ) + QString( "%1" ).arg( offset, 0, 16 ).toUpper();
 		return QString( "%1" ).arg( offset );

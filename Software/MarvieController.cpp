@@ -212,7 +212,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 
 	modbusRegMapModel.setSensorModbusDescMap( &sensorModbusDescMap );
 	ui.modbusRegMapTreeView->setModel( &modbusRegMapModel );
-	ui.modbusRegMapTreeView->header()->resizeSection( 0, 240 );
+	ui.modbusRegMapTreeView->header()->resizeSection( 0, 228 );
 	ui.modbusRegMapTreeView->header()->resizeSection( 1, 85 );
 	ui.modbusRegMapTreeView->header()->resizeSection( 2, 75 );
 
@@ -261,6 +261,19 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	modbusRegMapMenu = new QMenu( this );
 	modbusRegMapMenu->addAction( "Expand all" );
 	modbusRegMapMenu->addAction( "Collapse all" );
+	modbusRegMapMenu->addSeparator()->setText( "Offset units" );
+	QActionGroup* offsetUnitsGroup = new QActionGroup( this );
+	offsetUnitsGroup->setExclusive( true );
+	QAction* byteOffsetAction = offsetUnitsGroup->addAction( "Bytes" );
+	QAction* wordOffsetAction = offsetUnitsGroup->addAction( "Words" );
+	QAction* dWordOffsetAction = offsetUnitsGroup->addAction( "DWords" );
+	byteOffsetAction->setCheckable( true );
+	byteOffsetAction->setChecked( true );
+	wordOffsetAction->setCheckable( true );
+	dWordOffsetAction->setCheckable( true );
+	modbusRegMapMenu->addAction( byteOffsetAction );
+	modbusRegMapMenu->addAction( wordOffsetAction );
+	modbusRegMapMenu->addAction( dWordOffsetAction );
 	modbusRegMapMenu->addSeparator();
 	modbusRegMapMenu->addAction( "Hexadecimal output" )->setCheckable( true );
 	modbusRegMapMenu->addAction( "Relative offset" )->setCheckable( true );
@@ -1127,7 +1140,7 @@ void MarvieController::sensorSettingsMenuActionTriggered( QAction* action )
 	else if( action->text() == "Create an address map" )
 	{
 		modbusRegMapModel.resetData();
-		quint32 offset = 600;
+		quint32 offset = 1200;
 		for( int i = 0; i < ui.sensorSettingsTreeWidget->topLevelItemCount(); ++i )
 		{
 			QString name = ui.sensorSettingsTreeWidget->topLevelItem( i )->data( 0, Qt::DisplayRole ).toString();
@@ -1150,6 +1163,12 @@ void MarvieController::modbusRegMapMenuActionTriggered( QAction* action )
 		ui.modbusRegMapTreeView->expandAll();
 	else if( action->text() == "Collapse all" )
 		ui.modbusRegMapTreeView->collapseAll();
+	if( action->text() == "Bytes" )
+		modbusRegMapModel.setDisplayOffsetUnits( ModbusRegMapModel::OffsetUnits::Bytes );
+	if( action->text() == "Words" )
+		modbusRegMapModel.setDisplayOffsetUnits( ModbusRegMapModel::OffsetUnits::Words );
+	if( action->text() == "DWords" )
+		modbusRegMapModel.setDisplayOffsetUnits( ModbusRegMapModel::OffsetUnits::DWords );
 	else if( action->text() == "Hexadecimal output" )
 		modbusRegMapModel.setHexadecimalOutput( action->isChecked() );
 	else if( action->text() == "Relative offset" )

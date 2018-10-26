@@ -287,6 +287,7 @@ void MonitoringDataItem::setValue( QVector< uint8_t > vect )
 {
 	_value.setValue( vect );
 	_type = ValueType::UInt8Array;
+	_valueArraySize = vect.size();
 }
 
 void MonitoringDataItem::setValue( QVector< int16_t > vect )
