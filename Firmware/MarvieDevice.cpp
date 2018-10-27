@@ -351,6 +351,8 @@ void MarvieDevice::mainThreadMain()
 						AbstractBRSensor* sensor = reader->nextUpdatedSensor();
 						while( sensor )
 						{
+							if( !sensor->sensorData()->isValid() )
+								sensors[sensor->userData()].dateTime = DateTimeService::currentDateTime();
 							sensors[sensor->userData()].updatedForMLink = true;
 							copySensorDataToModbusRegisters( sensor );
 							if( marvieLog && sensorLogEnabled )
@@ -361,6 +363,8 @@ void MarvieDevice::mainThreadMain()
 					else if( vPortBindings[i] == VPortBinding::Rs232 || vPortBindings[i] == VPortBinding::NetworkSocket )
 					{
 						AbstractBRSensor* sensor = static_cast< SingleBRSensorReader* >( brSensorReaders[i] )->nextSensor();
+						if( !sensor->sensorData()->isValid() )
+							sensors[sensor->userData()].dateTime = DateTimeService::currentDateTime();
 						sensors[sensor->userData()].updatedForMLink = true;
 						copySensorDataToModbusRegisters( sensor );
 						if( marvieLog && sensorLogEnabled )
@@ -1728,7 +1732,7 @@ void MarvieDevice::sendSensorDataM( uint32_t sensorId, MLinkServer::ComplexDataC
 	sensorData->lock();
 	if( sensorData->isValid() )
 	{
-		if( channel->open( MarviePackets::ComplexChannel::SensorDataChannel, nullptr, 0 ) )
+		if( sensorData->time().date().year() > 0 && channel->open( MarviePackets::ComplexChannel::SensorDataChannel, nullptr, 0 ) )
 		{
 			uint8_t header[sizeof( uint8_t ) + sizeof( uint8_t ) + sizeof( DateTime )];
 			header[0] = ( uint8_t )sensorId;
@@ -1756,7 +1760,7 @@ void MarvieDevice::sendSensorDataM( uint32_t sensorId, MLinkServer::ComplexDataC
 			break;
 		}
 		report.errorCode = sensorData->errorCode();
-		report.dateTime = sensorData->time();
+		report.dateTime = sensors[sensorId].dateTime;
 		mLinkServer->sendPacket( MarviePackets::Type::SensorErrorReportType, ( const uint8_t* )&report, sizeof( report ) );
 	}
 	sensorData->unlock();
