@@ -60,7 +60,8 @@ Tem104Sensor::Data* Tem104Sensor::readData()
 	uint8_t readTimerRequest[10] = { 0x55, address, uint8_t( ~address ), 0x0F, 0x01, 0x03, 0x02, 0x00, 0xFF, 0x42 };
 	readTimerRequest[9] = checksum( readTimerRequest, readTimerRequest + 9 );
 	io->write( readTimerRequest, sizeof( readTimerRequest ) );
-	returnIfError( waitResponse( 255 ), 1 );
+	auto err = waitResponse( 255 );
+	returnIfError( err, 1 );
 	parseTimerResponse();
 
 	// read integrated values
@@ -70,7 +71,8 @@ Tem104Sensor::Data* Tem104Sensor::readData()
 		uint8_t readRAMRequestCh[10] = { 0x55, address, uint8_t( ~address ), 0x0C, 0x01, 0x03, uint8_t( addr >> 8 ), uint8_t( addr ), 0x92, 0x42 };
 		readRAMRequestCh[9] = checksum( readRAMRequestCh, readRAMRequestCh + 9 );
 		io->write( readRAMRequestCh, sizeof( readRAMRequestCh ) );
-		returnIfError( waitResponse( 146 ), 2 + i );
+		auto err = waitResponse( 146 );
+		returnIfError( err, 2 + i );
 		parseRamResponse( i );
 	}
 
