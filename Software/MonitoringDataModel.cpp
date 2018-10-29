@@ -156,7 +156,7 @@ QVariant MonitoringDataModel::data( const QModelIndex &index, int role ) const
 		case MonitoringDataItem::ValueType::DoubleArray:
 			return printArray( v.value< QVector< double > >(), hexadecimal );
 		case MonitoringDataItem::ValueType::DateTime:
-			return v.toDateTime().toString( Qt::ISODate );
+			return v.toDateTime().toString( Qt::ISODate ).replace( "T", " " );
 		default:
 			return "";
 		}
