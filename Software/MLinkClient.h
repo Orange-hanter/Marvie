@@ -10,8 +10,8 @@ class MLinkClient : public QObject
 	Q_OBJECT
 
 public:
-	enum class State { Disconnected, Connecting, Connected, Disconnecting };
-	enum class Error { NoError, SequenceViolationError, RemoteHostClosedError, ResponseTimeoutError, IODeviceClosedError };
+	enum class State { Disconnected, Connecting, Authorizing, Connected, Disconnecting };
+	enum class Error { NoError, SequenceViolationError, AuthorizationError, RemoteHostClosedError, ResponseTimeoutError, IODeviceClosedError };
 
 	MLinkClient();
 	~MLinkClient();
@@ -20,6 +20,7 @@ public:
 	Error error() const;
 
 	void setIODevice( QIODevice* device );
+	void setAuthorizationData( QString accountName, QString accountPassword );
 	void connectToHost();
 	void disconnectFromHost();
 
@@ -45,7 +46,9 @@ private:
 	struct Header;
 	struct OutputCData;
 	void sendSynPacket();
+	void sendAuthAck();
 	void sendFinPacket();
+	void sendFinAckPacket();
 	Request complexDataBeginRequest( uint8_t id, QByteArray name, uint32_t size );
 	Request complexDataBeginAckRequest( uint8_t id, uint32_t g );
 	Request nextComplexDataPartRequest( uint8_t id, OutputCData& cdata );
@@ -55,7 +58,6 @@ private:
 	uint32_t MLinkClient::calcCrc( QByteArray& data );
 	void addCrc( QByteArray& data );
 	void closeLink( Error e );
-	void closeLink();
 
 private slots:
 	void processBytes();
@@ -63,18 +65,25 @@ private slots:
 	void bytesWritten();
 	void aboutToClose();
 	void timeout();
+	void pingTimeout();
 
 private:
-	enum PacketType { Syn, SynAck, Fin, FinAck, Ping, Pong, ComplexDataBegin, ComplexDataBeginAck, ComplexData, ComplexDataNext, ComplexDataNextAck, ComplexDataEnd, User };
+	enum PacketType { Syn, SynAck, Auth, AuthAck, Fin, FinAck, Ping, Pong, ComplexDataBegin, ComplexDataBeginAck, ComplexData, ComplexDataNext, ComplexDataNextAck, ComplexDataEnd, User };
+	enum
+	{
+		MaxPacketTransferInterval = 1500,
+		PingInterval = 1500, // must be <= MaxPacketTransferInterval
+		WaitAfterErrorInterval = 1000,
+	};
 	State _state;
 	Error _error;
 	QIODevice* device;
+	QString accountName, accountPassword;
 	uint16_t sqNumCounter;
 	uint16_t sqNumNext;
 	uint64_t r;
 	const uint32_t g;
-	bool pongWaiting;
-	QTimer timer;
+	QTimer timer, pingTimer;
 
 	struct Header
 	{

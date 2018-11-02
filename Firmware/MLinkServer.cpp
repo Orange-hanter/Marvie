@@ -166,10 +166,11 @@ MLinkServer::MLinkServer() : BaseDynamicThread( MLINK_STACK_SIZE )
 	linkState = State::Stopped;
 	linkError = Error::NoError;
 	device = nullptr;
-	callbacks = nullptr;	
+	integrityControlEnabled = true;
+	authCallback = nullptr;
+	cdcCallback = nullptr;	
 	sqNumCounter = sqNumNext = 0;
-	confirmedR = r = 0;
-	pongWaiting = false;
+	confirmedR = r = lastR = 0;
 	chThdQueueObjectInit( &stateWaitingQueue );
 	chThdQueueObjectInit( &packetWaitingQueue );
 	chMtxObjectInit( &ioMutex );
@@ -202,6 +203,20 @@ void MLinkServer::setIODevice( IODevice* device )
 	this->device = device;
 }
 
+void MLinkServer::setIntegrityControlEnabled( bool enabled )
+{
+	if( linkState != State::Stopped )
+		return;
+	this->integrityControlEnabled = enabled;
+}
+
+void MLinkServer::setAuthenticationCallback( AuthenticationCallback* callback )
+{
+	if( linkState != State::Stopped )
+		return;
+	authCallback = callback;
+}
+
 void MLinkServer::startListening( tprio_t prio )
 {
 	if( linkState != State::Stopped || !device || !device->isOpen() )
@@ -232,7 +247,7 @@ bool MLinkServer::waitForStateChanged( sysinterval_t timeout /*= TIME_INFINITE *
 {
 	msg_t msg = MSG_OK;
 	chSysLock();
-	if( linkState == State::Stopping || linkState == State::Listening )
+	if( linkState == State::Stopping || linkState == State::Listening || linkState == State::Authorizing )
 		msg = chThdEnqueueTimeoutS( &stateWaitingQueue, timeout );
 	chSysUnlock();
 
@@ -244,9 +259,9 @@ MLinkServer::ComplexDataChannel* MLinkServer::createComplexDataChannel()
 	return new ComplexDataChannel( this );
 }
 
-void MLinkServer::setComplexDataReceiveCallback( ComplexDataCallback* callbacks )
+void MLinkServer::setComplexDataReceiveCallback( ComplexDataCallback* callback )
 {
-	this->callbacks = callbacks;
+	this->cdcCallback = callback;
 }
 
 void MLinkServer::confirmSession()
@@ -350,20 +365,21 @@ EvtSource* MLinkServer::eventSource()
 void MLinkServer::main()
 {
 	parserState = ParserState::WaitHeader;
+	sqNumCounter = sqNumNext = 0;
 
 	EvtListener listener;
 	device->eventSource()->registerMaskWithFlags( &listener, InnerEventMask::IODeviceEventFlag, CHN_INPUT_AVAILABLE );
 	chEvtAddEvents( IODeviceEventFlag );
 	while( linkState != State::Stopping || r )
 	{
-		eventmask_t em = chEvtWaitAny( StopRequestFlag | TimeoutEventFlag | IODeviceEventFlag );
+		eventmask_t em = chEvtWaitAny( ALL_EVENTS );
 		if( em & StopRequestFlag )
 		{
 			if( !r )
 				break;
-			sendFin();
+			sendFin( r );
 			chSysLock();
-			chVTSetI( &timer, TIME_MS2I( 1000 ), timerCallback, this );
+			chVTSetI( &timer, TIME_MS2I( MaxPacketTransferInterval * 2 ), timerCallback, this );
 			chEvtGetAndClearEventsI( TimeoutEventFlag );
 			em &= ~TimeoutEventFlag;
 			chSysUnlock();
@@ -399,7 +415,7 @@ void MLinkServer::processNewBytes()
 
 			if( calcCrc( packetData, sizeof( Header ) + header->size ) != *reinterpret_cast< uint32_t* >( packetData + sizeof( Header ) + header->size ) ) // crc error
 				continue;
-			if( linkState == State::Connected )
+			if( linkState == State::Connected || linkState == State::Authorizing )
 			{
 				if( header->sqNum != sqNumNext++ ) // sequence violation
 					closeLink( Error::SequenceViolationError );
@@ -437,8 +453,7 @@ void MLinkServer::processNewPacket()
 	Header* header = reinterpret_cast< Header* >( packetData );
 	if( linkState == State::Connected )
 	{
-		pongWaiting = false;
-		chVTSet( &timer, TIME_MS2I( 600 ), timerCallback, this );
+		chVTSet( &timer, TIME_MS2I( MaxPacketTransferInterval * 2 ), timerCallback, this );
 		if( header->type >= PacketType::User )
 		{
 			if( packetBuffer.writeAvailable() < sizeof( header->size ) + sizeof( header->type ) + header->size )
@@ -462,14 +477,14 @@ void MLinkServer::processNewPacket()
 			switch( header->type )
 			{
 			case PacketType::ComplexData:
-				if( callbacks )
-					callbacks->newDataReceived( packetData[sizeof( Header )], packetData + sizeof( Header ) + sizeof( uint8_t ), header->size - 1 );
+				if( cdcCallback )
+					cdcCallback->newDataReceived( packetData[sizeof( Header )], packetData + sizeof( Header ) + sizeof( uint8_t ), header->size - 1 );
 				break;
 			case PacketType::ComplexDataNext:
 			{
 				volatile bool nextOk = true;
-				if( callbacks )
-					nextOk = callbacks->newDataReceived( packetData[sizeof( Header )], packetData + sizeof( Header ) + sizeof( uint8_t ), header->size - 1 );
+				if( cdcCallback )
+					nextOk = cdcCallback->newDataReceived( packetData[sizeof( Header )], packetData + sizeof( Header ) + sizeof( uint8_t ), header->size - 1 );
 				sendComplexDataNextAckM( packetData[sizeof( Header )], nextOk );
 				break;
 			}
@@ -489,8 +504,8 @@ void MLinkServer::processNewPacket()
 			{
 				packetData[sizeof( Header ) + header->size] = 0;
 				uint32_t g;
-				if( callbacks )
-					g = callbacks->onOpennig( packetData[sizeof( Header )], ( const char * )packetData + sizeof( Header ) + sizeof( uint8_t ) + sizeof( uint32_t ),
+				if( cdcCallback )
+					g = cdcCallback->onOpennig( packetData[sizeof( Header )], ( const char * )packetData + sizeof( Header ) + sizeof( uint8_t ) + sizeof( uint32_t ),
 											  *reinterpret_cast< uint32_t* >( packetData + sizeof( Header ) + sizeof( uint8_t ) ) );
 				else
 					g = 0;
@@ -505,13 +520,13 @@ void MLinkServer::processNewPacket()
 				cdcBResp = nullptr;
 				break;
 			case PacketType::ComplexDataEnd:
-				if( callbacks )
-					callbacks->onClosing( packetData[sizeof( Header )], packetData[sizeof( Header ) + sizeof( uint8_t )] );
+				if( cdcCallback )
+					cdcCallback->onClosing( packetData[sizeof( Header )], packetData[sizeof( Header ) + sizeof( uint8_t )] );
 				break;
 			case PacketType::Fin:
 				if( *reinterpret_cast< uint64_t* >( packetData + sizeof( Header ) ) != r )
 					break;
-				sendFinAckM();
+				sendFinAckM( r );
 				closeLinkM( Error::NoError );
 				break;
 			default:
@@ -526,19 +541,75 @@ void MLinkServer::processNewPacket()
 			chSysLock();
 			if( linkState == State::Listening )
 			{
-				linkState = State::Connected;
 				sqNumNext = 1;
-				r = *reinterpret_cast< uint64_t* >( packetData + sizeof( Header ) );
+				lastR = *reinterpret_cast< uint64_t* >( packetData + sizeof( Header ) );
 				packetBuffer.clear();
-				chVTSetI( &timer, TIME_MS2I( 600 ), timerCallback, this );
-				extEventSource.broadcastFlagsI( ( eventflags_t )Event::StateChanged );
-				chThdDequeueNextI( &stateWaitingQueue, MSG_OK );
-				chSchRescheduleS();
-				chSysUnlock();
-				sendSynAckM();
+
+				if( authCallback )
+				{
+					linkState = State::Authorizing;
+					chVTSetI( &timer, TIME_MS2I( MaxPacketTransferInterval * 2 ), timerCallback, this );
+					extEventSource.broadcastFlagsI( ( eventflags_t )Event::StateChanged );
+					chThdDequeueNextI( &stateWaitingQueue, MSG_OK );
+					chSchRescheduleS();
+					chSysUnlock();
+					sendAuthM();
+				}
+				else
+				{
+					linkState = State::Connected;
+					r = lastR;
+					chVTSetI( &timer, TIME_MS2I( MaxPacketTransferInterval * 2 ), timerCallback, this );
+					extEventSource.broadcastFlagsI( ( eventflags_t )Event::StateChanged );
+					chThdDequeueNextI( &stateWaitingQueue, MSG_OK );
+					chSchRescheduleS();
+					chSysUnlock();
+					sendSynAckM();
+				}
 			}
 			else
 				chSysUnlock();
+		}
+	}
+	else if( linkState == State::Authorizing )
+	{
+		chVTSet( &timer, TIME_MS2I( MaxPacketTransferInterval * 2 ), timerCallback, this );
+		if( header->type == PacketType::AuthAck )
+		{
+			char* accountName = reinterpret_cast< char* >( packetData + sizeof( Header ) );
+			char* password = accountName + strlen( accountName ) + 1;
+			if( authCallback->authenticate( accountName, password ) )
+			{
+				chSysLock();
+				if( linkState == State::Authorizing )
+				{
+					linkState = State::Connected;
+					r = lastR;
+
+					extEventSource.broadcastFlagsI( ( eventflags_t )Event::StateChanged );
+					chThdDequeueNextI( &stateWaitingQueue, MSG_OK );
+					chSchRescheduleS();
+					chSysUnlock();
+					sendSynAckM();
+				}
+				else
+					chSysUnlock();
+			}
+			else
+				sendFinM( lastR );
+		}
+		else if( header->type == PacketType::Fin )
+		{
+			if( *reinterpret_cast< uint64_t* >( packetData + sizeof( Header ) ) == lastR )
+			{
+				sendFinAckM( lastR );
+				closeLinkM( Error::NoError );
+			}
+		}
+		if( header->type == PacketType::FinAck )
+		{
+			if( *reinterpret_cast< uint64_t* >( packetData + sizeof( Header ) ) == lastR )
+				closeLinkM( Error::AuthenticationError );
 		}
 	}
 	else if( linkState == State::Stopping )
@@ -552,31 +623,35 @@ void MLinkServer::processNewPacket()
 	chMtxUnlock( &ioMutex );
 }
 
-void MLinkServer::sendFin()
+void MLinkServer::sendFin( uint64_t ackR )
 {
 	chMtxLock( &ioMutex );
+	sendFinM( ackR );
+	chMtxUnlock( &ioMutex );
+}
+
+void MLinkServer::sendFinM( uint64_t ackR )
+{
 	Header* header = reinterpret_cast< Header* >( packetData );
 	header->preamble = MLINK_PREAMBLE;
 	header->size = sizeof( uint64_t );
 	header->sqNum = sqNumCounter++;
 	header->type = PacketType::Fin;
-	*reinterpret_cast< uint64_t* >( packetData + sizeof( Header ) ) = r;
+	*reinterpret_cast< uint64_t* >( packetData + sizeof( Header ) ) = ackR;
 	*reinterpret_cast< uint32_t* >( packetData + sizeof( Header ) + sizeof( uint64_t ) ) = calcCrc( packetData, sizeof( Header ) + sizeof( uint64_t ) );
 	device->write( packetData, sizeof( Header ) + sizeof( uint64_t ) + sizeof( uint32_t ), TIME_INFINITE );
-	chMtxUnlock( &ioMutex );
 }
 
-void MLinkServer::sendPing()
+void MLinkServer::sendFinAckM( uint64_t ackR )
 {
-	chMtxLock( &ioMutex );
 	Header* header = reinterpret_cast< Header* >( packetData );
 	header->preamble = MLINK_PREAMBLE;
-	header->size = 0;
+	header->size = sizeof( uint64_t );
 	header->sqNum = sqNumCounter++;
-	header->type = PacketType::Ping;
-	*reinterpret_cast< uint32_t* >( packetData + sizeof( Header ) ) = calcCrc( packetData, sizeof( Header ) );
-	device->write( packetData, sizeof( Header ) + sizeof( uint32_t ), TIME_INFINITE );
-	chMtxUnlock( &ioMutex );
+	header->type = PacketType::FinAck;
+	*reinterpret_cast< uint64_t* >( packetData + sizeof( Header ) ) = ackR;
+	*reinterpret_cast< uint32_t* >( packetData + sizeof( Header ) + sizeof( uint64_t ) ) = calcCrc( packetData, sizeof( Header ) + sizeof( uint64_t ) );
+	device->write( packetData, sizeof( Header ) + sizeof( uint64_t ) + sizeof( uint32_t ), TIME_INFINITE );
 }
 
 void MLinkServer::sendPongM()
@@ -602,16 +677,15 @@ void MLinkServer::sendSynAckM()
 	device->write( packetData, sizeof( Header ) + sizeof( uint64_t ) + sizeof( uint32_t ), TIME_INFINITE );
 }
 
-void MLinkServer::sendFinAckM()
+void MLinkServer::sendAuthM()
 {
 	Header* header = reinterpret_cast< Header* >( packetData );
 	header->preamble = MLINK_PREAMBLE;
-	header->size = sizeof( uint64_t );
+	header->size = 0;
 	header->sqNum = sqNumCounter++;
-	header->type = PacketType::FinAck;
-	*reinterpret_cast< uint64_t* >( packetData + sizeof( Header ) ) = r;
-	*reinterpret_cast< uint32_t* >( packetData + sizeof( Header ) + sizeof( uint64_t ) ) = calcCrc( packetData, sizeof( Header ) + sizeof( uint64_t ) );
-	device->write( packetData, sizeof( Header ) + sizeof( uint64_t ) + sizeof( uint32_t ), TIME_INFINITE );
+	header->type = PacketType::Auth;
+	*reinterpret_cast< uint32_t* >( packetData + sizeof( Header ) ) = calcCrc( packetData, sizeof( Header ) );
+	device->write( packetData, sizeof( Header ) + sizeof( uint32_t ), TIME_INFINITE );
 }
 
 void MLinkServer::sendComplexDataBeginAckM( uint8_t id, uint32_t g )
@@ -642,17 +716,8 @@ void MLinkServer::sendComplexDataNextAckM( uint8_t id, bool nextOk )
 
 void MLinkServer::timeout()
 {
-	if( linkState == State::Connected )
-	{
-		if( pongWaiting )
-			closeLink( Error::ResponseTimeoutError );
-		else
-		{
-			pongWaiting = true;			
-			sendPing();
-			chVTSet( &timer, TIME_MS2I( 200 ), timerCallback, this );
-		}
-	}
+	if( linkState == State::Connected || linkState == State::Authorizing )
+		closeLink( Error::ResponseTimeoutError );
 	else if( linkState == State::Stopping )
 		closeLink( Error::NoError );
 }
@@ -676,7 +741,6 @@ void MLinkServer::closeLinkM( Error err )
 	chSysUnlock();
 	sqNumCounter = sqNumNext = 0;
 	r = 0;
-	pongWaiting = false;
 	if( cdcBResp )
 	{
 		chBSemReset( &cdcBResp->sem, true );

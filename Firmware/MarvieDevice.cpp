@@ -179,6 +179,7 @@ MarvieDevice::MarvieDevice() : settingsBackupRegs( sizeof( SettingsBackup ) / 4 
 	EthernetThread::instance()->startThread( EthernetThreadPrio );
 
 	mLinkServer = new MLinkServer;
+	mLinkServer->setAuthenticationCallback( this );
 	mLinkServer->setComplexDataReceiveCallback( this );
 	//mLinkServer->setIODevice( comPorts[MarviePlatform::mLinkComPort] );
 }
@@ -595,16 +596,15 @@ void MarvieDevice::adInputsReadThreadMain()
 
 void MarvieDevice::mLinkServerHandlerThreadMain()
 {
-	EvtListener mLinkListener, cpuUsageMonitorListener, ethThreadListener;
+	EvtListener mLinkListener, ethThreadListener, tcpServerListener, tcpSocketListener, cpuUsageMonitorListener;
 	mLinkServer->eventSource()->registerMask( &mLinkListener, MLinkThreadEvent::MLinkEvent );
-	CpuUsageMonitor::instance()->eventSource()->registerMask( &cpuUsageMonitorListener, MLinkThreadEvent::CpuUsageMonitorEvent );
 	EthernetThread::instance()->eventSource()->registerMask( &ethThreadListener, MLinkThreadEvent::EthernetEvent );
+	CpuUsageMonitor::instance()->eventSource()->registerMask( &cpuUsageMonitorListener, MLinkThreadEvent::CpuUsageMonitorEvent );
 
-	UdpSocket* socket = new UdpSocket;
-	auto conf = EthernetThread::instance()->currentConfig();
-	socket->bind( conf.ipAddress, 16021 );
-	socket->connect( conf.gateway, 16032 );
-	mLinkServer->setIODevice( socket );
+	TcpServer* tcpServer = new TcpServer;
+	tcpServer->eventSource()->registerMask( &tcpServerListener, MLinkThreadEvent::MLinkTcpServerEvent );
+	tcpServer->listen( 16021 );
+	TcpSocket* mLinkSocket = nullptr;
 
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
@@ -616,16 +616,37 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 	while( true )
 	{
 		eventmask_t em = chEvtWaitAny( ALL_EVENTS );
-		if( em & MLinkThreadEvent::EthernetEvent )
+		if( em & MLinkThreadEvent::MLinkTcpSocketEvent )
 		{
-			if( ethThreadListener.getAndClearFlags() & EthernetThread::Event::NetworkAddressChanged )
+			if( mLinkSocket && !mLinkSocket->isOpen() )
 			{
 				mLinkServer->stopListening();
 				mLinkServer->waitForStateChanged();
-				auto conf = EthernetThread::instance()->currentConfig();
-				socket->bind( conf.ipAddress, 16021 );
-				socket->connect( conf.gateway, 16032 );
-				mLinkServer->startListening( NORMALPRIO );
+				mLinkServer->setIODevice( nullptr );
+
+				mLinkSocket->eventSource()->unregister( &tcpSocketListener );
+				delete mLinkSocket;
+				mLinkSocket = nullptr;
+				chEvtGetAndClearEvents( MLinkThreadEvent::MLinkTcpSocketEvent );
+			}
+		}
+		if( em & MLinkThreadEvent::MLinkTcpServerEvent )
+		{
+			TcpSocket* socket;
+			while( ( socket = tcpServer->nextPendingConnection() ) != nullptr )
+			{
+				if( mLinkSocket )
+				{
+					socket->disconnect();
+					delete socket;
+				}
+				else
+				{
+					mLinkSocket = socket;
+					mLinkSocket->eventSource()->registerMask( &tcpSocketListener, MLinkThreadEvent::MLinkTcpSocketEvent );
+					mLinkServer->setIODevice( mLinkSocket );
+					mLinkServer->startListening( NORMALPRIO );
+				}
 			}
 		}
 		if( em & MLinkThreadEvent::MLinkEvent )
@@ -643,11 +664,31 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 				else
 					chVTReset( &timer );
 			}
+			if( flags & ( eventflags_t )MLinkServer::Event::Error )
+			{
+				mLinkServer->stopListening();
+				mLinkServer->waitForStateChanged();
+				mLinkServer->setIODevice( nullptr );
+
+				if( mLinkSocket )
+				{
+					mLinkSocket->eventSource()->unregister( &tcpSocketListener );
+					mLinkSocket->disconnect();
+					delete mLinkSocket;
+					mLinkSocket = nullptr;
+					chEvtGetAndClearEvents( MLinkThreadEvent::MLinkTcpSocketEvent );
+				}
+			}
 			if( flags & ( eventflags_t )MLinkServer::Event::NewPacketAvailable )
 			{
-				uint8_t type;
-				uint32_t size = mLinkServer->readPacket( &type, mLinkBuffer, sizeof( mLinkBuffer ) );
-				mLinkProcessNewPacket( type, mLinkBuffer, size );
+				while( true )
+				{
+					uint8_t type;
+					uint32_t size = mLinkServer->readPacket( &type, mLinkBuffer, sizeof( mLinkBuffer ) );
+					if( type == 255 )
+						break;
+					mLinkProcessNewPacket( type, mLinkBuffer, size );
+				}
 			}
 		}
 		if( mLinkServer->state() != MLinkServer::State::Connected )
@@ -1452,6 +1493,11 @@ uint32_t MarvieDevice::digitSignals( uint32_t block )
 	if( block == 0 )
 		return digitInputs;
 	return 0;
+}
+
+bool MarvieDevice::authenticate( char* accountName, char* password )
+{
+	return strcmp( accountName, "admin" ) == 0 && strcmp( password, "admin" ) == 0;
 }
 
 uint32_t MarvieDevice::onOpennig( uint8_t id, const char* name, uint32_t size )

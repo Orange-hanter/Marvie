@@ -75,9 +75,6 @@
     <ClCompile Include="Crc32SW.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MLinkClient.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ComPortsConfigWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -123,6 +120,12 @@
     <ClCompile Include="SensorUnfoldedDesc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AccountWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MLinkClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MarvieController.h">
@@ -136,9 +139,6 @@
     </QtMoc>
     <QtMoc Include="thirdparty\QCustomPlot\qcustomplot.h">
       <Filter>Header Files\thirdparty\QCustomPlot</Filter>
-    </QtMoc>
-    <QtMoc Include="MLinkClient.h">
-      <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ComPortsConfigWidget.h">
       <Filter>Header Files</Filter>
@@ -161,6 +161,12 @@
     <QtMoc Include="SensorFieldAddressMapModel.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="AccountWindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="MLinkClient.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="MarvieController.qrc">
@@ -175,6 +181,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="SdStatistics.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="AccountWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

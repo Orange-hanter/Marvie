@@ -2,6 +2,7 @@
 
 #include "FramelessWindow/FramelessWindow.h"
 #include "MLinkClient.h"
+#include "AccountWindow.h"
 #include <QList>
 #include <QVector>
 #include <QDomDocument>
@@ -39,6 +40,8 @@ private slots:
 
 	void nextInterfaceButtonClicked();
 	void connectButtonClicked();
+	void logInButtonClicked( QString accountName, QString accountPassword );
+	void logOutButtonClicked( QString accountName );
 
 	void deviceRestartButtonClicked();
 	void startVPortsButtonClicked();
@@ -96,6 +99,7 @@ private slots:
 	void exportModbusRegMapToCsvButtonClicked();
 
 	void mlinkStateChanged( MLinkClient::State );
+	void mlinkError( MLinkClient::Error );
 	void mlinkNewPacketAvailable( uint8_t type, QByteArray data );
 	void mlinkNewComplexPacketAvailable( uint8_t channelId, QString name, QByteArray data );
 	void mlinkComplexDataSendingProgress( uint8_t channelId, QString name, float progress );
@@ -135,6 +139,7 @@ private:
 private:
 	MLinkClient mlink;
 	QIODevice* mlinkIODevice;
+	AccountWindow* accountWindow;
 
 	class XmlMessageHandler : public QAbstractMessageHandler
 	{

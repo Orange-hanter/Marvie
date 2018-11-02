@@ -911,7 +911,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
     </layout>
    </item>
    <item>
-    <widget class="Line" name="lineForFramelessWindow_3">
+    <widget class="Line" name="mainMenuEndLine">
      <property name="maximumSize">
       <size>
        <width>16777215</width>
@@ -3653,7 +3653,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>397</width>
+                <width>360</width>
                 <height>677</height>
                </rect>
               </property>

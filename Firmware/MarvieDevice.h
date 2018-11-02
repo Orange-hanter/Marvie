@@ -31,7 +31,7 @@
 #define COM_USART_OUTPUT_BUFFER_SIZE  1024
 #define GSM_MODEM_OUTPUT_BUFFER       4096
 
-class MarvieDevice : private AbstractSRSensor::SignalProvider, private MLinkServer::ComplexDataCallback, private ModbusPotato::ISlaveHandler
+class MarvieDevice : private AbstractSRSensor::SignalProvider, private MLinkServer::ComplexDataCallback, private MLinkServer::AuthenticationCallback, private ModbusPotato::ISlaveHandler
 {
 	MarvieDevice();
 
@@ -62,6 +62,8 @@ private:
 	float analogSignal( uint32_t block, uint32_t line ) final override;
 	bool digitSignal( uint32_t block, uint32_t line ) final override;
 	uint32_t digitSignals( uint32_t block ) final override;
+
+	bool authenticate( char* accountName, char* password ) final override;
 
 	uint32_t onOpennig( uint8_t id, const char* name, uint32_t size ) final override;
 	bool newDataReceived( uint8_t id, const uint8_t* data, uint32_t size ) final override;
@@ -163,7 +165,7 @@ private:
 				uint32_t pc;
 				uint32_t lr;
 			} failure;
-			struct SystemHaltMessage 
+			struct SystemHaltMessage
 			{
 				char msg[16];
 			} message;
@@ -237,7 +239,7 @@ private:
 	uint64_t monitoringLogSize;
 
 	// MLink thread resources ================================================================
-	enum MLinkThreadEvent : eventmask_t { MLinkEvent = 1, CpuUsageMonitorEvent = 2, MemoryLoadEvent = 4, EthernetEvent = 8, GsmModemEvent = 16, ConfigChangedEvent = 32, ConfigResetEvent = 64, SensorUpdateEvent = 128, StatusUpdateEvent = 256 };
+	enum MLinkThreadEvent : eventmask_t { MLinkEvent = 1, CpuUsageMonitorEvent = 2, MemoryLoadEvent = 4, EthernetEvent = 8, MLinkTcpServerEvent = 16, MLinkTcpSocketEvent = 32, GsmModemEvent = 64, ConfigChangedEvent = 128, ConfigResetEvent = 256, SensorUpdateEvent = 512, StatusUpdateEvent = 1024 };
 	MLinkServer* mLinkServer;
 	uint8_t mLinkBuffer[255];
 	Mutex datFilesMutex;
