@@ -21,6 +21,9 @@ public:
 	SocketState state() override;
 	SocketError socketError() const override;
 
+	void setSocketOption( SocketOption option, int value ) override;
+	int socketOption( SocketOption option ) override;
+
 	bool open() override;
 	bool isOpen() const override;
 	void reset() override;

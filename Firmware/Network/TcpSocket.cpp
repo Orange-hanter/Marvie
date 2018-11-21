@@ -53,6 +53,16 @@ SocketError TcpSocket::socketError() const
 	return LwipSocketPrivate::socketError();
 }
 
+void TcpSocket::setSocketOption( SocketOption option, int value )
+{
+	LwipSocketPrivate::setSocketOption( option, value );
+}
+
+int TcpSocket::socketOption( SocketOption option )
+{
+	return LwipSocketPrivate::socketOption( option );
+}
+
 bool TcpSocket::open()
 {
 	return false;

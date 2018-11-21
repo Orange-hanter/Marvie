@@ -6,6 +6,7 @@
 enum class SocketType { Unknown, Udp, Tcp };
 enum class SocketState { Unconnected, Connecting, Connected, Bound, Closing };
 enum class SocketError { NoError, ConnectionRefusedError, RemoteHostClosedError, HostNotFoundError, SocketResourceError, SocketTimeoutError, DatagramTooLargeError, NetworkError, AddressInUseError, UnknownSocketError, IllegalArgument };
+enum class SocketOption { LowDelay, KeepAlive };
 enum class SocketEventFlag { Error = 1, StateChanged = 2, InputAvailable = 4, OutputEmpty = 8 };
 
 class AbstractSocket : public IODevice
@@ -22,6 +23,9 @@ public:
 	virtual SocketType type() = 0;
 	virtual SocketState state() = 0;
 	virtual SocketError socketError() const = 0;
+
+	virtual void setSocketOption( SocketOption option, int value );
+	virtual int socketOption( SocketOption option );
 
 public:
 	void* userData;

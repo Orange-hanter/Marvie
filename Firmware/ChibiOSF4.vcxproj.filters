@@ -2559,6 +2559,9 @@
     <ClCompile Include="Drivers\Sensors\Tem05MSensor.cpp">
       <Filter>Source files\Drivers\Sensors</Filter>
     </ClCompile>
+    <ClCompile Include="Network\AbstractSocket.cpp">
+      <Filter>Source files\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mcuconf.h">

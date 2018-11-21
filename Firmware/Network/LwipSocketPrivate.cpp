@@ -345,6 +345,41 @@ bool LwipSocketPrivate::waitForReadAvailable( uint32_t size, sysinterval_t timeo
 	return size <= readAvailable();
 }
 
+void LwipSocketPrivate::setSocketOption( SocketOption option, int value )
+{
+	if( con->type != NETCONN_TCP )
+		return;
+	switch( option )
+	{
+	case SocketOption::LowDelay:
+		if( value )
+			tcp_nagle_disable( con->pcb.tcp );
+		else
+			tcp_nagle_enable( con->pcb.tcp );
+		break;
+	case SocketOption::KeepAlive:
+		con->pcb.tcp->keep_idle = ( u32_t )( value );
+		break;
+	default:
+		break;
+	}
+}
+
+int LwipSocketPrivate::socketOption( SocketOption option )
+{
+	if( con->type != NETCONN_TCP )
+		return -1;
+	switch( option )
+	{
+	case SocketOption::LowDelay:
+		return tcp_nagle_disabled( con->pcb.tcp );
+	case SocketOption::KeepAlive:
+		return ( int )con->pcb.tcp->keep_idle;
+	default:
+		return -1;
+	}
+}
+
 uint32_t LwipSocketPrivate::takeNetbuf()
 {
 	if( netconn_recv( con, &lastNetbuf ) == ERR_OK )

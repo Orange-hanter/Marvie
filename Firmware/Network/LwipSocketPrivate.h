@@ -32,6 +32,9 @@ class LwipSocketPrivate
 	uint32_t readAvailable() const;	
 	bool waitForReadAvailable( uint32_t size, sysinterval_t timeout );
 
+	void setSocketOption( SocketOption option, int value );
+	int socketOption( SocketOption option );
+
 	uint32_t takeNetbuf();
 	void deleteFirstPBuf();
 	void catNetbuf();

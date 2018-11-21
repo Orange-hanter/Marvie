@@ -169,6 +169,7 @@
     <ClCompile Include="MLinkServer.cpp" />
     <ClCompile Include="NetworkSensorReader.cpp" />
     <ClCompile Include="Network\AbstractPppModem.cpp" />
+    <ClCompile Include="Network\AbstractSocket.cpp" />
     <ClCompile Include="Network\Modem.cpp" />
     <ClCompile Include="Network\AbstractTcpSocket.cpp" />
     <ClCompile Include="Network\AbstractUdpSocket.cpp" />
