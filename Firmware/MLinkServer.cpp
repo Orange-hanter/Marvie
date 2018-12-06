@@ -568,8 +568,10 @@ void MLinkServer::processNewPacketM()
 
 uint32_t MLinkServer::socketWriteM( const uint8_t* data, uint32_t size )
 {
-	socket->write( data, size, TIME_INFINITE );
+	uint32_t n = socket->write( data, size, TIME_INFINITE );
 	chVTSet( &pingTimer, TIME_MS2I( PingInterval ), pingTimerCallback, this );
+	
+	return n;
 }
 
 void MLinkServer::sendAuthAckM()

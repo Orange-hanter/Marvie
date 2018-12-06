@@ -162,7 +162,7 @@
           </KeyValue>
           <KeyValue>
             <Key>com.sysprogs.jlink.autoprogram</Key>
-            <Value>1</Value>
+            <Value />
           </KeyValue>
           <KeyValue>
             <Key>com.sysprogs.jlink.commands.beforeconnect</Key>

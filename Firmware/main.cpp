@@ -15,7 +15,6 @@
 #include "Tests/MarvieLogSystemTest.hpp"
 #include "Tests/PowerDownTest.hpp"
 #include "Tests/SdDataUploader.hpp"
-#include "Tests/PPPServerTest.hpp"
 #include "Tests/MLinkTest.hpp"
 #include "Tests/LwipEthernetTest.hpp"
 
