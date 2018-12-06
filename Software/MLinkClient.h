@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QIODevice>
 #include <QLinkedList>
+#include <QTcpSocket>
 #include <QTimer>
 #include <QMap>
 
@@ -11,7 +11,7 @@ class MLinkClient : public QObject
 
 public:
 	enum class State { Disconnected, Connecting, Authorizing, Connected, Disconnecting };
-	enum class Error { NoError, SequenceViolationError, AuthorizationError, RemoteHostClosedError, ResponseTimeoutError, IODeviceClosedError };
+	enum class Error { NoError, ClientInnerError, AuthenticationError, RemoteHostClosedError, ResponseTimeoutError };
 
 	MLinkClient();
 	~MLinkClient();
@@ -19,15 +19,14 @@ public:
 	State state() const;
 	Error error() const;
 
-	void setIODevice( QIODevice* device );
 	void setAuthorizationData( QString accountName, QString accountPassword );
-	void connectToHost();
+	void connectToHost( QHostAddress address );
 	void disconnectFromHost();
 
-	void sendPacket( uint8_t type, QByteArray data ); // 0 <= size <= 255
-	bool sendComplexData( uint8_t channelId, QByteArray data, QString name = QString() ); // 0 < size
-	bool cancelComplexDataSending( uint8_t channelId );
-	bool cancelComplexDataReceiving( uint8_t channelId );
+	void sendPacket( uint8_t type, QByteArray data ); // 0 <= size <= MSS
+	bool sendChannelData( uint8_t channel, QByteArray data, QString name = QString() ); // 0 < size
+	bool cancelChannelDataSending( uint8_t channel );
+	bool cancelChannelDataReceiving( uint8_t channel );
 
 signals:
 	void stateChanged( State state );
@@ -35,63 +34,63 @@ signals:
 	void connected();
 	void disconnected();
 	void newPacketAvailable( uint8_t type, QByteArray data );
-	void newComplexPacketAvailable( uint8_t channelId, QString name, QByteArray data );
-	void complexDataSendingProgress( uint8_t channelId, QString name, float progress );
-	void complexDataSendindCanceled( uint8_t channelId, QString name );
-	void complexDataReceivingProgress( uint8_t channelId, QString name, float progress );
-	void complexDataReceivingCanceled( uint8_t channelId, QString name );
+	void newChannelDataAvailable( uint8_t channel, QString name, QByteArray data );
+	void channelDataSendingProgress( uint8_t channel, QString name, float progress );
+	void channeDataReceivingProgress( uint8_t channel, QString name, float progress );
 
 private:
 	struct Request;
 	struct Header;
 	struct OutputCData;
-	void sendSynPacket();
-	void sendAuthAck();
-	void sendFinPacket();
-	void sendFinAckPacket();
-	Request complexDataBeginRequest( uint8_t id, QByteArray name, uint32_t size );
-	Request complexDataBeginAckRequest( uint8_t id, uint32_t g );
-	Request nextComplexDataPartRequest( uint8_t id, OutputCData& cdata );
-	Request complexDataEndRequest( uint8_t id, bool canceled );
+	void sendAuth();
+	Request openChannelRequest( uint8_t channel, uint32_t id, QByteArray name, uint32_t size );
+	Request nextDataChannelPartRequest( uint8_t channel, OutputCData& cdata );
+	Request closeDataChannelRequest( uint8_t channel, uint32_t id, bool canceled );
+	Request remoteCloseDataChannelRequest( uint8_t channel, uint32_t id );
 	void pushBackRequest( Request& req );
 	void pushFrontRequest( Request& req );
-	uint32_t MLinkClient::calcCrc( QByteArray& data );
-	void addCrc( QByteArray& data );
 	void closeLink( Error e );
 
 private slots:
 	void processBytes();
 	void processPacket( Header& header, QByteArray& packetData );
 	void bytesWritten();
-	void aboutToClose();
+	void socketConnected();
+	void socketDisconnected();
+	void socketError( QAbstractSocket::SocketError socketError );
 	void timeout();
 	void pingTimeout();
 
 private:
-	enum PacketType { Syn, SynAck, Auth, AuthAck, Fin, FinAck, Ping, Pong, ComplexDataBegin, ComplexDataBeginAck, ComplexData, ComplexDataNext, ComplexDataNextAck, ComplexDataEnd, User };
-	enum
-	{
-		MaxPacketTransferInterval = 1500,
-		PingInterval = 1500, // must be <= MaxPacketTransferInterval
-		WaitAfterErrorInterval = 1000,
-	};
-	State _state;
-	Error _error;
-	QIODevice* device;
-	QString accountName, accountPassword;
-	uint16_t sqNumCounter;
-	uint16_t sqNumNext;
-	uint64_t r;
-	const uint32_t g;
-	QTimer timer, pingTimer;
-
+	enum PacketType { Auth, AuthAck, AuthFail, IAmAlive, OpenChannel, ChannelData, CloseChannel, RemoteCloseChannel, User };
+#pragma pack( push, 1 )
 	struct Header
 	{
 		uint32_t preamble;
-		uint8_t size;
+		uint16_t size;
 		uint8_t type;
-		uint16_t sqNum;
 	};
+	struct ChannelHeader
+	{
+		uint32_t id;
+		uint8_t ch;
+	};
+#pragma pack( pop )
+	enum
+	{
+		MTU = 1400,
+		MSS = MTU - sizeof( Header ),
+		DataChannelMSS = MTU - sizeof( Header ) - sizeof( ChannelHeader ),
+		MaxPacketTransferInterval = 1500,
+		PingInterval = 500, // must be <= MaxPacketTransferInterval
+	};
+	State _state;
+	Error _error;
+	uint32_t idCounter;
+	QTcpSocket* socket;
+	QString accountName, accountPassword;
+	QTimer timer, pingTimer;
+	
 	struct Request
 	{
 		Request() { type = 0; }
@@ -100,20 +99,19 @@ private:
 	};
 	struct InputCData
 	{
-		InputCData() { size = 0; needCancel = false; }
-		uint32_t size;
+		InputCData() { id = size = 0; }
+		uint32_t id;
 		QString name;
+		uint32_t size;
 		QByteArray data;
-		bool needCancel;
 	};
 	struct OutputCData
 	{
-		OutputCData() { g = n = numWritten = 0; needCancel = false; }
+		OutputCData() { id = numWritten = 0; }
+		uint32_t id;
 		QByteArray name;
 		QByteArray data;
-		uint32_t g, n;
 		uint32_t numWritten;
-		bool needCancel;
 	};
 	QLinkedList< Request > reqList;
 	QMap< uint8_t, InputCData > inCDataMap;

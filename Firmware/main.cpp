@@ -15,6 +15,9 @@
 #include "Tests/MarvieLogSystemTest.hpp"
 #include "Tests/PowerDownTest.hpp"
 #include "Tests/SdDataUploader.hpp"
+#include "Tests/PPPServerTest.hpp"
+#include "Tests/MLinkTest.hpp"
+#include "Tests/LwipEthernetTest.hpp"
 
 #include <algorithm>
 
@@ -24,6 +27,12 @@ int main()
 		*( uint32_t* )i = 0;*/
 	halInit();
 	chSysInit();
+
+	/*tcpip_init( nullptr, nullptr );
+
+	ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );
+
+	PPPServerTest::test();*/
 
 	/*SdDataUploader::main();
 	while( true );*/
@@ -37,7 +46,7 @@ int main()
 	/*FileSystemTest::test();
 	while( true );*/
 
-	enum IWDGPrescaler
+	/*enum IWDGPrescaler
 	{
 		IWDGPrescaler4   = 0,
 		IWDGPrescaler8   = 1,
@@ -51,9 +60,32 @@ int main()
 	wdgConfig.pr = IWDGPrescaler256;
 	wdgConfig.rlr = 0x0FFF;
 	wdgStart( &WDGD1, &wdgConfig );
-	wdgReset( &WDGD1 );
+	wdgReset( &WDGD1 );*/
 
+	//{
+	//	tcpip_init( nullptr, nullptr );
+
+	//	auto conf = EthernetThread::instance()->currentConfig();
+	//	conf.addressMode = EthernetThread::AddressMode::Static;
+	//	conf.ipAddress = IpAddress( 192, 168, 2, 10 );
+	//	conf.netmask = 0xFFFFFF00;
+	//	conf.gateway = IpAddress( 192, 168, 2, 1 );
+	//	EthernetThread::instance()->setConfig( conf );
+	//	EthernetThread::instance()->startThread();
+
+	//	/*thread_reference_t ref = nullptr;
+	//	chSysLock();
+	//	chThdSuspendS( &ref );
+	//	chSysUnlock();*/
+
+	//	MLinkTest::test();
+	//	while( true );
+	//}
+	
 	tcpip_init( nullptr, nullptr );
+
+	/*LwipEthernetTest::test();
+	while( true );*/
 
 	ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );
 
@@ -62,7 +94,7 @@ int main()
 
 	auto conf = EthernetThread::instance()->currentConfig();
 	conf.addressMode = EthernetThread::AddressMode::Static;
-	conf.ipAddress = IpAddress( 192, 168, 2, 42 );
+	conf.ipAddress = IpAddress( 192, 168, 2, 10 );
 	conf.netmask = 0xFFFFFF00;
 	conf.gateway = IpAddress( 192, 168, 2, 1 );
 	EthernetThread::instance()->setConfig( conf );

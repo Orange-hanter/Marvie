@@ -35,7 +35,7 @@ bool MarvieXmlConfigParsers::parseVPortOverIp( XMLElement* node, VPortOverIpConf
 		size_t len = strlen( v );
 		if( len > 15 )
 			return false;
-		strncpy( conf->ip, v, len );
+		memcpy( conf->ip, v, len );
 		conf->ip[len] = 0;
 
 		int port;
@@ -73,7 +73,7 @@ bool MarvieXmlConfigParsers::parseGsmModemConfig( XMLElement* node, GsmModemConf
 	int len = strlen( v );
 	if( len > 20 )
 		return false;
-	strncpy( conf->apn, v, len );
+	memcpy( conf->apn, v, len );
 	conf->apn[len] = 0;
 
 	return true;

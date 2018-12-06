@@ -37,31 +37,29 @@ DataTransferProgressWindow::DataTransferProgressWindow( MLinkClient* link, uint8
 	windowRect.moveCenter( parent->mapToGlobal( parent->rect().center() ) );
 	setGeometry( windowRect );
 
-	QObject::connect( button, &QToolButton::released, this, &DataTransferProgressWindow::buttonClicled );
+	QObject::connect( button, &QToolButton::released, this, &DataTransferProgressWindow::buttonClicked );
 	QObject::connect( link, &MLinkClient::stateChanged, this, &DataTransferProgressWindow::stateChanged );
 	QObject::connect( link, &MLinkClient::newPacketAvailable, this, &DataTransferProgressWindow::newPacketAvailable );
 	if( dir == TransferDir::Sending )
 	{
 		progressBar->setRange( 0, 1000 );
-		QObject::connect( link, &MLinkClient::complexDataSendingProgress, this, &DataTransferProgressWindow::complexDataSendingProgress );
-		QObject::connect( link, &MLinkClient::complexDataSendindCanceled, this, &DataTransferProgressWindow::complexDataSendindCanceled );
+		QObject::connect( link, &MLinkClient::channelDataSendingProgress, this, &DataTransferProgressWindow::complexDataSendingProgress );
 	}
 	else
 	{
 		progressBar->setRange( 0, 0 );
-		QObject::connect( link, &MLinkClient::newComplexPacketAvailable, this, &DataTransferProgressWindow::newComplexPacketAvailable );
-		QObject::connect( link, &MLinkClient::complexDataReceivingProgress, this, &DataTransferProgressWindow::complexDataReceivingProgress );
-		QObject::connect( link, &MLinkClient::complexDataReceivingCanceled, this, &DataTransferProgressWindow::complexDataReceivingCanceled );
+		QObject::connect( link, &MLinkClient::newChannelDataAvailable, this, &DataTransferProgressWindow::newComplexPacketAvailable );
+		QObject::connect( link, &MLinkClient::channeDataReceivingProgress, this, &DataTransferProgressWindow::complexDataReceivingProgress );
 	}
 }
 
-void DataTransferProgressWindow::buttonClicled()
+void DataTransferProgressWindow::buttonClicked()
 {
 	if( button->text().isEmpty() )
 	{
 		if( dir == TransferDir::Sending )
 		{
-			if( !link->cancelComplexDataSending( channelId ) )
+			if( !link->cancelChannelDataSending( channelId ) )
 			{
 				error();
 				return;
@@ -69,7 +67,7 @@ void DataTransferProgressWindow::buttonClicled()
 		}
 		else
 		{
-			if( !link->cancelComplexDataReceiving( channelId ) )
+			if( !link->cancelChannelDataReceiving( channelId ) )
 			{
 				error();
 				return;
@@ -117,19 +115,19 @@ void DataTransferProgressWindow::complexDataSendingProgress( uint8_t channelId, 
 		accept();
 }
 
-void DataTransferProgressWindow::complexDataSendindCanceled( uint8_t channelId, QString name )
-{
-	if( channelId != this->channelId )
-		return;
-
-	progressBar->setRange( 0, 1000 );
-	progressBar->setValue( 0 );
-	if( cancellationRequested )
-		progressBar->setFormat( "Canceled" );
-	else
-		progressBar->setFormat( "Error" );
-	okButton();
-}
+//void DataTransferProgressWindow::complexDataSendindCanceled( uint8_t channelId, QString name )
+//{
+//	if( channelId != this->channelId )
+//		return;
+//
+//	progressBar->setRange( 0, 1000 );
+//	progressBar->setValue( 0 );
+//	if( cancellationRequested )
+//		progressBar->setFormat( "Canceled" );
+//	else
+//		progressBar->setFormat( "Error" );
+//	okButton();
+//}
 
 void DataTransferProgressWindow::complexDataReceivingProgress( uint8_t channelId, QString name, float progress )
 {
@@ -141,18 +139,18 @@ void DataTransferProgressWindow::complexDataReceivingProgress( uint8_t channelId
 	progressBar->setValue( 1000 * progress );
 }
 
-void DataTransferProgressWindow::complexDataReceivingCanceled( uint8_t channelId, QString name )
-{
-	if( channelId != this->channelId )
-		return;
-
-	progressBar->setRange( 0, 1000 );
-	progressBar->setValue( 0 );
-	if( cancellationRequested )
-		progressBar->setFormat( "Canceled" );
-	else
-		progressBar->setFormat( "Error" );	
-}
+//void DataTransferProgressWindow::complexDataReceivingCanceled( uint8_t channelId, QString name )
+//{
+//	if( channelId != this->channelId )
+//		return;
+//
+//	progressBar->setRange( 0, 1000 );
+//	progressBar->setValue( 0 );
+//	if( cancellationRequested )
+//		progressBar->setFormat( "Canceled" );
+//	else
+//		progressBar->setFormat( "Error" );	
+//}
 
 void DataTransferProgressWindow::closeEvent( QCloseEvent * event )
 {

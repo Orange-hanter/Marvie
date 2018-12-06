@@ -1,18 +1,17 @@
 #include "MLinkClient.h"
 #include "Crc32SW.h"
-#include <QAbstractSocket>
+#include <QHostAddress>
 #include <cassert>
 #include <QtDebug>
 
 #define MLINK_PREAMBLE 0x203d26d1
 
-MLinkClient::MLinkClient() : g( 4 )
+MLinkClient::MLinkClient()
 {
 	_state = State::Disconnected;
 	_error = Error::NoError;
-	device = nullptr;
-	sqNumCounter = sqNumNext = 0;
-	r = 0;
+	idCounter = 0;
+	socket = nullptr;
 	QObject::connect( &timer, &QTimer::timeout, this, &MLinkClient::timeout );
 	QObject::connect( &pingTimer, &QTimer::timeout, this, &MLinkClient::pingTimeout );
 }
@@ -32,71 +31,57 @@ MLinkClient::Error MLinkClient::error() const
 	return _error;
 }
 
-void MLinkClient::setIODevice( QIODevice* device )
-{
-	if( _state == State::Disconnected )
-	{
-		if( this->device )
-		{
-			QObject::disconnect( this->device, &QIODevice::readyRead, this, &MLinkClient::processBytes );
-			QObject::disconnect( this->device, &QIODevice::bytesWritten, this, &MLinkClient::bytesWritten );
-			QAbstractSocket* socket = dynamic_cast< QAbstractSocket* >( this->device ); // because QIODevice::aboutToClose not working!
-			if( socket )
-				QObject::disconnect( socket, &QAbstractSocket::disconnected, this, &MLinkClient::aboutToClose );
-			else
-				QObject::disconnect( this->device, &QIODevice::aboutToClose, this, &MLinkClient::aboutToClose );
-		}
-
-		this->device = device;
-		if( device )
-		{
-			QObject::connect( device, &QIODevice::readyRead, this, &MLinkClient::processBytes );
-			QObject::connect( device, &QIODevice::bytesWritten, this, &MLinkClient::bytesWritten );
-			QAbstractSocket* socket = dynamic_cast< QAbstractSocket* >( device ); // because QIODevice::aboutToClose not working!
-			if( socket )
-				QObject::connect( socket, &QAbstractSocket::disconnected, this, &MLinkClient::aboutToClose );
-			else
-				QObject::connect( device, &QIODevice::aboutToClose, this, &MLinkClient::aboutToClose );
-		}
-	}
-}
-
 void MLinkClient::setAuthorizationData( QString accountName, QString accountPassword )
 {
-	if( accountName.size() + accountPassword.size() + 2 > 255 )
+	if( accountName.size() + accountPassword.size() + 2 > MSS )
 		return;
 
 	this->accountName = accountName;
 	this->accountPassword = accountPassword;
 }
 
-void MLinkClient::connectToHost()
+void MLinkClient::connectToHost( QHostAddress address )
 {
-	if( !device || _state != State::Disconnected /*|| !device->isOpen()*/ )
+	if( _state != State::Disconnected )
 		return;
 
 	assert( inCDataMap.size() == 0 );
 	_state = State::Connecting;
 	_error = Error::NoError;
-	sendSynPacket();
+	socket = new QTcpSocket;
+	socket->connectToHost( address, 16021 );
+	QObject::connect( socket, &QTcpSocket::connected, this, &MLinkClient::socketConnected );
+	QObject::connect( socket, &QTcpSocket::readyRead, this, &MLinkClient::processBytes );
+	QObject::connect( socket, &QTcpSocket::bytesWritten, this, &MLinkClient::bytesWritten );
+	QObject::connect( socket, &QTcpSocket::disconnected, this, &MLinkClient::socketDisconnected );
+	QObject::connect( socket, static_cast< void( QTcpSocket::* )( QAbstractSocket::SocketError ) >( &QTcpSocket::error ), this, &MLinkClient::socketError );
 	stateChanged( _state );
 }
 
 void MLinkClient::disconnectFromHost()
 {
-	if( !device || _state == State::Disconnected || _state == State::Disconnecting )
+	if( !socket || _state == State::Disconnected || _state == State::Disconnecting )
 		return;
+	if( _state == State::Connecting )
+	{
+		_state = State::Disconnected;
+		socket->disconnect( this );
+		socket->deleteLater();
+		socket = nullptr;
+		stateChanged( _state );
+		return;
+	}
 
 	_state = State::Disconnecting;
 	reqList.clear();
 	pingTimer.stop();
-	sendFinPacket();	
+	socket->disconnectFromHost();
 	stateChanged( _state );
 }
 
 void MLinkClient::sendPacket( uint8_t type, QByteArray data )
 {
-	if( _state != State::Connected || data.size() > 255 || type > ( 255 - PacketType::User ) )
+	if( _state != State::Connected || data.size() > MSS || type > ( 255 - PacketType::User ) )
 		return;
 
 	Request req;
@@ -106,55 +91,72 @@ void MLinkClient::sendPacket( uint8_t type, QByteArray data )
 	pushBackRequest( req );
 }
 
-bool MLinkClient::sendComplexData( uint8_t channelId, QByteArray data, QString name )
+bool MLinkClient::sendChannelData( uint8_t channel, QByteArray data, QString name )
 {
-	if( _state != State::Connected || data.size() == 0 || outCDataMap.contains( channelId ) )
+	if( _state != State::Connected || data.size() == 0 || outCDataMap.contains( channel ) )
 		return false;
 
 	OutputCData cdata;
-	cdata.name = name.toUtf8();
-	if( cdata.name.size() > 250 )
-		cdata.name = cdata.name.left( 250 );
+	if( ++idCounter == 0 )
+		idCounter = 1;
+	cdata.id = idCounter;
+	cdata.name = name.toUtf8().left( ( DataChannelMSS - ( sizeof( uint32_t ) + sizeof( uint8_t ) ) ) );
 	cdata.data = data;
 
-	outCDataMap[channelId] = cdata;
-	pushBackRequest( complexDataBeginRequest( channelId, cdata.name, data.size() ) );
+	outCDataMap[channel] = cdata;
+	pushBackRequest( openChannelRequest( channel, cdata.id, cdata.name, data.size() ) );
 	return true;
 }
 
-bool MLinkClient::cancelComplexDataSending( uint8_t channelId )
+bool MLinkClient::cancelChannelDataSending( uint8_t channel )
 {
-	if( _state != State::Connected || !outCDataMap.contains( channelId ) )
+	if( _state != State::Connected || !outCDataMap.contains( channel ) )
 		return false;
 
-	outCDataMap[channelId].needCancel = true;
+	uint32_t id = outCDataMap[channel].id;
+	for( auto i = reqList.begin(); i != reqList.end(); ++i )
+	{
+		auto& req = *i;
+		if( req.type == PacketType::OpenChannel || req.type == PacketType::ChannelData || req.type == PacketType::CloseChannel )
+		{
+			const ChannelHeader* chHeader = reinterpret_cast< const ChannelHeader* >( req.data.constData() );
+			if( chHeader->ch != channel || chHeader->id != id )
+				continue;
+
+			if( req.type == PacketType::ChannelData )
+			{
+				reqList.erase( i );
+				pushBackRequest( closeDataChannelRequest( channel, id, true ) );
+				outCDataMap.remove( channel );
+			}
+			else if( req.type == PacketType::OpenChannel )
+			{
+				reqList.erase( i );
+				outCDataMap.remove( channel );
+			}
+			else
+			{
+				req.data[( int )sizeof( ChannelHeader )] = 1;
+				outCDataMap.remove( channel );
+			}
+			break;
+		}
+	}
+
 	return true;
 }
 
-bool MLinkClient::cancelComplexDataReceiving( uint8_t channelId )
+bool MLinkClient::cancelChannelDataReceiving( uint8_t channel )
 {
-	if( _state != State::Connected || !inCDataMap.contains( channelId ) )
+	if( _state != State::Connected || !inCDataMap.contains( channel ) )
 		return false;
 
-	inCDataMap[channelId].needCancel = true;
+	pushBackRequest( remoteCloseDataChannelRequest( channel, inCDataMap[channel].id ) );
+	inCDataMap.remove( channel );
 	return true;
 }
 
-void MLinkClient::sendSynPacket()
-{
-	sqNumCounter = 0;
-	sqNumNext = 0;
-	r = ( ( uint64_t )qrand() << 32 ) | ( uint64_t )qrand();
-	Header header{ MLINK_PREAMBLE, 8, PacketType::Syn, sqNumCounter++ };
-	QByteArray packetData;
-	packetData.append( reinterpret_cast< const char* >( &header ), sizeof( header ) );
-	packetData.append( reinterpret_cast< const char* >( &r ), sizeof( r ) );
-	addCrc( packetData );
-	device->write( packetData );
-	timer.start( MaxPacketTransferInterval * 2 );
-}
-
-void MLinkClient::sendAuthAck()
+void MLinkClient::sendAuth()
 {
 	Request req;
 	req.type = PacketType::AuthAck;
@@ -165,77 +167,57 @@ void MLinkClient::sendAuthAck()
 	pushBackRequest( req );
 }
 
-void MLinkClient::sendFinPacket()
-{
-	Header header{ MLINK_PREAMBLE, 8, PacketType::Fin, sqNumCounter++ };
-	QByteArray packetData;
-	packetData.append( reinterpret_cast< const char* >( &header ), sizeof( header ) );
-	packetData.append( reinterpret_cast< const char* >( &r ), sizeof( r ) );
-	addCrc( packetData );
-	device->write( packetData );
-	timer.start( MaxPacketTransferInterval * 2 );
-}
-
-void MLinkClient::sendFinAckPacket()
-{
-	Header header{ MLINK_PREAMBLE, 8, PacketType::FinAck, sqNumCounter++ };
-	QByteArray packetData;
-	packetData.append( reinterpret_cast< const char* >( &header ), sizeof( header ) );
-	packetData.append( reinterpret_cast< const char* >( &r ), sizeof( r ) );
-	addCrc( packetData );
-	device->write( packetData );
-}
-
-MLinkClient::Request MLinkClient::complexDataBeginRequest( uint8_t id, QByteArray name, uint32_t size )
+MLinkClient::Request MLinkClient::openChannelRequest( uint8_t channel, uint32_t id, QByteArray name, uint32_t size )
 {
 	Request req;
-	req.type = PacketType::ComplexDataBegin;
-	req.data.append( reinterpret_cast< const char* >( &id ), sizeof( id ) );
+	req.type = PacketType::OpenChannel;
+	ChannelHeader chHeader{ id, channel };
+	req.data.append( reinterpret_cast< const char* >( &chHeader ), sizeof( chHeader ) );
 	req.data.append( reinterpret_cast< const char* >( &size ), sizeof( size ) );
 	req.data.append( name );
+	req.data.append( '\0' );
 
 	return req;
 }
 
-MLinkClient::Request MLinkClient::complexDataBeginAckRequest( uint8_t id, uint32_t g )
+MLinkClient::Request MLinkClient::nextDataChannelPartRequest( uint8_t channel, OutputCData& cdata )
 {
-	Request req;
-	req.type = PacketType::ComplexDataBeginAck;
-	req.data.append( reinterpret_cast< const char* >( &id ), sizeof( id ) );
-	req.data.append( reinterpret_cast< const char* >( &g ), sizeof( g ) );
-
-	return req;
-}
-
-MLinkClient::Request MLinkClient::nextComplexDataPartRequest( uint8_t id, OutputCData& cdata )
-{
-	uint8_t size;
-	if( cdata.data.size() - cdata.numWritten >= 254 )
-		size = 254;
+	uint16_t size;
+	if( cdata.data.size() - cdata.numWritten > DataChannelMSS )
+		size = DataChannelMSS;
 	else
 		size = cdata.data.size() - cdata.numWritten;
 	if( size == 0 )
-		return complexDataEndRequest( id, false );
+		return closeDataChannelRequest( channel, cdata.id, false );
 
 	Request req;
-	if( ++cdata.n == cdata.g && ( cdata.data.size() - cdata.numWritten - size ) )
-		req.type = PacketType::ComplexDataNext, cdata.n = 0;
-	else
-		req.type = PacketType::ComplexData;
-	req.data.append( reinterpret_cast< const char* >( &id ), sizeof( id ) );
+	req.type = PacketType::ChannelData;
+	ChannelHeader chHeader{ cdata.id, channel };
+	req.data.append( reinterpret_cast< const char* >( &chHeader ), sizeof( chHeader ) );
 	req.data.append( cdata.data.constData() + cdata.numWritten, size );
 	cdata.numWritten += size;
 
 	return req;
 }
 
-MLinkClient::Request MLinkClient::complexDataEndRequest( uint8_t id, bool canceled )
+MLinkClient::Request MLinkClient::closeDataChannelRequest( uint8_t channel, uint32_t id, bool canceled )
 {
 	Request req;
-	req.type = PacketType::ComplexDataEnd;
-	req.data.append( reinterpret_cast< const char* >( &id ), sizeof( id ) );
+	req.type = PacketType::CloseChannel;
+	ChannelHeader chHeader{ id, channel };
 	uint8_t t = canceled;
+	req.data.append( reinterpret_cast< const char* >( &chHeader ), sizeof( chHeader ) );
 	req.data.append( reinterpret_cast< const char* >( &t ), sizeof( t ) );
+
+	return req;
+}
+
+MLinkClient::Request MLinkClient::remoteCloseDataChannelRequest( uint8_t channel, uint32_t id )
+{
+	Request req;
+	req.type = PacketType::RemoteCloseChannel;
+	ChannelHeader chHeader{ id, channel };
+	req.data.append( reinterpret_cast< const char* >( &chHeader ), sizeof( chHeader ) );
 
 	return req;
 }
@@ -243,26 +225,15 @@ MLinkClient::Request MLinkClient::complexDataEndRequest( uint8_t id, bool cancel
 void MLinkClient::pushBackRequest( Request& req )
 {
 	reqList.append( req );
-	if( device->bytesToWrite() == 0 )
+	if( socket->bytesToWrite() == 0 )
 		bytesWritten();
 }
 
 void MLinkClient::pushFrontRequest( Request& req )
 {
 	reqList.push_front( req );
-	if( device->bytesToWrite() == 0 )
+	if( socket->bytesToWrite() == 0 )
 		bytesWritten();
-}
-
-uint32_t MLinkClient::calcCrc( QByteArray& data )
-{
-	return Crc32SW::crc( reinterpret_cast< const uint8_t* >( data.constData() ), data.size(), 0 );
-}
-
-void MLinkClient::addCrc( QByteArray& data )
-{
-	uint32_t crc = calcCrc( data );
-	data.append( reinterpret_cast< const char* >( &crc ), sizeof( crc ) );
 }
 
 void MLinkClient::closeLink( Error e )
@@ -274,7 +245,9 @@ void MLinkClient::closeLink( Error e )
 	pingTimer.stop();
 	_state = State::Disconnected;
 	_error = e;
-	r = 0;
+	socket->disconnect( this );
+	socket->deleteLater();
+	socket = nullptr;
 	if( e != Error::NoError )
 		error( _error );
 	stateChanged( _state );
@@ -283,49 +256,27 @@ void MLinkClient::closeLink( Error e )
 
 void MLinkClient::processBytes()
 {
-	while( true )
+	int limit = 0;
+	if( socket )
+		limit = socket->bytesAvailable();
+	while( limit > 0 )
 	{
-		if( _state == State::Disconnected )
-		{
-			if( device )
-				device->readAll();
-			return;
-		}
-
-		if( device->bytesAvailable() < sizeof( Header ) + sizeof( uint32_t ) ) // Header + crc
+		if( socket->bytesAvailable() < sizeof( Header ) )
 			return;
 
 		Header header;
-		device->peek( reinterpret_cast< char* >( &header ), sizeof( header ) );
+		socket->peek( reinterpret_cast< char* >( &header ), sizeof( header ) );
 		if( header.preamble != MLINK_PREAMBLE )
 		{
-			device->read( 1 );
-			continue;
+			closeLink( Error::ClientInnerError );
+			return;
 		}
 
-		if( ( quint64 )device->bytesAvailable() < sizeof( Header ) + sizeof( uint32_t ) + header.size )
+		if( ( quint64 )socket->bytesAvailable() < sizeof( Header ) + header.size )
 			return;
-		QByteArray packetData = device->read( sizeof( Header ) + sizeof( uint32_t ) + header.size );
-		if( calcCrc( packetData.left( sizeof( Header ) + header.size ) ) != *reinterpret_cast< const uint32_t* >( packetData.right( sizeof( uint32_t ) ).constData() ) ) // crc error
-			continue;
-		if( _state == State::Connected || _state == State::Authorizing )
-		{
-			if( header.sqNum != sqNumNext++ ) // sequence violation
-			{
-				_state = State::Disconnecting;
-				_error = Error::SequenceViolationError;
-				reqList.clear();
-				error( Error::SequenceViolationError );
-				stateChanged( _state );
-				timer.start( WaitAfterErrorInterval );
-				pingTimer.stop();
-				continue;
-			}
-			else
-				processPacket( header, packetData );
-		}
-		else
-			processPacket( header, packetData );
+		socket->read( reinterpret_cast< char* >( &header ), sizeof( header ) );
+		processPacket( header, socket->read( header.size ) );
+		limit -= sizeof( header ) + header.size;
 	}
 }
 
@@ -335,98 +286,47 @@ void MLinkClient::processPacket( Header& header, QByteArray& packetData )
 	{
 		timer.start( MaxPacketTransferInterval * 3 );
 		if( header.type >= PacketType::User )
-			newPacketAvailable( header.type - PacketType::User, packetData.mid( sizeof( Header ), header.size ) );
+			newPacketAvailable( header.type - PacketType::User, packetData );
 		else
 		{
 			switch( header.type )
 			{
-			case ComplexData:
-			case ComplexDataNext:
+			case ChannelData:
 			{
-				uint8_t id = packetData.constData()[sizeof( Header )];
-				assert( inCDataMap.contains( id ) == true );
-				auto& cdata = inCDataMap[id];
-				cdata.data.append( packetData.mid( sizeof( Header ) + sizeof( uint8_t ), header.size - 1 ) );
-				if( cdata.size )
-					complexDataReceivingProgress( id, cdata.name, ( float )cdata.data.size() / cdata.size );
-				if( header.type == ComplexDataNext )
-				{
-					Request req;
-					req.type = ComplexDataNextAck;
-					req.data.append( id );
-					uint8_t nextOk = !cdata.needCancel;
-					req.data.append( ( char* )&nextOk, 1 );
-					pushBackRequest( req );
-				}
-				break;
-			}
-			case ComplexDataNextAck:
-			{
-				uint8_t id = packetData.constData()[sizeof( Header )];
-				assert( outCDataMap.contains( id ) == true );
-				auto& cdata = outCDataMap[id];
-				if( packetData.constData()[sizeof( Header ) + sizeof( uint8_t )] == 0 )
-					cdata.needCancel = true;
-				if( cdata.needCancel )
-					pushBackRequest( complexDataEndRequest( id, true ) );
-				else
-					pushBackRequest( nextComplexDataPartRequest( id, cdata ) );
-			}
-			case Pong:
-				break;
-			case ComplexDataBeginAck:
-			{
-				uint8_t id = packetData.constData()[sizeof( Header )];
-				assert( outCDataMap.contains( id ) == true );
-				auto& cdata = outCDataMap[id];
-				cdata.g = *reinterpret_cast< const uint32_t* >( packetData.constData() + sizeof( Header ) + sizeof( uint8_t ) );
-				if( cdata.g == 0xFFFFFFFF ) // sending rejected
-				{
-					QString name = cdata.name;
-					outCDataMap.remove( id );
-					complexDataSendindCanceled( id, name );
+				const ChannelHeader* chHeader = reinterpret_cast< const ChannelHeader* >( packetData.constData() );
+				if( !inCDataMap.contains( chHeader->ch ) || inCDataMap[chHeader->ch].id != chHeader->id )
 					break;
-				}
-				if( cdata.needCancel )
-					pushBackRequest( complexDataEndRequest( id, true ) );
-				else
-					pushBackRequest( nextComplexDataPartRequest( id, cdata ) );
+				auto& cdata = inCDataMap[chHeader->ch];
+				cdata.data.append( packetData.right( header.size - sizeof( ChannelHeader ) ) );
+				if( cdata.size )
+					channeDataReceivingProgress( chHeader->ch, cdata.name, ( float )cdata.data.size() / cdata.size );
 				break;
 			}
-			case ComplexDataBegin:
+			case IAmAlive:
+				break;
+			case OpenChannel:
 			{
 				InputCData cdata;
-				uint8_t id = packetData.constData()[sizeof( Header )];
-				cdata.size = *reinterpret_cast< const uint32_t* >( packetData.constData() + sizeof( Header ) + sizeof( uint8_t ) );
-				cdata.name = packetData.mid( sizeof( Header ) + sizeof( uint8_t ) + sizeof( uint32_t ), header.size - sizeof( uint8_t ) - sizeof( uint32_t ) );
-				inCDataMap[id] = cdata;
-				pushBackRequest( complexDataBeginAckRequest( id, g ) );
-				complexDataReceivingProgress( id, cdata.name, 0.0f );
+				const ChannelHeader* chHeader = reinterpret_cast< const ChannelHeader* >( packetData.constData() );
+				cdata.id = chHeader->id;
+				cdata.size = *reinterpret_cast< const uint32_t* >( packetData.constData() + sizeof( ChannelHeader ) );
+				cdata.name = QString( packetData.constData() + sizeof( ChannelHeader ) + sizeof( uint32_t ) );
+				assert( !inCDataMap.contains( chHeader->ch ) );
+				inCDataMap[chHeader->ch] = cdata;
+				channeDataReceivingProgress( chHeader->ch, cdata.name, 0.0f );
 				break;
 			}
-			case ComplexDataEnd:
+			case CloseChannel:
 			{
-				uint8_t id = packetData.constData()[sizeof( Header )];
-				assert( inCDataMap.contains( id ) == true );
-				auto cdata = inCDataMap.take( id );
-				uint8_t canceled = packetData.constData()[sizeof( Header ) + sizeof( uint8_t )];
-				if( canceled || cdata.needCancel )
-					complexDataReceivingCanceled( id, cdata.name );
-				else
-					newComplexPacketAvailable( id, cdata.name, cdata.data );
-				break;
-			}
-			case Fin:
-			{
-				if( *reinterpret_cast< const uint64_t* >( packetData.constData() + sizeof( header ) ) != r )
+				const ChannelHeader* chHeader = reinterpret_cast< const ChannelHeader* >( packetData.constData() );
+				if( !inCDataMap.contains( chHeader->ch ) || inCDataMap[chHeader->ch].id != chHeader->id )
 					break;
-				Header header{ MLINK_PREAMBLE, 8, PacketType::FinAck, sqNumCounter++ };
-				QByteArray packetData;
-				packetData.append( reinterpret_cast< const char* >( &header ), sizeof( header ) );
-				packetData.append( reinterpret_cast< const char* >( &r ), sizeof( r ) );
-				addCrc( packetData );
-				device->write( packetData );
-				closeLink( Error::RemoteHostClosedError );
+				auto cdata = inCDataMap.take( chHeader->ch );
+				uint8_t canceled = packetData.constData()[sizeof( ChannelHeader )];
+				if( canceled )
+					channeDataReceivingProgress( chHeader->ch, cdata.name, -1.0f );
+				else
+					newChannelDataAvailable( chHeader->ch, cdata.name, cdata.data );
 				break;
 			}
 			default:
@@ -435,75 +335,25 @@ void MLinkClient::processPacket( Header& header, QByteArray& packetData )
 			}
 		}
 	}
-	else if( _state == State::Connecting )
-	{
-		switch( header.type )
-		{
-		case PacketType::SynAck:
-		{
-			if( *reinterpret_cast< const uint64_t* >( packetData.constData() + sizeof( Header ) ) != r )
-				break;
-			_state = State::Connected;
-			sqNumNext = 1;
-			stateChanged( _state );
-			connected();
-			timer.start( MaxPacketTransferInterval * 3 );
-			pingTimer.start( PingInterval );
-			break;
-		}
-		case PacketType::Auth:
-		{
-			_state = State::Authorizing;
-			sqNumNext = 1;
-			stateChanged( _state );
-			sendAuthAck();
-			timer.start( MaxPacketTransferInterval * 2 );
-			break;
-		}
-		case PacketType::Syn:
-		{
-			if( *reinterpret_cast< const uint64_t* >( packetData.constData() + sizeof( Header ) ) != r )
-				break;
-			timer.start( MaxPacketTransferInterval * 2 );
-			break;
-		}
-		default:
-			break;
-		}
-	}
 	else if( _state == State::Authorizing )
 	{
 		switch( header.type )
 		{
-		case PacketType::SynAck:
+		case PacketType::AuthAck:
 		{
-			if( *reinterpret_cast< const uint64_t* >( packetData.constData() + sizeof( Header ) ) != r )
-				break;
 			_state = State::Connected;
-			stateChanged( _state );
-			connected();
 			timer.start( MaxPacketTransferInterval * 3 );
 			pingTimer.start( PingInterval );
+			stateChanged( _state );
+			connected();
 			break;
 		}
-		case PacketType::Fin:
-			sendFinAckPacket();
-			closeLink( Error::AuthorizationError );
+		case PacketType::AuthFail:			
+			closeLink( Error::AuthenticationError );
 			break;
 		default:
 			break;
 		}
-	}
-	else if( _state == State::Disconnecting )
-	{
-		if( ( header.type == PacketType::SynAck || header.type == PacketType::Syn || header.type == PacketType::FinAck )
-			&& *reinterpret_cast< const uint64_t* >( packetData.constData() + sizeof( Header ) ) != r )
-			return;
-
-		if( header.type == PacketType::FinAck )
-			closeLink( Error::NoError );		
-		else if( header.type == PacketType::Syn )
-			timer.start( MaxPacketTransferInterval );
 	}
 }
 
@@ -516,62 +366,63 @@ void MLinkClient::bytesWritten()
 		pingTimer.start( PingInterval );
 
 	Request packet = reqList.takeFirst();
-	Header header{ MLINK_PREAMBLE, ( uint8_t )packet.data.size(), packet.type, sqNumCounter++ };
+	Header header{ MLINK_PREAMBLE, ( uint16_t )packet.data.size(), packet.type };
 	QByteArray packetData;
 	packetData.append( reinterpret_cast< const char* >( &header ), sizeof( header ) );
 	packetData.append( packet.data );
-	addCrc( packetData );
-	device->write( packetData );
+	socket->write( packetData );
 
-	if( packet.type == PacketType::ComplexData )
+	if( packet.type == PacketType::ChannelData || packet.type == PacketType::OpenChannel )
 	{
-		uint8_t id = packet.data.constData()[0];
-		OutputCData& cdata = outCDataMap[id];
+		const ChannelHeader* chHeader = reinterpret_cast< const ChannelHeader* >( packet.data.constData() );
+		OutputCData& cdata = outCDataMap[chHeader->ch];
+		if( cdata.id != chHeader->id )
+			return;
 		if( cdata.numWritten != cdata.data.size() )
-			complexDataSendingProgress( id, cdata.name, ( float )cdata.numWritten / cdata.data.size() );
-		if( cdata.needCancel )
-			reqList.append( complexDataEndRequest( id, true ) );
-		else
-			reqList.append( nextComplexDataPartRequest( id, outCDataMap[id] ) );
+			channelDataSendingProgress( chHeader->ch, cdata.name, ( float )cdata.numWritten / cdata.data.size() );
+		reqList.append( nextDataChannelPartRequest( chHeader->ch, cdata ) );
 	}
-	else if( packet.type == PacketType::ComplexDataNext )
+	else if( packet.type == PacketType::CloseChannel )
 	{
-		uint8_t id = packet.data.constData()[0];
-		OutputCData& cdata = outCDataMap[id];
-		complexDataSendingProgress( id, cdata.name, ( float )cdata.numWritten / cdata.data.size() );
-	}
-	else if( packet.type == PacketType::ComplexDataEnd )
-	{
-		uint8_t id = packet.data.constData()[0];
-		OutputCData cdata = outCDataMap.take( id );
-
-		if( cdata.needCancel )
-			complexDataSendindCanceled( id, cdata.name );
-		else
-			complexDataSendingProgress( id, cdata.name, 1.0f );
+		const ChannelHeader* chHeader = reinterpret_cast< const ChannelHeader* >( packet.data.constData() );
+		if( outCDataMap[chHeader->ch].id != chHeader->id )
+			return;
+		OutputCData cdata = outCDataMap.take( chHeader->ch );
+		channelDataSendingProgress( chHeader->ch, cdata.name, 1.0f );
 	}
 }
 
-void MLinkClient::aboutToClose()
+void MLinkClient::socketConnected()
 {
-	if( _state != State::Disconnected && _state != State::Disconnecting )
-		closeLink( Error::IODeviceClosedError );
+	_state = State::Authorizing;
+	sendAuth();
+	timer.start( MaxPacketTransferInterval * 2 );
+	stateChanged( _state );
+}
+
+void MLinkClient::socketDisconnected()
+{
+	if( _state == State::Disconnecting )
+		closeLink( Error::NoError );
+	else
+		closeLink( Error::RemoteHostClosedError );
+}
+
+void MLinkClient::socketError( QAbstractSocket::SocketError socketError )
+{
+	socketDisconnected();
 }
 
 void MLinkClient::timeout()
 {
 	if( _state == State::Connected || _state == State::Authorizing )
 		closeLink( Error::ResponseTimeoutError );
-	else if( _state == State::Connecting )
-		sendSynPacket();
-	else if( _state == State::Disconnecting )
-		closeLink( Error::NoError );
 }
 
 void MLinkClient::pingTimeout()
 {
 	assert( _state == State::Connected );
 	Request req;
-	req.type = PacketType::Ping;
+	req.type = PacketType::IAmAlive;
 	pushFrontRequest( req );
 }

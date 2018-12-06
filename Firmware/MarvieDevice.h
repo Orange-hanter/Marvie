@@ -31,7 +31,7 @@
 #define COM_USART_OUTPUT_BUFFER_SIZE  1024
 #define GSM_MODEM_OUTPUT_BUFFER       4096
 
-class MarvieDevice : private AbstractSRSensor::SignalProvider, private MLinkServer::ComplexDataCallback, private MLinkServer::AuthenticationCallback, private ModbusPotato::ISlaveHandler
+class MarvieDevice : private AbstractSRSensor::SignalProvider, private MLinkServer::DataChannelCallback, private MLinkServer::AuthenticationCallback, private ModbusPotato::ISlaveHandler
 {
 	MarvieDevice();
 
@@ -65,15 +65,15 @@ private:
 
 	bool authenticate( char* accountName, char* password ) final override;
 
-	uint32_t onOpennig( uint8_t id, const char* name, uint32_t size ) final override;
-	bool newDataReceived( uint8_t id, const uint8_t* data, uint32_t size ) final override;
-	void onClosing( uint8_t id, bool canceled ) final override;
+	bool onOpennig( uint8_t channel , const char* name, uint32_t size ) final override;
+	bool newDataReceived( uint8_t channel, const uint8_t* data, uint32_t size ) final override;
+	void onClosing( uint8_t channel, bool canceled ) final override;
 
 	void mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t size );
 	void mLinkSync( bool coldSync );
 	void sendFirmwareDesc();
 	void sendVPortStatusM( uint32_t vPortId );
-	void sendSensorDataM( uint32_t sensorId, MLinkServer::ComplexDataChannel* channel );
+	void sendSensorDataM( uint32_t sensorId, MLinkServer::DataChannel* channel );
 	void sendDeviceStatus();
 	void sendEthernetStatus();
 	void sendGsmModemStatusM();
@@ -239,7 +239,7 @@ private:
 	uint64_t monitoringLogSize;
 
 	// MLink thread resources ================================================================
-	enum MLinkThreadEvent : eventmask_t { MLinkEvent = 1, CpuUsageMonitorEvent = 2, MemoryLoadEvent = 4, EthernetEvent = 8, MLinkTcpServerEvent = 16, MLinkTcpSocketEvent = 32, GsmModemEvent = 64, ConfigChangedEvent = 128, ConfigResetEvent = 256, SensorUpdateEvent = 512, StatusUpdateEvent = 1024 };
+	enum MLinkThreadEvent : eventmask_t { MLinkEvent = 1, CpuUsageMonitorEvent = 2, MemoryLoadEvent = 4, EthernetEvent = 8, /*MLinkTcpServerEvent = 16, MLinkTcpSocketEvent = 32,*/ GsmModemEvent = 64, ConfigChangedEvent = 128, ConfigResetEvent = 256, SensorUpdateEvent = 512, StatusUpdateEvent = 1024 };
 	MLinkServer* mLinkServer;
 	uint8_t mLinkBuffer[255];
 	Mutex datFilesMutex;

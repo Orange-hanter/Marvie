@@ -329,9 +329,9 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	QObject::connect( &mlink, &MLinkClient::stateChanged, this, &MarvieController::mlinkStateChanged );
 	QObject::connect( &mlink, static_cast< void( MLinkClient::* )( MLinkClient::Error ) >( &MLinkClient::error ), this, &MarvieController::mlinkError );
 	QObject::connect( &mlink, &MLinkClient::newPacketAvailable, this, &MarvieController::mlinkNewPacketAvailable );
-	QObject::connect( &mlink, &MLinkClient::newComplexPacketAvailable, this, &MarvieController::mlinkNewComplexPacketAvailable );
-	QObject::connect( &mlink, &MLinkClient::complexDataSendingProgress, this, &MarvieController::mlinkComplexDataSendingProgress );
-	QObject::connect( &mlink, &MLinkClient::complexDataReceivingProgress, this, &MarvieController::mlinkComplexDataReceivingProgress );
+	QObject::connect( &mlink, &MLinkClient::newChannelDataAvailable, this, &MarvieController::mlinkNewComplexPacketAvailable );
+	QObject::connect( &mlink, &MLinkClient::channelDataSendingProgress, this, &MarvieController::mlinkComplexDataSendingProgress );
+	QObject::connect( &mlink, &MLinkClient::channeDataReceivingProgress, this, &MarvieController::mlinkComplexDataReceivingProgress );
 
 	QObject::connect( ui.deviceRestartButton, &QToolButton::released, this, &MarvieController::deviceRestartButtonClicked );
 	QObject::connect( ui.startVPortsButton, &QToolButton::released, this, &MarvieController::startVPortsButtonClicked );
@@ -669,9 +669,9 @@ void MarvieController::logInButtonClicked( QString accountName, QString accountP
 			return;
 		}
 
-		mlinkIODevice = port;
-		mlink.setIODevice( mlinkIODevice );
-		mlink.connectToHost();
+		//mlinkIODevice = port;
+		//mlink.setIODevice( mlinkIODevice );
+		//mlink.connectToHost();
 		ui.rs232ComboBox->setEnabled( false );
 	}
 	else if( ui.interfaceStackedWidget->currentWidget() == ui.ethernetPage )
@@ -740,12 +740,7 @@ void MarvieController::logInButtonClicked( QString accountName, QString accountP
 		Device* device = new Device( ui.ipEdit->text() );
 		device->open( QIODevice::ReadWrite );*/
 
-		QTcpSocket* device = new QTcpSocket;
-		device->connectToHost( ui.ipEdit->text(), 16021 );
-
-		mlinkIODevice = device;
-		mlink.setIODevice( mlinkIODevice );
-		mlink.connectToHost();
+		mlink.connectToHost( QHostAddress( ui.ipEdit->text() ) );
 		ui.ipEdit->setEnabled( false );
 	}
 	else if( ui.interfaceStackedWidget->currentWidget() == ui.bluetoothPage )
@@ -1352,7 +1347,7 @@ void MarvieController::uploadConfigButtonClicked()
 		return;
 	}
 
-	mlink.sendComplexData( MarviePackets::ComplexChannel::XmlConfigChannel, data );
+	mlink.sendChannelData( MarviePackets::ComplexChannel::XmlConfigChannel, data );
 	DataTransferProgressWindow window( &mlink, MarviePackets::ComplexChannel::XmlConfigChannel, DataTransferProgressWindow::TransferDir::Sending, this );
 	window.setTitleText( "Uploading config" );
 	window.exec();
@@ -1638,10 +1633,6 @@ void MarvieController::mlinkStateChanged( MLinkClient::State s )
 	{
 	case MLinkClient::State::Disconnected:
 		accountWindow->logOutConfirmed();
-		mlink.setIODevice( nullptr );
-		mlinkIODevice->waitForBytesWritten( 100 );
-		mlinkIODevice->deleteLater();
-		mlinkIODevice = nullptr;
 
 		ui.nextInterfaceButton->setEnabled( true );
 		resetDeviceLoad();
@@ -1680,7 +1671,7 @@ void MarvieController::mlinkStateChanged( MLinkClient::State s )
 
 void MarvieController::mlinkError( MLinkClient::Error err )
 {
-	if( err == MLinkClient::Error::AuthorizationError )
+	if( err == MLinkClient::Error::AuthenticationError )
 		accountWindow->passwordIncorrect();
 }
 

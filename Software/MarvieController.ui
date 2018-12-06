@@ -741,7 +741,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
         </size>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="rs232Page">
         <layout class="QHBoxLayout" name="horizontalLayout_3">

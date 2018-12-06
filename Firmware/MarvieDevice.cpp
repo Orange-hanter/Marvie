@@ -180,7 +180,7 @@ MarvieDevice::MarvieDevice() : settingsBackupRegs( sizeof( SettingsBackup ) / 4 
 
 	mLinkServer = new MLinkServer;
 	mLinkServer->setAuthenticationCallback( this );
-	mLinkServer->setComplexDataReceiveCallback( this );
+	mLinkServer->setDataChannelCallback( this );
 	//mLinkServer->setIODevice( comPorts[MarviePlatform::mLinkComPort] );
 }
 
@@ -593,62 +593,24 @@ void MarvieDevice::adInputsReadThreadMain()
 			chThdSleepMilliseconds( TIME_MS2I( 50 ) - dt );
 	}
 }
-
+#include <lwip/tcp.h>
 void MarvieDevice::mLinkServerHandlerThreadMain()
 {
-	EvtListener mLinkListener, ethThreadListener, tcpServerListener, tcpSocketListener, cpuUsageMonitorListener;
+	EvtListener mLinkListener, ethThreadListener, cpuUsageMonitorListener;
 	mLinkServer->eventSource()->registerMask( &mLinkListener, MLinkThreadEvent::MLinkEvent );
 	EthernetThread::instance()->eventSource()->registerMask( &ethThreadListener, MLinkThreadEvent::EthernetEvent );
 	CpuUsageMonitor::instance()->eventSource()->registerMask( &cpuUsageMonitorListener, MLinkThreadEvent::CpuUsageMonitorEvent );
-
-	TcpServer* tcpServer = new TcpServer;
-	tcpServer->eventSource()->registerMask( &tcpServerListener, MLinkThreadEvent::MLinkTcpServerEvent );
-	tcpServer->listen( 16021 );
-	TcpSocket* mLinkSocket = nullptr;
 
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
 
 	syncConfigNum = ( uint32_t )-1;
-	auto sensorDataChannel = mLinkServer->createComplexDataChannel();
+	auto sensorDataChannel = mLinkServer->createDataChannel();
 
 	mLinkServer->startListening( NORMALPRIO );
 	while( true )
 	{
 		eventmask_t em = chEvtWaitAny( ALL_EVENTS );
-		if( em & MLinkThreadEvent::MLinkTcpSocketEvent )
-		{
-			if( mLinkSocket && !mLinkSocket->isOpen() )
-			{
-				mLinkServer->stopListening();
-				mLinkServer->waitForStateChanged();
-				mLinkServer->setIODevice( nullptr );
-
-				mLinkSocket->eventSource()->unregister( &tcpSocketListener );
-				delete mLinkSocket;
-				mLinkSocket = nullptr;
-				chEvtGetAndClearEvents( MLinkThreadEvent::MLinkTcpSocketEvent );
-			}
-		}
-		if( em & MLinkThreadEvent::MLinkTcpServerEvent )
-		{
-			TcpSocket* socket;
-			while( ( socket = tcpServer->nextPendingConnection() ) != nullptr )
-			{
-				if( mLinkSocket )
-				{
-					socket->disconnect();
-					delete socket;
-				}
-				else
-				{
-					mLinkSocket = socket;
-					mLinkSocket->eventSource()->registerMask( &tcpSocketListener, MLinkThreadEvent::MLinkTcpSocketEvent );
-					mLinkServer->setIODevice( mLinkSocket );
-					mLinkServer->startListening( NORMALPRIO );
-				}
-			}
-		}
 		if( em & MLinkThreadEvent::MLinkEvent )
 		{
 			eventflags_t flags = mLinkListener.getAndClearFlags();
@@ -663,21 +625,6 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 				}
 				else
 					chVTReset( &timer );
-			}
-			if( flags & ( eventflags_t )MLinkServer::Event::Error )
-			{
-				mLinkServer->stopListening();
-				mLinkServer->waitForStateChanged();
-				mLinkServer->setIODevice( nullptr );
-
-				if( mLinkSocket )
-				{
-					mLinkSocket->eventSource()->unregister( &tcpSocketListener );
-					mLinkSocket->disconnect();
-					delete mLinkSocket;
-					mLinkSocket = nullptr;
-					chEvtGetAndClearEvents( MLinkThreadEvent::MLinkTcpSocketEvent );
-				}
 			}
 			if( flags & ( eventflags_t )MLinkServer::Event::NewPacketAvailable )
 			{
@@ -1500,39 +1447,39 @@ bool MarvieDevice::authenticate( char* accountName, char* password )
 	return strcmp( accountName, "admin" ) == 0 && strcmp( password, "admin" ) == 0;
 }
 
-uint32_t MarvieDevice::onOpennig( uint8_t id, const char* name, uint32_t size )
+bool MarvieDevice::onOpennig( uint8_t ch, const char* name, uint32_t size )
 {
 	datFilesMutex.lock();
-	if( sdCardStatus != SdCardStatus::Working || id >= 3 || datFiles[id] )
+	if( sdCardStatus != SdCardStatus::Working || ch >= 3 || datFiles[ch] )
 	{
 		datFilesMutex.unlock();
-		return ( uint32_t )-1;
+		return false;
 	}
 
 	char path[] = "/Temp/0.dat";
-	path[6] = '0' + id;
-	datFiles[id] = new FIL;
-	if( f_open( datFiles[id], path, FA_OPEN_ALWAYS | FA_WRITE | FA_READ ) != FR_OK )
+	path[6] = '0' + ch;
+	datFiles[ch] = new FIL;
+	if( f_open( datFiles[ch], path, FA_OPEN_ALWAYS | FA_WRITE | FA_READ ) != FR_OK )
 	{
-		delete datFiles[id];
-		datFiles[id] = nullptr;
+		delete datFiles[ch];
+		datFiles[ch] = nullptr;
 
 		datFilesMutex.unlock();
-		return ( uint32_t )-1;
+		return false;
 	}
 
 	datFilesMutex.unlock();
-	return 1;
+	return true;
 }
 
-bool MarvieDevice::newDataReceived( uint8_t id, const uint8_t* data, uint32_t size )
+bool MarvieDevice::newDataReceived( uint8_t ch, const uint8_t* data, uint32_t size )
 {
 	datFilesMutex.lock();
-	if( sdCardStatus != SdCardStatus::Working || id >= 3 || datFiles[id] == nullptr )
+	if( sdCardStatus != SdCardStatus::Working || ch >= 3 || datFiles[ch] == nullptr )
 		goto Abort;
 
 	uint bw;
-	if( f_write( datFiles[id], data, size, &bw ) != FR_OK || bw != size )
+	if( f_write( datFiles[ch], data, size, &bw ) != FR_OK || bw != size )
 		goto Abort;
 
 	datFilesMutex.unlock();
@@ -1543,10 +1490,10 @@ Abort:
 	return false;
 }
 
-void MarvieDevice::onClosing( uint8_t id, bool canceled )
+void MarvieDevice::onClosing( uint8_t ch, bool canceled )
 {
 	datFilesMutex.lock();
-	if( sdCardStatus != SdCardStatus::Working || id >= 3 || datFiles[id] == nullptr )
+	if( sdCardStatus != SdCardStatus::Working || ch >= 3 || datFiles[ch] == nullptr )
 	{
 		datFilesMutex.unlock();
 		return;
@@ -1555,16 +1502,16 @@ void MarvieDevice::onClosing( uint8_t id, bool canceled )
 	if( canceled )
 	{
 		char path[] = "/Temp/0.dat";
-		path[6] = '0' + id;
-		f_close( datFiles[id] );
+		path[6] = '0' + ch;
+		f_close( datFiles[ch] );
 		f_unlink( path );
-		delete datFiles[id];
-		datFiles[id] = nullptr;
+		delete datFiles[ch];
+		datFiles[ch] = nullptr;
 	}
 	else
 	{
 		//f_sync( datFiles[id] );
-		switch( id )
+		switch( ch )
 		{
 		case MarviePackets::ComplexChannel::BootloaderChannel:
 			mainThread->signalEvents( MainThreadEvent::NewBootloaderDatFile );
@@ -1593,7 +1540,7 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 		uint32_t xmlDataSize = readConfigXmlFile( &xmlData );
 		if( xmlData )
 		{
-			auto channel = mLinkServer->createComplexDataChannel();
+			auto channel = mLinkServer->createDataChannel();
 			if( channel->open( MarviePackets::ComplexChannel::XmlConfigChannel, "", xmlDataSize ) )
 			{
 				Concurrent::run( [this, channel, xmlData, xmlDataSize]()
@@ -1615,7 +1562,7 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 	else if( type == MarviePackets::Type::SetDateTimeType )
 	{
 		DateTime dateTime;
-		strncpy( ( char* )&dateTime, ( const char* )data, sizeof( DateTime ) );
+		memcpy( ( char* )&dateTime, ( const char* )data, sizeof( DateTime ) );
 		DateTimeService::setDateTime( dateTime );
 	}
 	else if( type == MarviePackets::Type::StartVPortsType )
@@ -1669,10 +1616,10 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 void MarvieDevice::mLinkSync( bool coldSync )
 {
 	mLinkServer->sendPacket( MarviePackets::Type::SyncStartType, nullptr, 0 );
-	auto channel = mLinkServer->createComplexDataChannel();
+	auto channel = mLinkServer->createDataChannel();
 	if( coldSync )
 	{
-		auto channel = mLinkServer->createComplexDataChannel();
+		auto channel = mLinkServer->createDataChannel();
 		if( channel->open( MarviePackets::ComplexChannel::SupportedSensorsListChannel, "", 0 ) )
 		{
 			char* data = new char[1024];
@@ -1682,7 +1629,7 @@ void MarvieDevice::mLinkSync( bool coldSync )
 				uint32_t len = strlen( ( *i ).name );
 				if( 1024 - n < len )
 					channel->sendData( ( uint8_t* )data, n ), n = 0;
-				strncpy( data + n, ( *i ).name, len );
+				memcpy( data + n, ( *i ).name, len );
 				n += len;
 				if( i + 1 != SensorService::endSensorsList() )
 				{
@@ -1708,7 +1655,7 @@ void MarvieDevice::mLinkSync( bool coldSync )
 	if( xmlDataSize )
 	{
 		configXmlDataSendingSemaphore.wait( TIME_INFINITE );
-		auto channel = mLinkServer->createComplexDataChannel();
+		auto channel = mLinkServer->createDataChannel();
 		if( channel->open( MarviePackets::ComplexChannel::XmlConfigSyncChannel, "", xmlDataSize ) )
 		{
 			channel->sendData( ( uint8_t* )xmlData, xmlDataSize );
@@ -1772,7 +1719,7 @@ void MarvieDevice::sendVPortStatusM( uint32_t vPortId )
 	mLinkServer->sendPacket( MarviePackets::Type::VPortStatusType, ( const uint8_t* )&status, sizeof( status ) );
 }
 
-void MarvieDevice::sendSensorDataM( uint32_t sensorId, MLinkServer::ComplexDataChannel* channel )
+void MarvieDevice::sendSensorDataM( uint32_t sensorId, MLinkServer::DataChannel* channel )
 {
 	auto sensorData = sensors[sensorId].sensor->sensorData();
 	sensorData->lock();
@@ -2302,7 +2249,7 @@ extern "C"
 
 	void idleLoopHook()
 	{
-		wdgReset( &WDGD1 );
+		//wdgReset( &WDGD1 );
 	}
 
 	void NMI_Handler()

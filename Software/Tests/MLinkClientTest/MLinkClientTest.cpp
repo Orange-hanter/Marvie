@@ -1,6 +1,5 @@
 #include "MLinkClientTest.h"
-#include <QSerialPortInfo>
-#include <QSerialPort>
+#include <QHostAddress>
 #include <assert.h>
 
 QByteArray randBytes( uint size )
@@ -15,95 +14,51 @@ MLinkClientTest::MLinkClientTest( QWidget *parent ) : QWidget( parent )
 {
 	ui.setupUi( this );
 
-	ioDevice = nullptr;
-
-	QObject::connect( ui.rs232ConnectButton, &QToolButton::released, this, &MLinkClientTest::connectButtonClicked );
+	QObject::connect( ui.ethernetConnectButton, &QToolButton::released, this, &MLinkClientTest::connectButtonClicked );
 	QObject::connect( ui.ch2Button, &QToolButton::released, this, &MLinkClientTest::ch2ButtonClicked );
 	QObject::connect( ui.ch3Button, &QToolButton::released, this, &MLinkClientTest::ch3ButtonClicked );
 	QObject::connect( &mlink, &MLinkClient::stateChanged, this, &MLinkClientTest::mlinkStateChanged );
 	QObject::connect( &mlink, &MLinkClient::newPacketAvailable, this, &MLinkClientTest::mlinkNewPacketAvailable );
-	QObject::connect( &mlink, &MLinkClient::newComplexPacketAvailable, this, &MLinkClientTest::mlinkNewComplexPacketAvailable );
-	QObject::connect( &mlink, &MLinkClient::complexDataSendingProgress, this, &MLinkClientTest::mlinkComplexDataSendingProgress );
-	QObject::connect( &mlink, &MLinkClient::complexDataSendindCanceled, this, &MLinkClientTest::mlinkComplexDataSendindCanceled );
-	QObject::connect( &mlink, &MLinkClient::complexDataReceivingProgress, this, &MLinkClientTest::mlinkComplexDataReceivingProgress );
-	QObject::connect( &mlink, &MLinkClient::complexDataReceivingCanceled, this, &MLinkClientTest::mlinkComplexDataReceivingCanceled );
-	ui.rs232ComboBox->installEventFilter( this );
+	QObject::connect( &mlink, &MLinkClient::newChannelDataAvailable, this, &MLinkClientTest::mlinkNewComplexPacketAvailable );
+	QObject::connect( &mlink, &MLinkClient::channelDataSendingProgress, this, &MLinkClientTest::mlinkComplexDataSendingProgress );
+	QObject::connect( &mlink, &MLinkClient::channeDataReceivingProgress, this, &MLinkClientTest::mlinkComplexDataReceivingProgress );
 
 	dwc[0] = dwc[1] = upc[0] = upc[1] = spc = 0;
 	ch3Size = 0;
 }
 
-bool MLinkClientTest::eventFilter( QObject *obj, QEvent *event )
-{
-	if( obj == ui.rs232ComboBox )
-	{
-		if( event->type() == QEvent::Type::MouseButtonPress || event->type() == QEvent::Type::KeyPress )
-		{
-			auto current = ui.rs232ComboBox->currentText();
-			auto list = QSerialPortInfo::availablePorts();
-			QStringList names;
-			for( auto& i : list )
-				names.append( i.portName() );
-			ui.rs232ComboBox->clear();
-			ui.rs232ComboBox->addItems( names );
-			if( names.contains( current ) )
-				ui.rs232ComboBox->setCurrentText( current );
-			else
-				ui.rs232ComboBox->setCurrentIndex( -1 );
-		}
-	}
-
-	return false;
-}
-
 void MLinkClientTest::connectButtonClicked()
 {
-	if( mlink.state() != MLinkClient::State::Disconnected )
-	{
+	if( mlink.state() == MLinkClient::State::Disconnected )
+		mlink.connectToHost( QHostAddress( ui.ipEdit->text() ) );
+	else
 		mlink.disconnectFromHost();
-		return;
-	}
-
-	if( ui.rs232ComboBox->currentText().isEmpty() )
-		return;
-	QSerialPort* port = new QSerialPort();
-	port->setBaudRate( QSerialPort::Baud115200 );
-	port->setStopBits( QSerialPort::OneStop );
-	port->setParity( QSerialPort::NoParity );
-	port->setFlowControl( QSerialPort::NoFlowControl );
-	port->setPortName( ui.rs232ComboBox->currentText() );
-	if( !port->open( QIODevice::ReadWrite ) )
-	{
-		delete port;
-		return;
-	}
-
-	ioDevice = port;
-	mlink.setIODevice( ioDevice );
-	mlink.connectToHost();
-	ui.rs232ComboBox->setEnabled( false );
 }
 
 void MLinkClientTest::ch2ButtonClicked()
 {
-	if( ui.ch2ProgressBar->maximum() == 0 )
+	if( ui.ch2ProgressBar->maximum() == 0 || mlink.state() != MLinkClient::State::Connected )
 		return;
 
 	if( ui.ch2Button->text() == "Upload" )
 	{
 		ui.ch2Button->setText( "Cancel" );
-		mlink.sendComplexData( 2, randBytes( ui.ch2DataSizeSpinBox->value() ), "2.dat" );
+		mlink.sendChannelData( 2, randBytes( ui.ch2DataSizeSpinBox->value() ), "2.dat" );
 	}
 	else
 	{
-		if( mlink.cancelComplexDataSending( 2 ) )
-			ui.ch2ProgressBar->setRange( 0, 0 );
+		if( mlink.cancelChannelDataSending( 2 ) )
+		{
+			ui.ch2ProgressBar->setRange( 0, 100 );
+			ui.ch2ProgressBar->setValue( 0 );
+			ui.ch2Button->setText( "Upload" );
+		}
 	}
 }
 
 void MLinkClientTest::ch3ButtonClicked()
 {
-	if( ui.ch3ProgressBar->maximum() == 0 )
+	if( ui.ch3ProgressBar->maximum() == 0 || mlink.state() != MLinkClient::State::Connected )
 		return;
 
 	if( ui.ch3Button->text() == "Download" )
@@ -115,8 +70,12 @@ void MLinkClientTest::ch3ButtonClicked()
 	}
 	else
 	{
-		if( mlink.cancelComplexDataReceiving( 3 ) )
-			ui.ch3ProgressBar->setRange( 0, 0 );
+		if( mlink.cancelChannelDataReceiving( 3 ) )
+		{
+			ui.ch3ProgressBar->setRange( 0, 100 );
+			ui.ch3ProgressBar->setValue( 0 );
+			ui.ch3Button->setText( "Download" );
+		}
 	}
 }
 
@@ -125,12 +84,8 @@ void MLinkClientTest::mlinkStateChanged( MLinkClient::State s )
 	switch( s )
 	{
 	case MLinkClient::State::Disconnected:
-		ui.rs232ComboBox->setEnabled( true );
-		ui.rs232ConnectButton->setIcon( QIcon( ":/MLinkClientTest/icons/icons8-rs-232-female-filled-50.png" ) );
-		mlink.setIODevice( nullptr );
-		ioDevice->close();
-		delete ioDevice;
-		ioDevice = nullptr;
+		ui.ipEdit->setEnabled( true );
+		ui.ethernetConnectButton->setIcon( QIcon( ":/MLinkClientTest/icons/icons8-ethernet-on-filled-50.png" ) );
 		ui.ch2Button->setText( "Upload" );
 		ui.ch2ProgressBar->setValue( 0 );
 		ui.ch2ProgressBar->setMaximum( 100 );
@@ -139,10 +94,10 @@ void MLinkClientTest::mlinkStateChanged( MLinkClient::State s )
 		ui.ch3ProgressBar->setMaximum( 100 );
 		break;
 	case MLinkClient::State::Connecting:
-		ui.rs232ConnectButton->setIcon( QIcon( ":/MLinkClientTest/icons/icons8-rs-232-female-filled-50-orange.png" ) );
+		ui.ethernetConnectButton->setIcon( QIcon( ":/MLinkClientTest/icons/icons8-ethernet-on-filled-50-orange.png" ) );
 		break;
 	case MLinkClient::State::Connected:
-		ui.rs232ConnectButton->setIcon( QIcon( ":/MLinkClientTest/icons/icons8-rs-232-female-filled-50-green.png" ) );
+		ui.ethernetConnectButton->setIcon( QIcon( ":/MLinkClientTest/icons/icons8-ethernet-on-filled-50-green.png" ) );
 
 		{
 			QProgressBar* pb[3] = { ui.ch0ProgressBar, ui.ch1ProgressBar, ui.ch2ProgressBar };
@@ -156,9 +111,9 @@ void MLinkClientTest::mlinkStateChanged( MLinkClient::State s )
 		cdata[0] = randBytes( ui.ch0DataSizeSpinBox->value() );
 		cdata[1] = randBytes( ui.ch1DataSizeSpinBox->value() );
 		if( ui.ch0EnableCheckBox->checkState() == Qt::Checked )
-			mlink.sendComplexData( 0, cdata[0], "0.dat" );
+			mlink.sendChannelData( 0, cdata[0], "0.dat" );
 		if( ui.ch1EnableCheckBox->checkState() == Qt::Checked )
-			mlink.sendComplexData( 1, cdata[1], "1.dat" );
+			mlink.sendChannelData( 1, cdata[1], "1.dat" );
 		dwc[0] = dwc[1] = upc[0] = upc[1] = spc = 0;
 		if( ui.simplePacketEnableCheckBox->checkState() == Qt::Checked )
 			mlink.sendPacket( 0, QByteArray( "Hello", 6 ) );
@@ -166,7 +121,7 @@ void MLinkClientTest::mlinkStateChanged( MLinkClient::State s )
 
 		break;
 	case MLinkClient::State::Disconnecting:
-		ui.rs232ConnectButton->setIcon( QIcon( ":/MLinkClientTest/icons/icons8-rs-232-female-filled-50-orange.png" ) );
+		ui.ethernetConnectButton->setIcon( QIcon( ":/MLinkClientTest/icons/icons8-ethernet-on-filled-50-orange.png" ) );
 		break;
 	default:
 		break;
@@ -188,19 +143,20 @@ void MLinkClientTest::mlinkNewComplexPacketAvailable( uint8_t channelId, QString
 	assert( QString( "%1.dat" ).arg( channelId ) == name );
 	if( channelId == 3 )
 	{
-		if( data.size() != ch3Size )
+		if( data.size() == ch3Size )
 		{
-			ui.ch3ProgressBar->setFormat( "Error" );
-			return;
-		}
-		for( int i = 0; i < data.size(); ++i )
-		{
-			if( ( char )data[i] != ( '0' + i % 10 ) )
+			for( int i = 0; i < data.size(); ++i )
 			{
-				ui.ch3ProgressBar->setFormat( "Error" );
-				return;
+				if( ( char )data[i] != ( '0' + i % 10 ) )
+				{
+					ui.ch3ProgressBar->setFormat( "Error" );
+					break;
+				}
 			}
 		}
+		else
+			ui.ch3ProgressBar->setFormat( "Error" );
+
 		ui.ch3Button->setText( "Download" );
 
 		return;
@@ -212,7 +168,7 @@ void MLinkClientTest::mlinkNewComplexPacketAvailable( uint8_t channelId, QString
 	++dwc[channelId];
 	uint32_t chDataSize[] = { ( uint32_t )ui.ch0DataSizeSpinBox->value(), ( uint32_t )ui.ch1DataSizeSpinBox->value() };
 	cdata[channelId] = randBytes( chDataSize[channelId] );
-	mlink.sendComplexData( channelId, cdata[channelId], QString( "%1.dat" ).arg( channelId ) );
+	mlink.sendChannelData( channelId, cdata[channelId], QString( "%1.dat" ).arg( channelId ) );
 }
 
 void MLinkClientTest::mlinkComplexDataSendingProgress( uint8_t channelId, QString name, float progress )
@@ -235,14 +191,6 @@ void MLinkClientTest::mlinkComplexDataSendingProgress( uint8_t channelId, QStrin
 	updateLabels();
 }
 
-void MLinkClientTest::mlinkComplexDataSendindCanceled( uint8_t channelId, QString name )
-{
-	assert( channelId == 2 );
-	ui.ch2ProgressBar->setRange( 0, 100 );
-	ui.ch2ProgressBar->setValue( 0 );
-	ui.ch2Button->setText( "Upload" );
-}
-
 void MLinkClientTest::mlinkComplexDataReceivingProgress( uint8_t channelId, QString name, float progress )
 {
 	assert( channelId <= 3 && channelId != 2 );
@@ -253,14 +201,6 @@ void MLinkClientTest::mlinkComplexDataReceivingProgress( uint8_t channelId, QStr
 	pb[channelId]->setValue( progress*100.0 );
 	pb[channelId]->setRange( 0, 100 );
 	updateLabels();
-}
-
-void MLinkClientTest::mlinkComplexDataReceivingCanceled( uint8_t channelId, QString name )
-{
-	assert( channelId == 3 );
-	ui.ch3ProgressBar->setRange( 0, 100 );
-	ui.ch3ProgressBar->setValue( 0 );
-	ui.ch3Button->setText( "Download" );
 }
 
 void MLinkClientTest::updateLabels()
