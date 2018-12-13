@@ -98,6 +98,7 @@ endif()
 
 list( APPEND CHIBIOS_SOURCES_hal community/os/hal/src/hal_community.c )
 list( APPEND CHIBIOS_INCLUDES_hal community/os/hal/include )
+list( APPEND CHIBIOS_INCLUDES_hal community/os/various )
 
 if( CHIBIOS_SOURCES_community_hal_${STM32_FAMILY} )
     list( APPEND CHIBIOS_SOURCES_hal ${CHIBIOS_SOURCES_community_hal_${STM32_FAMILY}} )
@@ -108,6 +109,7 @@ if( CHIBIOS_INCLUDES_community_hal_${STM32_FAMILY} )
 endif()
 
 foreach( comp ${CHIBIOS_COMMUNITY_HAL_COMPONENTS} )
+    list( APPEND CHIBIOS_SOURCES_hal ${CHIBIOS_SOURCES_community_hal_${comp}} )
     if( CHIBIOS_SOURCES_community_hal_${comp}_${STM32_FAMILY} )
         list( APPEND CHIBIOS_SOURCES_hal ${CHIBIOS_SOURCES_community_hal_${comp}_${STM32_FAMILY}} )
     endif()

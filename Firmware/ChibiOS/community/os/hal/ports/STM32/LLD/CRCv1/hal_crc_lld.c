@@ -234,7 +234,7 @@ void crc_lld_stop(CRCDriver *crcp) {
 #else
   (void)crcp;
 #endif
-  rccDisableCRC(FALSE);
+  rccDisableCRC();
 }
 
 /**
