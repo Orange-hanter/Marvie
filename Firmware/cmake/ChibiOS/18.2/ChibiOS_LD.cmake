@@ -17,7 +17,7 @@ IF(NOT ChibiOS_LINKER_SCRIPT)
     FILE(WRITE ${CMAKE_BINARY_DIR}/chibios_link.ld.in
         "MEMORY\n"
         "{\n"
-            "flash0  : org = 0x08000000, len = \${STM32_FLASH_SIZE}\n"
+            "flash0  : org = \${STM32_FLASH_ORIGIN}, len = \${STM32_FLASH_SIZE}\n"
             "flash1  : org = 0x00000000, len = 0\n"
             "flash2  : org = 0x00000000, len = 0\n"
             "flash3  : org = 0x00000000, len = 0\n"
