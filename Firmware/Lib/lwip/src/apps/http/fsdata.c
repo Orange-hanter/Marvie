@@ -308,7 +308,7 @@ static const unsigned char FSDATA_ALIGN_PRE data__index_html[] FSDATA_ALIGN_POST
 
 
 
-const struct fsdata_file file__img_sics_gif[] = { {
+static const struct fsdata_file file__img_sics_gif[] = { {
 file_NULL,
 data__img_sics_gif,
 data__img_sics_gif + 16,
@@ -316,7 +316,7 @@ sizeof(data__img_sics_gif) - 16,
 FS_FILE_FLAGS_HEADER_INCLUDED | FS_FILE_FLAGS_HEADER_PERSISTENT,
 }};
 
-const struct fsdata_file file__404_html[] = { {
+static const struct fsdata_file file__404_html[] = { {
 file__img_sics_gif,
 data__404_html,
 data__404_html + 12,
@@ -324,7 +324,7 @@ sizeof(data__404_html) - 12,
 FS_FILE_FLAGS_HEADER_INCLUDED | FS_FILE_FLAGS_HEADER_PERSISTENT,
 }};
 
-const struct fsdata_file file__index_html[] = { {
+static const struct fsdata_file file__index_html[] = { {
 file__404_html,
 data__index_html,
 data__index_html + 12,
