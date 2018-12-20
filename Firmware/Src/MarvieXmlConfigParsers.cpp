@@ -137,15 +137,15 @@ MarvieXmlConfigParsers::ComPortConf** MarvieXmlConfigParsers::parseComPortsConfi
 	if( !comPortsConfigNode )
 		return nullptr;
 	ComPortConf** comPortsConfig = new ComPortConf*[comPortAssignments.size()];
-	for( uint i = 0; i < comPortAssignments.size(); ++i )
+	for( uint32_t i = 0; i < comPortAssignments.size(); ++i )
 		comPortsConfig[i] = nullptr;
 	auto clear = [&]()
 	{
-		for( uint i = 0; i < comPortAssignments.size(); ++i )
+		for( uint32_t i = 0; i < comPortAssignments.size(); ++i )
 			delete comPortsConfig[i];
 		delete comPortsConfig;
 	};
-	uint comNum = 0;
+	uint32_t comNum = 0;
 	XMLElement* comElement = comPortsConfigNode->FirstChildElement();
 	for( auto& iCom : comPortAssignments )
 	{

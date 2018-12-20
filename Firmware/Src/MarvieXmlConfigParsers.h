@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Lib/tinyxml2/tinyxml2.h"
+#include "tinyxml2.h"
 #include "Drivers/Interfaces/UsartBasedDevice.h"
 #include "Network/IpAddress.h"
 #include <vector>

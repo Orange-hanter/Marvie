@@ -1,4 +1,5 @@
 #include "CpuUsageMonitor.h"
+#include "board.h"
 #include "hal_lld.h"
 
 CpuUsageMonitor* CpuUsageMonitor::inst = nullptr;

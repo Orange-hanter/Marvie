@@ -1,6 +1,6 @@
 #include "TcpSocket.h"
 #include "Core/Assert.h"
-#include "Lib/lwip/src/include/lwip/tcp.h"
+#include "lwip/tcp.h"
 #include <string.h>
 
 TcpSocket::TcpSocket() : LwipSocketPrivate( NETCONN_TCP )

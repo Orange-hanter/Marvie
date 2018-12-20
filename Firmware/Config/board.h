@@ -57,7 +57,9 @@
 /*
  * MCU type as defined in the ST header.
  */
+#if !defined(STM32F407xx)
 #define STM32F407xx
+#endif
 
  /*
  * Ethernet PHY type.

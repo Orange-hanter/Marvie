@@ -18,7 +18,7 @@
 #include "MarviePackets.h"
 #include "MLinkServer.h"
 #include "MarviePlatform.h"
-#include "Lib/sha1/_Sha1.h"
+#include "_Sha1.h"
 #include "ff.h"
 #include "Apps/Modbus/RawModbusServer.h"
 #include "Apps/Modbus/TcpModbusServer.h"
@@ -30,6 +30,8 @@
 #define COM_USART_INPUT_BUFFER_SIZE   1024
 #define COM_USART_OUTPUT_BUFFER_SIZE  1024
 #define GSM_MODEM_OUTPUT_BUFFER       4096
+
+typedef unsigned int uint;
 
 class MarvieDevice : private AbstractSRSensor::SignalProvider, private MLinkServer::DataChannelCallback, private MLinkServer::AuthenticationCallback, private ModbusPotato::ISlaveHandler
 {

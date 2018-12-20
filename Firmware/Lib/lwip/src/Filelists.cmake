@@ -243,6 +243,8 @@ set(lwipallapps_SRCS
     ${lwipmbedtls_SRCS}
 )
 
+set(LWIP_INCLUDE_DIRS ${LWIP_DIR}/src/include)
+
 # Generate lwip/init.h (version info)
 configure_file(${LWIP_DIR}/src/include/lwip/init.h.cmake.in ${LWIP_DIR}/src/include/lwip/init.h)
 
@@ -271,9 +273,9 @@ endif (DOXYGEN_FOUND)
 add_library(lwipcore EXCLUDE_FROM_ALL ${lwipnoapps_SRCS})
 target_compile_options(lwipcore PRIVATE ${LWIP_COMPILER_FLAGS})
 target_compile_definitions(lwipcore PRIVATE ${LWIP_DEFINITIONS}  ${LWIP_MBEDTLS_DEFINITIONS})
-target_include_directories(lwipcore PRIVATE ${LWIP_INCLUDE_DIRS} ${LWIP_MBEDTLS_INCLUDE_DIRS})
+target_include_directories(lwipcore PUBLIC ${LWIP_INCLUDE_DIRS} PRIVATE ${LWIP_MBEDTLS_INCLUDE_DIRS})
 
 add_library(lwipallapps EXCLUDE_FROM_ALL ${lwipallapps_SRCS})
 target_compile_options(lwipallapps PRIVATE ${LWIP_COMPILER_FLAGS})
 target_compile_definitions(lwipallapps PRIVATE ${LWIP_DEFINITIONS}  ${LWIP_MBEDTLS_DEFINITIONS})
-target_include_directories(lwipallapps PRIVATE ${LWIP_INCLUDE_DIRS} ${LWIP_MBEDTLS_INCLUDE_DIRS})
+target_include_directories(lwipallapps PRIVATE PUBLIC ${LWIP_INCLUDE_DIRS} PRIVATE ${LWIP_MBEDTLS_INCLUDE_DIRS})

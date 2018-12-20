@@ -1,6 +1,6 @@
 #include "UdpSocket.h"
 #include "Core/Assert.h"
-#include "Lib/lwip/src/include/lwip/udp.h"
+#include "lwip/udp.h"
 #include <string.h>
 
 UdpSocket::UdpSocket() : LwipSocketPrivate( NETCONN_UDP )

@@ -48,7 +48,7 @@ void UdpStressTestServer::exec()
 		lastNum = num;
 		counter++;
 		Header header = { counter, lostCounter, errCounter, 0 };
-		for( uint i = 0; i < additionalSize / 4; ++i )
+		for( uint32_t i = 0; i < additionalSize / 4; ++i )
 			tmp[i + sizeof( header )] = 0x55;
 		header.crc = crc32Stm( crc32Stm( 0xFFFFFFFF, ( uint32_t* )&header, 3 ), ( uint32_t* )( tmp + sizeof( header ) ), additionalSize / 4 );
 		memcpy( tmp, &header, sizeof( header ) );

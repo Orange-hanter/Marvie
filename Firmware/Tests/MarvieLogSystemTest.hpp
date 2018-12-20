@@ -1,5 +1,6 @@
 #include "FileSystem/FileSystem.h"
 #include "Log/MarvieLog.h"
+#include "Core/Assert.h"
 #include "hal.h"
 #include "Crc32HW.h"
 #include <math.h>

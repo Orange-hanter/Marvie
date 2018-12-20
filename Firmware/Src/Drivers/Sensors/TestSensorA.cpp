@@ -65,7 +65,7 @@ TestSensorA::Data* TestSensorA::readData()
 	sprintf( str, " : CallNum = %d\n", data.readNum );
 	io->write( ( const uint8_t* )str, strlen( str ), TIME_INFINITE );
 
-	for( uint i = 0; i < _delay / 10; ++i )
+	for( uint32_t i = 0; i < _delay / 10; ++i )
 	{
 		auto t0 = chVTGetSystemTime();
 		auto t1 = t0 + TIME_US2I( 10000 * _load / 100 );

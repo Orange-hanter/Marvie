@@ -45,7 +45,7 @@ public:
 		: i( initializer_list_helper( flags.begin(), flags.end() ) ) {}
 
 	constexpr inline Flags &operator&=( int mask ) noexcept { i &= mask; return *this; }
-	constexpr inline Flags &operator&=( uint mask ) noexcept { i &= mask; return *this; }
+	constexpr inline Flags &operator&=( unsigned int mask ) noexcept { i &= mask; return *this; }
 	constexpr inline Flags &operator&=( Enum mask ) noexcept { i &= Int( mask ); return *this; }
 	constexpr inline Flags &operator|=( Flags f ) noexcept { i |= f.i; return *this; }
 	constexpr inline Flags &operator|=( Enum f ) noexcept { i |= Int( f ); return *this; }
@@ -59,7 +59,7 @@ public:
 	constexpr inline Flags operator^( Flags f ) const noexcept { return Flags( Flag( i ^ f.i ) ); }
 	constexpr inline Flags operator^( Enum f ) const noexcept { return Flags( Flag( i ^ Int( f ) ) ); }
 	constexpr inline Flags operator&( int mask ) const noexcept { return Flags( Flag( i & mask ) ); }
-	constexpr inline Flags operator&( uint mask ) const noexcept { return Flags( Flag( i & mask ) ); }
+	constexpr inline Flags operator&( unsigned int mask ) const noexcept { return Flags( Flag( i & mask ) ); }
 	constexpr inline Flags operator&( Enum f ) const noexcept { return Flags( Flag( i & Int( f ) ) ); }
 	constexpr inline Flags operator~() const noexcept { return Flags( Flag( ~i ) ); }
 

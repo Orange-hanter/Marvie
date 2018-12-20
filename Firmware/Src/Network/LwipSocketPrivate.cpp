@@ -134,7 +134,7 @@ SocketError LwipSocketPrivate::socketError() const
 
 SocketError LwipSocketPrivate::socketError( const netconn* con )
 {
-	switch( con->last_err )
+	switch( con->pending_err )
 	{
 	case err_enum_t::ERR_OK:
 		if( con->recvmbox != 0 && con->type == NETCONN_TCP && con->pcb.tcp->state == tcp_state::CLOSE_WAIT )

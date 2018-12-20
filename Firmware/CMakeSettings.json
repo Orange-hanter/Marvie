@@ -1,0 +1,281 @@
+﻿{
+  "environments": [
+    {
+      "elfName": "firmware.elf"
+    }
+  ],
+  "configurations": [
+    {
+      "name": "Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [
+        "GCC"
+      ],
+      "environments": [
+        {
+          "buildRoot": "${workspaceRoot}/build/Debug"
+        }
+      ],
+      "buildRoot": "${workspaceRoot}/build/${name}",
+      "installRoot": "${workspaceRoot}/install/${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_MODULE_PATH",
+          "value": "${workspaceRoot}/CMake/"
+        },
+        {
+          "name": "TOOLCHAIN_PREFIX",
+          "value": "C:/SysGCC/arm-eabi"
+        },
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "${workspaceRoot}/CMake/gcc_stm32.cmake"
+        },
+        {
+          "name": "TARGET_TRIPLET",
+          "value": "arm-eabi"
+        },
+        {
+          "name": "STM32_CHIP",
+          "value": "STM32F407VE"
+        },
+        {
+          "name": "STM32_FAMILY",
+          "value": "F4"
+        },
+        {
+          "name": "CHIBIOS_ROOT",
+          "value": "${workspaceRoot}/ChibiOS"
+        },
+        {
+          "name": "CHIBIOS_CHCONF_FILE",
+          "value": "${workspaceRoot}/Config/chconf.h"
+        },
+        {
+          "name": "CHIBIOS_HALCONF_FILE",
+          "value": "${workspaceRoot}/Config/halconf.h"
+        },
+        {
+          "name": "CHIBIOS_HALCONF_COMMUNITY_FILE",
+          "value": "${workspaceRoot}/Config/halconf_community.h"
+        },
+        {
+          "name": "CHIBIOS_PROCESS_STACK_SIZE",
+          "value": "0x800"
+        },
+        {
+          "name": "CHIBIOS_MAIN_STACK_SIZE",
+          "value": "0x800"
+        }
+      ]
+    },
+    {
+      "name": "Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "inheritEnvironments": [
+        "GCC"
+      ],
+      "environments": [
+        {
+          "buildRoot": "${workspaceRoot}/build/Release"
+        }
+      ],
+      "buildRoot": "${workspaceRoot}/build/${name}",
+      "installRoot": "${workspaceRoot}/install/${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_MODULE_PATH",
+          "value": "${workspaceRoot}/CMake/"
+        },
+        {
+          "name": "TOOLCHAIN_PREFIX",
+          "value": "C:/SysGCC/arm-eabi"
+        },
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "${workspaceRoot}/CMake/gcc_stm32.cmake"
+        },
+        {
+          "name": "TARGET_TRIPLET",
+          "value": "arm-eabi"
+        },
+        {
+          "name": "STM32_CHIP",
+          "value": "STM32F407VE"
+        },
+        {
+          "name": "STM32_FAMILY",
+          "value": "F4"
+        },
+        {
+          "name": "CHIBIOS_ROOT",
+          "value": "${workspaceRoot}/ChibiOS"
+        },
+        {
+          "name": "CHIBIOS_CHCONF_FILE",
+          "value": "${workspaceRoot}/Config/chconf.h"
+        },
+        {
+          "name": "CHIBIOS_HALCONF_FILE",
+          "value": "${workspaceRoot}/Config/halconf.h"
+        },
+        {
+          "name": "CHIBIOS_HALCONF_COMMUNITY_FILE",
+          "value": "${workspaceRoot}/Config/halconf_community.h"
+        },
+        {
+          "name": "CHIBIOS_PROCESS_STACK_SIZE",
+          "value": "0x800"
+        },
+        {
+          "name": "CHIBIOS_MAIN_STACK_SIZE",
+          "value": "0x800"
+        }
+      ]
+    },
+    {
+      "name": "MinSizeRel",
+      "generator": "Ninja",
+      "configurationType": "MinSizeRel",
+      "inheritEnvironments": [
+        "GCC"
+      ],
+      "environments": [
+        {
+          "buildRoot": "${workspaceRoot}/build/MinSizeRel"
+        }
+      ],
+      "buildRoot": "${workspaceRoot}/build/${name}",
+      "installRoot": "${workspaceRoot}/install/${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_MODULE_PATH",
+          "value": "${workspaceRoot}/CMake/"
+        },
+        {
+          "name": "TOOLCHAIN_PREFIX",
+          "value": "C:/SysGCC/arm-eabi"
+        },
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "${workspaceRoot}/CMake/gcc_stm32.cmake"
+        },
+        {
+          "name": "TARGET_TRIPLET",
+          "value": "arm-eabi"
+        },
+        {
+          "name": "STM32_CHIP",
+          "value": "STM32F407VE"
+        },
+        {
+          "name": "STM32_FAMILY",
+          "value": "F4"
+        },
+        {
+          "name": "CHIBIOS_ROOT",
+          "value": "${workspaceRoot}/ChibiOS"
+        },
+        {
+          "name": "CHIBIOS_CHCONF_FILE",
+          "value": "${workspaceRoot}/Config/chconf.h"
+        },
+        {
+          "name": "CHIBIOS_HALCONF_FILE",
+          "value": "${workspaceRoot}/Config/halconf.h"
+        },
+        {
+          "name": "CHIBIOS_HALCONF_COMMUNITY_FILE",
+          "value": "${workspaceRoot}/Config/halconf_community.h"
+        },
+        {
+          "name": "CHIBIOS_PROCESS_STACK_SIZE",
+          "value": "0x800"
+        },
+        {
+          "name": "CHIBIOS_MAIN_STACK_SIZE",
+          "value": "0x800"
+        }
+      ]
+    },
+    {
+      "name": "RelWithDebInfo",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "inheritEnvironments": [
+        "GCC"
+      ],
+      "environments": [
+        {
+          "buildRoot": "${workspaceRoot}/build/RelWithDebInfo"
+        }
+      ],
+      "buildRoot": "${workspaceRoot}/build/${name}",
+      "installRoot": "${workspaceRoot}/install/${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_MODULE_PATH",
+          "value": "${workspaceRoot}/CMake/"
+        },
+        {
+          "name": "TOOLCHAIN_PREFIX",
+          "value": "C:/SysGCC/arm-eabi"
+        },
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "${workspaceRoot}/CMake/gcc_stm32.cmake"
+        },
+        {
+          "name": "TARGET_TRIPLET",
+          "value": "arm-eabi"
+        },
+        {
+          "name": "STM32_CHIP",
+          "value": "STM32F407VE"
+        },
+        {
+          "name": "STM32_FAMILY",
+          "value": "F4"
+        },
+        {
+          "name": "CHIBIOS_ROOT",
+          "value": "${workspaceRoot}/ChibiOS"
+        },
+        {
+          "name": "CHIBIOS_CHCONF_FILE",
+          "value": "${workspaceRoot}/Config/chconf.h"
+        },
+        {
+          "name": "CHIBIOS_HALCONF_FILE",
+          "value": "${workspaceRoot}/Config/halconf.h"
+        },
+        {
+          "name": "CHIBIOS_HALCONF_COMMUNITY_FILE",
+          "value": "${workspaceRoot}/Config/halconf_community.h"
+        },
+        {
+          "name": "CHIBIOS_PROCESS_STACK_SIZE",
+          "value": "0x800"
+        },
+        {
+          "name": "CHIBIOS_MAIN_STACK_SIZE",
+          "value": "0x800"
+        }
+      ]
+    }
+  ]
+}

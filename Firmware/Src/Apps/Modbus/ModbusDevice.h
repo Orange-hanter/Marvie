@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Lib/modbus/ModbusMaster.h"
-#include "Lib/modbus/ModbusSlave.h"
-#include "Lib/modbus/ModbusASCII.h"
-#include "Lib/modbus/ModbusRTU.h"
-#include "Lib/modbus/ModbusIP.h"
+#include "ModbusMaster.h"
+#include "ModbusSlave.h"
+#include "ModbusASCII.h"
+#include "ModbusRTU.h"
+#include "ModbusIP.h"
 
 class ModbusDevice
 {
