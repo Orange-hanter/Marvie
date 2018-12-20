@@ -1,0 +1,49 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "cppdbg",
+      "name": "stm32",
+      "project": "CMakeLists.txt",
+      "cwd": "${workspaceRoot}",
+      "program": "${env.buildRoot}/${env.elfName}",
+      "MIMode": "gdb",
+      "externalConsole": true,
+      "inheritEnvironments": [
+        "gcc_arm"
+      ],
+      "miDebuggerPath": "C:/SysGCC/arm-eabi/bin/arm-eabi-gdb.exe",
+      "setupCommands": [
+        {
+          "text": "cd ${env.buildRoot}"
+        },
+        {
+          "text": "target remote localhost:2331",
+          "ignoreFailures": false
+        },
+        {
+          "text": "file ${env.elfName}",
+          "ignoreFailures": false
+        },
+        {
+          "text": "monitor reset",
+          "ignoreFailures": false
+        },
+        {
+          "text": "load",
+          "ignoreFailures": false
+        },
+        {
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "visualizerFile": "${debugInfo.linuxNatvisPath}",
+      "showDisplayString": true,
+      "launchCompleteCommand": "None",
+      "filterStderr": true,
+      "filterStdout": true
+    }
+  ]
+}
