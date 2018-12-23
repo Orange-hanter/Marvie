@@ -32,6 +32,10 @@ extern "C"
 	{
 		return chHeapAlloc( nullptr, nbytes );
 	}
+	void* calloc( size_t count, size_t size )
+	{
+		return chHeapAlloc( nullptr, size * count );
+	}
 	void free( void* ptr )
 	{
 		chHeapFree( ptr );

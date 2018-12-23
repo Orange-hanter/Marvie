@@ -149,7 +149,13 @@ add_executable(${CMAKE_PROJECT_NAME}.elf
 	${chibios_various_SRCS}
 	${test_SRCS}
 )
-target_link_libraries(${CMAKE_PROJECT_NAME}.elf lwipcore fatfs modbus tinyxml2 _sha1)
+target_link_libraries(${CMAKE_PROJECT_NAME}.elf 
+                      lwipcore 
+					  fatfs 
+					  modbus 
+					  tinyxml2 
+					  _sha1
+)
 
 STM32_SET_TARGET_PROPERTIES(${CMAKE_PROJECT_NAME}.elf)
 STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}.elf)
