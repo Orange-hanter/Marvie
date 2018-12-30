@@ -201,6 +201,10 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	ui.sdLoadLabel->installEventFilter( new SdLoadChartEventFilter( ui.sdLoadLabel, sdStat ) );
 	resetDeviceLoad();
 
+	deviceVersionMenu = new QMenu( this );
+	deviceVersionMenu->addAction( QIcon( ":/MarvieController/icons/icons8-uninstalling-updates-96.png" ), "Update firmware" );
+	deviceVersionMenu->setFixedWidth( 150 );
+
 	sdCardMenu = new QMenu( this );
 	sdCardMenu->addAction( QIcon( ":/MarvieController/icons/icons8-eject-48.png" ), "Eject" );
 	sdCardMenu->addAction( QIcon( ":/MarvieController/icons/icons8-eraser-60.png" ), "Format" );
@@ -339,6 +343,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	QObject::connect( ui.updateAllSensorsButton, &QToolButton::released, this, &MarvieController::updateAllSensorsButtonClicked );
 	QObject::connect( ui.updateSensorButton, &QToolButton::released, this, &MarvieController::updateSensorButtonClicked );
 	QObject::connect( ui.syncDateTimeButton, &QToolButton::released, this, &MarvieController::syncDateTimeButtonClicked );
+	QObject::connect( ui.deviceVersionMenuButton, &QToolButton::released, this, &MarvieController::deviceVersionMenuButtonClicked );
 	QObject::connect( ui.sdCardMenuButton, &QToolButton::released, this, &MarvieController::sdCardMenuButtonClicked );
 	QObject::connect( ui.logMenuButton, &QToolButton::released, this, &MarvieController::logMenuButtonClicked );
 
@@ -394,6 +399,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	QObject::connect( ui.uploadConfigButton, &QToolButton::released, this, &MarvieController::uploadConfigButtonClicked );
 	QObject::connect( ui.downloadConfigButton, &QToolButton::released, this, &MarvieController::downloadConfigButtonClicked );
 
+	QObject::connect( deviceVersionMenu, &QMenu::triggered, this, &MarvieController::deviceVersionMenuActionTriggered );
 	QObject::connect( sdCardMenu, &QMenu::triggered, this, &MarvieController::sdCardMenuActionTriggered );
 	QObject::connect( logMenu, &QMenu::triggered, this, &MarvieController::logMenuActionTriggered );
 
@@ -790,6 +796,11 @@ void MarvieController::updateSensorButtonClicked()
 	}
 }
 
+void MarvieController::deviceVersionMenuButtonClicked()
+{
+	deviceVersionMenu->popup( ui.deviceVersionMenuButton->mapToGlobal( ui.deviceVersionMenuButton->rect().bottomLeft() ) );
+}
+
 void MarvieController::syncDateTimeButtonClicked()
 {
 	DateTime dateTime = toDeviceDateTime( QDateTime::currentDateTime() );
@@ -808,6 +819,22 @@ void MarvieController::logMenuButtonClicked()
 	logMenu->actions()[0]->setEnabled( deviceSdCardStatus == SdCardStatus::Working );
 	logMenu->actions()[1]->setEnabled( deviceSdCardStatus == SdCardStatus::Working );
 	logMenu->popup( ui.logMenuButton->mapToGlobal( ui.logMenuButton->rect().bottomLeft() ) );
+}
+
+void MarvieController::deviceVersionMenuActionTriggered( QAction* action )
+{
+	QSettings setting( "settings.ini", QSettings::Format::IniFormat );
+	QString name = QFileDialog::getOpenFileName( this, "Select firmware file", setting.value( "firmwareFileDir", QDir::currentPath() ).toString(), "Bin files (*.bin)" );
+	if( name.isEmpty() )
+		return;
+	setting.setValue( "firmwareFileDir", QDir( name ).absolutePath().remove( QDir( name ).dirName() ) );
+	QFile file( name );
+
+	file.open( QIODevice::ReadOnly );
+	mlink.sendChannelData( MarviePackets::ComplexChannel::FirmwareChannel, file.readAll() );
+	DataTransferProgressWindow window( &mlink, MarviePackets::ComplexChannel::FirmwareChannel, DataTransferProgressWindow::TransferDir::Sending, this );
+	window.setTitleText( "Uploading firmware" );
+	window.exec();
 }
 
 void MarvieController::sdCardMenuActionTriggered( QAction* action )
@@ -1653,6 +1680,7 @@ void MarvieController::mlinkStateChanged( MLinkClient::State s )
 	case MLinkClient::State::Connected:
 		accountWindow->logInConfirmed();
 		ui.syncDateTimeButton->show();
+		ui.deviceVersionMenuButton->show();
 		ui.sdCardMenuButton->show();
 		ui.logMenuButton->show();
 
@@ -1820,6 +1848,8 @@ void MarvieController::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
 	case MarviePackets::Type::FirmwareDescType:
 	{
 		const MarviePackets::FirmwareDesc* desc = reinterpret_cast< const MarviePackets::FirmwareDesc* >( data.constData() );
+		deviceCoreVersion = desc->coreVersion;
+		updateDeviceVersion();
 		QString targetName = QString( desc->targetName );
 		ui.targetDeviceComboBox->setCurrentText( targetName );
 		if( ui.targetDeviceComboBox->currentText() != targetName )
@@ -3492,6 +3522,11 @@ void MarvieController::resetDeviceLoad()
 	sdStat->setStatistics( 0, 0, 0 );
 }
 
+void MarvieController::updateDeviceVersion()
+{
+	ui.deviceVersionLabel->setText( "Version: " + deviceCoreVersion );
+}
+
 void MarvieController::updateDeviceStatus( const MarviePackets::DeviceStatus* status )
 {
 	ui.deviceDateTimeLabel->setText( QString( "Time: " ) + printDateTime( toQtDateTime( status->dateTime ) ) );
@@ -3677,10 +3712,12 @@ void MarvieController::resetDeviceInfo()
 	deviceSdCardStatus = SdCardStatus::Unknown;
 	deviceLogState = LogState::Unknown;
 
+	ui.deviceVersionLabel->setText( "Version: unknown" );
 	ui.deviceDateTimeLabel->setText( "Time: unknown" );
 	ui.deviceStateLabel->setText( "State: unknown" );
-	ui.sdCardStatusLabel->setText( "SD card: unknown" );	
+	ui.sdCardStatusLabel->setText( "SD card: unknown" );
 
+	ui.deviceVersionMenuButton->hide();
 	ui.syncDateTimeButton->hide();
 	ui.sdCardMenuButton->hide();
 	ui.logMenuButton->hide();

@@ -13,6 +13,10 @@
         "-DCHIBIOS_PROCESS_STACK_SIZE=0x800",
         "-DCHIBIOS_MAIN_STACK_SIZE=0x800"
     ],
+    "cmake.buildDirectory": "${workspaceRoot}/build",
     "cmake.configureOnOpen": true,
-    "C_Cpp.configurationWarnings": "Disabled"
+    "C_Cpp.configurationWarnings": "Disabled",
+    "C_Cpp.clang_format_style": "file",
+    //"cortex-debug.JLinkGDBServerPath": "C:/SysGCC/arm-eabi/bin/arm-eabi-gdb.exe",
+    "cortex-debug.JLinkGDBServerPath": "C:/Users/User/Documents/Visual Studio 2017/Projects/JLinkGDBServerCLFake/Release/JLinkGDBServerCLFake.exe"
 }

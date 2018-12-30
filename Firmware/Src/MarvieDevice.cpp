@@ -451,6 +451,25 @@ void MarvieDevice::mainThreadMain()
 		}
 		if( em & MainThreadEvent::EjectSdCardRequest )
 			ejectSdCard();
+		if( em & MainThreadEvent::NewFirmwareDatFile )
+		{
+			datFilesMutex.lock();
+			auto& file = datFiles[MarviePackets::ComplexChannel::FirmwareChannel];
+			if( file )
+			{
+				char path[] = "/Temp/0.dat";
+				path[6] = '0' + MarviePackets::ComplexChannel::FirmwareChannel;
+
+				f_unlink( "/firmware.bin" );
+				f_close( file );
+				f_rename( path, "/firmware.bin" );
+				fileLog.addRecorg( "New firmware is downloaded" );
+
+				delete file;
+				file = nullptr;
+			}
+			datFilesMutex.unlock();
+		}
 		if( em & MainThreadEvent::CleanMonitoringLogRequestEvent )
 		{
 			if( marvieLog )

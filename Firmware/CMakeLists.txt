@@ -1,18 +1,25 @@
-project(firmware)
+project(marvie)
 cmake_minimum_required(VERSION 3.11)
 enable_language(ASM)
 #set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
+set(STM32_FLASH_ORIGIN "0x08008400")
+set(STM32_FLASH_SIZE "479K")
+set(STM32_RAM_SIZE "128K")
+set(STM32_CCRAM_SIZE "64K")
+
 set(WIN32 1)
 include(gcc_stm32)
 
+set(CHIBIOS_CONFIG_DIR "Config/Firmware")
 find_package(ChibiOS 18 COMPONENTS rt hal REQUIRED)
 
 include_directories(
 	${ChibiOS_INCLUDE_DIRS}
 	ChibiOS/os/various
 	ChibiOS/os/various/lwip_bindings/
-	Config/
+    Config/
+    Config/Firmware
 )
 
 add_subdirectory(Lib/lwip)
@@ -117,8 +124,14 @@ set(test_SRCS
 	Tests/UdpStressTestServer/UdpStressTestServer.cpp
 )
 
-set(PROJECT_SOURCES
-    Config/board.c
+add_definitions(-DCORTEX_USE_FPU=FALSE -DUSE_ASSERT=TRUE)
+
+set(STM32_LINKER_SCRIPT ${ChibiOS_LINKER_SCRIPT})
+
+# Marvie firmware --------------------------------------------------------
+
+set(firmware_SRCS
+	Config/board.c
     Src/BRSensorReader.cpp
     Src/Crc32HW.cpp
     Src/main.cpp
@@ -131,32 +144,28 @@ set(PROJECT_SOURCES
     Src/SingleBRSensorReader.cpp
 )
 
-add_definitions(-DCORTEX_USE_FPU=FALSE -DUSE_ASSERT=TRUE)
-
-set(STM32_LINKER_SCRIPT ${ChibiOS_LINKER_SCRIPT})
-
-add_executable(${CMAKE_PROJECT_NAME}.elf 
-	${PROJECT_SOURCES}
-	${apps_SRCS} 
-	${core_SRCS} 
-	${drivers_SRCS} 
-	${fileSystem_SRCS} 
-	${log_SRCS} 
-	${network_SRCS} 
-	${sensorService_SRCS} 
-	${support_SRCS} 
+add_executable(${CMAKE_PROJECT_NAME}_firmware.elf
+	${firmware_SRCS}
+	${apps_SRCS}
+	${core_SRCS}
+	${drivers_SRCS}
+	${fileSystem_SRCS}
+	${log_SRCS}
+	${network_SRCS}
+	${sensorService_SRCS}
+	${support_SRCS}
 	${ChibiOS_SOURCES}
 	${chibios_various_SRCS}
 	${test_SRCS}
 )
-target_link_libraries(${CMAKE_PROJECT_NAME}.elf 
-                      lwipcore 
-					  fatfs 
-					  modbus 
-					  tinyxml2 
-					  _sha1
+target_link_libraries(${CMAKE_PROJECT_NAME}_firmware.elf
+    lwipcore
+	fatfs
+	modbus
+	tinyxml2
+	_sha1
 )
 
-STM32_SET_TARGET_PROPERTIES(${CMAKE_PROJECT_NAME}.elf)
-STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}.elf)
-STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}.elf)
+STM32_SET_TARGET_PROPERTIES(${CMAKE_PROJECT_NAME}_firmware.elf)
+STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}_firmware.elf)
+STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}_firmware.elf)

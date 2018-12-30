@@ -18,7 +18,7 @@
 #include "MonitoringLog.h"
 #include "SynchronizationWindow.h"
 
-#include "../Firmware/MarviePackets.h"
+#include "../Firmware/Src/MarviePackets.h"
 
 #include "ui_MarvieController.h"
 #include "ui_SdStatistics.h"
@@ -48,10 +48,12 @@ private slots:
 	void stopVPortsButtonClicked();
 	void updateAllSensorsButtonClicked();
 	void updateSensorButtonClicked();
+	void deviceVersionMenuButtonClicked();
 	void syncDateTimeButtonClicked();
 	void sdCardMenuButtonClicked();
 	void logMenuButtonClicked();
 
+	void deviceVersionMenuActionTriggered( QAction* action );
 	void sdCardMenuActionTriggered( QAction* action );
 	void logMenuActionTriggered( QAction* action );
 
@@ -123,6 +125,7 @@ private:
 	void updateDeviceCpuLoad( float cpuLoad );
 	void updateDeviceMemoryLoad( const MarviePackets::MemoryLoad* memoryLoad );
 	void resetDeviceLoad();
+	void updateDeviceVersion();
 	void updateDeviceStatus( const MarviePackets::DeviceStatus* );
 	void updateEthernetStatus( const MarviePackets::EthernetStatus* );
 	void updateGsmStatus( const MarviePackets::GsmStatus* );
@@ -202,7 +205,7 @@ private:
 		Ui::SdStatisticsForm ui;
 	}*sdStat;
 
-	QMenu* sdCardMenu, *logMenu;
+	QMenu* deviceVersionMenu, *sdCardMenu, *logMenu;
 
 	QMenu* monitoringDataViewMenu;
 
@@ -220,6 +223,7 @@ private:
 
 	SynchronizationWindow* syncWindow;
 
+	QString deviceCoreVersion;
 	QVector< QString > deviceVPorts, deviceSensors, deviceSupportedSensors;
 	enum class DeviceState { Unknown, IncorrectConfiguration, Working, Reconfiguration } deviceState;
 	enum class SdCardStatus : uint8_t { Unknown, NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } deviceSdCardStatus;

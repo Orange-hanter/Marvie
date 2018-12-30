@@ -14,7 +14,7 @@
       ],
       "environments": [
         {
-          "buildRoot": "${workspaceRoot}/build/Debug"
+          "buildRoot": "${workspaceRoot}/build/"
         }
       ],
       "buildRoot": "${workspaceRoot}/build/${name}",
@@ -50,18 +50,6 @@
         {
           "name": "CHIBIOS_ROOT",
           "value": "${workspaceRoot}/ChibiOS"
-        },
-        {
-          "name": "CHIBIOS_CHCONF_FILE",
-          "value": "${workspaceRoot}/Config/chconf.h"
-        },
-        {
-          "name": "CHIBIOS_HALCONF_FILE",
-          "value": "${workspaceRoot}/Config/halconf.h"
-        },
-        {
-          "name": "CHIBIOS_HALCONF_COMMUNITY_FILE",
-          "value": "${workspaceRoot}/Config/halconf_community.h"
         },
         {
           "name": "CHIBIOS_PROCESS_STACK_SIZE",
@@ -82,7 +70,7 @@
       ],
       "environments": [
         {
-          "buildRoot": "${workspaceRoot}/build/Release"
+          "buildRoot": "${workspaceRoot}/build/"
         }
       ],
       "buildRoot": "${workspaceRoot}/build/${name}",
@@ -118,18 +106,6 @@
         {
           "name": "CHIBIOS_ROOT",
           "value": "${workspaceRoot}/ChibiOS"
-        },
-        {
-          "name": "CHIBIOS_CHCONF_FILE",
-          "value": "${workspaceRoot}/Config/chconf.h"
-        },
-        {
-          "name": "CHIBIOS_HALCONF_FILE",
-          "value": "${workspaceRoot}/Config/halconf.h"
-        },
-        {
-          "name": "CHIBIOS_HALCONF_COMMUNITY_FILE",
-          "value": "${workspaceRoot}/Config/halconf_community.h"
         },
         {
           "name": "CHIBIOS_PROCESS_STACK_SIZE",
@@ -150,7 +126,7 @@
       ],
       "environments": [
         {
-          "buildRoot": "${workspaceRoot}/build/MinSizeRel"
+          "buildRoot": "${workspaceRoot}/build/"
         }
       ],
       "buildRoot": "${workspaceRoot}/build/${name}",
@@ -186,18 +162,6 @@
         {
           "name": "CHIBIOS_ROOT",
           "value": "${workspaceRoot}/ChibiOS"
-        },
-        {
-          "name": "CHIBIOS_CHCONF_FILE",
-          "value": "${workspaceRoot}/Config/chconf.h"
-        },
-        {
-          "name": "CHIBIOS_HALCONF_FILE",
-          "value": "${workspaceRoot}/Config/halconf.h"
-        },
-        {
-          "name": "CHIBIOS_HALCONF_COMMUNITY_FILE",
-          "value": "${workspaceRoot}/Config/halconf_community.h"
         },
         {
           "name": "CHIBIOS_PROCESS_STACK_SIZE",
@@ -218,7 +182,7 @@
       ],
       "environments": [
         {
-          "buildRoot": "${workspaceRoot}/build/RelWithDebInfo"
+          "buildRoot": "${workspaceRoot}/build/"
         }
       ],
       "buildRoot": "${workspaceRoot}/build/${name}",
@@ -254,18 +218,6 @@
         {
           "name": "CHIBIOS_ROOT",
           "value": "${workspaceRoot}/ChibiOS"
-        },
-        {
-          "name": "CHIBIOS_CHCONF_FILE",
-          "value": "${workspaceRoot}/Config/chconf.h"
-        },
-        {
-          "name": "CHIBIOS_HALCONF_FILE",
-          "value": "${workspaceRoot}/Config/halconf.h"
-        },
-        {
-          "name": "CHIBIOS_HALCONF_COMMUNITY_FILE",
-          "value": "${workspaceRoot}/Config/halconf_community.h"
         },
         {
           "name": "CHIBIOS_PROCESS_STACK_SIZE",
