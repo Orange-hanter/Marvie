@@ -31,7 +31,6 @@ private:
 	int channelId;
 	TransferDir dir;
 	int errPacketId;
-	bool cancellationRequested;
 	QProgressBar* progressBar;
 	QToolButton* button;
 };

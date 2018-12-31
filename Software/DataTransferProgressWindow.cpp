@@ -8,7 +8,6 @@ DataTransferProgressWindow::DataTransferProgressWindow( MLinkClient* link, uint8
 	this->channelId = channelId;
 	this->dir = dir;
 	this->errPacketId = errPacketId;
-	cancellationRequested = false;
 
 	QWidget* centralWindget = new QWidget;
 	QHBoxLayout* layout = new QHBoxLayout( centralWindget );
@@ -73,17 +72,11 @@ void DataTransferProgressWindow::buttonClicked()
 				return;
 			}
 		}
-		cancellationRequested = true;
-		button->hide();
-		progressBar->setRange( 0, 0 );
+
+		reject();
 	}
 	else
-	{
-		if( cancellationRequested )
-			reject();
-		else
-			accept();
-	}
+		accept();
 }
 
 void DataTransferProgressWindow::stateChanged( MLinkClient::State state )

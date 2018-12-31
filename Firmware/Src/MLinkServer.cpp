@@ -742,6 +742,7 @@ void MLinkServer::closeLinkM( Error err )
 		linkState = State::Listening;
 		flags |= ( eventflags_t )Event::StateChanged;
 	}
+	sessionConfirmed = false;
 	chSysUnlock();
 	socket->eventSource()->unregister( &socketListener );
 	socket->disconnect();
