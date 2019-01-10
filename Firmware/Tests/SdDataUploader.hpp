@@ -27,9 +27,9 @@ namespace SdDataUploader
 
 		auto ethConf = EthernetThread::instance()->currentConfig();
 		ethConf.addressMode = EthernetThread::AddressMode::Static;
-		ethConf.ipAddress = IpAddress( 192, 168, 2, 10 );
+		ethConf.ipAddress = IpAddress( 192, 168, 10, 10 );
 		ethConf.netmask = 0xFFFFFF00;
-		ethConf.gateway = IpAddress( 192, 168, 2, 1 );
+		ethConf.gateway = IpAddress( 192, 168, 10, 1 );
 		EthernetThread::instance()->setConfig( ethConf );
 		EthernetThread::instance()->startThread( NORMALPRIO );
 

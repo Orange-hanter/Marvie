@@ -15,9 +15,9 @@ namespace LwipEthernetTest
 
 		auto conf = EthernetThread::instance()->currentConfig();
 		conf.addressMode = EthernetThread::AddressMode::Static;
-		conf.ipAddress = IpAddress( 192, 168, 2, 10 );
+		conf.ipAddress = IpAddress( 192, 168, 10, 10 );
 		conf.netmask = 0xFFFFFF00;
-		conf.gateway = IpAddress( 192, 168, 2, 1 );
+		conf.gateway = IpAddress( 192, 168, 10, 1 );
 		EthernetThread::instance()->setConfig( conf );
 		EthernetThread::instance()->startThread();
 

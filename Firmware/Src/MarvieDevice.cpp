@@ -12,7 +12,7 @@ using namespace MarvieXmlConfigParsers;
 
 MarvieDevice* MarvieDevice::_inst = nullptr;
 
-MarvieDevice::MarvieDevice() : settingsBackupRegs( sizeof( SettingsBackup ) / 4 + 1, SettingsBackupOffset ), configXmlDataSendingSemaphore( false )
+MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 {
 	MarviePlatform::comPortAssignments( comPortAssignments );
 
@@ -94,6 +94,10 @@ MarvieDevice::MarvieDevice() : settingsBackupRegs( sizeof( SettingsBackup ) / 4 
 		}
 	}
 
+	// power down pin config
+	palSetPadMode( GPIOC, 13, PAL_MODE_INPUT );
+	palSetPadCallbackI( GPIOC, 13, powerDownExtiCallback, ( void* )13 );
+
 	// SimGsm PWR KEY // TEMP!
 	palSetPadMode( GPIOD, 1, PAL_MODE_OUTPUT_PUSHPULL | PAL_STM32_OSPEED_HIGHEST );
 	palSetPad( GPIOD, 1 );
@@ -117,15 +121,8 @@ MarvieDevice::MarvieDevice() : settingsBackupRegs( sizeof( SettingsBackup ) / 4 
 
 	crcStart( &CRCD1, nullptr );
 
-	SettingsBackup& backup = ( SettingsBackup& )settingsBackupRegs.value( 0 );
-	if( !settingsBackupRegs.isValid() )
-	{
-		backup.flags.ethernetDhcp = false;
-		backup.eth.ip = IpAddress( 192, 168, 2, 10 );
-		backup.eth.netmask = 0xFFFFFF00;
-		backup.eth.gateway = IpAddress( 192, 168, 2, 1 );
-		settingsBackupRegs.setValid();
-	}
+	MarvieBackup* backup = MarvieBackup::instance();
+	backup->init();
 
 	deviceState = DeviceState::IncorrectConfiguration;
 	configError = ConfigError::NoError;
@@ -171,10 +168,10 @@ MarvieDevice::MarvieDevice() : settingsBackupRegs( sizeof( SettingsBackup ) / 4 
 	memoryLoad.sdCardFreeSpace = 0;
 
 	auto ethConf = EthernetThread::instance()->currentConfig();
-	ethConf.addressMode = backup.flags.ethernetDhcp ? EthernetThread::AddressMode::Dhcp : EthernetThread::AddressMode::Static;
-	ethConf.ipAddress = backup.eth.ip;
-	ethConf.netmask = backup.eth.netmask;
-	ethConf.gateway = backup.eth.gateway;
+	ethConf.addressMode = backup->settings.flags.ethernetDhcp ? EthernetThread::AddressMode::Dhcp : EthernetThread::AddressMode::Static;
+	ethConf.ipAddress = backup->settings.eth.ip;
+	ethConf.netmask = backup->settings.eth.netmask;
+	ethConf.gateway = backup->settings.eth.gateway;
 	EthernetThread::instance()->setConfig( ethConf );
 	EthernetThread::instance()->startThread( EthernetThreadPrio );
 
@@ -182,6 +179,12 @@ MarvieDevice::MarvieDevice() : settingsBackupRegs( sizeof( SettingsBackup ) / 4 
 	mLinkServer->setAuthenticationCallback( this );
 	mLinkServer->setDataChannelCallback( this );
 	//mLinkServer->setIODevice( comPorts[MarviePlatform::mLinkComPort] );
+
+	mainThread = nullptr;
+	miskTasksThread = nullptr;
+	adInputsReadThread = nullptr;
+	mLinkServerHandlerThread = nullptr;
+	uiThread = nullptr;
 }
 
 MarvieDevice* MarvieDevice::instance()
@@ -201,7 +204,7 @@ void MarvieDevice::exec()
 	uiThread                 = Concurrent::run( [this]() { uiThreadMain(); },                 1024, NORMALPRIO );
 
 	//mLinkServer->startListening( NORMALPRIO );
-		
+
 	Concurrent::run( []()
 	{
 		UdpStressTestServer* server = new UdpStressTestServer( 1112 );
@@ -252,9 +255,31 @@ End:
 
 void MarvieDevice::mainThreadMain()
 {
+	palEnablePadEvent( GPIOC, 13, PAL_EVENT_MODE_FALLING_EDGE );
+
+	configMutex.lock();
+	MarvieBackup* backup = MarvieBackup::instance();
+	if( backup->settings.flags.gsmEnabled )
+	{
+		createGsmModemObjectM();
+		gsmModem->setPinCode( backup->settings.gsm.pinCode );
+		gsmModem->setApn( backup->settings.gsm.apn );
+		gsmModem->startModem();
+	}
+	configMutex.unlock();
+
 	while( true )
 	{
 		eventmask_t em = chEvtWaitAny( ALL_EVENTS );
+		if( em & MainThreadEvent::PowerDownDetected )
+		{
+			ejectSdCard();
+			backup->failureDesc.pwrDown.processedCorrectly = true;
+			chSysLock();
+			while( !palReadPad( GPIOC, 13 ) )
+				;
+			__NVIC_SystemReset();
+		}
 		if( em & MainThreadEvent::SdCardStatusChanged )
 		{
 			if( sdCardInserted )
@@ -612,7 +637,7 @@ void MarvieDevice::adInputsReadThreadMain()
 			chThdSleepMilliseconds( TIME_MS2I( 50 ) - dt );
 	}
 }
-#include <lwip/tcp.h>
+
 void MarvieDevice::mLinkServerHandlerThreadMain()
 {
 	EvtListener mLinkListener, ethThreadListener, cpuUsageMonitorListener;
@@ -739,32 +764,66 @@ void MarvieDevice::uiThreadMain()
 	chThdSuspendS( &ref );
 }
 
+void MarvieDevice::createGsmModemObjectM()
+{
+	gsmModem = new SimGsmPppModem( MarviePlatform::gsmModemEnableIoPort, false, MarviePlatform::gsmModemEnableLevel );
+	gsmModem->setAsDefault();
+	auto gsmUsart = comUsarts[MarviePlatform::comPortIoLines[MarviePlatform::gsmModemComPort].comUsartIndex].usart;
+	if( MarviePlatform::comPortTypes[MarviePlatform::gsmModemComPort] == ComPortType::Rs485 )
+		static_cast< AbstractRs485* >( comPorts[MarviePlatform::gsmModemComPort] )->disable();
+	gsmUsart->setBaudRate( 230400 );
+	gsmUsart->setDataFormat( UsartBasedDevice::B8N );
+	gsmUsart->setStopBits( UsartBasedDevice::S1 );
+	gsmModem->setUsart( gsmUsart );
+	gsmModem->eventSource()->registerMask( &gsmModemMainThreadListener, MainThreadEvent::GsmModemMainEvent );
+	gsmModem->eventSource()->registerMask( &gsmModemMLinkThreadListener, MLinkThreadEvent::GsmModemEvent );
+	/* Hack! */
+	gsmModemMLinkThreadListener.ev_listener.listener = mLinkServerHandlerThread->thread_ref;
+	/* You didn't see anything */
+}
+
 void MarvieDevice::logFailure()
 {
-	FailureDescBackup& backup = ( FailureDescBackup& )*( &RTC->BKP0R + FailureDescBackupOffset );
-	if( backup.type != FailureDescBackup::Type::None )
+	auto& failureDesc = MarvieBackup::instance()->failureDesc;
+	char* str = ( char* )buffer;
+	if( failureDesc.type != MarvieBackup::FailureDesc::Type::None )
 	{
-		char threadName[5];
-		threadName[4] = 0;
-		strncpy( threadName, backup.threadName, 4 );
-		char* str = ( char* )buffer;
-		if( backup.type == FailureDescBackup::Type::SystemHalt )
+		if( failureDesc.type == MarvieBackup::FailureDesc::Type::SystemHalt )
 		{
-			constexpr size_t size = sizeof( FailureDescBackup::Union::SystemHaltMessage::msg );
-			char msg[size + 1];
-			msg[size] = 0;
-			strncpy( msg, backup.u.message.msg, size );
 			sprintf( str, "System was restored after a system halt [%#x %s %s]",
-					 ( unsigned int )backup.threadAddress, threadName, msg );
+					 ( unsigned int )failureDesc.threadAddress, failureDesc.threadName, failureDesc.u.msg );
 		}
 		else
 			sprintf( str, "System was restored after a hardware failure [%#x %#x %#x %#x %#x %#x %s]",
-					 ( unsigned int )backup.type, ( unsigned int )backup.u.failure.flags,
-					 ( unsigned int )backup.u.failure.busAddress, ( unsigned int )backup.u.failure.pc, ( unsigned int )backup.u.failure.lr,
-					 ( unsigned int )backup.threadAddress, threadName );
+					 ( unsigned int )failureDesc.type, ( unsigned int )failureDesc.u.failure.flags,
+					 ( unsigned int )failureDesc.u.failure.busAddress,
+					 ( unsigned int )failureDesc.u.failure.pc,
+					 ( unsigned int )failureDesc.u.failure.lr,
+					 ( unsigned int )failureDesc.threadAddress, failureDesc.threadName );
 		fileLog.addRecorg( str );
-		backup.type = FailureDescBackup::Type::None;
+		failureDesc.type = MarvieBackup::FailureDesc::Type::None;
 	}
+	chSysLock();
+	if( failureDesc.pwrDown.detected )
+	{
+		DateTime dateTime = failureDesc.pwrDown.dateTime;
+		volatile bool processedCorrectly = failureDesc.pwrDown.processedCorrectly;
+		failureDesc.pwrDown.detected = false;
+		failureDesc.pwrDown.processedCorrectly = false;
+		chSysUnlock();
+
+		char* dateStr = ( char* )buffer + 512;
+		char* timeStr = ( char* )buffer + 512 + 100;
+		dateTime.date().printDate( dateStr )[0] = '\0';
+		dateTime.time().printTime( timeStr )[0] = '\0';
+		if( processedCorrectly )
+			sprintf( str, "%s at %s correctly", dateStr, timeStr );
+		else
+			sprintf( str, "%s at %s incorrectly", dateStr, timeStr );
+		fileLog.addRecorg( str );
+	}
+	else
+		chSysUnlock();
 }
 
 void MarvieDevice::ejectSdCard()
@@ -956,12 +1015,14 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 		networkConf.ethConf.netmask != ethThdConf.netmask ||
 		networkConf.ethConf.gateway != ethThdConf.gateway )
 	{
-		SettingsBackup& backup = ( SettingsBackup& )settingsBackupRegs.value( 0 );
-		backup.flags.ethernetDhcp = networkConf.ethConf.dhcpEnable;
-		backup.eth.ip = networkConf.ethConf.ip;
-		backup.eth.netmask = networkConf.ethConf.netmask;
-		backup.eth.gateway = networkConf.ethConf.gateway;
-		settingsBackupRegs.setValid();
+		MarvieBackup* backup = MarvieBackup::instance();
+		backup->acquire();
+		backup->settings.flags.ethernetDhcp = networkConf.ethConf.dhcpEnable;
+		backup->settings.eth.ip = networkConf.ethConf.ip;
+		backup->settings.eth.netmask = networkConf.ethConf.netmask;
+		backup->settings.eth.gateway = networkConf.ethConf.gateway;
+		backup->settings.setValid();
+		backup->release();
 
 		ethThdConf.addressMode = networkConf.ethConf.dhcpEnable ? EthernetThread::AddressMode::Dhcp : EthernetThread::AddressMode::Static;
 		ethThdConf.ipAddress = networkConf.ethConf.ip;
@@ -986,34 +1047,32 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 	{
 		auto gsmConf = static_cast< GsmModemConf* >( comPortsConf[MarviePlatform::gsmModemComPort] );
 		if( !gsmModem )
+			createGsmModemObjectM();
+		MarvieBackup* backup = MarvieBackup::instance();
+		if( gsmModem->pinCode() != gsmConf->pinCode || strcmp( gsmModem->apn(), gsmConf->apn ) != 0 || !backup->settings.flags.gsmEnabled )
 		{
-			gsmModem = new SimGsmPppModem( MarviePlatform::gsmModemEnableIoPort, false, MarviePlatform::gsmModemEnableLevel );
-			gsmModem->setAsDefault();
-			auto gsmUsart = comUsarts[MarviePlatform::comPortIoLines[MarviePlatform::gsmModemComPort].comUsartIndex].usart;
-			if( MarviePlatform::comPortTypes[MarviePlatform::gsmModemComPort] == ComPortType::Rs485 )
-				static_cast< AbstractRs485* >( comPorts[MarviePlatform::gsmModemComPort] )->disable();
-			gsmUsart->setBaudRate( 230400 );
-			gsmUsart->setDataFormat( UsartBasedDevice::B8N );
-			gsmUsart->setStopBits( UsartBasedDevice::S1 );
-			gsmModem->setUsart( gsmUsart );
-			gsmModem->eventSource()->registerMask( &gsmModemMainThreadListener, MainThreadEvent::GsmModemMainEvent );
-			gsmModem->eventSource()->registerMask( &gsmModemMLinkThreadListener, MLinkThreadEvent::GsmModemEvent );
-			/* Hack! */
-			gsmModemMLinkThreadListener.ev_listener.listener = mLinkServerHandlerThread->thread_ref;
-			/* You didn't see anything */
-		}
-		if( gsmModem->pinCode() != gsmConf->pinCode || strcmp( gsmModem->apn(), gsmConf->apn ) != 0 )
-		{
+			backup->acquire();
+			backup->settings.flags.gsmEnabled = true;
+			backup->settings.gsm.pinCode = gsmConf->pinCode;
+			strcpy( backup->settings.gsm.apn, gsmConf->apn );
+			backup->settings.setValid();
+			backup->release();
+
 			gsmModem->stopModem();
 			gsmModem->waitForStateChange();
-			gsmModem->setPinCode( gsmConf->pinCode );
-			strcpy( apn, gsmConf->apn );
-			gsmModem->setApn( apn );
+			gsmModem->setPinCode( backup->settings.gsm.pinCode );
+			gsmModem->setApn( backup->settings.gsm.apn );
 			gsmModem->startModem();
 		}
 	}
 	else if( gsmModem )
 	{
+		MarvieBackup* backup = MarvieBackup::instance();
+		backup->acquire();
+		backup->settings.flags.gsmEnabled = false;
+		backup->settings.setValid();
+		backup->release();
+
 		gsmModem->stopModem();
 		gsmModem->waitForStateChange();
 		gsmModem->eventSource()->unregister( &gsmModemMLinkThreadListener );
@@ -1461,17 +1520,31 @@ uint32_t MarvieDevice::digitSignals( uint32_t block )
 	return 0;
 }
 
-bool MarvieDevice::authenticate( char* accountName, char* password )
+int MarvieDevice::authenticate( char* accountName, char* password )
 {
-	return strcmp( accountName, "admin" ) == 0 && strcmp( password, "admin" ) == 0;
+	MarvieBackup* backup = MarvieBackup::instance();
+	if( strcmp( accountName, "admin" ) == 0 )
+	{
+		if( strcmp( password, backup->settings.passwords.adminPassword ) == 0 )
+			return 0;
+	}
+	else if( strcmp( accountName, "observer" ) == 0 )
+	{
+		if( strcmp( password, backup->settings.passwords.observerPassword ) == 0 )
+			return 1;
+	}
+
+	return -1;
 }
 
 bool MarvieDevice::onOpennig( uint8_t ch, const char* name, uint32_t size )
 {
 	datFilesMutex.lock();
-	if( sdCardStatus != SdCardStatus::Working || ch >= 3 || datFiles[ch] )
+	if( sdCardStatus != SdCardStatus::Working || ch >= 3 || datFiles[ch] || mLinkServer->accountIndex() != 0 )
 	{
 		datFilesMutex.unlock();
+		if( mLinkServer->accountIndex() != 0 )
+			mLinkServer->sendPacket( MarviePackets::Type::IllegalAccessType, nullptr, 0 );
 		return false;
 	}
 
@@ -1578,57 +1651,89 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 			mLinkServer->sendPacket( MarviePackets::Type::ConfigXmlMissingType, nullptr, 0 );
 		}
 	}
-	else if( type == MarviePackets::Type::SetDateTimeType )
+	else
 	{
-		DateTime dateTime;
-		memcpy( ( char* )&dateTime, ( const char* )data, sizeof( DateTime ) );
-		DateTimeService::setDateTime( dateTime );
-	}
-	else if( type == MarviePackets::Type::StartVPortsType )
-	{
-		mainThread->signalEvents( MainThreadEvent::StartSensorReaders );
-	}
-	else if( type == MarviePackets::Type::StopVPortsType )
-	{
-		mainThread->signalEvents( MainThreadEvent::StopSensorReaders );
-	}
-	else if( type == MarviePackets::Type::UpdateAllSensorsType )
-	{
-		configMutex.lock();
-		for( uint i = 0; i < vPortsCount; ++i )
+		if( mLinkServer->accountIndex() != 0 )
 		{
-			if( brSensorReaders[i] )
-				brSensorReaders[i]->forceAll();
+			mLinkServer->sendPacket( MarviePackets::Type::IllegalAccessType, nullptr, 0 );
+			return;
 		}
-		configMutex.unlock();
-	}
-	else if( type == MarviePackets::Type::UpdateOneSensorType )
-	{
-		configMutex.lock();
-		uint32_t sensorId = *( uint16_t* )data;
-		if( sensorsCount > sensorId && sensors[sensorId].sensor->type() == AbstractSensor::Type::BR )
+
+		if( type == MarviePackets::Type::ChangeAccountPasswordType )
 		{
-			auto reader = brSensorReaders[sensors[sensorId].vPortId];
-			if( reader )
-				reader->forceOne( reinterpret_cast< AbstractBRSensor* >( sensors[sensorId].sensor ) );
+			auto newPassword = reinterpret_cast< MarviePackets::AccountNewPassword* >( data );
+			int index = authenticate( newPassword->name, newPassword->currentPassword );
+			if( index == -1 )
+			{
+				uint8_t err = 1;
+				mLinkServer->sendPacket( MarviePackets::Type::ChangeAccountPasswordResultType, &err, sizeof( err ) );
+			}
+			else
+			{
+				MarvieBackup* backup = MarvieBackup::instance();
+				backup->acquire();
+				if( index == 0 )
+					strcpy( backup->settings.passwords.adminPassword, newPassword->newPassword );
+				else
+					strcpy( backup->settings.passwords.observerPassword, newPassword->newPassword );
+				backup->settings.setValid();
+				backup->release();
+				uint8_t err = 0;
+				mLinkServer->sendPacket( MarviePackets::Type::ChangeAccountPasswordResultType, &err, sizeof( err ) );
+			}
 		}
-		configMutex.unlock();
-	}
-	else if( type == MarviePackets::Type::RestartDeviceType )
-		mainThread->signalEvents( MainThreadEvent::RestartRequestEvent );
-	else if( type == MarviePackets::Type::EjectSdCardType )
-	{
-		if( sdCardStatus != SdCardStatus::NotInserted )
-			mainThread->signalEvents( MainThreadEvent::EjectSdCardRequest );
-	}
-	else if( type == MarviePackets::Type::CleanMonitoringLogType )
-		mainThread->signalEvents( MainThreadEvent::CleanMonitoringLogRequestEvent );
-	else if( type == MarviePackets::Type::CleanSystemLogType )
-		mainThread->signalEvents( MainThreadEvent::CleanSystemLogRequestEvent );
-	else if( type == MarviePackets::Type::FormatSdCardType )
-	{
-		if( sdCardStatus != SdCardStatus::Formatting )
-			mainThread->signalEvents( MainThreadEvent::FormatSdCardRequest );
+		else if( type == MarviePackets::Type::SetDateTimeType )
+		{
+			DateTime dateTime;
+			memcpy( ( char* )&dateTime, ( const char* )data, sizeof( DateTime ) );
+			DateTimeService::setDateTime( dateTime );
+		}
+		else if( type == MarviePackets::Type::StartVPortsType )
+		{
+			mainThread->signalEvents( MainThreadEvent::StartSensorReaders );
+		}
+		else if( type == MarviePackets::Type::StopVPortsType )
+		{
+			mainThread->signalEvents( MainThreadEvent::StopSensorReaders );
+		}
+		else if( type == MarviePackets::Type::UpdateAllSensorsType )
+		{
+			configMutex.lock();
+			for( uint i = 0; i < vPortsCount; ++i )
+			{
+				if( brSensorReaders[i] )
+					brSensorReaders[i]->forceAll();
+			}
+			configMutex.unlock();
+		}
+		else if( type == MarviePackets::Type::UpdateOneSensorType )
+		{
+			configMutex.lock();
+			uint32_t sensorId = *( uint16_t* )data;
+			if( sensorsCount > sensorId && sensors[sensorId].sensor->type() == AbstractSensor::Type::BR )
+			{
+				auto reader = brSensorReaders[sensors[sensorId].vPortId];
+				if( reader )
+					reader->forceOne( reinterpret_cast< AbstractBRSensor* >( sensors[sensorId].sensor ) );
+			}
+			configMutex.unlock();
+		}
+		else if( type == MarviePackets::Type::RestartDeviceType )
+		    mainThread->signalEvents( MainThreadEvent::RestartRequestEvent );
+		else if( type == MarviePackets::Type::EjectSdCardType )
+		{
+			if( sdCardStatus != SdCardStatus::NotInserted )
+				mainThread->signalEvents( MainThreadEvent::EjectSdCardRequest );
+		}
+		else if( type == MarviePackets::Type::CleanMonitoringLogType )
+		    mainThread->signalEvents( MainThreadEvent::CleanMonitoringLogRequestEvent );
+		else if( type == MarviePackets::Type::CleanSystemLogType )
+		    mainThread->signalEvents( MainThreadEvent::CleanSystemLogRequestEvent );
+		else if( type == MarviePackets::Type::FormatSdCardType )
+		{
+			if( sdCardStatus != SdCardStatus::Formatting )
+				mainThread->signalEvents( MainThreadEvent::FormatSdCardRequest );
+		}
 	}
 }
 
@@ -2225,36 +2330,48 @@ void MarvieDevice::adcErrorCallback( ADCDriver *adcp, adcerror_t err )
 	chThdResumeI( &MarvieDevice::instance()->adInputsReadThreadRef, MSG_RESET );
 }
 
+void MarvieDevice::powerDownExtiCallback( void* arg )
+{
+	auto& failureDesc = MarvieBackup::instance()->failureDesc;
+	chSysLockFromISR();
+	failureDesc.pwrDown.detected = true;
+	failureDesc.pwrDown.processedCorrectly = false;
+	failureDesc.pwrDown.dateTime = DateTimeService::currentDateTime();
+	chEvtSignalI( MarvieDevice::instance()->mainThread->thread_ref, MarvieDevice::MainThreadEvent::PowerDownDetected );
+	chSysUnlockFromISR();
+}
+
 void MarvieDevice::faultHandler()
 {
-	FailureDescBackup& backup = ( FailureDescBackup& )*( &RTC->BKP0R + FailureDescBackupOffset );
-	backup.type = ( FailureDescBackup::Type )( __get_IPSR() + 1 );
-	backup.u.failure.flags = SCB->CFSR;
+	auto& failureDesc = MarvieBackup::instance()->failureDesc;
+	failureDesc.type = ( MarvieBackup::FailureDesc::Type )( __get_IPSR() + 1 );
+	failureDesc.u.failure.flags = SCB->CFSR;
 	port_extctx* ctx = ( port_extctx* )__get_PSP();
-	backup.u.failure.pc = ( uint32_t )ctx->pc;
-	backup.u.failure.lr = ( uint32_t )ctx->lr_thd;
-	if( backup.type == FailureDescBackup::Type::HardFault || backup.type == FailureDescBackup::Type::BusFault )
-		backup.u.failure.busAddress = SCB->BFAR;
-	else if( backup.type == FailureDescBackup::Type::MemManage )
-		backup.u.failure.busAddress = SCB->MMFAR;
+	failureDesc.u.failure.pc = ( uint32_t )ctx->pc;
+	failureDesc.u.failure.lr = ( uint32_t )ctx->lr_thd;
+	if( failureDesc.type == MarvieBackup::FailureDesc::Type::HardFault || failureDesc.type == MarvieBackup::FailureDesc::Type::BusFault )
+		failureDesc.u.failure.busAddress = SCB->BFAR;
+	else if( failureDesc.type == MarvieBackup::FailureDesc::Type::MemManage )
+		failureDesc.u.failure.busAddress = SCB->MMFAR;
 	else
-		backup.u.failure.busAddress = 0;
-	backup.threadAddress = ( uint32_t )currp;
-	strncpy( backup.threadName, "none", 4 ); // fix this!
+		failureDesc.u.failure.busAddress = 0;
+	failureDesc.threadAddress = ( uint32_t )currp;
+	strncpy( failureDesc.threadName, "none", 5 ); // fix this!
 	assert( false );
 	NVIC_SystemReset();
 }
 
 void MarvieDevice::systemHaltHook( const char* reason )
 {
-	FailureDescBackup& backup = ( FailureDescBackup& )*( &RTC->BKP0R + FailureDescBackupOffset );
-	backup.type = FailureDescBackup::Type::SystemHalt;
+	auto& failureDesc = MarvieBackup::instance()->failureDesc;
+	failureDesc.type = MarvieBackup::FailureDesc::Type::SystemHalt;
 	size_t len = strlen( reason );
-	if( len > sizeof( backup.u.message.msg ) )
-		len = sizeof( backup.u.message.msg );
-	strncpy( backup.u.message.msg, reason, len );
-	backup.threadAddress = ( uint32_t )currp;
-	strncpy( backup.threadName, "none", 4 ); // fix this!
+	if( len > sizeof( failureDesc.u.msg ) - 1 )
+		len = sizeof( failureDesc.u.msg ) - 1;
+	strncpy( failureDesc.u.msg, reason, len );
+	failureDesc.u.msg[len] = 0;
+	failureDesc.threadAddress = ( uint32_t )currp;
+	strncpy( failureDesc.threadName, "none", 5 ); // fix this!
 	assert( false );
 	NVIC_SystemReset();
 }

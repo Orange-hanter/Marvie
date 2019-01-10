@@ -46,7 +46,7 @@ public:
 	class AuthenticationCallback
 	{
 	public:
-		virtual bool authenticate( char* accountName, char* password ) = 0;
+		virtual int authenticate( char* accountName, char* password ) = 0;
 	};
 
 	MLinkServer();
@@ -64,6 +64,7 @@ public:
 	void setDataChannelCallback( DataChannelCallback* callback );
 
 	void confirmSession();
+	int accountIndex();
 	bool sendPacket( uint8_t type, const uint8_t* data, uint16_t size ); // 0 <= size <= MSS
 	bool waitPacket( sysinterval_t timeout = TIME_INFINITE );
 	bool hasPendingPacket();
@@ -133,6 +134,7 @@ private:
 	AuthenticationCallback* authCallback;
 	DataChannelCallback* inputDataChCallback;
 	uint32_t idCounter;
+	int accountId;
 	bool sessionConfirmed;
 	threads_queue_t stateWaitingQueue;
 	threads_queue_t packetWaitingQueue;

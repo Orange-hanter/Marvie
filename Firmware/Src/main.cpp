@@ -4,7 +4,6 @@
 
 #include "Drivers/Network/Ethernet/EthernetThread.h"
 
-#include "Core/RtcBackupRegisters.h"
 #include "Core/DateTimeService.h"
 
 #include "Tests/GsmPPPTest.hpp"
@@ -17,6 +16,7 @@
 #include "Tests/SdDataUploader.hpp"
 #include "Tests/MLinkTest.hpp"
 #include "Tests/LwipEthernetTest.hpp"
+//#include "Tests/UsbSduTest.hpp"
 
 #include <algorithm>
 
@@ -26,6 +26,10 @@ int main()
 		*( uint32_t* )i = 0;*/
 	halInit();
 	chSysInit();
+	rccEnableAHB1( RCC_AHB1ENR_BKPSRAMEN, true );
+
+	/*UsbSduTest::test();
+	while( true );*/
 
 	/*tcpip_init( nullptr, nullptr );
 
@@ -66,9 +70,9 @@ int main()
 
 	//	auto conf = EthernetThread::instance()->currentConfig();
 	//	conf.addressMode = EthernetThread::AddressMode::Static;
-	//	conf.ipAddress = IpAddress( 192, 168, 2, 10 );
+	//	conf.ipAddress = IpAddress( 192, 168, 10, 10 );
 	//	conf.netmask = 0xFFFFFF00;
-	//	conf.gateway = IpAddress( 192, 168, 2, 1 );
+	//	conf.gateway = IpAddress( 192, 168, 10, 1 );
 	//	EthernetThread::instance()->setConfig( conf );
 	//	EthernetThread::instance()->startThread();
 
@@ -93,9 +97,9 @@ int main()
 
 	auto conf = EthernetThread::instance()->currentConfig();
 	conf.addressMode = EthernetThread::AddressMode::Static;
-	conf.ipAddress = IpAddress( 192, 168, 2, 10 );
+	conf.ipAddress = IpAddress( 192, 168, 10, 10 );
 	conf.netmask = 0xFFFFFF00;
-	conf.gateway = IpAddress( 192, 168, 2, 1 );
+	conf.gateway = IpAddress( 192, 168, 10, 1 );
 	EthernetThread::instance()->setConfig( conf );
 	EthernetThread::instance()->startThread();
 

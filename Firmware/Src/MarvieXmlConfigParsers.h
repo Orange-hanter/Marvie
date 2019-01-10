@@ -71,7 +71,7 @@ namespace MarvieXmlConfigParsers
 		GsmModemConf() : ComPortConf( ComPortAssignment::GsmModem ) {}
 
 		uint32_t pinCode;
-		char apn[20 + 1];
+		char apn[31 + 1];
 	};
 
 	struct ModbusRtuSlaveConf : public ComPortConf

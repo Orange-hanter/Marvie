@@ -70,6 +70,9 @@ private slots:
 	void monitoringLogViewMenuRequested( const QPoint& point );
 	void monitoringLogViewMenuActionTriggered( QAction* action );
 
+	void accountSettingsCleanButtonClicked();
+	void accountSettingsChangePasswordButtonClicked();
+
 	void sensorSettingsMenuRequested( const QPoint& point );
 	void sensorSettingsMenuActionTriggered( QAction* action );
 

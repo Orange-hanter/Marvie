@@ -322,6 +322,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	QObject::connect( ui.logButton, &QToolButton::released, this, &MarvieController::mainMenuButtonClicked );
 	QObject::connect( ui.settingsButton, &QToolButton::released, this, &MarvieController::mainMenuButtonClicked );
 	QObject::connect( ui.mainSettingsButton, &QToolButton::released, this, &MarvieController::settingsMenuButtonClicked );
+	QObject::connect( ui.securitySettingsButton, &QToolButton::released, this, &MarvieController::settingsMenuButtonClicked );
 	QObject::connect( ui.sensorsSettingsButton, &QToolButton::released, this, &MarvieController::settingsMenuButtonClicked );
 
 	QObject::connect( ui.nextInterfaceButton, &QToolButton::released, this, &MarvieController::nextInterfaceButtonClicked );
@@ -375,6 +376,9 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	QObject::connect( &vPortsOverEthernetModel, &VPortOverIpModel::dataChanged, this, &MarvieController::updateVPortsList );
 	QObject::connect( &vPortsOverEthernetModel, &VPortOverIpModel::rowsInserted, this, &MarvieController::updateVPortsList );
 	QObject::connect( &vPortsOverEthernetModel, &VPortOverIpModel::rowsRemoved, this, &MarvieController::updateVPortsList );
+
+	QObject::connect( ui.accountCleanButton, &QPushButton::released, this, &MarvieController::accountSettingsCleanButtonClicked );
+	QObject::connect( ui.accountChangePasswordButton, &QPushButton::released, this, &MarvieController::accountSettingsChangePasswordButtonClicked );
 
 	QObject::connect( ui.sensorNameEdit, &QLineEdit::textChanged, &sensorNameTimer, static_cast< void( QTimer::* )( ) >( &QTimer::start ) );
 	QObject::connect( ui.sensorNameEdit, &QLineEdit::returnPressed, this, &MarvieController::sensorNameEditReturnPressed );
@@ -617,7 +621,7 @@ void MarvieController::mainMenuButtonClicked()
 
 void MarvieController::settingsMenuButtonClicked()
 {
-	QToolButton* buttons[] = { ui.mainSettingsButton, ui.sensorsSettingsButton };
+	QToolButton* buttons[] = { ui.mainSettingsButton, ui.securitySettingsButton, ui.sensorsSettingsButton };
 	QObject* s = sender();
 	for( int i = 0; i < sizeof( buttons ) / sizeof( *buttons ); ++i )
 	{
@@ -1146,6 +1150,41 @@ void MarvieController::monitoringLogViewMenuActionTriggered( QAction* action )
 		ui.monitoringLogTreeWidget->setHexadecimalOutput( action->isChecked() );
 }
 
+void MarvieController::accountSettingsCleanButtonClicked()
+{
+	ui.accountNameEdit->clear();
+	ui.accountCurrentPasswordEdit->clear();
+	ui.accountNewPasswordEdit->clear();
+	ui.accountRetypedNewPasswordEdit->clear();
+}
+
+void MarvieController::accountSettingsChangePasswordButtonClicked()
+{
+	if( ui.accountNameEdit->text().isEmpty() )
+	{
+		QMessageBox::information( nullptr, "",
+								  "Enter account name",
+								  QMessageBox::Ok );
+		return;
+	}
+	if( ui.accountNewPasswordEdit->text() != ui.accountRetypedNewPasswordEdit->text() )
+	{
+		QMessageBox::information( nullptr, "",
+								  "Password must be the same",
+								  QMessageBox::Ok );
+		return;
+	}
+
+	MarviePackets::AccountNewPassword anp {};
+	auto data = ui.accountNameEdit->text().toUtf8();
+	qCopy( data.begin(), data.end(), anp.name );
+	data = ui.accountCurrentPasswordEdit->text().toUtf8();
+	qCopy( data.begin(), data.end(), anp.currentPassword );
+	data = ui.accountNewPasswordEdit->text().toUtf8();
+	qCopy( data.begin(), data.end(), anp.newPassword );
+	mlink.sendPacket( MarviePackets::Type::ChangeAccountPasswordType, QByteArray( ( const char* )&anp, sizeof( anp ) ) );
+}
+
 void MarvieController::setMonitoringLogWidgetGroupEnabled( bool enabled )
 {
 	ui.monitoringLogDateLabel->setEnabled( enabled );
@@ -1300,10 +1339,10 @@ void MarvieController::newConfigButtonClicked()
 {
 	targetDeviceChanged( ui.targetDeviceComboBox->currentText() );
 
-	ui.dhcpRadioButton->setChecked( true );
-	ui.staticIpLineEdit->setText( "192.168.1.10" );
+	ui.staticIpRadioButton->setChecked( true );
+	ui.staticIpLineEdit->setText( "192.168.10.10" );
 	ui.netmaskLineEdit->setText( "255.255.255.0" );
-	ui.gatewayLineEdit->setText( "192.168.1.1" );
+	ui.gatewayLineEdit->setText( "192.168.10.1" );
 	ui.modbusTcpCheckBox->setCheckState( Qt::Unchecked );
 	ui.modbusTcpSpinBox->setValue( 502 );
 	ui.modbusRtuCheckBox->setCheckState( Qt::Unchecked );
@@ -1868,6 +1907,26 @@ void MarvieController::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
 		deviceVPorts.clear();
 		deviceSensors.clear();
 		ui.deviceSensorsComboBox->clear();
+		break;
+	}
+	case MarviePackets::Type::ChangeAccountPasswordResultType:
+	{
+		uint8_t err = *reinterpret_cast< const uint8_t* >( data.constData() );
+		if( err != 0 )
+			QMessageBox::warning( nullptr, "",
+								  "Invalid account name or password",
+								  QMessageBox::Ok );
+		else
+			QMessageBox::information( nullptr, "",
+									  "Password successfully changed",
+									  QMessageBox::Ok );
+		break;
+	}
+	case MarviePackets::Type::IllegalAccessType:
+	{
+		QMessageBox::warning( nullptr, "",
+							  "Illegal access",
+							  QMessageBox::Ok );
 		break;
 	}
 	default:

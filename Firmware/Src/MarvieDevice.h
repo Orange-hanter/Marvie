@@ -1,29 +1,29 @@
 #pragma once
 
-#include "Core/ObjectMemoryUtilizer.h"
-#include "Core/RtcBackupRegisters.h"
-#include "Core/CpuUsageMonitor.h"
-#include "Core/Concurrent.h"
-#include "Core/Assert.h"
-#include "Drivers/Interfaces/Usart.h"
-#include "Drivers/Interfaces/Rs485.h"
-#include "Drivers/Interfaces/SharedRs485.h"
-#include "Drivers/Network/Ethernet/EthernetThread.h"
-#include "Drivers/Network/SimGsm/SimGsmPppModem.h"
-#include "SensorService/SensorService.h"
-#include "MarvieXmlConfigParsers.h"
-#include "MultipleBRSensorsReader.h"
-#include "SingleBRSensorReader.h"
-#include "NetworkSensorReader.h"
-#include "MarviePackets.h"
-#include "MLinkServer.h"
-#include "MarviePlatform.h"
-#include "_Sha1.h"
-#include "ff.h"
 #include "Apps/Modbus/RawModbusServer.h"
 #include "Apps/Modbus/TcpModbusServer.h"
-#include "Log/MarvieLog.h"
+#include "Core/Assert.h"
+#include "Core/Concurrent.h"
+#include "Core/CpuUsageMonitor.h"
+#include "Core/ObjectMemoryUtilizer.h"
+#include "Drivers/Interfaces/Rs485.h"
+#include "Drivers/Interfaces/SharedRs485.h"
+#include "Drivers/Interfaces/Usart.h"
+#include "Drivers/Network/Ethernet/EthernetThread.h"
+#include "Drivers/Network/SimGsm/SimGsmPppModem.h"
 #include "Log/FileLog.h"
+#include "Log/MarvieLog.h"
+#include "MLinkServer.h"
+#include "MarvieBackup.h"
+#include "MarviePackets.h"
+#include "MarviePlatform.h"
+#include "MarvieXmlConfigParsers.h"
+#include "MultipleBRSensorsReader.h"
+#include "NetworkSensorReader.h"
+#include "SensorService/SensorService.h"
+#include "SingleBRSensorReader.h"
+#include "_Sha1.h"
+#include "ff.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -49,6 +49,7 @@ private:
 	void mLinkServerHandlerThreadMain();
 	void uiThreadMain();
 
+	void createGsmModemObjectM();
 	void logFailure();
 	void ejectSdCard();
 	inline void formatSdCard();
@@ -65,7 +66,7 @@ private:
 	bool digitSignal( uint32_t block, uint32_t line ) final override;
 	uint32_t digitSignals( uint32_t block ) final override;
 
-	bool authenticate( char* accountName, char* password ) final override;
+	int authenticate( char* accountName, char* password ) final override;
 
 	bool onOpennig( uint8_t channel , const char* name, uint32_t size ) final override;
 	bool newDataReceived( uint8_t channel, const uint8_t* data, uint32_t size ) final override;
@@ -98,6 +99,7 @@ private:
 	static void adcErrorCallback( ADCDriver *adcp, adcerror_t err );
 
 public:
+	static void powerDownExtiCallback( void* );
 	static void faultHandler();
 	static void systemHaltHook( const char* reason );
 
@@ -132,56 +134,6 @@ private:
 	uint8_t* comUsartOutputBuffers[MarviePlatform::comUsartsCount];
 	uint32_t buffer[1024];
 	SHA1 sha;
-	struct SettingsBackup
-	{
-		struct Flags
-		{
-			uint32_t ethernetDhcp : 1;
-		} flags;
-		struct Ethernet
-		{
-			IpAddress ip;
-			uint32_t netmask;
-			IpAddress gateway;
-		} eth;
-	};
-	struct FailureDescBackup
-	{
-		enum Type : uint32_t
-		{
-			None = 0,
-			SystemHalt,
-			Reset,
-			NMI,
-			HardFault,
-			MemManage,
-			BusFault,
-			UsageFault,
-		} type;
-		union Union
-		{
-			struct FailureDesc
-			{
-				uint32_t flags;
-				uint32_t busAddress;
-				uint32_t pc;
-				uint32_t lr;
-			} failure;
-			struct SystemHaltMessage
-			{
-				char msg[16];
-			} message;
-		} u;
-		uint32_t threadAddress;
-		char threadName[4];
-	};
-	enum
-	{
-		SettingsBackupOffset = 0,
-		FailureDescBackupOffset = sizeof( SettingsBackup ) / 4 + 1
-	};
-	RtcBackupRegisters settingsBackupRegs;
-	char apn[25] = {};
 	FileLog fileLog;
 
 	// ======================================================================================
@@ -226,7 +178,13 @@ private:
 	Mutex configXmlFileMutex;
 
 	// Main thread resources =================================================================
-	enum MainThreadEvent : eventmask_t { SdCardStatusChanged = 1, NewBootloaderDatFile = 2, NewFirmwareDatFile = 4, NewXmlConfigDatFile = 8, StartSensorReaders = 16, StopSensorReaders = 32, BrSensorReaderEvent = 64, SrSensorsTimerEvent = 128, EjectSdCardRequest = 256, FormatSdCardRequest = 512, CleanMonitoringLogRequestEvent = 1024, CleanSystemLogRequestEvent = 2048, RestartRequestEvent = 4096, GsmModemMainEvent = 8192 };
+	enum MainThreadEvent : eventmask_t 
+	{
+		SdCardStatusChanged = 1, NewBootloaderDatFile = 2, NewFirmwareDatFile = 4, NewXmlConfigDatFile = 8,
+		PowerDownDetected = 16, StartSensorReaders = 32, StopSensorReaders = 64, BrSensorReaderEvent = 128,
+		SrSensorsTimerEvent = 256, EjectSdCardRequest = 512, FormatSdCardRequest = 1024, CleanMonitoringLogRequestEvent = 2048,
+		CleanSystemLogRequestEvent = 4096, RestartRequestEvent = 8192, GsmModemMainEvent = 16384
+	};
 	enum class DeviceState { /*Initialization,*/ Reconfiguration, Working, IncorrectConfiguration } deviceState;
 	enum class ConfigError { NoError, NoConfigFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorReadingConfigError, LogConfigError, SensorsConfigError } configError;
 	enum class SensorsConfigError { NoError, UnknownSensor, IncorrectSettings, BingingError } sensorsConfigError;
@@ -241,7 +199,12 @@ private:
 	uint64_t monitoringLogSize;
 
 	// MLink thread resources ================================================================
-	enum MLinkThreadEvent : eventmask_t { MLinkEvent = 1, CpuUsageMonitorEvent = 2, MemoryLoadEvent = 4, EthernetEvent = 8, /*MLinkTcpServerEvent = 16, MLinkTcpSocketEvent = 32,*/ GsmModemEvent = 64, ConfigChangedEvent = 128, ConfigResetEvent = 256, SensorUpdateEvent = 512, StatusUpdateEvent = 1024 };
+	enum MLinkThreadEvent : eventmask_t 
+	{
+		MLinkEvent = 1, CpuUsageMonitorEvent = 2, MemoryLoadEvent = 4, EthernetEvent = 8,
+		/*MLinkTcpServerEvent = 16, MLinkTcpSocketEvent = 32,*/ GsmModemEvent = 64, ConfigChangedEvent = 128,
+		ConfigResetEvent = 256, SensorUpdateEvent = 512, StatusUpdateEvent = 1024
+	};
 	MLinkServer* mLinkServer;
 	uint8_t mLinkBuffer[255];
 	Mutex datFilesMutex;

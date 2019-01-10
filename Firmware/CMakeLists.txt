@@ -3,10 +3,10 @@ cmake_minimum_required(VERSION 3.11)
 enable_language(ASM)
 #set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-set(STM32_FLASH_ORIGIN "0x08008400")
-set(STM32_FLASH_SIZE "479K")
-set(STM32_RAM_SIZE "128K")
-set(STM32_CCRAM_SIZE "64K")
+#set(STM32_FLASH_ORIGIN "0x08008400")
+#set(STM32_FLASH_SIZE "479K")
+#set(STM32_RAM_SIZE "128K")
+#set(STM32_CCRAM_SIZE "64K")
 
 set(WIN32 1)
 include(gcc_stm32)
@@ -52,7 +52,6 @@ set(core_SRCS
     Src/Core/NewDelete.cpp
     Src/Core/Object.cpp
     Src/Core/ObjectMemoryUtilizer.cpp
-    Src/Core/RtcBackupRegisters.cpp
 )
 
 set(drivers_SRCS
@@ -136,12 +135,14 @@ set(firmware_SRCS
     Src/Crc32HW.cpp
     Src/main.cpp
     Src/MarvieDevice.cpp
-    Src/MarviePlatform.cpp
+	Src/MarviePlatform.cpp
+	Src/MarvieBackup.cpp
     Src/MarvieXmlConfigParsers.cpp
     Src/MLinkServer.cpp
     Src/MultipleBRSensorsReader.cpp
     Src/NetworkSensorReader.cpp
     Src/SingleBRSensorReader.cpp
+	#Src/usbcfg.c
 )
 
 add_executable(${CMAKE_PROJECT_NAME}_firmware.elf

@@ -4,8 +4,48 @@
 
 namespace MarviePackets
 {
-	enum Type : uint8_t { FirmwareDescType, CpuLoadType, MemoryLoadType, VPortStatusType, GetConfigXmlType, ConfigXmlMissingType, SyncStartType, SyncEndType, ConfigResetType, VPortCountType, DeviceStatusType, EthernetStatusType, GsmStatusType, ServiceStatisticsType, SensorErrorReportType, SetDateTimeType, EjectSdCardType, FormatSdCardType, StopVPortsType, StartVPortsType, UpdateAllSensorsType, UpdateOneSensorType, RestartDeviceType, CleanMonitoringLogType, CleanSystemLogType, AnalogInputsDataType, DigitInputsDataType };
-	enum ComplexChannel { BootloaderChannel, FirmwareChannel, XmlConfigChannel, XmlConfigSyncChannel, SensorDataChannel, SupportedSensorsListChannel };
+	enum Type : uint8_t
+	{
+		FirmwareDescType,
+		CpuLoadType,
+		MemoryLoadType,
+		VPortStatusType,
+		GetConfigXmlType,
+		ConfigXmlMissingType,
+		SyncStartType,
+		SyncEndType,
+		IllegalAccessType,
+		ConfigResetType,
+		VPortCountType,
+		DeviceStatusType,
+		EthernetStatusType,
+		GsmStatusType,
+		ServiceStatisticsType,
+		SensorErrorReportType,
+		SetDateTimeType,
+		EjectSdCardType,
+		FormatSdCardType,
+		StopVPortsType,
+		StartVPortsType,
+		UpdateAllSensorsType,
+		UpdateOneSensorType,
+		RestartDeviceType,
+		CleanMonitoringLogType,
+		CleanSystemLogType,
+		ChangeAccountPasswordType,
+		ChangeAccountPasswordResultType,
+		AnalogInputsDataType,
+		DigitInputsDataType
+	};
+	enum ComplexChannel
+	{
+		BootloaderChannel,
+		FirmwareChannel,
+		XmlConfigChannel,
+		XmlConfigSyncChannel,
+		SensorDataChannel,
+		SupportedSensorsListChannel
+	};
 
 	struct FirmwareDesc
 	{
@@ -81,5 +121,11 @@ namespace MarviePackets
 		int16_t tcpModbusRtuClientsCount;
 		int16_t tcpModbusAsciiClientsCount;
 		int16_t tcpModbusIpClientsCount;
+	};
+	struct AccountNewPassword
+	{
+		char name[15 + 1];
+		char currentPassword[31 + 1];
+		char newPassword[31 + 1];
 	};
 };

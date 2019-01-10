@@ -71,7 +71,7 @@ bool MarvieXmlConfigParsers::parseGsmModemConfig( XMLElement* node, GsmModemConf
 	if( node->QueryStringAttribute( "apn", &v ) == XML_NO_ATTRIBUTE )
 		return false;
 	int len = strlen( v );
-	if( len > 20 )
+	if( len > sizeof( conf->apn ) - 1 )
 		return false;
 	memcpy( conf->apn, v, len );
 	conf->apn[len] = 0;

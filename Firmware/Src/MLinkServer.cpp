@@ -146,6 +146,7 @@ MLinkServer::MLinkServer() : BaseDynamicThread( MLINK_STACK_SIZE )
 	authCallback = nullptr;
 	inputDataChCallback = nullptr;
 	idCounter = 0;
+	accountId = -1;
 	sessionConfirmed = false;
 	chThdQueueObjectInit( &stateWaitingQueue );
 	chThdQueueObjectInit( &packetWaitingQueue );
@@ -234,6 +235,12 @@ void MLinkServer::confirmSession()
 	if( linkState == State::Connected )
 		sessionConfirmed = true;
 	chSysUnlock();
+}
+
+
+int MLinkServer::accountIndex()
+{
+	return accountId;
 }
 
 bool MLinkServer::sendPacket( uint8_t type, const uint8_t* data, uint16_t size )
@@ -539,7 +546,7 @@ void MLinkServer::processNewPacketM()
 		{
 			char* accountName = reinterpret_cast< char* >( packetData );
 			char* password = accountName + strlen( accountName ) + 1;
-			if( authCallback == nullptr || authCallback->authenticate( accountName, password ) )
+			if( authCallback == nullptr || ( accountId = authCallback->authenticate( accountName, password ) ) != -1 )
 			{
 				chSysLock();
 				if( linkState == State::Authenticating )
@@ -742,6 +749,7 @@ void MLinkServer::closeLinkM( Error err )
 		linkState = State::Listening;
 		flags |= ( eventflags_t )Event::StateChanged;
 	}
+	accountId = -1;
 	sessionConfirmed = false;
 	chSysUnlock();
 	socket->eventSource()->unregister( &socketListener );
