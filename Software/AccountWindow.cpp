@@ -9,6 +9,8 @@ AccountWindow::AccountWindow( QWidget* parent /*= nullptr */ ) : QFrame( parent 
 	setWindowFlag( Qt::WindowFlags::enum_type::Popup );
 	setFrameShape( QFrame::Shape::StyledPanel );
 	setFrameShadow( QFrame::Shadow::Raised );
+	ui.messageLabel->hide();
+	setFixedSize( 236, 105 );
 
 	QSettings settings( "settings.ini", QSettings::Format::IniFormat );
 	ui.accountNameEdit->setText( settings.value( "accountName" ).toString() );
@@ -35,6 +37,8 @@ void AccountWindow::logInConfirmed()
 {
 	ui.logInButton->setText( "Log out" );
 	ui.logInButton->setEnabled( true );
+	ui.messageLabel->hide();
+	setFixedSize( 236, 105 );
 }
 
 void AccountWindow::logOutConfirmed()
@@ -49,13 +53,14 @@ void AccountWindow::passwordIncorrect()
 	setInputEnabled( true );
 	ui.logInButton->setText( "Log in" );
 	ui.logInButton->setEnabled( true );
+	ui.messageLabel->show();
+	setFixedSize( 236, 128 );
 
 	QSettings settings( "settings.ini", QSettings::Format::IniFormat );
 	settings.remove( "accountPassword" );
 	ui.accountPasswordEdit->setText( "" );
 
 	show();
-	QToolTip::showText( ui.accountPasswordEdit->mapToGlobal( ui.accountPasswordEdit->rect().bottomLeft() ) + QPoint( 10, 0 ), "Incorrect account name or password.", this, rect(), 3000 );
 }
 
 void AccountWindow::buttonClicked()

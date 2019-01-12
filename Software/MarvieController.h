@@ -120,9 +120,12 @@ private:
 	QMap< QString, QString > sensorSettingsValues( int index );
 	void fixSensorVPortIds( bool needUpdate );
 	QStringList vPortFullNames();
+	void clearMainConfig();
+	void clearSensorsConfig();
 
 	bool loadConfigFromXml( QByteArray xmlData );
 	QByteArray saveConfigToXml();
+	void appendSensorsConfig( QDomDocument& doc, QDomElement& root );
 
 	struct DeviceMemoryLoad;
 	void updateDeviceCpuLoad( float cpuLoad );
@@ -141,6 +144,7 @@ private:
 
 	QString saveCanonicalXML( const QDomDocument& doc, int indent = 1 ) const;
 	void writeDomNodeCanonically( QXmlStreamWriter &stream, const QDomNode &domNode ) const;
+	QString toText( const QDomNode &domNode, int indent = 1 );
 
 private:
 	MLinkClient mlink;

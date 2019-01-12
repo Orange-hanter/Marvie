@@ -117,6 +117,7 @@ private:
 	{
 		EthernetThreadPrio = NORMALPRIO + 1
 	};
+	volatile bool incorrectShutdown;
 	std::list< std::list< MarvieXmlConfigParsers::ComPortAssignment > > comPortAssignments;
 	LogicOutput analogInputAddress[4];
 	adcsample_t adcSamples[8];

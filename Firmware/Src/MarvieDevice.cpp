@@ -14,6 +14,12 @@ MarvieDevice* MarvieDevice::_inst = nullptr;
 
 MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 {
+	crcStart( &CRCD1, nullptr );
+	MarvieBackup* backup = MarvieBackup::instance();
+	backup->init();
+	incorrectShutdown = backup->failureDesc.pwrDown.power;
+	backup->failureDesc.pwrDown.power = true;
+
 	MarviePlatform::comPortAssignments( comPortAssignments );
 
 	auto usartAF = []( SerialDriver* sd )
@@ -118,11 +124,6 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	sdCardStatusEventPending = false;
 	f_mount( &fatFs, "/", 0 );
 	fsError = FR_NOT_READY;
-
-	crcStart( &CRCD1, nullptr );
-
-	MarvieBackup* backup = MarvieBackup::instance();
-	backup->init();
 
 	deviceState = DeviceState::IncorrectConfiguration;
 	configError = ConfigError::NoError;
@@ -274,7 +275,7 @@ void MarvieDevice::mainThreadMain()
 		if( em & MainThreadEvent::PowerDownDetected )
 		{
 			ejectSdCard();
-			backup->failureDesc.pwrDown.processedCorrectly = true;
+			backup->failureDesc.pwrDown.power = false;
 			chSysLock();
 			while( !palReadPad( GPIOC, 13 ) )
 				;
@@ -304,9 +305,12 @@ void MarvieDevice::mainThreadMain()
 							Dir( "/Log" ).mkdir();
 							fileLog.open( "/Log/log.txt" );
 							if( configNum == 0 )
-								fileLog.addRecorg( "System start" );
+							{
+								sprintf( ( char* )buffer, "System started after %s shutdown", incorrectShutdown ? "incorrect" : "correct" );
+								fileLog.addRecorg( ( char* )buffer );
+							}
 							logFailure();
-							monitoringLogSize = Dir( "/Log/BinaryLog" ).contentSize();
+							monitoringLogSize = Dir( "/Log/Monitoring" ).contentSize();
 							if( marvieLog )
 								marvieLog->startLogging( LOWPRIO );
 							reconfig();
@@ -472,6 +476,7 @@ void MarvieDevice::mainThreadMain()
 		if( em & MainThreadEvent::RestartRequestEvent )
 		{
 			ejectSdCard();
+			backup->failureDesc.pwrDown.power = false;
 			__NVIC_SystemReset();
 		}
 		if( em & MainThreadEvent::EjectSdCardRequest )
@@ -501,7 +506,7 @@ void MarvieDevice::mainThreadMain()
 				marvieLog->clean();
 			else
 			{
-				Dir( "/Log/BinaryLog" ).removeRecursively();
+				Dir( "/Log/Monitoring" ).removeRecursively();
 				monitoringLogSize = 0;
 			}
 		}
@@ -807,19 +812,14 @@ void MarvieDevice::logFailure()
 	if( failureDesc.pwrDown.detected )
 	{
 		DateTime dateTime = failureDesc.pwrDown.dateTime;
-		volatile bool processedCorrectly = failureDesc.pwrDown.processedCorrectly;
 		failureDesc.pwrDown.detected = false;
-		failureDesc.pwrDown.processedCorrectly = false;
 		chSysUnlock();
 
 		char* dateStr = ( char* )buffer + 512;
 		char* timeStr = ( char* )buffer + 512 + 100;
 		dateTime.date().printDate( dateStr )[0] = '\0';
 		dateTime.time().printTime( timeStr )[0] = '\0';
-		if( processedCorrectly )
-			sprintf( str, "%s at %s correctly", dateStr, timeStr );
-		else
-			sprintf( str, "%s at %s incorrectly", dateStr, timeStr );
+		sprintf( str, "%s at %s power failure was detected", dateStr, timeStr );
 		fileLog.addRecorg( str );
 	}
 	else
@@ -1333,7 +1333,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 			logConf.sensorsMode != LogConf::SensorsMode::Disabled )
 		{
 			marvieLog = new MarvieLog;
-			marvieLog->setRootPath( "/Log/BinaryLog" );
+			marvieLog->setRootPath( "/Log/Monitoring" );
 			marvieLog->setMaxSize( logConf.maxSize );
 			marvieLog->setOverwritingEnabled( logConf.overwriting );
 			marvieLog->setOnlyNewDigitSignal( logConf.digitInputsMode == LogConf::DigitInputsMode::ByChange );
@@ -1350,7 +1350,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 			marvieLog->startLogging( LOWPRIO );
 		}
 		else
-			monitoringLogSize = Dir( "/Log/BinaryLog" ).contentSize();
+			monitoringLogSize = Dir( "/Log/Monitoring" ).contentSize();
 
 		if( modbusEnabled )
 		{
@@ -2334,9 +2334,8 @@ void MarvieDevice::powerDownExtiCallback( void* arg )
 {
 	auto& failureDesc = MarvieBackup::instance()->failureDesc;
 	chSysLockFromISR();
-	failureDesc.pwrDown.detected = true;
-	failureDesc.pwrDown.processedCorrectly = false;
 	failureDesc.pwrDown.dateTime = DateTimeService::currentDateTime();
+	failureDesc.pwrDown.detected = true;
 	chEvtSignalI( MarvieDevice::instance()->mainThread->thread_ref, MarvieDevice::MainThreadEvent::PowerDownDetected );
 	chSysUnlockFromISR();
 }

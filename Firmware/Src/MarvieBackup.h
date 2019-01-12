@@ -5,7 +5,7 @@
 
 struct MarvieBackup
 {
-    static inline MarvieBackup* instance() { return ( MarvieBackup* )BKPSRAM_BASE; }
+	static inline MarvieBackup* instance() { return ( MarvieBackup* )BKPSRAM_BASE; }
 
 	uint64_t marker;
 	uint32_t version;
@@ -67,8 +67,8 @@ struct MarvieBackup
 
 		struct PowerDown
 		{
+			bool power;
 			bool detected;
-			bool processedCorrectly;
 			DateTime dateTime;
 		} pwrDown;
 

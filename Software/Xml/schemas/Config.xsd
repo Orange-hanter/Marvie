@@ -238,7 +238,7 @@
         </xs:element>
         <xs:element ref="sensorReadingConfig" minOccurs="1" maxOccurs="1"/>
         <xs:element ref="logConfig" minOccurs="0" maxOccurs="1"/>
-        <xs:element ref="sensorsConfig" minOccurs="0"/>
+        <xs:element ref="sensorsConfig" minOccurs="0" maxOccurs="1"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -317,7 +317,7 @@
         </xs:element>
         <xs:element ref="sensorReadingConfig" minOccurs="1" maxOccurs="1"/>
         <xs:element ref="logConfig" minOccurs="0" maxOccurs="1"/>
-        <xs:element ref="sensorsConfig" minOccurs="0"/>
+        <xs:element ref="sensorsConfig" minOccurs="0" maxOccurs="1"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

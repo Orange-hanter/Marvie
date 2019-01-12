@@ -77,6 +77,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	ui.sensorSettingsTreeWidget->header()->resizeSection( 1, 150 );
 	ui.mainStackedWidget->setCurrentIndex( 0 );
 	ui.settingsStackedWidget->setCurrentIndex( 0 );
+	ui.configTransferButtonGroupWidget->hide();
 
 	ui.vPortsOverIpTableView->setModel( &vPortsOverEthernetModel );
 	ui.vPortsOverIpTableView->setItemDelegate( &vPortsOverIpDelegate );
@@ -331,12 +332,12 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	QObject::connect( ui.bluetoothConnectButton, &QToolButton::released, this, &MarvieController::connectButtonClicked );
 	QObject::connect( accountWindow, &AccountWindow::logIn, this, &MarvieController::logInButtonClicked );
 	QObject::connect( accountWindow, &AccountWindow::logOut, this, &MarvieController::logOutButtonClicked );
-	QObject::connect( &mlink, &MLinkClient::stateChanged, this, &MarvieController::mlinkStateChanged );
-	QObject::connect( &mlink, static_cast< void( MLinkClient::* )( MLinkClient::Error ) >( &MLinkClient::error ), this, &MarvieController::mlinkError );
-	QObject::connect( &mlink, &MLinkClient::newPacketAvailable, this, &MarvieController::mlinkNewPacketAvailable );
-	QObject::connect( &mlink, &MLinkClient::newChannelDataAvailable, this, &MarvieController::mlinkNewComplexPacketAvailable );
-	QObject::connect( &mlink, &MLinkClient::channelDataSendingProgress, this, &MarvieController::mlinkComplexDataSendingProgress );
-	QObject::connect( &mlink, &MLinkClient::channeDataReceivingProgress, this, &MarvieController::mlinkComplexDataReceivingProgress );
+	QObject::connect( &mlink, &MLinkClient::stateChanged, this, &MarvieController::mlinkStateChanged, Qt::QueuedConnection );
+	QObject::connect( &mlink, static_cast< void( MLinkClient::* )( MLinkClient::Error ) >( &MLinkClient::error ), this, &MarvieController::mlinkError, Qt::QueuedConnection );
+	QObject::connect( &mlink, &MLinkClient::newPacketAvailable, this, &MarvieController::mlinkNewPacketAvailable, Qt::QueuedConnection );
+	QObject::connect( &mlink, &MLinkClient::newChannelDataAvailable, this, &MarvieController::mlinkNewComplexPacketAvailable, Qt::QueuedConnection );
+	//QObject::connect( &mlink, &MLinkClient::channelDataSendingProgress, this, &MarvieController::mlinkComplexDataSendingProgress, Qt::QueuedConnection );
+	//QObject::connect( &mlink, &MLinkClient::channeDataReceivingProgress, this, &MarvieController::mlinkComplexDataReceivingProgress, Qt::QueuedConnection );
 
 	QObject::connect( ui.deviceRestartButton, &QToolButton::released, this, &MarvieController::deviceRestartButtonClicked );
 	QObject::connect( ui.startVPortsButton, &QToolButton::released, this, &MarvieController::startVPortsButtonClicked );
@@ -402,6 +403,8 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	QObject::connect( ui.exportConfigButton, &QToolButton::released, this, &MarvieController::exportConfigButtonClicked );
 	QObject::connect( ui.uploadConfigButton, &QToolButton::released, this, &MarvieController::uploadConfigButtonClicked );
 	QObject::connect( ui.downloadConfigButton, &QToolButton::released, this, &MarvieController::downloadConfigButtonClicked );
+	QObject::connect( ui.uploadConfigSecondButton, &QToolButton::released, this, &MarvieController::uploadConfigButtonClicked );
+	QObject::connect( ui.downloadConfigSecondButton, &QToolButton::released, this, &MarvieController::downloadConfigButtonClicked );
 
 	QObject::connect( deviceVersionMenu, &QMenu::triggered, this, &MarvieController::deviceVersionMenuActionTriggered );
 	QObject::connect( sdCardMenu, &QMenu::triggered, this, &MarvieController::sdCardMenuActionTriggered );
@@ -617,6 +620,11 @@ void MarvieController::mainMenuButtonClicked()
 		else
 			buttons[i]->setChecked( false );
 	}
+
+	if( s == ui.settingsButton && ui.settingsStackedWidget->currentIndex() != 0 )
+		ui.configTransferButtonGroupWidget->show();
+	else
+		ui.configTransferButtonGroupWidget->hide();
 }
 
 void MarvieController::settingsMenuButtonClicked()
@@ -638,6 +646,11 @@ void MarvieController::settingsMenuButtonClicked()
 		else
 			buttons[i]->setChecked( false );
 	}
+
+	if( ui.settingsStackedWidget->currentIndex() != 0 )
+		ui.configTransferButtonGroupWidget->show();
+	else
+		ui.configTransferButtonGroupWidget->hide();
 }
 
 void MarvieController::nextInterfaceButtonClicked()
@@ -1337,32 +1350,8 @@ void MarvieController::targetDeviceChanged( QString text )
 
 void MarvieController::newConfigButtonClicked()
 {
-	targetDeviceChanged( ui.targetDeviceComboBox->currentText() );
-
-	ui.staticIpRadioButton->setChecked( true );
-	ui.staticIpLineEdit->setText( "192.168.10.10" );
-	ui.netmaskLineEdit->setText( "255.255.255.0" );
-	ui.gatewayLineEdit->setText( "192.168.10.1" );
-	ui.modbusTcpCheckBox->setCheckState( Qt::Unchecked );
-	ui.modbusTcpSpinBox->setValue( 502 );
-	ui.modbusRtuCheckBox->setCheckState( Qt::Unchecked );
-	ui.modbusRtuSpinBox->setValue( 503 );
-	ui.modbusAsciiCheckBox->setCheckState( Qt::Unchecked );
-	ui.modbusAsciiSpinBox->setValue( 504 );
-
-	vPortsOverEthernetModel.removeRows( 0, vPortsOverEthernetModel.rowCount() );
-
-	ui.rs485MinIntervalSpinBox->setValue( 0 );
-
-	ui.logMaxSizeSpinBox->setValue( 1024 );
-	ui.logOverwritingCheckBox->setChecked( true );
-	ui.digitalInputsLogModeComboBox->setCurrentIndex( 0 );
-	ui.digitalInputsLogPeriodSpinBox->setValue( 1 );
-	ui.analogInputsLogModeComboBox->setCurrentIndex( 0 );
-	ui.analogInputsLogPeriodSpinBox->setValue( 10 );
-	ui.sensorsLogModeComboBox->setCurrentIndex( 0 );
-
-	sensorsClearButtonClicked();
+	clearMainConfig();
+	clearSensorsConfig();
 }
 
 void MarvieController::importConfigButtonClicked()
@@ -1373,11 +1362,29 @@ void MarvieController::importConfigButtonClicked()
 		return;
 	setting.setValue( "confDir", QDir( name ).absolutePath().remove( QDir( name ).dirName() ) );
 	QFile file( name );
-	
+
 	file.open( QIODevice::ReadOnly );
 	if( !loadConfigFromXml( file.readAll() ) )
 	{
-		// ADD // FIX
+		QMessageBox msgBox;
+		msgBox.setText( "Failed to import configuration.                      " );
+		msgBox.setStandardButtons( QMessageBox::Ok );
+		msgBox.setDefaultButton( QMessageBox::Ok );
+		msgBox.setDetailedText( xmlMessageHandler.description +
+								QString( " at %1:%2" ).arg( xmlMessageHandler.sourceLocation.line() )
+								.arg( xmlMessageHandler.sourceLocation.column() ) );
+		msgBox.setIcon( QMessageBox::Warning );
+		msgBox.exec();
+	}
+	else if( !xmlMessageHandler.description.isEmpty() )
+	{
+		QMessageBox msgBox;
+		msgBox.setText( "Warnings occurred while importing configuration.     " );
+		msgBox.setStandardButtons( QMessageBox::Ok );
+		msgBox.setDefaultButton( QMessageBox::Ok );
+		msgBox.setDetailedText( xmlMessageHandler.description );
+		msgBox.setIcon( QMessageBox::Warning );
+		msgBox.exec();
 	}
 }
 
@@ -1386,6 +1393,13 @@ void MarvieController::exportConfigButtonClicked()
 	QByteArray data = saveConfigToXml();
 	if( data.isEmpty() )
 	{
+		QMessageBox msgBox;
+		msgBox.setText( "Failed to export configuration.                       " );
+		msgBox.setStandardButtons( QMessageBox::Ok );
+		msgBox.setDefaultButton( QMessageBox::Ok );
+		msgBox.setDetailedText( xmlMessageHandler.description );
+		msgBox.setIcon( QMessageBox::Warning );
+		msgBox.exec();
 		// ADD // FIX
 		return;
 	}
@@ -1409,6 +1423,13 @@ void MarvieController::uploadConfigButtonClicked()
 	QByteArray data = saveConfigToXml();
 	if( data.isEmpty() )
 	{
+		QMessageBox msgBox;
+		msgBox.setText( "Failed to upload configuration.                       " );
+		msgBox.setStandardButtons( QMessageBox::Ok );
+		msgBox.setDefaultButton( QMessageBox::Ok );
+		msgBox.setDetailedText( xmlMessageHandler.description );
+		msgBox.setIcon( QMessageBox::Warning );
+		msgBox.exec();
 		// ADD // FIX
 		return;
 	}
@@ -1421,6 +1442,9 @@ void MarvieController::uploadConfigButtonClicked()
 
 void MarvieController::downloadConfigButtonClicked()
 {
+	if( mlink.state() != MLinkClient::State::Connected )
+		return;
+
 	mlink.sendPacket( MarviePackets::Type::GetConfigXmlType, QByteArray() );
 	DataTransferProgressWindow window( &mlink, MarviePackets::ComplexChannel::XmlConfigChannel, DataTransferProgressWindow::TransferDir::Receiving, this, MarviePackets::Type::ConfigXmlMissingType );
 	window.setTitleText( "Downloading config" );
@@ -1610,7 +1634,7 @@ void MarvieController::sensorCopyButtonClicked()
 
 void MarvieController::sensorsClearButtonClicked()
 {
-	ui.sensorSettingsTreeWidget->clear();
+	clearSensorsConfig();
 }
 
 void MarvieController::exportModbusRegMapToCsvButtonClicked()
@@ -1943,6 +1967,28 @@ void MarvieController::mlinkNewComplexPacketAvailable( uint8_t channelId, QStrin
 			deviceVPorts.clear();
 			deviceSensors.clear();
 			// ADD // FIX
+			QMessageBox msgBox;
+			msgBox.setText( "Incorrect configuration." );
+			msgBox.setInformativeText( "Do you want to save the downloaded data?" );
+			msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
+			msgBox.setDefaultButton( QMessageBox::Yes );
+			msgBox.setDetailedText( xmlMessageHandler.description +
+									QString( " at %1:%2" ).arg( xmlMessageHandler.sourceLocation.line() )
+									.arg( xmlMessageHandler.sourceLocation.column() ) );
+			msgBox.setIcon( QMessageBox::Warning );
+			int ret = msgBox.exec();
+			if( ret == QMessageBox::Yes )
+			{
+				QSettings setting( "settings.ini", QSettings::Format::IniFormat );
+				QString name = QFileDialog::getSaveFileName( this, "Save downloaded data", setting.value( "confDir", QDir::currentPath() ).toString(), "XML files (*.xml)" );
+				if( name.isEmpty() )
+					return;
+				setting.setValue( "confDir", QDir( name ).absolutePath().remove( QDir( name ).dirName() ) );
+
+				QFile file( name );
+				file.open( QIODevice::WriteOnly );
+				file.write( data );
+			}
 		}
 		else
 		{
@@ -1953,6 +1999,30 @@ void MarvieController::mlinkNewComplexPacketAvailable( uint8_t channelId, QStrin
 			for( auto i = list.begin(); i != list.end(); ++i )
 				( *i ).insert( 0, QString( "%1. " ).arg( n++ ) );
 			ui.deviceSensorsComboBox->addItems( list );
+
+			if( !xmlMessageHandler.description.isEmpty() )
+			{
+				QMessageBox msgBox;
+				msgBox.setText( "Loaded configuration has warnings." );
+				msgBox.setInformativeText( "Do you want to save the downloaded data?" );
+				msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
+				msgBox.setDefaultButton( QMessageBox::Yes );
+				msgBox.setDetailedText( xmlMessageHandler.description );
+				msgBox.setIcon( QMessageBox::Warning );
+				int ret = msgBox.exec();
+				if( ret == QMessageBox::Yes )
+				{
+					QSettings setting( "settings.ini", QSettings::Format::IniFormat );
+					QString name = QFileDialog::getSaveFileName( this, "Save downloaded data", setting.value( "confDir", QDir::currentPath() ).toString(), "XML files (*.xml)" );
+					if( name.isEmpty() )
+						return;
+					setting.setValue( "confDir", QDir( name ).absolutePath().remove( QDir( name ).dirName() ) );
+
+					QFile file( name );
+					file.open( QIODevice::WriteOnly );
+					file.write( data );
+				}
+			}
 		}
 	}
 	else if( channelId == MarviePackets::ComplexChannel::XmlConfigChannel )
@@ -3006,13 +3076,49 @@ QStringList MarvieController::vPortFullNames()
 	return names;
 }
 
+void MarvieController::clearMainConfig()
+{
+	targetDeviceChanged( ui.targetDeviceComboBox->currentText() );
+
+	ui.staticIpRadioButton->setChecked( true );
+	ui.staticIpLineEdit->setText( "192.168.10.10" );
+	ui.netmaskLineEdit->setText( "255.255.255.0" );
+	ui.gatewayLineEdit->setText( "192.168.10.1" );
+	ui.modbusTcpCheckBox->setCheckState( Qt::Unchecked );
+	ui.modbusTcpSpinBox->setValue( 502 );
+	ui.modbusRtuCheckBox->setCheckState( Qt::Unchecked );
+	ui.modbusRtuSpinBox->setValue( 503 );
+	ui.modbusAsciiCheckBox->setCheckState( Qt::Unchecked );
+	ui.modbusAsciiSpinBox->setValue( 504 );
+
+	vPortsOverEthernetModel.removeRows( 0, vPortsOverEthernetModel.rowCount() );
+
+	ui.rs485MinIntervalSpinBox->setValue( 0 );
+
+	ui.logMaxSizeSpinBox->setValue( 1024 );
+	ui.logOverwritingCheckBox->setChecked( true );
+	ui.digitalInputsLogModeComboBox->setCurrentIndex( 0 );
+	ui.digitalInputsLogPeriodSpinBox->setValue( 1 );
+	ui.analogInputsLogModeComboBox->setCurrentIndex( 0 );
+	ui.analogInputsLogPeriodSpinBox->setValue( 10 );
+	ui.sensorsLogModeComboBox->setCurrentIndex( 0 );
+}
+
+void MarvieController::clearSensorsConfig()
+{
+	ui.sensorSettingsTreeWidget->clear();
+}
+
 bool MarvieController::loadConfigFromXml( QByteArray xmlData )
 {
 	xmlData = QString( xmlData ).remove( QRegExp( "(xmlns:xsi|xsi:schemaLocation)=\"[^\"]+\"" ) ).toLocal8Bit();
 	xmlMessageHandler.description.clear();
 	QDomDocument doc;
-	if( !doc.setContent( xmlData, &xmlMessageHandler.description ) )
+	int errLine, errColumn;
+	if( !doc.setContent( xmlData, &xmlMessageHandler.description, &errLine, &errColumn ) )
 	{
+		xmlMessageHandler.sourceLocation.setLine( errLine );
+		xmlMessageHandler.sourceLocation.setColumn( errColumn );
 		// FIX?
 		return false;
 	}	
@@ -3049,10 +3155,12 @@ bool MarvieController::loadConfigFromXml( QByteArray xmlData )
 
 	if( missingSensors.count() )
 	{
+		if( !c0.hasChildNodes() )
+			configRoot.removeChild( c0 );
 		QString str( "The description of the following sensors is missing:" );
 		for( const auto& i : missingSensors )
 		{
-			str.append( "\n\t" );
+			str.append( "\n  " );
 			str.append( i );
 			str.append( ';' );
 		}
@@ -3090,7 +3198,7 @@ bool MarvieController::loadConfigFromXml( QByteArray xmlData )
 			return false;
 		}
 	}
-	newConfigButtonClicked();
+	clearMainConfig();
 
 	auto c1 = configRoot.firstChildElement( "comPortsConfig" );
 	auto c2 = c1.firstChildElement();
@@ -3227,7 +3335,17 @@ bool MarvieController::loadConfigFromXml( QByteArray xmlData )
 
 	c1 = configRoot.firstChildElement( "sensorsConfig" );
 	if( c1.isNull() )
+	{
+		clearSensorsConfig();
 		return true;
+	}
+
+	QDomDocument currentSensorsConfig;
+	auto e0 = currentSensorsConfig.createElement( "sensorsConfig" );
+	appendSensorsConfig( currentSensorsConfig, e0 );
+	if( toText( c1 ) == toText( e0 ) )
+		return true;
+	clearSensorsConfig();
 	c2 = c1.firstChildElement();
 	while( !c2.isNull() )
 	{
@@ -3453,65 +3571,70 @@ QByteArray MarvieController::saveConfigToXml()
 	{
 		auto c1 = doc.createElement( "sensorsConfig" );
 		root.appendChild( c1 );
-		for( int i = 0; i < ui.sensorSettingsTreeWidget->topLevelItemCount(); ++i )
-		{
-			QString sensorName = ui.sensorSettingsTreeWidget->topLevelItem( i )->text( 0 ).split( ". " )[1];
-			auto settingsValues = sensorSettingsValues( i );
-			auto settings = sensorDescMap[sensorName].settings;
-			auto c2 = doc.createElement( sensorName );
-			c1.appendChild( c2 );
-			if( settings.target == SensorDesc::Settings::Target::BR )
-			{
-				auto c3 = doc.createElement( "vPortID" );
-				c2.appendChild( c3 );
-				c3.appendChild( doc.createTextNode( settingsValues["vPortID"] ) );
-
-				if( settingsValues.contains( "baudrate" ) )
-				{
-					c3 = doc.createElement( "baudrate" );
-					c2.appendChild( c3 );
-					c3.appendChild( doc.createTextNode( settingsValues["baudrate"] ) );
-				}
-
-				c3 = doc.createElement( "normalPeriod" );
-				c2.appendChild( c3 );
-				c3.appendChild( doc.createTextNode( settingsValues["normalPeriod"] ) );
-
-				c3 = doc.createElement( "emergencyPeriod" );
-				c2.appendChild( c3 );
-				c3.appendChild( doc.createTextNode( settingsValues["emergencyPeriod"] ) );
-
-				c3 = doc.createElement( "name" );
-				c2.appendChild( c3 );
-				c3.appendChild( doc.createTextNode( settingsValues["name"] ) );
-			}
-			else if( settings.target == SensorDesc::Settings::Target::SR )
-			{
-				auto c3 = doc.createElement( "blockID" );
-				c2.appendChild( c3 );
-				c3.appendChild( doc.createTextNode( settingsValues["blockID"] ) );
-
-				c3 = doc.createElement( "logPeriod" );
-				c2.appendChild( c3 );
-				c3.appendChild( doc.createTextNode( settingsValues["logPeriod"] ) );
-
-				c3 = doc.createElement( "name" );
-				c2.appendChild( c3 );
-				c3.appendChild( doc.createTextNode( settingsValues["name"] ) );
-			}
-			for( const auto& i : settings.prmList )
-			{
-				if( settingsValues.contains( i->name ) )
-				{
-					auto c3 = doc.createElement( i->name );
-					c2.appendChild( c3 );
-					c3.appendChild( doc.createTextNode( settingsValues[i->name] ) );
-				}
-			}
-		}
+		appendSensorsConfig( doc, c1 );
 	}
 
 	return /*QByteArray( "<?xml version=\"1.0\"?>\n" ) +*/ saveCanonicalXML( doc ).toLocal8Bit();
+}
+
+void MarvieController::appendSensorsConfig( QDomDocument& doc, QDomElement& root )
+{
+	for( int i = 0; i < ui.sensorSettingsTreeWidget->topLevelItemCount(); ++i )
+	{
+		QString sensorName = ui.sensorSettingsTreeWidget->topLevelItem( i )->text( 0 ).split( ". " )[1];
+		auto settingsValues = sensorSettingsValues( i );
+		auto settings = sensorDescMap[sensorName].settings;
+		auto c2 = doc.createElement( sensorName );
+		root.appendChild( c2 );
+		if( settings.target == SensorDesc::Settings::Target::BR )
+		{
+			auto c3 = doc.createElement( "vPortID" );
+			c2.appendChild( c3 );
+			c3.appendChild( doc.createTextNode( settingsValues["vPortID"] ) );
+
+			if( settingsValues.contains( "baudrate" ) )
+			{
+				c3 = doc.createElement( "baudrate" );
+				c2.appendChild( c3 );
+				c3.appendChild( doc.createTextNode( settingsValues["baudrate"] ) );
+			}
+
+			c3 = doc.createElement( "normalPeriod" );
+			c2.appendChild( c3 );
+			c3.appendChild( doc.createTextNode( settingsValues["normalPeriod"] ) );
+
+			c3 = doc.createElement( "emergencyPeriod" );
+			c2.appendChild( c3 );
+			c3.appendChild( doc.createTextNode( settingsValues["emergencyPeriod"] ) );
+
+			c3 = doc.createElement( "name" );
+			c2.appendChild( c3 );
+			c3.appendChild( doc.createTextNode( settingsValues["name"] ) );
+		}
+		else if( settings.target == SensorDesc::Settings::Target::SR )
+		{
+			auto c3 = doc.createElement( "blockID" );
+			c2.appendChild( c3 );
+			c3.appendChild( doc.createTextNode( settingsValues["blockID"] ) );
+
+			c3 = doc.createElement( "logPeriod" );
+			c2.appendChild( c3 );
+			c3.appendChild( doc.createTextNode( settingsValues["logPeriod"] ) );
+
+			c3 = doc.createElement( "name" );
+			c2.appendChild( c3 );
+			c3.appendChild( doc.createTextNode( settingsValues["name"] ) );
+		}
+		for( const auto& i : settings.prmList )
+		{
+			if( settingsValues.contains( i->name ) )
+			{
+				auto c3 = doc.createElement( i->name );
+				c2.appendChild( c3 );
+				c3.appendChild( doc.createTextNode( settingsValues[i->name] ) );
+			}
+		}
+	}
 }
 
 void MarvieController::updateDeviceCpuLoad( float cpuLoad )
@@ -3887,8 +4010,19 @@ void MarvieController::writeDomNodeCanonically( QXmlStreamWriter &stream, const 
 	}
 	else if( domNode.isComment() )
 		stream.writeComment( domNode.nodeValue() );
-	else if( domNode.isText() )
+	else if( domNode.isText() && !domNode.nodeValue().isEmpty() )
 		stream.writeCharacters( domNode.nodeValue() );
+}
+
+QString MarvieController::toText( const QDomNode &domNode, int indent )
+{
+	QString xmlData;
+	QXmlStreamWriter stream( &xmlData );
+	stream.setAutoFormatting( true );
+	stream.setAutoFormattingIndent( indent );
+	writeDomNodeCanonically( stream, domNode );
+
+	return xmlData;
 }
 
 void MarvieController::XmlMessageHandler::handleMessage( QtMsgType type, const QString &description, const QUrl &identifier, const QSourceLocation &sourceLocation )

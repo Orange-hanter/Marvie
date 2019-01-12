@@ -16,11 +16,11 @@ extern "C"
 
 void runApp()
 {
-	/*if( *( uint32_t* )0x08008000 != 0xAABBCCDD )
+	if( *( uint32_t* )0x08008000 != 0xAABBCCDD )
 	{
 		while( true )
 			;
-	}*/
+	}
 
 	constexpr uint32_t appStartAddress = 0x08008400;
 	volatile void ( *app )( void );
@@ -84,8 +84,7 @@ int main()
 			FLASH_Lock();
 
 			f_close( &file );
-			f_unlink( "/_firmware.bin" );
-			f_rename( "/firmware.bin", "/_firmware.bin" );
+			f_unlink( "/firmware.bin" );
 		}
 	}
 End:

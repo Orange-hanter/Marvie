@@ -727,6 +727,88 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
       </spacer>
      </item>
      <item>
+      <widget class="QWidget" name="configTransferButtonGroupWidget" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>75</width>
+         <height>0</height>
+        </size>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_60">
+        <property name="leftMargin">
+         <number>3</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>3</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QToolButton" name="downloadConfigSecondButton">
+          <property name="maximumSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Download</string>
+          </property>
+          <property name="icon">
+           <iconset resource="MarvieController.qrc">
+            <normaloff>:/MarvieController/icons/icons8-download-96.png</normaloff>:/MarvieController/icons/icons8-download-96.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="popupMode">
+           <enum>QToolButton::InstantPopup</enum>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="uploadConfigSecondButton">
+          <property name="maximumSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Upload</string>
+          </property>
+          <property name="icon">
+           <iconset resource="MarvieController.qrc">
+            <normaloff>:/MarvieController/icons/icons8-upload-96.png</normaloff>:/MarvieController/icons/icons8-upload-96.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="popupMode">
+           <enum>QToolButton::InstantPopup</enum>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
       <widget class="QStackedWidget" name="interfaceStackedWidget">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -3474,7 +3556,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
        <item>
         <widget class="QStackedWidget" name="settingsStackedWidget">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="mainSettingsPage">
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -3698,7 +3780,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
               <widget class="Line" name="lineForFramelessWindow_5">
                <property name="minimumSize">
                 <size>
-                 <width>264</width>
+                 <width>270</width>
                  <height>0</height>
                 </size>
                </property>
