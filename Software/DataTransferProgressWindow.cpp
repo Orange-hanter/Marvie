@@ -103,6 +103,12 @@ void DataTransferProgressWindow::complexDataSendingProgress( uint8_t channelId, 
 	if( channelId != this->channelId )
 		return;
 
+	if( progress == -1.0f )
+	{
+		error();
+		return;
+	}
+
 	progressBar->setValue( 1000 * progress );
 	if( progress == 1.0f )
 		accept();

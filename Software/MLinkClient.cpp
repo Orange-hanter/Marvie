@@ -6,8 +6,14 @@
 
 #define MLINK_PREAMBLE 0x203d26d1
 
+Q_DECLARE_METATYPE( MLinkClient::State )
+Q_DECLARE_METATYPE( MLinkClient::Error )
+
 MLinkClient::MLinkClient()
 {
+	qRegisterMetaType< MLinkClient::State >();
+	qRegisterMetaType< MLinkClient::Error >();
+
 	_state = State::Disconnected;
 	_error = Error::NoError;
 	idCounter = 0;
@@ -329,6 +335,31 @@ void MLinkClient::processPacket( Header& header, QByteArray& packetData )
 					newChannelDataAvailable( chHeader->ch, cdata.name, cdata.data );
 				break;
 			}
+			case RemoteCloseChannel:
+			{
+				const ChannelHeader* chHeader = reinterpret_cast< const ChannelHeader* >( packetData.constData() );
+				for( auto i = reqList.begin(); i != reqList.end(); ++i )
+				{
+					auto& req = *i;
+					if( req.type == PacketType::OpenChannel || req.type == PacketType::ChannelData || req.type == PacketType::CloseChannel )
+					{
+						const ChannelHeader* reqChHeader = reinterpret_cast< const ChannelHeader* >( req.data.constData() );
+						if( reqChHeader->ch != chHeader->ch || reqChHeader->id != chHeader->id )
+							continue;
+
+						reqList.erase( i );
+						break;
+					}
+				}
+				auto i = outCDataMap.find( chHeader->ch );
+				if( i != outCDataMap.end() && i.value().id == chHeader->id )
+				{
+					QString name = i.value().name;
+					outCDataMap.erase( i );
+					channelDataSendingProgress( chHeader->ch, name, -1.0f );
+				}
+				break;
+			}
 			default:
 				assert( false );
 				break;
@@ -385,7 +416,7 @@ void MLinkClient::bytesWritten()
 	else if( packet.type == PacketType::CloseChannel )
 	{
 		const ChannelHeader* chHeader = reinterpret_cast< const ChannelHeader* >( packet.data.constData() );
-		if( outCDataMap[chHeader->ch].id != chHeader->id )
+		if( !outCDataMap.contains( chHeader->ch ) || outCDataMap[chHeader->ch].id != chHeader->id )
 			return;
 		OutputCData cdata = outCDataMap.take( chHeader->ch );
 		channelDataSendingProgress( chHeader->ch, cdata.name, 1.0f );

@@ -29,8 +29,8 @@ public:
 	bool cancelChannelDataReceiving( uint8_t channel );
 
 signals:
-	void stateChanged( State state );
-	void error( Error error );
+	void stateChanged( MLinkClient::State state );
+	void error( MLinkClient::Error error );
 	void connected();
 	void disconnected();
 	void newPacketAvailable( uint8_t type, QByteArray data );
@@ -82,7 +82,7 @@ private:
 		MSS = MTU - sizeof( Header ),
 		DataChannelMSS = MTU - sizeof( Header ) - sizeof( ChannelHeader ),
 		MaxPacketTransferInterval = 1500,
-		PingInterval = 500, // must be <= MaxPacketTransferInterval
+		PingInterval = 1000, // must be <= MaxPacketTransferInterval
 	};
 	State _state;
 	Error _error;
