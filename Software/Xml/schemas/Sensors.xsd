@@ -6,6 +6,7 @@
    <xs:sequence>
     <xs:choice maxOccurs="unbounded" minOccurs="1">
      <xs:element ref="CE301"/>
+     <xs:element ref="GeneralSRSensor"/>
      <xs:element ref="SimpleSensor"/>
      <xs:element ref="TEM104"/>
      <xs:element ref="TestSRSensorA"/>
@@ -31,6 +32,50 @@
         </xs:restriction>
        </xs:simpleType>
       </xs:element>
+     </xs:sequence>
+    </xs:extension>
+   </xs:complexContent>
+  </xs:complexType>
+ </xs:element>
+ <xs:element name="GeneralSRSensor">
+  <xs:complexType>
+   <xs:complexContent>
+    <xs:extension base="srSensorBase">
+     <xs:sequence>
+      <xs:element name="channel">
+       <xs:simpleType>
+        <xs:restriction base="xs:int">
+         <xs:minInclusive value="0"/>
+         <xs:maxInclusive value="15"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+      <xs:element name="filterA">
+       <xs:simpleType>
+        <xs:restriction base="xs:string">
+         <xs:enumeration value="None"/>
+         <xs:enumeration value="LowPassAlpha"/>
+         <xs:enumeration value="LowPassFreq"/>
+         <xs:enumeration value="MovingAvg"/>
+         <xs:enumeration value="Median"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+      <xs:element name="prmA" type="xs:float"/>
+      <xs:element name="filterB">
+       <xs:simpleType>
+        <xs:restriction base="xs:string">
+         <xs:enumeration value="None"/>
+         <xs:enumeration value="LowPassAlpha"/>
+         <xs:enumeration value="LowPassFreq"/>
+         <xs:enumeration value="MovingAvg"/>
+         <xs:enumeration value="Median"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+      <xs:element name="prmB" type="xs:float"/>
+      <xs:element name="k" type="xs:float"/>
+      <xs:element name="b" type="xs:float"/>
      </xs:sequence>
     </xs:extension>
    </xs:complexContent>

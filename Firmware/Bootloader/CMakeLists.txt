@@ -18,10 +18,10 @@ set(marvie_dir ${CMAKE_SOURCE_DIR}/..)
 
 include_directories(
 	${ChibiOS_INCLUDE_DIRS}
-	../ChibiOS/os/various
-	../ChibiOS/os/various/lwip_bindings/
-	../Config/
-	../Config/Bootloader
+	${marvie_dir}/ChibiOS/os/various
+	${marvie_dir}/ChibiOS/os/various/lwip_bindings/
+	${marvie_dir}/Config/
+	${marvie_dir}/Config/Bootloader
 )
 
 add_subdirectory(../Lib/fatfs  ${CMAKE_BINARY_DIR}/Lib/fatfs)

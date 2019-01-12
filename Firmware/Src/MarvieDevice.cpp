@@ -638,8 +638,8 @@ void MarvieDevice::adInputsReadThreadMain()
 		configMutex.unlock();
 
 		sysinterval_t dt = chVTTimeElapsedSinceX( t0 );
-		if( TIME_MS2I( 50 ) > dt )
-			chThdSleepMilliseconds( TIME_MS2I( 50 ) - dt );
+		if( TIME_MS2I( MarviePlatform::srSensorUpdatePeriodMs ) > dt )
+			chThdSleepMilliseconds( TIME_MS2I( MarviePlatform::srSensorUpdatePeriodMs ) - dt );
 	}
 }
 

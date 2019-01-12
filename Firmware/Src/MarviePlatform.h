@@ -21,6 +21,8 @@ public:
 	static constexpr uint32_t digitInputsCount = 8;
 	static const IOPort digitInputPorts[digitInputsCount];
 
+	static constexpr uint32_t srSensorUpdatePeriodMs = 50;
+
 	static constexpr uint32_t comUsartsCount = 4;
 	struct ComUsartIoLines
 	{

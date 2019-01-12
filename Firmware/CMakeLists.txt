@@ -9,6 +9,8 @@ enable_language(ASM)
 #set(STM32_CCRAM_SIZE "64K")
 
 set(WIN32 1)
+#set(USE_PRINTF_FLOAT 1)
+set(USE_SCANF_FLOAT 1)
 include(gcc_stm32)
 
 set(CHIBIOS_CONFIG_DIR "Config/Firmware")
@@ -16,10 +18,10 @@ find_package(ChibiOS 18 COMPONENTS rt hal REQUIRED)
 
 include_directories(
 	${ChibiOS_INCLUDE_DIRS}
-	ChibiOS/os/various
-	ChibiOS/os/various/lwip_bindings/
-    Config/
-    Config/Firmware
+	${CMAKE_SOURCE_DIR}/ChibiOS/os/various
+	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/lwip_bindings/
+    ${CMAKE_SOURCE_DIR}/Config/
+    ${CMAKE_SOURCE_DIR}/Config/Firmware
 )
 
 add_subdirectory(Lib/lwip)
@@ -29,98 +31,106 @@ add_subdirectory(Lib/fatfs)
 add_subdirectory(Lib/sha1)
 
 include_directories(
-	Src/
 	${CMAKE_SOURCE_DIR}
+	${CMAKE_SOURCE_DIR}/Src/
 )
 
 set(apps_SRCS
-	Src/Apps/Modbus/ModbusDevice.cpp
-	Src/Apps/Modbus/ModbusServer.cpp
-	Src/Apps/Modbus/RawModbusServer.cpp
-	Src/Apps/Modbus/TcpModbusServer.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/ModbusDevice.cpp
+	${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/ModbusServer.cpp
+	${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/RawModbusServer.cpp
+	${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/TcpModbusServer.cpp
 )
 
 set(core_SRCS
-    Src/Core/BaseDynamicThread.cpp
-    Src/Core/ByteRingBuffer.cpp
-	Src/Core/CCMemoryAllocator.cpp
-    Src/Core/CCMemoryHeap.cpp
-    Src/Core/CpuUsageMonitor.cpp
-    Src/Core/DateTime.cpp
-    Src/Core/DateTimeService.cpp
-    Src/Core/IODevice.cpp
-    Src/Core/NewDelete.cpp
-    Src/Core/Object.cpp
-    Src/Core/ObjectMemoryUtilizer.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/BaseDynamicThread.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Core/ByteRingBuffer.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/CCMemoryAllocator.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Core/CCMemoryHeap.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Core/CpuUsageMonitor.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Core/DateTime.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Core/DateTimeService.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Core/IODevice.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Core/NewDelete.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Core/Object.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Core/ObjectMemoryUtilizer.cpp
 )
 
 set(drivers_SRCS
-	Src/Drivers/Interfaces/Rs485.cpp
-	Src/Drivers/Interfaces/SharedRs485.cpp
-	Src/Drivers/Interfaces/Usart.cpp
-	Src/Drivers/Interfaces/UsartBasedDevice.cpp
-	Src/Drivers/Network/Ethernet/EthernetThread.cpp
-	Src/Drivers/Network/SimGsm/SimGsmATResponseParsers.cpp
-	Src/Drivers/Network/SimGsm/SimGsmPppModem.cpp
-	Src/Drivers/Sensors/AbstractSensor.cpp
-	Src/Drivers/Sensors/CE301Sensor.cpp
-	Src/Drivers/Sensors/Tem05MSensor.cpp
-	Src/Drivers/Sensors/Tem104Sensor.cpp
-	Src/Drivers/Sensors/TestSensorA.cpp
-	Src/Drivers/Sensors/TestSensorB.cpp
-	Src/Drivers/Sensors/TestSRSensorA.cpp
-	Src/Drivers/LogicOutput.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Interfaces/Rs485.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Interfaces/SharedRs485.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Interfaces/Usart.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Interfaces/UsartBasedDevice.cpp	
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Network/Ethernet/EthernetThread.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Network/SimGsm/SimGsmATResponseParsers.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Network/SimGsm/SimGsmPppModem.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/AbstractSensor.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/CE301Sensor.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/GeneralSRSensor.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Tem05MSensor.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Tem104Sensor.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/TestSensorA.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/TestSensorB.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/TestSRSensorA.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/LogicOutput.cpp
 )
 
 set(fileSystem_SRCS
-	Src/FileSystem/Dir.cpp
-	Src/FileSystem/File.cpp
-	Src/FileSystem/FileInfo.cpp
-	Src/FileSystem/FileSystem.cpp
+	${CMAKE_SOURCE_DIR}/Src/FileSystem/Dir.cpp
+	${CMAKE_SOURCE_DIR}/Src/FileSystem/File.cpp
+	${CMAKE_SOURCE_DIR}/Src/FileSystem/FileInfo.cpp
+	${CMAKE_SOURCE_DIR}/Src/FileSystem/FileSystem.cpp
+)
+
+set(filters_SRCS
+	${CMAKE_SOURCE_DIR}/Src/Filters/LowPassFilter.cpp
+	${CMAKE_SOURCE_DIR}/Src/Filters/MedianFilter.cpp
+	${CMAKE_SOURCE_DIR}/Src/Filters/MovingAvgFilter.cpp
 )
 
 set(log_SRCS
-	Src/Log/FileLog.cpp
-	Src/Log/MarvieLog.cpp
+	${CMAKE_SOURCE_DIR}/Src/Log/FileLog.cpp
+	${CMAKE_SOURCE_DIR}/Src/Log/MarvieLog.cpp
 )
 
 set(network_SRCS
-	Src/Network/AbstractPppModem.cpp
-	Src/Network/AbstractSocket.cpp
-	Src/Network/AbstractTcpSocket.cpp
-	Src/Network/AbstractUdpSocket.cpp
-	Src/Network/IpAddress.cpp
-	Src/Network/LwipSocketPrivate.cpp
-	Src/Network/Modem.cpp
-	Src/Network/TcpServer.cpp
-	Src/Network/TcpSocket.cpp
-	Src/Network/UdpSocket.cpp
+	${CMAKE_SOURCE_DIR}/Src/Network/AbstractPppModem.cpp
+	${CMAKE_SOURCE_DIR}/Src/Network/AbstractSocket.cpp
+	${CMAKE_SOURCE_DIR}/Src/Network/AbstractTcpSocket.cpp
+	${CMAKE_SOURCE_DIR}/Src/Network/AbstractUdpSocket.cpp
+	${CMAKE_SOURCE_DIR}/Src/Network/IpAddress.cpp
+	${CMAKE_SOURCE_DIR}/Src/Network/LwipSocketPrivate.cpp
+	${CMAKE_SOURCE_DIR}/Src/Network/Modem.cpp
+	${CMAKE_SOURCE_DIR}/Src/Network/TcpServer.cpp
+	${CMAKE_SOURCE_DIR}/Src/Network/TcpSocket.cpp
+	${CMAKE_SOURCE_DIR}/Src/Network/UdpSocket.cpp
 )
 
 set(sensorService_SRCS
-	Src/SensorService/CE301Type.cpp
-	Src/SensorService/SensorService.cpp
-	Src/SensorService/Tem104Type.cpp
-	Src/SensorService/TestSensorAType.cpp
-	Src/SensorService/TestSensorBType.cpp
-	Src/SensorService/TestSRSensorAType.cpp
+	${CMAKE_SOURCE_DIR}/Src/SensorService/CE301Type.cpp
+	${CMAKE_SOURCE_DIR}/Src/SensorService/GeneralSRSensorType.cpp
+	${CMAKE_SOURCE_DIR}/Src/SensorService/SensorService.cpp
+	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem104Type.cpp
+	${CMAKE_SOURCE_DIR}/Src/SensorService/TestSensorAType.cpp
+	${CMAKE_SOURCE_DIR}/Src/SensorService/TestSensorBType.cpp
+	${CMAKE_SOURCE_DIR}/Src/SensorService/TestSRSensorAType.cpp
 )
 
 set(support_SRCS
-	Src/Support/LexicalAnalyzer.cpp
-	Src/Support/Utility.cpp
+	${CMAKE_SOURCE_DIR}/Src/Support/LexicalAnalyzer.cpp
+	${CMAKE_SOURCE_DIR}/Src/Support/Utility.cpp
 )
 
 set(chibios_various_SRCS
-	ChibiOS/os/various/lwip_bindings/arch/sys_arch.c
-	ChibiOS/os/various/cpp_wrappers/ch.cpp
-	ChibiOS/os/various/fatfs_bindings/fatfs_diskio.c
-	ChibiOS/os/various/fatfs_bindings/fatfs_syscall.c
-	ChibiOS/os/various/evtimer.c
+	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/lwip_bindings/arch/sys_arch.c
+	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/cpp_wrappers/ch.cpp
+	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/fatfs_bindings/fatfs_diskio.c
+	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/fatfs_bindings/fatfs_syscall.c
+	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/evtimer.c
 )
 
 set(test_SRCS
-	Tests/UdpStressTestServer/UdpStressTestServer.cpp
+	${CMAKE_SOURCE_DIR}/Tests/UdpStressTestServer/UdpStressTestServer.cpp
 )
 
 add_definitions(-DCORTEX_USE_FPU=FALSE -DUSE_ASSERT=TRUE)
@@ -130,19 +140,19 @@ set(STM32_LINKER_SCRIPT ${ChibiOS_LINKER_SCRIPT})
 # Marvie firmware --------------------------------------------------------
 
 set(firmware_SRCS
-	Config/board.c
-    Src/BRSensorReader.cpp
-    Src/Crc32HW.cpp
-    Src/main.cpp
-    Src/MarvieDevice.cpp
-	Src/MarviePlatform.cpp
-	Src/MarvieBackup.cpp
-    Src/MarvieXmlConfigParsers.cpp
-    Src/MLinkServer.cpp
-    Src/MultipleBRSensorsReader.cpp
-    Src/NetworkSensorReader.cpp
-    Src/SingleBRSensorReader.cpp
-	#Src/usbcfg.c
+	${CMAKE_SOURCE_DIR}/Config/board.c
+    ${CMAKE_SOURCE_DIR}/Src/BRSensorReader.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Crc32HW.cpp
+    ${CMAKE_SOURCE_DIR}/Src/main.cpp
+    ${CMAKE_SOURCE_DIR}/Src/MarvieDevice.cpp
+	${CMAKE_SOURCE_DIR}/Src/MarviePlatform.cpp
+	${CMAKE_SOURCE_DIR}/Src/MarvieBackup.cpp
+    ${CMAKE_SOURCE_DIR}/Src/MarvieXmlConfigParsers.cpp
+    ${CMAKE_SOURCE_DIR}/Src/MLinkServer.cpp
+    ${CMAKE_SOURCE_DIR}/Src/MultipleBRSensorsReader.cpp
+    ${CMAKE_SOURCE_DIR}/Src/NetworkSensorReader.cpp
+    ${CMAKE_SOURCE_DIR}/Src/SingleBRSensorReader.cpp
+	#${CMAKE_SOURCE_DIR}/Src/usbcfg.c
 )
 
 add_executable(${CMAKE_PROJECT_NAME}_firmware.elf
@@ -151,6 +161,7 @@ add_executable(${CMAKE_PROJECT_NAME}_firmware.elf
 	${core_SRCS}
 	${drivers_SRCS}
 	${fileSystem_SRCS}
+	${filters_SRCS}
 	${log_SRCS}
 	${network_SRCS}
 	${sensorService_SRCS}
