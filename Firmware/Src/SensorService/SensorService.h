@@ -2,7 +2,7 @@
 
 #include "Core/NanoList.h"
 #include "Drivers/Sensors/AbstractSensor.h"
-#include "tinyxml2.h"
+#include "Lib/tinyxml2/tinyxml2.h"
 
 class SensorService
 {

@@ -1,4 +1,4 @@
-#include "CE301Sensor.h"
+#include "Ce301Sensor.h"
 #include "Core/DateTimeService.h"
 #include "Support/Utility.h"
 
