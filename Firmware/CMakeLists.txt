@@ -117,6 +117,7 @@ set(sensorService_SRCS
 	${CMAKE_SOURCE_DIR}/Src/SensorService/GeneralSRSensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Mr01SensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/SensorService.cpp
+	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem05MSensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem104M1SensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem104SensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem104USensorType.cpp

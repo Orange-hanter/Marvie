@@ -194,7 +194,7 @@ float TERM0204Sensor::b4ToFloat( uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3 
 	while( !( m & 0x400000 ) )
 		m <<= 1, --b0;
 	m <<= 1, --b0;
-	v |= ( b0 << 23 ) | m & 0x7FFFFF;
+	v |= ( b0 << 23 ) | ( m & 0x7FFFFF );
 	return *reinterpret_cast< float volatile* >( &v );
 }
 

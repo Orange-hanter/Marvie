@@ -14,7 +14,7 @@ public:
 		Data()
 		{
 			constexpr size_t size = ( sizeof( Data ) - sizeof( SensorData ) ) / 4;
-			for( int i = 0; i < size; ++i )
+			for( size_t i = 0; i < size; ++i )
 				reinterpret_cast< uint32_t* >( &instant )[i] = 0;
 		}
 		struct InstantValues
