@@ -126,18 +126,18 @@ bool Tem05MSensor::parseData()
 	data.errType = SensorData::Error::NoError;
 
 	// 0x0020 - 0x002F
-	data.G[0] = _V3( tmp + 0 ) * multipliers[table[codeA].G];
-	data.P[0] = _V3( tmp + 3 ) * multipliers[table[codeA].P];
-	data.Q[0] = _V3( tmp + 6 ) * multipliers[table[codeA].Q];
-	data.V[0] = _V3( tmp + 9 ) * multipliers[table[codeA].V];
-	data.M[0] = _V3( tmp + 12 ) * multipliers[table[codeA].M];
+	data.ch[0].G = _V3( tmp + 0 ) * multipliers[table[codeA].G];
+	data.ch[0].P = _V3( tmp + 3 ) * multipliers[table[codeA].P];
+	data.ch[0].Q = _V3( tmp + 6 ) * multipliers[table[codeA].Q];
+	data.ch[0].V = _V3( tmp + 9 ) * multipliers[table[codeA].V];
+	data.ch[0].M = _V3( tmp + 12 ) * multipliers[table[codeA].M];
 
 	// 0x002F - 0x003E
-	data.G[1] = _V3( tmp + 15 ) * multipliers[table[codeB].G];
-	data.P[1] = _V3( tmp + 18 ) * multipliers[table[codeB].P];
-	data.Q[1] = _V3( tmp + 21 ) * multipliers[table[codeB].Q];
-	data.V[1] = _V3( tmp + 24 ) * multipliers[table[codeB].V];
-	data.M[1] = _V3( tmp + 27 ) * multipliers[table[codeB].M];
+	data.ch[1].G = _V3( tmp + 15 ) * multipliers[table[codeB].G];
+	data.ch[1].P = _V3( tmp + 18 ) * multipliers[table[codeB].P];
+	data.ch[1].Q = _V3( tmp + 21 ) * multipliers[table[codeB].Q];
+	data.ch[1].V = _V3( tmp + 24 ) * multipliers[table[codeB].V];
+	data.ch[1].M = _V3( tmp + 27 ) * multipliers[table[codeB].M];
 
 	data.unlock();
 	return true;

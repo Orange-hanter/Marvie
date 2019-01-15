@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<DataDesc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="file:// ../../Xml/schemas/SensorData.xsd">
+  <group name="Instant">
+    <groupArray count="2">
+      <group name="Channel">
+        <float>G</float>
+        <float>P</float>
+        <float>tmpSupply</float>
+        <float>tmpReturn</float>
+      </group>
+    </groupArray>
+    <float>pSupply</float>
+    <float>pReturn</float>
+    <float>vAdditional</float>
+    <uint16>error</uint16>
+    <unused size="2"/>
+  </group>
+
+  <group name="Integrated">
+    <groupArray count="2">
+      <group name="Channel">
+        <float>vSumm</float>
+        <float>mSumm</float>
+        <float>QSumm</float>
+      </group>
+    </groupArray>
+    <float>vSummAdditional</float>
+  </group>
+</DataDesc>

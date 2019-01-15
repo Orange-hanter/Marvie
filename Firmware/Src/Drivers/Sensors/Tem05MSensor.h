@@ -15,14 +15,17 @@ public:
 		{
 			constexpr uint32_t size = ( sizeof( Data ) - sizeof( SensorData ) ) / sizeof( float );
 			for( uint32_t i = 0; i < size; ++i )
-				reinterpret_cast< float* >( G )[i] = 0;
+				reinterpret_cast< float* >( ch )[i] = 0;
 		}
 
-		float G[2]; // m^3/h
-		float P[2]; // KW
-		float Q[2]; // MW*h
-		float V[2]; // m^3
-		float M[2]; // tn
+		struct Channel
+		{
+			float G; // m^3/h
+			float P; // KW
+			float Q; // MW*h
+			float V; // m^3
+			float M; // tn
+		} ch[2];
 	};
 
 	explicit Tem05MSensor();

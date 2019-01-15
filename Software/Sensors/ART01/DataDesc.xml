@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<DataDesc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="file:// ../../Xml/schemas/SensorData.xsd">
+  <group name="Instant">
+    <array type="int16" count="4">tmp</array>
+    <uint16>Status</uint16>
+    <unused size="6"/>
+  </group>
+</DataDesc>

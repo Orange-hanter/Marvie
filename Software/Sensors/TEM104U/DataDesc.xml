@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<DataDesc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="file:// ../../Xml/schemas/SensorData.xsd">
+  <group name="Instant">
+    <float>rshv</float>
+    <float>rshm</float>
+    <array type="float" count="2">tmp</array>
+    <array type="float" count="2">prs</array>
+  </group>
+ 
+  <group name="Integrated">
+    <double>intV</double>
+    <double>intM</double>
+    <double>intQ</double>
+    <uint32>T_Wrk</uint32>
+    <uint32>T_Cnt</uint32>
+    <uint32>T_Fail</uint32>
+    <uint32>T_Dt</uint32>
+    <uint32>T_Gmax</uint32>
+    <uint32>T_Gmin</uint32>
+    <array type="uint16" count="2">tmp</array>
+    <array type="uint8" count="2">prs</array>
+    <uint8>TekErr</uint8>
+    <uint8>TehErr</uint8>
+  </group>
+</DataDesc>
