@@ -138,8 +138,8 @@ void SHA1::addBytes( const char* data, int num )
 SHA1::Digest SHA1::result()
 {
 	// save the message size
-	Uint32 totalBitsL = size << 3;
-	Uint32 totalBitsH = size >> 29;
+	volatile Uint32 totalBitsL = size << 3;
+	volatile Uint32 totalBitsH = size >> 29;
 	// add 0x80 to the message
 	addBytes( "\x80", 1 );
 	
