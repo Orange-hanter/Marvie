@@ -3,7 +3,6 @@
 //uint8_t data[513] __attribute__( ( section( ".ram4" ) ) );
 
 #include "Drivers/Network/Ethernet/EthernetThread.h"
-
 #include "Core/DateTimeService.h"
 
 #include "Tests/FileSystemTest.hpp"
@@ -11,7 +10,7 @@
 #include "Tests/LwipEthernetTest.hpp"
 #include "Tests/MLinkTest.hpp"
 #include "Tests/MarvieLogSystemTest.hpp"
-//#include "Tests/ModbusServerTest.hpp"
+#include "Tests/ModbusServerTest.hpp"
 #include "Tests/ModbusTest.hpp"
 #include "Tests/PowerDownTest.hpp"
 #include "Tests/SdDataUploader.hpp"
@@ -29,7 +28,7 @@ int main()
 	chSysInit();
 	rccEnableAHB1( RCC_AHB1ENR_BKPSRAMEN, true );
 
-	/*	Sim800Test::test();
+	/*Sim800Test::test();
 	while(true);*/
 
 	/*UsbSduTest::test();
@@ -181,9 +180,8 @@ int main()
 
 	//ModbusTest::test();
 	//ModbusServerTest::test();
-	gsmPPPTest();
-	while( true )
-		;
+	/*gsmPPPTest();
+	while( true );*/
 
 	return 0;
 }

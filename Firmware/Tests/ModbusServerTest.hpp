@@ -6,6 +6,7 @@
 
 namespace ModbusServerTest
 {
+	#define MODBUS_REG_COUNT 512
 	using namespace ModbusPotato;
 
 	class ModbusSlaveHandlerHolding : public ISlaveHandler
