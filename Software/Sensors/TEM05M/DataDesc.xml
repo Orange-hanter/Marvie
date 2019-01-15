@@ -7,6 +7,9 @@
       <float>Q</float>
       <float>V</float>
       <float>M</float>
+      <float>t</float>
     </group>
   </groupArray>
+  <float>tCW</float>
+  <uint32>error</uint32>
 </DataDesc>

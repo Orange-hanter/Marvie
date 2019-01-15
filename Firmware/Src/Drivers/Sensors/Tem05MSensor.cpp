@@ -1,52 +1,52 @@
 #include "Tem05MSensor.h"
 #include "Core/DateTimeService.h"
 
-#define _V3( p ) ( *( uint32_t* )( p ) & 0x00FFFFFF )
+#define _V3( p ) ( *( uint32_t* )( p )&0x00FFFFFF )
 #define _V2( p ) ( *( uint16_t* )( p ) )
-#define BDC_TO_BIN( a ) ( ( ( a ) & 0x0F ) + ( ( a ) & 0xF0 ) * 10 )
+#define BDC_TO_BIN( a ) ( ( ( a )&0x0F ) + ( ( a )&0xF0 ) * 10 )
 
 const static float multipliers[10] = { 1.0e-00f, 1.0e-01f, 1.0e-02f, 1.0e-03f, 1.0e-04f, 1.0e-05f, 1.0e-06f, 1.0e-07f, 1.0e-08f, 1.0e-09f };
 struct MultipliersDegrees
 {
 	uint32_t G : 4,
-			 P : 4,
-			 Q : 4,
-			 V : 4,
-			 M : 4;
+	    P : 4,
+	    Q : 4,
+	    V : 4,
+	    M : 4;
 };
 
 const static MultipliersDegrees table[24] =
-{
-	{ 5, 3, 4, 3, 3 },
-	{ 5, 3, 4, 3, 3 },
-	{ 4, 2, 3, 2, 2 },
-	{ 4, 2, 3, 2, 2 },
+    {
+	    { 5, 3, 4, 3, 3 },
+	    { 5, 3, 4, 3, 3 },
+	    { 4, 2, 3, 2, 2 },
+	    { 4, 2, 3, 2, 2 },
 
-	{ 4, 2, 3, 2, 2 },
-	{ 4, 2, 3, 2, 2 },
-	{ 4, 2, 3, 2, 2 },
-	{ 4, 2, 3, 2, 2 },
+	    { 4, 2, 3, 2, 2 },
+	    { 4, 2, 3, 2, 2 },
+	    { 4, 2, 3, 2, 2 },
+	    { 4, 2, 3, 2, 2 },
 
-	{ 3, 1, 2, 1, 1 },
-	{ 3, 1, 2, 1, 1 },
-	{ 3, 1, 2, 1, 1 },
-	{ 3, 1, 2, 1, 1 },
+	    { 3, 1, 2, 1, 1 },
+	    { 3, 1, 2, 1, 1 },
+	    { 3, 1, 2, 1, 1 },
+	    { 3, 1, 2, 1, 1 },
 
-	{ 3, 1, 2, 1, 1 },
-	{ 3, 1, 2, 1, 1 },
-	{ 2, 0, 1, 0, 0 },
-	{ 3, 1, 2, 1, 1 },
+	    { 3, 1, 2, 1, 1 },
+	    { 3, 1, 2, 1, 1 },
+	    { 2, 0, 1, 0, 0 },
+	    { 3, 1, 2, 1, 1 },
 
-	{ 2, 0, 1, 0, 0 },
-	{ 2, 0, 1, 0, 0 },
-	{ 2, 0, 1, 0, 0 },
-	{ 2, 0, 1, 0, 0 },
+	    { 2, 0, 1, 0, 0 },
+	    { 2, 0, 1, 0, 0 },
+	    { 2, 0, 1, 0, 0 },
+	    { 2, 0, 1, 0, 0 },
 
-	{ 2, 0, 1, 0, 0 },
-	{ 4, 2, 3, 2, 2 },
-	{ 3, 1, 2, 1, 1 },
-	{ 3, 1, 2, 1, 1 },
-};
+	    { 2, 0, 1, 0, 0 },
+	    { 4, 2, 3, 2, 2 },
+	    { 3, 1, 2, 1, 1 },
+	    { 3, 1, 2, 1, 1 },
+    };
 
 const char Tem05MSensor::Name[] = "Tem05M";
 
@@ -57,7 +57,6 @@ Tem05MSensor::Tem05MSensor()
 
 Tem05MSensor::~Tem05MSensor()
 {
-
 }
 
 const char* Tem05MSensor::name() const
@@ -73,7 +72,16 @@ void Tem05MSensor::setBaudrate( uint32_t baudrate )
 Tem05MSensor::Data* Tem05MSensor::readData()
 {
 	io->acquireDevice();
-#define returnError( err, code ) { data.lock(); data.errType = err; data.errCode = code; data.unlock(); io->releaseDevice(); io->read( nullptr, io->readAvailable() ); return &data; }
+#define returnError( err, code )                          \
+	{                                                 \
+		data.lock();                              \
+		data.errType = err;                       \
+		data.errCode = code;                      \
+		data.unlock();                            \
+		io->releaseDevice();                      \
+		io->read( nullptr, io->readAvailable() ); \
+		return &data;                             \
+	}
 
 	if( io->isSerialDevice() )
 	{
@@ -111,10 +119,11 @@ uint32_t Tem05MSensor::sensorDataSize()
 
 bool Tem05MSensor::parseData()
 {
-	uint8_t codeA, codeB, tmp[30];
+	uint8_t codeA, codeB, tmp[37];
 	io->peek( 0x0012, &codeA, 1 );
 	io->peek( 0x0013, &codeB, 1 );
-	io->peek( 0x0020, tmp, 30 );
+	io->peek( 0x0020, tmp, 31 );
+	io->peek( 0x00CE, tmp + 31, 6 );
 	io->read( nullptr, 344 );
 
 	if( codeA >= 24 || codeB >= 24 )
@@ -138,6 +147,14 @@ bool Tem05MSensor::parseData()
 	data.ch[1].Q = _V3( tmp + 21 ) * multipliers[table[codeB].Q];
 	data.ch[1].V = _V3( tmp + 24 ) * multipliers[table[codeB].V];
 	data.ch[1].M = _V3( tmp + 27 ) * multipliers[table[codeB].M];
+
+	// 0x003E
+	data.error = tmp[30];
+
+	// 0x00CE - 0x00D4
+	data.ch[0].t = _V2( tmp + 31 ) * 0.01f;
+	data.ch[1].t = _V2( tmp + 33 ) * 0.01f;
+	data.tCW = _V2( tmp + 35 ) * 0.01f;
 
 	data.unlock();
 	return true;

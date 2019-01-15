@@ -10,6 +10,7 @@ public:
 	class Data : public SensorData
 	{
 		friend class Tem05MSensor;
+
 	public:
 		Data()
 		{
@@ -25,7 +26,10 @@ public:
 			float Q; // MW*h
 			float V; // m^3
 			float M; // tn
+			float t; // Celsius
 		} ch[2];
+		float tCW;   //temperature cold water
+		uint32_t error;
 	};
 
 	explicit Tem05MSensor();
