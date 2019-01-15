@@ -2384,7 +2384,7 @@ extern "C"
 
 	void idleLoopHook()
 	{
-		//wdgReset( &WDGD1 );
+		wdgReset( &WDGD1 );
 	}
 
 	void NMI_Handler()

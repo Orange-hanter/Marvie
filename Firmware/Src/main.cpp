@@ -6,16 +6,17 @@
 
 #include "Core/DateTimeService.h"
 
-#include "Tests/GsmPPPTest.hpp"
-#include "Tests/ModbusTest.hpp"
-#include "Tests/ModbusServerTest.hpp"
-#include "Tests/UdpStressTestServer/UdpStressTestServer.h"
 #include "Tests/FileSystemTest.hpp"
+#include "Tests/GsmPPPTest.hpp"
+#include "Tests/LwipEthernetTest.hpp"
+#include "Tests/MLinkTest.hpp"
 #include "Tests/MarvieLogSystemTest.hpp"
+//#include "Tests/ModbusServerTest.hpp"
+#include "Tests/ModbusTest.hpp"
 #include "Tests/PowerDownTest.hpp"
 #include "Tests/SdDataUploader.hpp"
-#include "Tests/MLinkTest.hpp"
-#include "Tests/LwipEthernetTest.hpp"
+#include "Tests/Sim800AtTest.hpp"
+#include "Tests/UdpStressTestServer/UdpStressTestServer.h"
 //#include "Tests/UsbSduTest.hpp"
 
 #include <algorithm>
@@ -28,6 +29,9 @@ int main()
 	chSysInit();
 	rccEnableAHB1( RCC_AHB1ENR_BKPSRAMEN, true );
 
+	/*	Sim800Test::test();
+	while(true);*/
+
 	/*UsbSduTest::test();
 	while( true );*/
 
@@ -39,7 +43,7 @@ int main()
 
 	/*SdDataUploader::main();
 	while( true );*/
-	
+
 	/*PowerDownTest::test();
 	while( true );*/
 
@@ -49,7 +53,7 @@ int main()
 	/*FileSystemTest::test();
 	while( true );*/
 
-	/*enum IWDGPrescaler
+	enum IWDGPrescaler
 	{
 		IWDGPrescaler4   = 0,
 		IWDGPrescaler8   = 1,
@@ -63,7 +67,7 @@ int main()
 	wdgConfig.pr = IWDGPrescaler256;
 	wdgConfig.rlr = 0x0FFF;
 	wdgStart( &WDGD1, &wdgConfig );
-	wdgReset( &WDGD1 );*/
+	wdgReset( &WDGD1 );
 
 	//{
 	//	tcpip_init( nullptr, nullptr );
@@ -84,7 +88,7 @@ int main()
 	//	MLinkTest::test();
 	//	while( true );
 	//}
-	
+
 	tcpip_init( nullptr, nullptr );
 
 	/*LwipEthernetTest::test();
@@ -93,7 +97,8 @@ int main()
 	ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );
 
 	MarvieDevice::instance()->exec();
-	while( true );
+	while( true )
+		;
 
 	auto conf = EthernetThread::instance()->currentConfig();
 	conf.addressMode = EthernetThread::AddressMode::Static;
@@ -109,13 +114,12 @@ int main()
 	terminal->open( 115200 );
 	terminal->write( ( uint8_t* )"Start ethernet...\r", 18, TIME_INFINITE );*/
 
-	Concurrent::run( []()
-	{
+	Concurrent::run( []() {
 		UdpStressTestServer* server = new UdpStressTestServer( 1112 );
 		server->exec();
 	} );
 
- 	/*EvtListener listener;
+	/*EvtListener listener;
  	EthernetThread::instance()->eventSource()->registerMask( &listener, EVENT_MASK( 0 ) );
  	while( true )
  	{
@@ -137,8 +141,7 @@ int main()
  		}
  	}*/
 
-	Concurrent::run( []()
-	{
+	Concurrent::run( []() {
 		TcpServer* server = new TcpServer;
 		server->listen( 42420 );
 		while( server->isListening() )
@@ -146,8 +149,7 @@ int main()
 			if( server->waitForNewConnection( TIME_MS2I( 100 ) ) )
 			{
 				TcpSocket* socket = server->nextPendingConnection();
-				Concurrent::run( [socket]()
-				{
+				Concurrent::run( [socket]() {
 					uint8_t* data = new uint8_t[2048];
 					while( true )
 					{
@@ -164,10 +166,11 @@ int main()
 						if( !socket->isOpen() )
 							break;
 					}
-End:
+				End:
 					delete data;
 					delete socket;
-				}, 2048, NORMALPRIO );
+				},
+						 2048, NORMALPRIO );
 			}
 		}
 	} );
@@ -176,12 +179,11 @@ End:
 	for( int i = 0; i < 1024 * 10; ++i )
 		guardArray[i] = 0;*/
 
-
 	//ModbusTest::test();
 	//ModbusServerTest::test();
 	gsmPPPTest();
-	while( true );
-
+	while( true )
+		;
 
 	return 0;
 }
