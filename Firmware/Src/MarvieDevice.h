@@ -109,7 +109,7 @@ private:
 	{
 		SdTestInterval            = 100,
 		MemoryTestInterval        = 1000,
-		StatusInterval            = 333,
+		StatusInterval            = 500,
 		SrSensorInterval          = 100,
 		SrSensorPeriodCounterLoad = 1000 / SrSensorInterval,
 	};

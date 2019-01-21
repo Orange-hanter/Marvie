@@ -11,12 +11,12 @@ enum class ComPortType { Rs232, Rs485 };
 class MarviePlatform
 {
 public:
-	static constexpr const char* coreVersion = "0.8.0.0";
+	static constexpr const char* coreVersion = "0.8.0.1L";
 	static constexpr const char* platformType = "VX";
 	static constexpr const char* configXmlRootTagName = "vxConfig";
 
 	static const IOPort analogInputAddressSelectorPorts[4];
-	static constexpr uint32_t analogInputsCount = 4;
+	static constexpr uint32_t analogInputsCount = 16;
 
 	static constexpr uint32_t digitInputsCount = 8;
 	static const IOPort digitInputPorts[digitInputsCount];

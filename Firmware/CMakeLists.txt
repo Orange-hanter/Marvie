@@ -144,7 +144,10 @@ set(test_SRCS
 	${CMAKE_SOURCE_DIR}/Tests/UdpStressTestServer/UdpStressTestServer.cpp
 )
 
-add_definitions(-DCORTEX_USE_FPU=FALSE -DUSE_ASSERT=TRUE)
+add_definitions(
+	            -DCORTEX_USE_FPU=FALSE
+                -DUSE_ASSERT=TRUE
+)
 
 set(STM32_LINKER_SCRIPT ${ChibiOS_LINKER_SCRIPT})
 
@@ -163,6 +166,7 @@ set(firmware_SRCS
     ${CMAKE_SOURCE_DIR}/Src/MultipleBRSensorsReader.cpp
     ${CMAKE_SOURCE_DIR}/Src/NetworkSensorReader.cpp
     ${CMAKE_SOURCE_DIR}/Src/SingleBRSensorReader.cpp
+	${CMAKE_SOURCE_DIR}/Src/stm32f4xx_flash.c
 	#${CMAKE_SOURCE_DIR}/Src/usbcfg.c
 )
 
