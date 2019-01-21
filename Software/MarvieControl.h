@@ -20,16 +20,16 @@
 
 #include "../Firmware/Src/MarviePackets.h"
 
-#include "ui_MarvieController.h"
+#include "ui_MarvieControl.h"
 #include "ui_SdStatistics.h"
 
-class MarvieController : public FramelessWidget
+class MarvieControl : public FramelessWidget
 {
 	Q_OBJECT
 
 public:
-	MarvieController( QWidget *parent = Q_NULLPTR );
-	~MarvieController();
+	MarvieControl( QWidget *parent = Q_NULLPTR );
+	~MarvieControl();
 
 private:
 	bool eventFilter( QObject *obj, QEvent *event ) final override;
@@ -236,5 +236,5 @@ private:
 	enum class SdCardStatus : uint8_t { Unknown, NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } deviceSdCardStatus;
 	enum class LogState : uint8_t { Unknown, Off, Stopped, Working, Archiving, Stopping } deviceLogState;
 
-	Ui::MarvieControllerClass ui;
+	Ui::MarvieControlClass ui;
 };

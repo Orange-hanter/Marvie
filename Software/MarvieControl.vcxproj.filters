@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -60,7 +60,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MarvieController.cpp">
+    <ClCompile Include="MarvieControl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="thirdparty\FramelessWindow\FramelessWindow.cpp">
@@ -128,7 +128,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="MarvieController.h">
+    <QtMoc Include="MarvieControl.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="thirdparty\FramelessWindow\FramelessWindow.h">
@@ -169,15 +169,15 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="MarvieController.qrc">
+    <QtRcc Include="MarvieControl.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="MarvieController.rc" />
+    <ResourceCompile Include="MarvieControl.rc" />
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="MarvieController.ui">
+    <QtUic Include="MarvieControl.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="SdStatistics.ui">
@@ -188,7 +188,7 @@
     </QtUic>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_MarvieController.h">
+    <ClInclude Include="GeneratedFiles\ui_MarvieControl.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="Crc32SW.h">

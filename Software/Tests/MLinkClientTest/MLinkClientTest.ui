@@ -372,7 +372,7 @@
  <layoutdefault spacing="6" margin="11"/>
  <resources>
   <include location="MLinkClientTest.qrc"/>
-  <include location="../../MarvieController.qrc"/>
+  <include location="../../MarvieControl.qrc"/>
  </resources>
  <connections/>
 </ui>

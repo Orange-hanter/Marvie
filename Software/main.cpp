@@ -1,4 +1,4 @@
-#include "MarvieController.h"
+#include "MarvieControl.h"
 #include <QtWidgets/QApplication>
 #include <time.h>
 #include "MonitoringLog.h"
@@ -22,7 +22,7 @@ int main( int argc, char *argv[] )
 	monitoringLog.nameGroup( "AI" ).dayGroup( QDate( 2018, 9, 21 ) ).nearestEntry( QTime::fromMSecsSinceStartOfDay( 46454279 + 1 ) );
 	monitoringLog.nameGroup( "DI" ).dayGroup( QDate( 2018, 9, 21 ) ).timestamps();*/
 
- 	MarvieController w;
+ 	MarvieControl w;
  	w.show();
  	return a.exec();
 

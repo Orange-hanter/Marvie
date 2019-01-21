@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MarvieControllerClass</class>
- <widget class="QWidget" name="MarvieControllerClass">
+ <class>MarvieControlClass</class>
+ <widget class="QWidget" name="MarvieControlClass">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -432,7 +432,7 @@
    </palette>
   </property>
   <property name="windowTitle">
-   <string>MarvieController</string>
+   <string>MarvieControl</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1,0,0">
    <property name="spacing">
@@ -540,8 +540,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
         <string>Control</string>
        </property>
        <property name="icon">
-        <iconset resource="MarvieController.qrc">
-         <normaloff>:/MarvieController/icons/icons8-adjust-64.png</normaloff>:/MarvieController/icons/icons8-adjust-64.png</iconset>
+        <iconset resource="MarvieControl.qrc">
+         <normaloff>:/MarvieControl/icons/icons8-adjust-64.png</normaloff>:/MarvieControl/icons/icons8-adjust-64.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -592,8 +592,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
         <string>Monitoring</string>
        </property>
        <property name="icon">
-        <iconset resource="MarvieController.qrc">
-         <normaloff>:/MarvieController/icons/icons8-Heart Monitor Filled-100-orange.png</normaloff>:/MarvieController/icons/icons8-Heart Monitor Filled-100-orange.png</iconset>
+        <iconset resource="MarvieControl.qrc">
+         <normaloff>:/MarvieControl/icons/icons8-Heart Monitor Filled-100-orange.png</normaloff>:/MarvieControl/icons/icons8-Heart Monitor Filled-100-orange.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -641,8 +641,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
         <string>Log</string>
        </property>
        <property name="icon">
-        <iconset resource="MarvieController.qrc">
-         <normaloff>:/MarvieController/icons/icons8-log-in-circle.png</normaloff>:/MarvieController/icons/icons8-log-in-circle.png</iconset>
+        <iconset resource="MarvieControl.qrc">
+         <normaloff>:/MarvieControl/icons/icons8-log-in-circle.png</normaloff>:/MarvieControl/icons/icons8-log-in-circle.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -690,8 +690,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
         <string>Settings</string>
        </property>
        <property name="icon">
-        <iconset resource="MarvieController.qrc">
-         <normaloff>:/MarvieController/icons/icons8-Gears Filled-100-orange.png</normaloff>:/MarvieController/icons/icons8-Gears Filled-100-orange.png</iconset>
+        <iconset resource="MarvieControl.qrc">
+         <normaloff>:/MarvieControl/icons/icons8-Gears Filled-100-orange.png</normaloff>:/MarvieControl/icons/icons8-Gears Filled-100-orange.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -759,8 +759,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
            <string>Download</string>
           </property>
           <property name="icon">
-           <iconset resource="MarvieController.qrc">
-            <normaloff>:/MarvieController/icons/icons8-download-96.png</normaloff>:/MarvieController/icons/icons8-download-96.png</iconset>
+           <iconset resource="MarvieControl.qrc">
+            <normaloff>:/MarvieControl/icons/icons8-download-96.png</normaloff>:/MarvieControl/icons/icons8-download-96.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -788,8 +788,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
            <string>Upload</string>
           </property>
           <property name="icon">
-           <iconset resource="MarvieController.qrc">
-            <normaloff>:/MarvieController/icons/icons8-upload-96.png</normaloff>:/MarvieController/icons/icons8-upload-96.png</iconset>
+           <iconset resource="MarvieControl.qrc">
+            <normaloff>:/MarvieControl/icons/icons8-upload-96.png</normaloff>:/MarvieControl/icons/icons8-upload-96.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -845,8 +845,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
          <item>
           <widget class="QToolButton" name="rs232ConnectButton">
            <property name="icon">
-            <iconset resource="MarvieController.qrc">
-             <normaloff>:/MarvieController/icons/icons8-rs-232-female-filled-50.png</normaloff>:/MarvieController/icons/icons8-rs-232-female-filled-50.png</iconset>
+            <iconset resource="MarvieControl.qrc">
+             <normaloff>:/MarvieControl/icons/icons8-rs-232-female-filled-50.png</normaloff>:/MarvieControl/icons/icons8-rs-232-female-filled-50.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -894,8 +894,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
          <item>
           <widget class="QToolButton" name="ethernetConnectButton">
            <property name="icon">
-            <iconset resource="MarvieController.qrc">
-             <normaloff>:/MarvieController/icons/icons8-ethernet-on-filled-50.png</normaloff>:/MarvieController/icons/icons8-ethernet-on-filled-50.png</iconset>
+            <iconset resource="MarvieControl.qrc">
+             <normaloff>:/MarvieControl/icons/icons8-ethernet-on-filled-50.png</normaloff>:/MarvieControl/icons/icons8-ethernet-on-filled-50.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -940,8 +940,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
          <item>
           <widget class="QToolButton" name="bluetoothConnectButton">
            <property name="icon">
-            <iconset resource="MarvieController.qrc">
-             <normaloff>:/MarvieController/icons/icons8-bluetooth-2-filled-50.png</normaloff>:/MarvieController/icons/icons8-bluetooth-2-filled-50.png</iconset>
+            <iconset resource="MarvieControl.qrc">
+             <normaloff>:/MarvieControl/icons/icons8-bluetooth-2-filled-50.png</normaloff>:/MarvieControl/icons/icons8-bluetooth-2-filled-50.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -973,8 +973,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="MarvieController.qrc">
-         <normaloff>:/MarvieController/icons/sort-down-filled.png</normaloff>:/MarvieController/icons/sort-down-filled.png</iconset>
+        <iconset resource="MarvieControl.qrc">
+         <normaloff>:/MarvieControl/icons/sort-down-filled.png</normaloff>:/MarvieControl/icons/sort-down-filled.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -1452,7 +1452,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                     <string/>
                    </property>
                    <property name="pixmap">
-                    <pixmap resource="MarvieController.qrc">:/MarvieController/icons/icons8-sort-down-26-blue.png</pixmap>
+                    <pixmap resource="MarvieControl.qrc">:/MarvieControl/icons/icons8-sort-down-26-blue.png</pixmap>
                    </property>
                    <property name="scaledContents">
                     <bool>true</bool>
@@ -1596,8 +1596,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="MarvieController.qrc">
-                     <normaloff>:/MarvieController/icons/icons8-shutdown-52.png</normaloff>:/MarvieController/icons/icons8-shutdown-52.png</iconset>
+                    <iconset resource="MarvieControl.qrc">
+                     <normaloff>:/MarvieControl/icons/icons8-shutdown-52.png</normaloff>:/MarvieControl/icons/icons8-shutdown-52.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -1651,8 +1651,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="MarvieController.qrc">
-                     <normaloff>:/MarvieController/icons/icons8-play-60.png</normaloff>:/MarvieController/icons/icons8-play-60.png</iconset>
+                    <iconset resource="MarvieControl.qrc">
+                     <normaloff>:/MarvieControl/icons/icons8-play-60.png</normaloff>:/MarvieControl/icons/icons8-play-60.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -1689,8 +1689,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="MarvieController.qrc">
-                     <normaloff>:/MarvieController/icons/icons8-stop-48.png</normaloff>:/MarvieController/icons/icons8-stop-48.png</iconset>
+                    <iconset resource="MarvieControl.qrc">
+                     <normaloff>:/MarvieControl/icons/icons8-stop-48.png</normaloff>:/MarvieControl/icons/icons8-stop-48.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -1727,8 +1727,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="MarvieController.qrc">
-                     <normaloff>:/MarvieController/icons/icons8-refresh-96.png</normaloff>:/MarvieController/icons/icons8-refresh-96.png</iconset>
+                    <iconset resource="MarvieControl.qrc">
+                     <normaloff>:/MarvieControl/icons/icons8-refresh-96.png</normaloff>:/MarvieControl/icons/icons8-refresh-96.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -1931,8 +1931,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                           <string/>
                          </property>
                          <property name="icon">
-                          <iconset resource="MarvieController.qrc">
-                           <normaloff>:/MarvieController/icons/icons8-down-button-48.png</normaloff>:/MarvieController/icons/icons8-down-button-48.png</iconset>
+                          <iconset resource="MarvieControl.qrc">
+                           <normaloff>:/MarvieControl/icons/icons8-down-button-48.png</normaloff>:/MarvieControl/icons/icons8-down-button-48.png</iconset>
                          </property>
                          <property name="iconSize">
                           <size>
@@ -1996,8 +1996,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                           <string/>
                          </property>
                          <property name="icon">
-                          <iconset resource="MarvieController.qrc">
-                           <normaloff>:/MarvieController/icons/icons8-refresh-96.png</normaloff>:/MarvieController/icons/icons8-refresh-96.png</iconset>
+                          <iconset resource="MarvieControl.qrc">
+                           <normaloff>:/MarvieControl/icons/icons8-refresh-96.png</normaloff>:/MarvieControl/icons/icons8-refresh-96.png</iconset>
                          </property>
                          <property name="iconSize">
                           <size>
@@ -2091,8 +2091,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                           <string/>
                          </property>
                          <property name="icon">
-                          <iconset resource="MarvieController.qrc">
-                           <normaloff>:/MarvieController/icons/icons8-down-button-48.png</normaloff>:/MarvieController/icons/icons8-down-button-48.png</iconset>
+                          <iconset resource="MarvieControl.qrc">
+                           <normaloff>:/MarvieControl/icons/icons8-down-button-48.png</normaloff>:/MarvieControl/icons/icons8-down-button-48.png</iconset>
                          </property>
                          <property name="iconSize">
                           <size>
@@ -2156,8 +2156,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                           <string/>
                          </property>
                          <property name="icon">
-                          <iconset resource="MarvieController.qrc">
-                           <normaloff>:/MarvieController/icons/icons8-down-button-48.png</normaloff>:/MarvieController/icons/icons8-down-button-48.png</iconset>
+                          <iconset resource="MarvieControl.qrc">
+                           <normaloff>:/MarvieControl/icons/icons8-down-button-48.png</normaloff>:/MarvieControl/icons/icons8-down-button-48.png</iconset>
                          </property>
                          <property name="iconSize">
                           <size>
@@ -2788,8 +2788,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset resource="MarvieController.qrc">
-                   <normaloff>:/MarvieController/icons/icons8-refresh-96.png</normaloff>:/MarvieController/icons/icons8-refresh-96.png</iconset>
+                  <iconset resource="MarvieControl.qrc">
+                   <normaloff>:/MarvieControl/icons/icons8-refresh-96.png</normaloff>:/MarvieControl/icons/icons8-refresh-96.png</iconset>
                  </property>
                  <property name="iconSize">
                   <size>
@@ -3232,8 +3232,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <string>4</string>
                </property>
                <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-sort-up-filled-50.png</normaloff>:/MarvieController/icons/icons8-sort-up-filled-50.png</iconset>
+                <iconset resource="MarvieControl.qrc">
+                 <normaloff>:/MarvieControl/icons/icons8-sort-up-filled-50.png</normaloff>:/MarvieControl/icons/icons8-sort-up-filled-50.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -3267,8 +3267,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-sort-down-filled-50.png</normaloff>:/MarvieController/icons/icons8-sort-down-filled-50.png</iconset>
+                <iconset resource="MarvieControl.qrc">
+                 <normaloff>:/MarvieControl/icons/icons8-sort-down-filled-50.png</normaloff>:/MarvieControl/icons/icons8-sort-down-filled-50.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -3626,8 +3626,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <string>New</string>
                </property>
                <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-file-90.png</normaloff>:/MarvieController/icons/icons8-file-90.png</iconset>
+                <iconset resource="MarvieControl.qrc">
+                 <normaloff>:/MarvieControl/icons/icons8-file-90.png</normaloff>:/MarvieControl/icons/icons8-file-90.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -3655,8 +3655,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <string>Import</string>
                </property>
                <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-import-90.png</normaloff>:/MarvieController/icons/icons8-import-90.png</iconset>
+                <iconset resource="MarvieControl.qrc">
+                 <normaloff>:/MarvieControl/icons/icons8-import-90.png</normaloff>:/MarvieControl/icons/icons8-import-90.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -3684,8 +3684,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <string>Export</string>
                </property>
                <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-export-90.png</normaloff>:/MarvieController/icons/icons8-export-90.png</iconset>
+                <iconset resource="MarvieControl.qrc">
+                 <normaloff>:/MarvieControl/icons/icons8-export-90.png</normaloff>:/MarvieControl/icons/icons8-export-90.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -3713,8 +3713,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <string>Download</string>
                </property>
                <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-download-96.png</normaloff>:/MarvieController/icons/icons8-download-96.png</iconset>
+                <iconset resource="MarvieControl.qrc">
+                 <normaloff>:/MarvieControl/icons/icons8-download-96.png</normaloff>:/MarvieControl/icons/icons8-download-96.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -3742,8 +3742,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <string>Upload</string>
                </property>
                <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-upload-96.png</normaloff>:/MarvieController/icons/icons8-upload-96.png</iconset>
+                <iconset resource="MarvieControl.qrc">
+                 <normaloff>:/MarvieControl/icons/icons8-upload-96.png</normaloff>:/MarvieControl/icons/icons8-upload-96.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -4378,8 +4378,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                          </size>
                         </property>
                         <property name="icon">
-                         <iconset resource="MarvieController.qrc">
-                          <normaloff>:/MarvieController/icons/icons8-sum-90.png</normaloff>:/MarvieController/icons/icons8-sum-90.png</iconset>
+                         <iconset resource="MarvieControl.qrc">
+                          <normaloff>:/MarvieControl/icons/icons8-sum-90.png</normaloff>:/MarvieControl/icons/icons8-sum-90.png</iconset>
                         </property>
                         <property name="iconSize">
                          <size>
@@ -4404,8 +4404,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                          </size>
                         </property>
                         <property name="icon">
-                         <iconset resource="MarvieController.qrc">
-                          <normaloff>:/MarvieController/icons/x.png</normaloff>:/MarvieController/icons/x.png</iconset>
+                         <iconset resource="MarvieControl.qrc">
+                          <normaloff>:/MarvieControl/icons/x.png</normaloff>:/MarvieControl/icons/x.png</iconset>
                         </property>
                         <property name="iconSize">
                          <size>
@@ -5239,8 +5239,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <string>New</string>
                </property>
                <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-file-90.png</normaloff>:/MarvieController/icons/icons8-file-90.png</iconset>
+                <iconset resource="MarvieControl.qrc">
+                 <normaloff>:/MarvieControl/icons/icons8-file-90.png</normaloff>:/MarvieControl/icons/icons8-file-90.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5268,8 +5268,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <string>Move up</string>
                </property>
                <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-move-node-up-filled.png</normaloff>:/MarvieController/icons/icons8-move-node-up-filled.png</iconset>
+                <iconset resource="MarvieControl.qrc">
+                 <normaloff>:/MarvieControl/icons/icons8-move-node-up-filled.png</normaloff>:/MarvieControl/icons/icons8-move-node-up-filled.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5297,8 +5297,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <string>Move down</string>
                </property>
                <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-move-node-down-filled.png</normaloff>:/MarvieController/icons/icons8-move-node-down-filled.png</iconset>
+                <iconset resource="MarvieControl.qrc">
+                 <normaloff>:/MarvieControl/icons/icons8-move-node-down-filled.png</normaloff>:/MarvieControl/icons/icons8-move-node-down-filled.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5326,8 +5326,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <string>Copy</string>
                </property>
                <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-copy-node-filled.png</normaloff>:/MarvieController/icons/icons8-copy-node-filled.png</iconset>
+                <iconset resource="MarvieControl.qrc">
+                 <normaloff>:/MarvieControl/icons/icons8-copy-node-filled.png</normaloff>:/MarvieControl/icons/icons8-copy-node-filled.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5355,8 +5355,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <string>Remove</string>
                </property>
                <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-delete-node-filled.png</normaloff>:/MarvieController/icons/icons8-delete-node-filled.png</iconset>
+                <iconset resource="MarvieControl.qrc">
+                 <normaloff>:/MarvieControl/icons/icons8-delete-node-filled.png</normaloff>:/MarvieControl/icons/icons8-delete-node-filled.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5384,8 +5384,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <string>Add</string>
                </property>
                <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-add-node-filled.png</normaloff>:/MarvieController/icons/icons8-add-node-filled.png</iconset>
+                <iconset resource="MarvieControl.qrc">
+                 <normaloff>:/MarvieControl/icons/icons8-add-node-filled.png</normaloff>:/MarvieControl/icons/icons8-add-node-filled.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5465,8 +5465,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <string>Back</string>
                </property>
                <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-chevron-left-filled-50.png</normaloff>:/MarvieController/icons/icons8-chevron-left-filled-50.png</iconset>
+                <iconset resource="MarvieControl.qrc">
+                 <normaloff>:/MarvieControl/icons/icons8-chevron-left-filled-50.png</normaloff>:/MarvieControl/icons/icons8-chevron-left-filled-50.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5507,8 +5507,8 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                 <string>Export to CSV</string>
                </property>
                <property name="icon">
-                <iconset resource="MarvieController.qrc">
-                 <normaloff>:/MarvieController/icons/icons8-export-csv-filled-50.png</normaloff>:/MarvieController/icons/icons8-export-csv-filled-50.png</iconset>
+                <iconset resource="MarvieControl.qrc">
+                 <normaloff>:/MarvieControl/icons/icons8-export-csv-filled-50.png</normaloff>:/MarvieControl/icons/icons8-export-csv-filled-50.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5666,7 +5666,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="MarvieController.qrc"/>
+  <include location="MarvieControl.qrc"/>
  </resources>
  <connections/>
 </ui>

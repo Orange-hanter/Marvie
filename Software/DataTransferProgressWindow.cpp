@@ -21,7 +21,7 @@ DataTransferProgressWindow::DataTransferProgressWindow( MLinkClient* link, uint8
 	button = new QToolButton;
 	button->setFixedSize( QSize( 29, 29 ) );
 	button->setIconSize( QSize( 25, 25 ) );
-	button->setIcon( QIcon( ":/MarvieController/icons/icons8-cancel-26.png" ) );
+	button->setIcon( QIcon( ":/MarvieControl/icons/icons8-cancel-26.png" ) );
 	button->setAutoRaise( true );
 	button->setToolTip( "Cancel" );
 	layout->addWidget( button );

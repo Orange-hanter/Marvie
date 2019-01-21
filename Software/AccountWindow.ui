@@ -58,7 +58,7 @@
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="MarvieController.qrc">:/MarvieController/icons/icons8-user-96-blue.png</pixmap>
+           <pixmap resource="MarvieControl.qrc">:/MarvieControl/icons/icons8-user-96-blue.png</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -222,7 +222,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="MarvieController.qrc"/>
+  <include location="MarvieControl.qrc"/>
  </resources>
  <connections/>
 </ui>

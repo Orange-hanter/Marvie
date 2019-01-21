@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/MarvieController">
+    <qresource prefix="/MarvieControl">
         <file>icons/icons8-user-96-blue.png</file>
         <file>icons/icons8-database-filled-100.png</file>
         <file>icons/icons8-sort-down-filled-50.png</file>

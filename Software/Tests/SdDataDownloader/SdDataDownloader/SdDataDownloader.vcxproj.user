@@ -4,21 +4,21 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <QTDIR>C:\Qt\5.10.0\msvc2017_64</QTDIR>
     <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
-    <RemoteDebuggerWorkingDirectory>C:\Users\Orange-hanter\Desktop\MarvieController</RemoteDebuggerWorkingDirectory>
+    <RemoteDebuggerWorkingDirectory>C:\Users\Orange-hanter\Desktop\MarvieControl</RemoteDebuggerWorkingDirectory>
     <RemoteDebuggerServerName>25.94.145.201</RemoteDebuggerServerName>
     <RemoteDebuggerConnection>RemoteWithoutAuthentication</RemoteDebuggerConnection>
-    <DeploymentDirectory>C:\Users\Orange-hanter\Desktop\MarvieController</DeploymentDirectory>
-    <RemoteDebuggerCommand>C:\Users\Orange-hanter\Desktop\MarvieController\SdDataDownloader.exe</RemoteDebuggerCommand>
+    <DeploymentDirectory>C:\Users\Orange-hanter\Desktop\MarvieControl</DeploymentDirectory>
+    <RemoteDebuggerCommand>C:\Users\Orange-hanter\Desktop\MarvieControl\SdDataDownloader.exe</RemoteDebuggerCommand>
     <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <QTDIR>C:\Qt\5.10.0\msvc2017_64</QTDIR>
     <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
-    <RemoteDebuggerCommand>C:\Users\Orange-hanter\Desktop\MarvieController\SdDataDownloader.exe</RemoteDebuggerCommand>
-    <RemoteDebuggerWorkingDirectory>C:\Users\Orange-hanter\Desktop\MarvieController</RemoteDebuggerWorkingDirectory>
+    <RemoteDebuggerCommand>C:\Users\Orange-hanter\Desktop\MarvieControl\SdDataDownloader.exe</RemoteDebuggerCommand>
+    <RemoteDebuggerWorkingDirectory>C:\Users\Orange-hanter\Desktop\MarvieControl</RemoteDebuggerWorkingDirectory>
     <RemoteDebuggerServerName>25.94.145.201</RemoteDebuggerServerName>
     <RemoteDebuggerConnection>RemoteWithoutAuthentication</RemoteDebuggerConnection>
-    <DeploymentDirectory>C:\Users\Orange-hanter\Desktop\MarvieController</DeploymentDirectory>
+    <DeploymentDirectory>C:\Users\Orange-hanter\Desktop\MarvieControl</DeploymentDirectory>
     <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
   </PropertyGroup>
 </Project>

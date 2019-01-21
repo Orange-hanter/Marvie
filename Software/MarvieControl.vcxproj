@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -122,7 +122,7 @@
     <ClCompile Include="DataTransferProgressWindow.cpp" />
     <ClCompile Include="AccountWindow.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MarvieController.cpp" />
+    <ClCompile Include="MarvieControl.cpp" />
     <ClCompile Include="MLinkClient.cpp" />
     <ClCompile Include="SensorFieldAddressMapModel.cpp" />
     <ClCompile Include="MonitoringDataItem.cpp" />
@@ -154,18 +154,18 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="MarvieController.h" />
+    <QtMoc Include="MarvieControl.h" />
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="AccountWindow.ui" />
-    <QtUic Include="MarvieController.ui" />
+    <QtUic Include="MarvieControl.ui" />
     <QtUic Include="SdStatistics.ui" />
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="MarvieController.qrc" />
+    <QtRcc Include="MarvieControl.qrc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="MarvieController.rc" />
+    <ResourceCompile Include="MarvieControl.rc" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="thirdparty\QCustomPlot\qcustomplot.h">
@@ -239,7 +239,7 @@
       <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_BLUETOOTH_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;QT_WIDGETS_LIB;QT_XML_LIB;QT_XMLPATTERNS_LIB;QT_PRINTSUPPORT_LIB</Define>
     </QtMoc>
     <ClInclude Include="Crc32SW.h" />
-    <ClInclude Include="GeneratedFiles\ui_MarvieController.h" />
+    <ClInclude Include="GeneratedFiles\ui_MarvieControl.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Xml\schemas\Base.xsd">

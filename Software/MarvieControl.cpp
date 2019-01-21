@@ -1,4 +1,4 @@
-#include "MarvieController.h"
+#include "MarvieControl.h"
 #include <QSerialPortInfo>
 #include <QSerialPort>
 #include <QUdpSocket>
@@ -35,14 +35,14 @@ QByteArray randBytes( uint size )
 	return m;
 }
 
-MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent ), vPortIdComboBoxEventFilter( vPorts )
+MarvieControl::MarvieControl( QWidget *parent ) : FramelessWidget( parent ), vPortIdComboBoxEventFilter( vPorts )
 {
 	QWidget* centralWindget = new QWidget;
 	ui.setupUi( centralWindget );
 	setPalette( centralWindget->palette() );
 	setCentralWidget( centralWindget );
 	windowButtons()->setButtonColor( ButtonType::Minimize | ButtonType::Maximize | ButtonType::Close, QColor( 100, 100, 100 ) );
-	setTitleText( "MarvieController" );
+	setTitleText( "MarvieControl" );
 
 	setMinimumSize( QSize( 544, 680 ) );
 	QRect mainWindowRect( 0, 0, 540, 680 );
@@ -203,17 +203,17 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	resetDeviceLoad();
 
 	deviceVersionMenu = new QMenu( this );
-	deviceVersionMenu->addAction( QIcon( ":/MarvieController/icons/icons8-uninstalling-updates-96.png" ), "Update firmware" );
+	deviceVersionMenu->addAction( QIcon( ":/MarvieControl/icons/icons8-uninstalling-updates-96.png" ), "Update firmware" );
 	deviceVersionMenu->setFixedWidth( 150 );
 
 	sdCardMenu = new QMenu( this );
-	sdCardMenu->addAction( QIcon( ":/MarvieController/icons/icons8-eject-48.png" ), "Eject" );
-	sdCardMenu->addAction( QIcon( ":/MarvieController/icons/icons8-eraser-60.png" ), "Format" );
+	sdCardMenu->addAction( QIcon( ":/MarvieControl/icons/icons8-eject-48.png" ), "Eject" );
+	sdCardMenu->addAction( QIcon( ":/MarvieControl/icons/icons8-eraser-60.png" ), "Format" );
 	sdCardMenu->setFixedWidth( 100 );
 
 	logMenu = new QMenu( this );
-	logMenu->addAction( QIcon( ":/MarvieController/icons/icons8-eraser-60.png" ), "Clean monitoring log" );
-	logMenu->addAction( QIcon( ":/MarvieController/icons/icons8-eraser-60.png" ), "Clean system log" );
+	logMenu->addAction( QIcon( ":/MarvieControl/icons/icons8-eraser-60.png" ), "Clean monitoring log" );
+	logMenu->addAction( QIcon( ":/MarvieControl/icons/icons8-eraser-60.png" ), "Clean system log" );
 	logMenu->setFixedWidth( 150 );
 
 	ui.monitoringDataTreeView->setSensorDescriptionMap( &sensorDescMap );
@@ -318,46 +318,46 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 
 	resetDeviceInfo();
 
-	QObject::connect( ui.controlButton, &QToolButton::released, this, &MarvieController::mainMenuButtonClicked );
-	QObject::connect( ui.monitoringButton, &QToolButton::released, this, &MarvieController::mainMenuButtonClicked );
-	QObject::connect( ui.logButton, &QToolButton::released, this, &MarvieController::mainMenuButtonClicked );
-	QObject::connect( ui.settingsButton, &QToolButton::released, this, &MarvieController::mainMenuButtonClicked );
-	QObject::connect( ui.mainSettingsButton, &QToolButton::released, this, &MarvieController::settingsMenuButtonClicked );
-	QObject::connect( ui.securitySettingsButton, &QToolButton::released, this, &MarvieController::settingsMenuButtonClicked );
-	QObject::connect( ui.sensorsSettingsButton, &QToolButton::released, this, &MarvieController::settingsMenuButtonClicked );
+	QObject::connect( ui.controlButton, &QToolButton::released, this, &MarvieControl::mainMenuButtonClicked );
+	QObject::connect( ui.monitoringButton, &QToolButton::released, this, &MarvieControl::mainMenuButtonClicked );
+	QObject::connect( ui.logButton, &QToolButton::released, this, &MarvieControl::mainMenuButtonClicked );
+	QObject::connect( ui.settingsButton, &QToolButton::released, this, &MarvieControl::mainMenuButtonClicked );
+	QObject::connect( ui.mainSettingsButton, &QToolButton::released, this, &MarvieControl::settingsMenuButtonClicked );
+	QObject::connect( ui.securitySettingsButton, &QToolButton::released, this, &MarvieControl::settingsMenuButtonClicked );
+	QObject::connect( ui.sensorsSettingsButton, &QToolButton::released, this, &MarvieControl::settingsMenuButtonClicked );
 
-	QObject::connect( ui.nextInterfaceButton, &QToolButton::released, this, &MarvieController::nextInterfaceButtonClicked );
-	QObject::connect( ui.rs232ConnectButton, &QToolButton::released, this, &MarvieController::connectButtonClicked );
-	QObject::connect( ui.ethernetConnectButton, &QToolButton::released, this, &MarvieController::connectButtonClicked );
-	QObject::connect( ui.bluetoothConnectButton, &QToolButton::released, this, &MarvieController::connectButtonClicked );
-	QObject::connect( accountWindow, &AccountWindow::logIn, this, &MarvieController::logInButtonClicked );
-	QObject::connect( accountWindow, &AccountWindow::logOut, this, &MarvieController::logOutButtonClicked );
-	QObject::connect( &mlink, &MLinkClient::stateChanged, this, &MarvieController::mlinkStateChanged, Qt::QueuedConnection );
-	QObject::connect( &mlink, static_cast< void( MLinkClient::* )( MLinkClient::Error ) >( &MLinkClient::error ), this, &MarvieController::mlinkError, Qt::QueuedConnection );
-	QObject::connect( &mlink, &MLinkClient::newPacketAvailable, this, &MarvieController::mlinkNewPacketAvailable, Qt::QueuedConnection );
-	QObject::connect( &mlink, &MLinkClient::newChannelDataAvailable, this, &MarvieController::mlinkNewComplexPacketAvailable, Qt::QueuedConnection );
-	//QObject::connect( &mlink, &MLinkClient::channelDataSendingProgress, this, &MarvieController::mlinkComplexDataSendingProgress, Qt::QueuedConnection );
-	//QObject::connect( &mlink, &MLinkClient::channeDataReceivingProgress, this, &MarvieController::mlinkComplexDataReceivingProgress, Qt::QueuedConnection );
+	QObject::connect( ui.nextInterfaceButton, &QToolButton::released, this, &MarvieControl::nextInterfaceButtonClicked );
+	QObject::connect( ui.rs232ConnectButton, &QToolButton::released, this, &MarvieControl::connectButtonClicked );
+	QObject::connect( ui.ethernetConnectButton, &QToolButton::released, this, &MarvieControl::connectButtonClicked );
+	QObject::connect( ui.bluetoothConnectButton, &QToolButton::released, this, &MarvieControl::connectButtonClicked );
+	QObject::connect( accountWindow, &AccountWindow::logIn, this, &MarvieControl::logInButtonClicked );
+	QObject::connect( accountWindow, &AccountWindow::logOut, this, &MarvieControl::logOutButtonClicked );
+	QObject::connect( &mlink, &MLinkClient::stateChanged, this, &MarvieControl::mlinkStateChanged, Qt::QueuedConnection );
+	QObject::connect( &mlink, static_cast< void( MLinkClient::* )( MLinkClient::Error ) >( &MLinkClient::error ), this, &MarvieControl::mlinkError, Qt::QueuedConnection );
+	QObject::connect( &mlink, &MLinkClient::newPacketAvailable, this, &MarvieControl::mlinkNewPacketAvailable, Qt::QueuedConnection );
+	QObject::connect( &mlink, &MLinkClient::newChannelDataAvailable, this, &MarvieControl::mlinkNewComplexPacketAvailable, Qt::QueuedConnection );
+	//QObject::connect( &mlink, &MLinkClient::channelDataSendingProgress, this, &MarvieControl::mlinkComplexDataSendingProgress, Qt::QueuedConnection );
+	//QObject::connect( &mlink, &MLinkClient::channeDataReceivingProgress, this, &MarvieControl::mlinkComplexDataReceivingProgress, Qt::QueuedConnection );
 
-	QObject::connect( ui.deviceRestartButton, &QToolButton::released, this, &MarvieController::deviceRestartButtonClicked );
-	QObject::connect( ui.startVPortsButton, &QToolButton::released, this, &MarvieController::startVPortsButtonClicked );
-	QObject::connect( ui.stopVPortsButton, &QToolButton::released, this, &MarvieController::stopVPortsButtonClicked );
-	QObject::connect( ui.updateAllSensorsButton, &QToolButton::released, this, &MarvieController::updateAllSensorsButtonClicked );
-	QObject::connect( ui.updateSensorButton, &QToolButton::released, this, &MarvieController::updateSensorButtonClicked );
-	QObject::connect( ui.syncDateTimeButton, &QToolButton::released, this, &MarvieController::syncDateTimeButtonClicked );
-	QObject::connect( ui.deviceVersionMenuButton, &QToolButton::released, this, &MarvieController::deviceVersionMenuButtonClicked );
-	QObject::connect( ui.sdCardMenuButton, &QToolButton::released, this, &MarvieController::sdCardMenuButtonClicked );
-	QObject::connect( ui.logMenuButton, &QToolButton::released, this, &MarvieController::logMenuButtonClicked );
+	QObject::connect( ui.deviceRestartButton, &QToolButton::released, this, &MarvieControl::deviceRestartButtonClicked );
+	QObject::connect( ui.startVPortsButton, &QToolButton::released, this, &MarvieControl::startVPortsButtonClicked );
+	QObject::connect( ui.stopVPortsButton, &QToolButton::released, this, &MarvieControl::stopVPortsButtonClicked );
+	QObject::connect( ui.updateAllSensorsButton, &QToolButton::released, this, &MarvieControl::updateAllSensorsButtonClicked );
+	QObject::connect( ui.updateSensorButton, &QToolButton::released, this, &MarvieControl::updateSensorButtonClicked );
+	QObject::connect( ui.syncDateTimeButton, &QToolButton::released, this, &MarvieControl::syncDateTimeButtonClicked );
+	QObject::connect( ui.deviceVersionMenuButton, &QToolButton::released, this, &MarvieControl::deviceVersionMenuButtonClicked );
+	QObject::connect( ui.sdCardMenuButton, &QToolButton::released, this, &MarvieControl::sdCardMenuButtonClicked );
+	QObject::connect( ui.logMenuButton, &QToolButton::released, this, &MarvieControl::logMenuButtonClicked );
 
-	QObject::connect( ui.monitoringLogOpenButton, &QPushButton::released, this, &MarvieController::monitoringLogOpenButtonClicked );
-	QObject::connect( ui.monitoringLogDateEdit, &QDateEdit::userDateChanged, this, &MarvieController::monitoringLogDateChanged );
-	QObject::connect( ui.monitoringLogTimeEdit, &QTimeEdit::userTimeChanged, this, &MarvieController::monitoringLogTimeChanged );
-	QObject::connect( ui.monitoringLogPrevEntryButton, &QToolButton::released, this, &MarvieController::monitoringLogMoveEntryButtonClicked );
-	QObject::connect( ui.monitoringLogNextEntryButton, &QToolButton::released, this, &MarvieController::monitoringLogMoveEntryButtonClicked );
-	QObject::connect( ui.monitoringLogTimeSlider, &QSlider::valueChanged, this, &MarvieController::monitoringLogSliderChanged );
+	QObject::connect( ui.monitoringLogOpenButton, &QPushButton::released, this, &MarvieControl::monitoringLogOpenButtonClicked );
+	QObject::connect( ui.monitoringLogDateEdit, &QDateEdit::userDateChanged, this, &MarvieControl::monitoringLogDateChanged );
+	QObject::connect( ui.monitoringLogTimeEdit, &QTimeEdit::userTimeChanged, this, &MarvieControl::monitoringLogTimeChanged );
+	QObject::connect( ui.monitoringLogPrevEntryButton, &QToolButton::released, this, &MarvieControl::monitoringLogMoveEntryButtonClicked );
+	QObject::connect( ui.monitoringLogNextEntryButton, &QToolButton::released, this, &MarvieControl::monitoringLogMoveEntryButtonClicked );
+	QObject::connect( ui.monitoringLogTimeSlider, &QSlider::valueChanged, this, &MarvieControl::monitoringLogSliderChanged );
 
-	QObject::connect( ui.addVPortOverIpButton, &QToolButton::released, this, &MarvieController::addVPortOverIpButtonClicked );
-	QObject::connect( ui.removeVPortOverIpButton, &QToolButton::released, this, &MarvieController::removeVPortOverIpButtonClicked );
+	QObject::connect( ui.addVPortOverIpButton, &QToolButton::released, this, &MarvieControl::addVPortOverIpButtonClicked );
+	QObject::connect( ui.removeVPortOverIpButton, &QToolButton::released, this, &MarvieControl::removeVPortOverIpButtonClicked );
 	QObject::connect( ui.digitalInputsLogModeComboBox, static_cast< void( QComboBox::* )( int ) >( &QComboBox::currentIndexChanged ), [this]( int index )
 	{
 		if( index == 0 )
@@ -373,54 +373,54 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 			ui.analogInputsLogPeriodSpinBox->show(), ui.analogInputsLogLabel->show();
 	} );
 
-	QObject::connect( ui.comPortsConfigWidget, &ComPortsConfigWidget::assignmentChanged, this, &MarvieController::comPortAssignmentChanged );
-	QObject::connect( &vPortsOverEthernetModel, &VPortOverIpModel::dataChanged, this, &MarvieController::updateVPortsList );
-	QObject::connect( &vPortsOverEthernetModel, &VPortOverIpModel::rowsInserted, this, &MarvieController::updateVPortsList );
-	QObject::connect( &vPortsOverEthernetModel, &VPortOverIpModel::rowsRemoved, this, &MarvieController::updateVPortsList );
+	QObject::connect( ui.comPortsConfigWidget, &ComPortsConfigWidget::assignmentChanged, this, &MarvieControl::comPortAssignmentChanged );
+	QObject::connect( &vPortsOverEthernetModel, &VPortOverIpModel::dataChanged, this, &MarvieControl::updateVPortsList );
+	QObject::connect( &vPortsOverEthernetModel, &VPortOverIpModel::rowsInserted, this, &MarvieControl::updateVPortsList );
+	QObject::connect( &vPortsOverEthernetModel, &VPortOverIpModel::rowsRemoved, this, &MarvieControl::updateVPortsList );
 
-	QObject::connect( ui.accountCleanButton, &QPushButton::released, this, &MarvieController::accountSettingsCleanButtonClicked );
-	QObject::connect( ui.accountChangePasswordButton, &QPushButton::released, this, &MarvieController::accountSettingsChangePasswordButtonClicked );
+	QObject::connect( ui.accountCleanButton, &QPushButton::released, this, &MarvieControl::accountSettingsCleanButtonClicked );
+	QObject::connect( ui.accountChangePasswordButton, &QPushButton::released, this, &MarvieControl::accountSettingsChangePasswordButtonClicked );
 
 	QObject::connect( ui.sensorNameEdit, &QLineEdit::textChanged, &sensorNameTimer, static_cast< void( QTimer::* )( ) >( &QTimer::start ) );
-	QObject::connect( ui.sensorNameEdit, &QLineEdit::returnPressed, this, &MarvieController::sensorNameEditReturnPressed );
-	QObject::connect( &sensorNameTimer, &QTimer::timeout, this, &MarvieController::sensorNameTimerTimeout );
+	QObject::connect( ui.sensorNameEdit, &QLineEdit::returnPressed, this, &MarvieControl::sensorNameEditReturnPressed );
+	QObject::connect( &sensorNameTimer, &QTimer::timeout, this, &MarvieControl::sensorNameTimerTimeout );
 
-	QObject::connect( popupSensorsListWidget, &QListWidget::itemClicked, this, &MarvieController::sensorNameSearchCompleted );
+	QObject::connect( popupSensorsListWidget, &QListWidget::itemClicked, this, &MarvieControl::sensorNameSearchCompleted );
 
-	QObject::connect( ui.sensorAddButton, &QToolButton::released, this, &MarvieController::sensorAddButtonClicked );
-	QObject::connect( ui.sensorRemoveButton, &QToolButton::released, this, &MarvieController::sensorRemoveButtonClicked );
-	QObject::connect( ui.sensorMoveUpButton, &QToolButton::released, this, &MarvieController::sensorMoveUpButtonClicked );
-	QObject::connect( ui.sensorMoveDownButton, &QToolButton::released, this, &MarvieController::sensorMoveDownButtonClicked );
-	QObject::connect( ui.sensorCopyButton, &QToolButton::released, this, &MarvieController::sensorCopyButtonClicked );
-	QObject::connect( ui.sensorsListClearButton, &QToolButton::released, this, &MarvieController::sensorsClearButtonClicked );
+	QObject::connect( ui.sensorAddButton, &QToolButton::released, this, &MarvieControl::sensorAddButtonClicked );
+	QObject::connect( ui.sensorRemoveButton, &QToolButton::released, this, &MarvieControl::sensorRemoveButtonClicked );
+	QObject::connect( ui.sensorMoveUpButton, &QToolButton::released, this, &MarvieControl::sensorMoveUpButtonClicked );
+	QObject::connect( ui.sensorMoveDownButton, &QToolButton::released, this, &MarvieControl::sensorMoveDownButtonClicked );
+	QObject::connect( ui.sensorCopyButton, &QToolButton::released, this, &MarvieControl::sensorCopyButtonClicked );
+	QObject::connect( ui.sensorsListClearButton, &QToolButton::released, this, &MarvieControl::sensorsClearButtonClicked );
 
 	QObject::connect( ui.backToSensorsLisstButton, &QToolButton::released, this, [this]() { ui.settingsStackedWidget->setCurrentWidget( ui.sensorSettingsPage ); } );
-	QObject::connect( ui.exportModbusRegMapToCsvButton, &QToolButton::released, this, &MarvieController::exportModbusRegMapToCsvButtonClicked );
+	QObject::connect( ui.exportModbusRegMapToCsvButton, &QToolButton::released, this, &MarvieControl::exportModbusRegMapToCsvButtonClicked );
 
-	QObject::connect( ui.targetDeviceComboBox, &QComboBox::currentTextChanged, this, &MarvieController::targetDeviceChanged );
-	QObject::connect( ui.newConfigButton, &QToolButton::released, this, &MarvieController::newConfigButtonClicked );
-	QObject::connect( ui.importConfigButton, &QToolButton::released, this, &MarvieController::importConfigButtonClicked );
-	QObject::connect( ui.exportConfigButton, &QToolButton::released, this, &MarvieController::exportConfigButtonClicked );
-	QObject::connect( ui.uploadConfigButton, &QToolButton::released, this, &MarvieController::uploadConfigButtonClicked );
-	QObject::connect( ui.downloadConfigButton, &QToolButton::released, this, &MarvieController::downloadConfigButtonClicked );
-	QObject::connect( ui.uploadConfigSecondButton, &QToolButton::released, this, &MarvieController::uploadConfigButtonClicked );
-	QObject::connect( ui.downloadConfigSecondButton, &QToolButton::released, this, &MarvieController::downloadConfigButtonClicked );
+	QObject::connect( ui.targetDeviceComboBox, &QComboBox::currentTextChanged, this, &MarvieControl::targetDeviceChanged );
+	QObject::connect( ui.newConfigButton, &QToolButton::released, this, &MarvieControl::newConfigButtonClicked );
+	QObject::connect( ui.importConfigButton, &QToolButton::released, this, &MarvieControl::importConfigButtonClicked );
+	QObject::connect( ui.exportConfigButton, &QToolButton::released, this, &MarvieControl::exportConfigButtonClicked );
+	QObject::connect( ui.uploadConfigButton, &QToolButton::released, this, &MarvieControl::uploadConfigButtonClicked );
+	QObject::connect( ui.downloadConfigButton, &QToolButton::released, this, &MarvieControl::downloadConfigButtonClicked );
+	QObject::connect( ui.uploadConfigSecondButton, &QToolButton::released, this, &MarvieControl::uploadConfigButtonClicked );
+	QObject::connect( ui.downloadConfigSecondButton, &QToolButton::released, this, &MarvieControl::downloadConfigButtonClicked );
 
-	QObject::connect( deviceVersionMenu, &QMenu::triggered, this, &MarvieController::deviceVersionMenuActionTriggered );
-	QObject::connect( sdCardMenu, &QMenu::triggered, this, &MarvieController::sdCardMenuActionTriggered );
-	QObject::connect( logMenu, &QMenu::triggered, this, &MarvieController::logMenuActionTriggered );
+	QObject::connect( deviceVersionMenu, &QMenu::triggered, this, &MarvieControl::deviceVersionMenuActionTriggered );
+	QObject::connect( sdCardMenu, &QMenu::triggered, this, &MarvieControl::sdCardMenuActionTriggered );
+	QObject::connect( logMenu, &QMenu::triggered, this, &MarvieControl::logMenuActionTriggered );
 
-	QObject::connect( ui.monitoringDataTreeView, &QTreeView::customContextMenuRequested, this, &MarvieController::monitoringDataViewMenuRequested );
-	QObject::connect( monitoringDataViewMenu, &QMenu::triggered, this, &MarvieController::monitoringDataViewMenuActionTriggered );
+	QObject::connect( ui.monitoringDataTreeView, &QTreeView::customContextMenuRequested, this, &MarvieControl::monitoringDataViewMenuRequested );
+	QObject::connect( monitoringDataViewMenu, &QMenu::triggered, this, &MarvieControl::monitoringDataViewMenuActionTriggered );
 
-	QObject::connect( ui.monitoringLogTreeWidget, &QTreeView::customContextMenuRequested, this, &MarvieController::monitoringLogViewMenuRequested );
-	QObject::connect( monitoringLogViewMenu, &QMenu::triggered, this, &MarvieController::monitoringLogViewMenuActionTriggered );
+	QObject::connect( ui.monitoringLogTreeWidget, &QTreeView::customContextMenuRequested, this, &MarvieControl::monitoringLogViewMenuRequested );
+	QObject::connect( monitoringLogViewMenu, &QMenu::triggered, this, &MarvieControl::monitoringLogViewMenuActionTriggered );
 
-	QObject::connect( ui.sensorSettingsTreeWidget, &QTreeView::customContextMenuRequested, this, &MarvieController::sensorSettingsMenuRequested );
-	QObject::connect( sensorSettingsMenu, &QMenu::triggered, this, &MarvieController::sensorSettingsMenuActionTriggered );
+	QObject::connect( ui.sensorSettingsTreeWidget, &QTreeView::customContextMenuRequested, this, &MarvieControl::sensorSettingsMenuRequested );
+	QObject::connect( sensorSettingsMenu, &QMenu::triggered, this, &MarvieControl::sensorSettingsMenuActionTriggered );
 
-	QObject::connect( ui.modbusRegMapTreeView, &QTreeView::customContextMenuRequested, this, &MarvieController::modbusRegMapMenuRequested );
-	QObject::connect( modbusRegMapMenu, &QMenu::triggered, this, &MarvieController::modbusRegMapMenuActionTriggered );
+	QObject::connect( ui.modbusRegMapTreeView, &QTreeView::customContextMenuRequested, this, &MarvieControl::modbusRegMapMenuRequested );
+	QObject::connect( modbusRegMapMenu, &QMenu::triggered, this, &MarvieControl::modbusRegMapMenuActionTriggered );
 
 	ui.rs232ComboBox->installEventFilter( this );
 
@@ -515,7 +515,7 @@ MarvieController::MarvieController( QWidget *parent ) : FramelessWidget( parent 
 	//syncWindow->show();
 }
 
-MarvieController::~MarvieController()
+MarvieControl::~MarvieControl()
 {
 	accountWindow->deleteLater();
 	popupSensorsListWidget->deleteLater();
@@ -541,7 +541,7 @@ MarvieController::~MarvieController()
 	settings.setValue( "interface", interfaceName );
 }
 
-bool MarvieController::eventFilter( QObject *obj, QEvent *event )
+bool MarvieControl::eventFilter( QObject *obj, QEvent *event )
 {
 	if( obj == ui.rs232ComboBox )
 	{
@@ -606,7 +606,7 @@ bool MarvieController::eventFilter( QObject *obj, QEvent *event )
 	return false;
 }
 
-void MarvieController::mainMenuButtonClicked()
+void MarvieControl::mainMenuButtonClicked()
 {
 	QToolButton* buttons[] = { ui.controlButton, ui.monitoringButton, ui.logButton, ui.settingsButton };
 	QObject* s = sender();
@@ -627,7 +627,7 @@ void MarvieController::mainMenuButtonClicked()
 		ui.configTransferButtonGroupWidget->hide();
 }
 
-void MarvieController::settingsMenuButtonClicked()
+void MarvieControl::settingsMenuButtonClicked()
 {
 	QToolButton* buttons[] = { ui.mainSettingsButton, ui.securitySettingsButton, ui.sensorsSettingsButton };
 	QObject* s = sender();
@@ -653,12 +653,12 @@ void MarvieController::settingsMenuButtonClicked()
 		ui.configTransferButtonGroupWidget->hide();
 }
 
-void MarvieController::nextInterfaceButtonClicked()
+void MarvieControl::nextInterfaceButtonClicked()
 {
 	ui.interfaceStackedWidget->setCurrentIndex( ( ui.interfaceStackedWidget->currentIndex() + 1 ) % 3 );
 }
 
-void MarvieController::connectButtonClicked()
+void MarvieControl::connectButtonClicked()
 {
 	if( mlink.state() == MLinkClient::State::Connecting )
 	{
@@ -673,7 +673,7 @@ void MarvieController::connectButtonClicked()
 	accountWindow->show();	
 }
 
-void MarvieController::logInButtonClicked( QString accountName, QString accountPassword )
+void MarvieControl::logInButtonClicked( QString accountName, QString accountPassword )
 {
 	mlink.setAuthorizationData( accountName, accountPassword );
 	if( ui.interfaceStackedWidget->currentWidget() == ui.rs232Page )
@@ -773,13 +773,13 @@ void MarvieController::logInButtonClicked( QString accountName, QString accountP
 	ui.nextInterfaceButton->setEnabled( false );
 }
 
-void MarvieController::logOutButtonClicked( QString accountName )
+void MarvieControl::logOutButtonClicked( QString accountName )
 {
 	mlink.disconnectFromHost();
 	return;
 }
 
-void MarvieController::deviceRestartButtonClicked()
+void MarvieControl::deviceRestartButtonClicked()
 {
 	/*int ret = QMessageBox::question( nullptr, "Restart device",
 									 "Do you want to restart?",
@@ -789,22 +789,22 @@ void MarvieController::deviceRestartButtonClicked()
 	mlink.sendPacket( MarviePackets::Type::RestartDeviceType, QByteArray() );
 }
 
-void MarvieController::startVPortsButtonClicked()
+void MarvieControl::startVPortsButtonClicked()
 {
 	mlink.sendPacket( MarviePackets::Type::StartVPortsType, QByteArray() );
 }
 
-void MarvieController::stopVPortsButtonClicked()
+void MarvieControl::stopVPortsButtonClicked()
 {
 	mlink.sendPacket( MarviePackets::Type::StopVPortsType, QByteArray() );
 }
 
-void MarvieController::updateAllSensorsButtonClicked()
+void MarvieControl::updateAllSensorsButtonClicked()
 {
 	mlink.sendPacket( MarviePackets::Type::UpdateAllSensorsType, QByteArray() );
 }
 
-void MarvieController::updateSensorButtonClicked()
+void MarvieControl::updateSensorButtonClicked()
 {
 	if( ui.deviceSensorsComboBox->currentIndex() != -1 )
 	{
@@ -813,32 +813,32 @@ void MarvieController::updateSensorButtonClicked()
 	}
 }
 
-void MarvieController::deviceVersionMenuButtonClicked()
+void MarvieControl::deviceVersionMenuButtonClicked()
 {
 	deviceVersionMenu->popup( ui.deviceVersionMenuButton->mapToGlobal( ui.deviceVersionMenuButton->rect().bottomLeft() ) );
 }
 
-void MarvieController::syncDateTimeButtonClicked()
+void MarvieControl::syncDateTimeButtonClicked()
 {
 	DateTime dateTime = toDeviceDateTime( QDateTime::currentDateTime() );
 	mlink.sendPacket( MarviePackets::Type::SetDateTimeType, QByteArray( ( const char* )&dateTime, sizeof( dateTime ) ) );
 }
 
-void MarvieController::sdCardMenuButtonClicked()
+void MarvieControl::sdCardMenuButtonClicked()
 {
 	sdCardMenu->actions()[0]->setEnabled( deviceSdCardStatus != SdCardStatus::NotInserted );
 	sdCardMenu->actions()[1]->setEnabled( deviceSdCardStatus == SdCardStatus::BadFileSystem || deviceSdCardStatus == SdCardStatus::Working );
 	sdCardMenu->popup( ui.sdCardMenuButton->mapToGlobal( ui.sdCardMenuButton->rect().bottomLeft() ) );
 }
 
-void MarvieController::logMenuButtonClicked()
+void MarvieControl::logMenuButtonClicked()
 {
 	logMenu->actions()[0]->setEnabled( deviceSdCardStatus == SdCardStatus::Working );
 	logMenu->actions()[1]->setEnabled( deviceSdCardStatus == SdCardStatus::Working );
 	logMenu->popup( ui.logMenuButton->mapToGlobal( ui.logMenuButton->rect().bottomLeft() ) );
 }
 
-void MarvieController::deviceVersionMenuActionTriggered( QAction* action )
+void MarvieControl::deviceVersionMenuActionTriggered( QAction* action )
 {
 	QSettings setting( "settings.ini", QSettings::Format::IniFormat );
 	QString name = QFileDialog::getOpenFileName( this, "Select firmware file", setting.value( "firmwareFileDir", QDir::currentPath() ).toString(), "Bin files (*.bin)" );
@@ -854,7 +854,7 @@ void MarvieController::deviceVersionMenuActionTriggered( QAction* action )
 	window.exec();
 }
 
-void MarvieController::sdCardMenuActionTriggered( QAction* action )
+void MarvieControl::sdCardMenuActionTriggered( QAction* action )
 {
 	if( action->text() == "Eject" )
 		mlink.sendPacket( MarviePackets::Type::EjectSdCardType, QByteArray() );
@@ -871,7 +871,7 @@ void MarvieController::sdCardMenuActionTriggered( QAction* action )
 	}
 }
 
-void MarvieController::logMenuActionTriggered( QAction* action )
+void MarvieControl::logMenuActionTriggered( QAction* action )
 {
 	if( action->text() == "Clean monitoring log" )
 	{
@@ -893,7 +893,7 @@ void MarvieController::logMenuActionTriggered( QAction* action )
 	}
 }
 
-void MarvieController::monitoringDataViewMenuRequested( const QPoint& point )
+void MarvieControl::monitoringDataViewMenuRequested( const QPoint& point )
 {
 	auto updateAction = monitoringDataViewMenu->actions()[0];
 	QModelIndex index = ui.monitoringDataTreeView->currentIndex();
@@ -924,7 +924,7 @@ void MarvieController::monitoringDataViewMenuRequested( const QPoint& point )
 	monitoringDataViewMenu->popup( ui.monitoringDataTreeView->viewport()->mapToGlobal( point ) );
 }
 
-void MarvieController::monitoringDataViewMenuActionTriggered( QAction* action )
+void MarvieControl::monitoringDataViewMenuActionTriggered( QAction* action )
 {
 	if( action->text() == "Update" )
 	{
@@ -966,7 +966,7 @@ void MarvieController::monitoringDataViewMenuActionTriggered( QAction* action )
 		ui.monitoringDataTreeView->setHexadecimalOutput( action->isChecked() );
 }
 
-void MarvieController::monitoringLogOpenButtonClicked()
+void MarvieControl::monitoringLogOpenButtonClicked()
 {
 	QSettings setting( "settings.ini", QSettings::Format::IniFormat );
 	QString path = QFileDialog::getExistingDirectory( this, "Open the monitoring log", setting.value( "monitoringLogDir", QDir::currentPath() ).toString() );
@@ -992,7 +992,7 @@ void MarvieController::monitoringLogOpenButtonClicked()
 	}
 }
 
-void MarvieController::monitoringLogDateChanged()
+void MarvieControl::monitoringLogDateChanged()
 {
 	ui.monitoringLogTreeWidget->clear();
 	QVector< QTime > timestamps;
@@ -1038,7 +1038,7 @@ void MarvieController::monitoringLogDateChanged()
 	ui.monitoringLogTimeSlider->blockSignals( false );
 }
 
-void MarvieController::monitoringLogTimeChanged()
+void MarvieControl::monitoringLogTimeChanged()
 {
 	if( monitoringLogTimestamps.isEmpty() )
 	{
@@ -1108,12 +1108,12 @@ void MarvieController::monitoringLogTimeChanged()
 	}
 }
 
-void MarvieController::monitoringLogSliderChanged( int v )
+void MarvieControl::monitoringLogSliderChanged( int v )
 {
 	ui.monitoringLogTimeEdit->setTime( monitoringLogTimestamps[v] );
 }
 
-void MarvieController::monitoringLogMoveEntryButtonClicked()
+void MarvieControl::monitoringLogMoveEntryButtonClicked()
 {
 	if( sender() == ui.monitoringLogPrevEntryButton )
 		ui.monitoringLogTimeSlider->setValue( ui.monitoringLogTimeSlider->value() - 1 );
@@ -1121,12 +1121,12 @@ void MarvieController::monitoringLogMoveEntryButtonClicked()
 		ui.monitoringLogTimeSlider->setValue( ui.monitoringLogTimeSlider->value() + 1 );
 }
 
-void MarvieController::monitoringLogViewMenuRequested( const QPoint& point )
+void MarvieControl::monitoringLogViewMenuRequested( const QPoint& point )
 {
 	monitoringLogViewMenu->popup( ui.monitoringLogTreeWidget->viewport()->mapToGlobal( point ) );
 }
 
-void MarvieController::monitoringLogViewMenuActionTriggered( QAction* action )
+void MarvieControl::monitoringLogViewMenuActionTriggered( QAction* action )
 {
 	if( action->text() == "Copy value" )
 	{
@@ -1163,7 +1163,7 @@ void MarvieController::monitoringLogViewMenuActionTriggered( QAction* action )
 		ui.monitoringLogTreeWidget->setHexadecimalOutput( action->isChecked() );
 }
 
-void MarvieController::accountSettingsCleanButtonClicked()
+void MarvieControl::accountSettingsCleanButtonClicked()
 {
 	ui.accountNameEdit->clear();
 	ui.accountCurrentPasswordEdit->clear();
@@ -1171,7 +1171,7 @@ void MarvieController::accountSettingsCleanButtonClicked()
 	ui.accountRetypedNewPasswordEdit->clear();
 }
 
-void MarvieController::accountSettingsChangePasswordButtonClicked()
+void MarvieControl::accountSettingsChangePasswordButtonClicked()
 {
 	if( ui.accountNameEdit->text().isEmpty() )
 	{
@@ -1198,7 +1198,7 @@ void MarvieController::accountSettingsChangePasswordButtonClicked()
 	mlink.sendPacket( MarviePackets::Type::ChangeAccountPasswordType, QByteArray( ( const char* )&anp, sizeof( anp ) ) );
 }
 
-void MarvieController::setMonitoringLogWidgetGroupEnabled( bool enabled )
+void MarvieControl::setMonitoringLogWidgetGroupEnabled( bool enabled )
 {
 	ui.monitoringLogDateLabel->setEnabled( enabled );
 	ui.monitoringLogDateEdit->setEnabled( enabled );
@@ -1215,12 +1215,12 @@ void MarvieController::setMonitoringLogWidgetGroupEnabled( bool enabled )
 	}
 }
 
-void MarvieController::sensorSettingsMenuRequested( const QPoint& point )
+void MarvieControl::sensorSettingsMenuRequested( const QPoint& point )
 {
 	sensorSettingsMenu->popup( ui.sensorSettingsTreeWidget->viewport()->mapToGlobal( point ) );
 }
 
-void MarvieController::sensorSettingsMenuActionTriggered( QAction* action )
+void MarvieControl::sensorSettingsMenuActionTriggered( QAction* action )
 {
 	if( action->text() == "Copy" )
 		sensorCopyButtonClicked();
@@ -1249,12 +1249,12 @@ void MarvieController::sensorSettingsMenuActionTriggered( QAction* action )
 	}
 }
 
-void MarvieController::modbusRegMapMenuRequested( const QPoint& point )
+void MarvieControl::modbusRegMapMenuRequested( const QPoint& point )
 {
 	modbusRegMapMenu->popup( ui.modbusRegMapTreeView->viewport()->mapToGlobal( point ) );
 }
 
-void MarvieController::modbusRegMapMenuActionTriggered( QAction* action )
+void MarvieControl::modbusRegMapMenuActionTriggered( QAction* action )
 {
 	if( action->text() == "Expand all" )
 		ui.modbusRegMapTreeView->expandAll();
@@ -1272,7 +1272,7 @@ void MarvieController::modbusRegMapMenuActionTriggered( QAction* action )
 		sensorFieldAddressMapModel.setRelativeOffset( action->isChecked() );
 }
 
-void MarvieController::targetDeviceChanged( QString text )
+void MarvieControl::targetDeviceChanged( QString text )
 {
 	static QVector< QVector< ComPortsConfigWidget::Assignment > > qxPortAssignments = []()
 	{
@@ -1348,13 +1348,13 @@ void MarvieController::targetDeviceChanged( QString text )
 	}
 }
 
-void MarvieController::newConfigButtonClicked()
+void MarvieControl::newConfigButtonClicked()
 {
 	clearMainConfig();
 	clearSensorsConfig();
 }
 
-void MarvieController::importConfigButtonClicked()
+void MarvieControl::importConfigButtonClicked()
 {
 	QSettings setting( "settings.ini", QSettings::Format::IniFormat );
 	QString name = QFileDialog::getOpenFileName( this, "Import config file", setting.value( "confDir", QDir::currentPath() ).toString(), "XML files (*.xml)" );
@@ -1388,7 +1388,7 @@ void MarvieController::importConfigButtonClicked()
 	}
 }
 
-void MarvieController::exportConfigButtonClicked()
+void MarvieControl::exportConfigButtonClicked()
 {
 	QByteArray data = saveConfigToXml();
 	if( data.isEmpty() )
@@ -1415,7 +1415,7 @@ void MarvieController::exportConfigButtonClicked()
 	file.write( data );
 }
 
-void MarvieController::uploadConfigButtonClicked()
+void MarvieControl::uploadConfigButtonClicked()
 {
 	if( mlink.state() != MLinkClient::State::Connected )
 		return;
@@ -1440,7 +1440,7 @@ void MarvieController::uploadConfigButtonClicked()
 	window.exec();
 }
 
-void MarvieController::downloadConfigButtonClicked()
+void MarvieControl::downloadConfigButtonClicked()
 {
 	if( mlink.state() != MLinkClient::State::Connected )
 		return;
@@ -1451,22 +1451,22 @@ void MarvieController::downloadConfigButtonClicked()
 	window.exec();
 }
 
-void MarvieController::addVPortOverIpButtonClicked()
+void MarvieControl::addVPortOverIpButtonClicked()
 {
 	vPortsOverEthernetModel.insertRows( vPortsOverEthernetModel.rowCount(), 1 );
 }
 
-void MarvieController::removeVPortOverIpButtonClicked()
+void MarvieControl::removeVPortOverIpButtonClicked()
 {
 	vPortsOverEthernetModel.removeRows( ui.vPortsOverIpTableView->currentIndex().row(), 1 );
 }
 
-void MarvieController::comPortAssignmentChanged( unsigned int id, ComPortsConfigWidget::Assignment previous, ComPortsConfigWidget::Assignment current )
+void MarvieControl::comPortAssignmentChanged( unsigned int id, ComPortsConfigWidget::Assignment previous, ComPortsConfigWidget::Assignment current )
 {
 	updateVPortsList();
 }
 
-void MarvieController::updateVPortsList()
+void MarvieControl::updateVPortsList()
 {
 	vPorts.clear();
 	auto comAssignments = ui.comPortsConfigWidget->assignments();
@@ -1486,13 +1486,13 @@ void MarvieController::updateVPortsList()
 		vPorts.append( QString( "Network[%1]" ).arg( i ) );
 }
 
-void MarvieController::sensorNameEditReturnPressed()
+void MarvieControl::sensorNameEditReturnPressed()
 {
 	sensorNameTimer.stop();
 	sensorNameTimerTimeout();
 }
 
-void MarvieController::sensorNameTimerTimeout()
+void MarvieControl::sensorNameTimerTimeout()
 {
 	QStringList matches;
 	QStringList supportedSensorsList = sensorDescMap.keys();
@@ -1542,7 +1542,7 @@ void MarvieController::sensorNameTimerTimeout()
 	popupSensorsListWidget->show();
 }
 
-void MarvieController::sensorNameSearchCompleted()
+void MarvieControl::sensorNameSearchCompleted()
 {
 	sensorNameTimer.stop();
 	popupSensorsListWidget->hide();
@@ -1557,7 +1557,7 @@ void MarvieController::sensorNameSearchCompleted()
 	}
 }
 
-void MarvieController::sensorAddButtonClicked()
+void MarvieControl::sensorAddButtonClicked()
 {
 	if( !sensorDescMap.contains( ui.sensorNameEdit->text() ) )
 		return;
@@ -1565,7 +1565,7 @@ void MarvieController::sensorAddButtonClicked()
 	ui.sensorSettingsTreeWidget->setCurrentIndex( ui.sensorSettingsTreeWidget->model()->index( ui.sensorSettingsTreeWidget->topLevelItemCount() - 1, 0 ) );
 }
 
-void MarvieController::sensorRemoveButtonClicked()
+void MarvieControl::sensorRemoveButtonClicked()
 {
 	auto index = ui.sensorSettingsTreeWidget->currentIndex();
 	if( !index.isValid() )
@@ -1580,7 +1580,7 @@ void MarvieController::sensorRemoveButtonClicked()
 		ui.sensorSettingsTreeWidget->setCurrentIndex( ui.sensorSettingsTreeWidget->model()->index( ui.sensorSettingsTreeWidget->topLevelItemCount() - 1, 0 ) );
 }
 
-void MarvieController::sensorMoveUpButtonClicked()
+void MarvieControl::sensorMoveUpButtonClicked()
 {
 	auto item = ui.sensorSettingsTreeWidget->currentItem();
 	if( !item || ui.sensorSettingsTreeWidget->topLevelItemCount() == 1 )
@@ -1600,7 +1600,7 @@ void MarvieController::sensorMoveUpButtonClicked()
 	ui.sensorSettingsTreeWidget->setCurrentIndex( ui.sensorSettingsTreeWidget->model()->index( index - 1, 0 ) );
 }
 
-void MarvieController::sensorMoveDownButtonClicked()
+void MarvieControl::sensorMoveDownButtonClicked()
 {
 	auto item = ui.sensorSettingsTreeWidget->currentItem();
 	if( !item || ui.sensorSettingsTreeWidget->topLevelItemCount() == 1 )
@@ -1620,7 +1620,7 @@ void MarvieController::sensorMoveDownButtonClicked()
 	ui.sensorSettingsTreeWidget->setCurrentIndex( ui.sensorSettingsTreeWidget->model()->index( index + 1, 0 ) );
 }
 
-void MarvieController::sensorCopyButtonClicked()
+void MarvieControl::sensorCopyButtonClicked()
 {
 	auto index = ui.sensorSettingsTreeWidget->currentIndex();
 	if( !index.isValid() )
@@ -1632,12 +1632,12 @@ void MarvieController::sensorCopyButtonClicked()
 	insertSensorSettings( index.row() + 1, sensorName, settings, true );
 }
 
-void MarvieController::sensorsClearButtonClicked()
+void MarvieControl::sensorsClearButtonClicked()
 {
 	clearSensorsConfig();
 }
 
-void MarvieController::exportModbusRegMapToCsvButtonClicked()
+void MarvieControl::exportModbusRegMapToCsvButtonClicked()
 {
 	QSettings setting( "settings.ini", QSettings::Format::IniFormat );
 	QString name = QFileDialog::getSaveFileName( this, "Export a modbus map to csv", setting.value( "modbusMapDir", QDir::currentPath() ).toString(), "CSV files (*.csv)" );
@@ -1670,7 +1670,7 @@ void MarvieController::exportModbusRegMapToCsvButtonClicked()
 	}
 }
 
-void MarvieController::mlinkStateChanged( MLinkClient::State s )
+void MarvieControl::mlinkStateChanged( MLinkClient::State s )
 {
 	if( ui.interfaceStackedWidget->currentWidget() == ui.rs232Page )
 	{
@@ -1678,16 +1678,16 @@ void MarvieController::mlinkStateChanged( MLinkClient::State s )
 		{
 		case MLinkClient::State::Disconnected:
 			ui.rs232ComboBox->setEnabled( true );
-			ui.rs232ConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-rs-232-female-filled-50.png" ) );
+			ui.rs232ConnectButton->setIcon( QIcon( ":/MarvieControl/icons/icons8-rs-232-female-filled-50.png" ) );
 			break;
 		case MLinkClient::State::Connecting:
-			ui.rs232ConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-rs-232-female-filled-50-orange.png" ) );
+			ui.rs232ConnectButton->setIcon( QIcon( ":/MarvieControl/icons/icons8-rs-232-female-filled-50-orange.png" ) );
 			break;
 		case MLinkClient::State::Connected:
-			ui.rs232ConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-rs-232-female-filled-50-green.png" ) );
+			ui.rs232ConnectButton->setIcon( QIcon( ":/MarvieControl/icons/icons8-rs-232-female-filled-50-green.png" ) );
 			break;
 		case MLinkClient::State::Disconnecting:
-			ui.rs232ConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-rs-232-female-filled-50-orange.png" ) );
+			ui.rs232ConnectButton->setIcon( QIcon( ":/MarvieControl/icons/icons8-rs-232-female-filled-50-orange.png" ) );
 			break;
 		default:
 			break;
@@ -1699,16 +1699,16 @@ void MarvieController::mlinkStateChanged( MLinkClient::State s )
 		{
 		case MLinkClient::State::Disconnected:
 			ui.ipEdit->setEnabled( true );
-			ui.ethernetConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-ethernet-on-filled-50.png" ) );
+			ui.ethernetConnectButton->setIcon( QIcon( ":/MarvieControl/icons/icons8-ethernet-on-filled-50.png" ) );
 			break;
 		case MLinkClient::State::Connecting:
-			ui.ethernetConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-ethernet-on-filled-50-orange.png" ) );
+			ui.ethernetConnectButton->setIcon( QIcon( ":/MarvieControl/icons/icons8-ethernet-on-filled-50-orange.png" ) );
 			break;
 		case MLinkClient::State::Connected:
-			ui.ethernetConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-ethernet-on-filled-50-green.png" ) );
+			ui.ethernetConnectButton->setIcon( QIcon( ":/MarvieControl/icons/icons8-ethernet-on-filled-50-green.png" ) );
 			break;
 		case MLinkClient::State::Disconnecting:
-			ui.ethernetConnectButton->setIcon( QIcon( ":/MarvieController/icons/icons8-ethernet-on-filled-50-orange.png" ) );
+			ui.ethernetConnectButton->setIcon( QIcon( ":/MarvieControl/icons/icons8-ethernet-on-filled-50-orange.png" ) );
 			break;
 		default:
 			break;
@@ -1760,13 +1760,13 @@ void MarvieController::mlinkStateChanged( MLinkClient::State s )
 	}
 }
 
-void MarvieController::mlinkError( MLinkClient::Error err )
+void MarvieControl::mlinkError( MLinkClient::Error err )
 {
 	if( err == MLinkClient::Error::AuthenticationError )
 		accountWindow->passwordIncorrect();
 }
 
-void MarvieController::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
+void MarvieControl::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
 {
 	switch( type )
 	{
@@ -1958,7 +1958,7 @@ void MarvieController::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
 	}
 }
 
-void MarvieController::mlinkNewComplexPacketAvailable( uint8_t channelId, QString name, QByteArray data )
+void MarvieControl::mlinkNewComplexPacketAvailable( uint8_t channelId, QString name, QByteArray data )
 {
 	if( channelId == MarviePackets::ComplexChannel::XmlConfigSyncChannel )
 	{
@@ -2051,28 +2051,28 @@ void MarvieController::mlinkNewComplexPacketAvailable( uint8_t channelId, QStrin
 	}
 }
 
-void MarvieController::mlinkComplexDataSendingProgress( uint8_t channelId, QString name, float progress )
+void MarvieControl::mlinkComplexDataSendingProgress( uint8_t channelId, QString name, float progress )
 {
 
 }
 
-void MarvieController::mlinkComplexDataReceivingProgress( uint8_t channelId, QString name, float progress )
+void MarvieControl::mlinkComplexDataReceivingProgress( uint8_t channelId, QString name, float progress )
 {
 
 }
 
-void MarvieController::sensorsInit()
+void MarvieControl::sensorsInit()
 {
 	QCryptographicHash hash( QCryptographicHash::Sha512 ), hashTmp( QCryptographicHash::Sha512 );
 
 	QXmlSchema settingsDescSchema;
 	settingsDescSchema.setMessageHandler( &xmlMessageHandler );
-	settingsDescSchema.load( QUrl::fromLocalFile( ":/MarvieController/Xml/schemas/SensorSettings.xsd" ) );
+	settingsDescSchema.load( QUrl::fromLocalFile( ":/MarvieControl/Xml/schemas/SensorSettings.xsd" ) );
 	QXmlSchemaValidator settingsDescValidator( settingsDescSchema );
 
 	QXmlSchema dataDescSchema;
 	dataDescSchema.setMessageHandler( &xmlMessageHandler );
-	dataDescSchema.load( QUrl::fromLocalFile( ":/MarvieController/Xml/schemas/SensorData.xsd" ) );
+	dataDescSchema.load( QUrl::fromLocalFile( ":/MarvieControl/Xml/schemas/SensorData.xsd" ) );
 	QXmlSchemaValidator dataDescValidator( dataDescSchema );
 
 	QDir dir( "Sensors" );
@@ -2382,10 +2382,10 @@ Skip:
 		return srcData;
 	};
 
-	QByteArray baseXsdData = checkAndRestore( ":/MarvieController/Xml/schemas/Base.xsd", "Xml/Schemas/Base.xsd" );
-	checkAndRestore( ":/MarvieController/Xml/schemas/SensorSettings.xsd", "Xml/Schemas/SensorSettings.xsd" );
-	checkAndRestore( ":/MarvieController/Xml/schemas/SensorData.xsd", "Xml/Schemas/SensorData.xsd" );
-	QByteArray configXsdData = checkAndRestore( ":/MarvieController/Xml/schemas/Config.xsd", "Xml/Schemas/Config.xsd" );
+	QByteArray baseXsdData = checkAndRestore( ":/MarvieControl/Xml/schemas/Base.xsd", "Xml/Schemas/Base.xsd" );
+	checkAndRestore( ":/MarvieControl/Xml/schemas/SensorSettings.xsd", "Xml/Schemas/SensorSettings.xsd" );
+	checkAndRestore( ":/MarvieControl/Xml/schemas/SensorData.xsd", "Xml/Schemas/SensorData.xsd" );
+	QByteArray configXsdData = checkAndRestore( ":/MarvieControl/Xml/schemas/Config.xsd", "Xml/Schemas/Config.xsd" );
 
 	QFile sensorsXsd( "Xml/Schemas/Sensors.xsd" );
 	sensorsXsd.open( QIODevice::ReadWrite );
@@ -2427,7 +2427,7 @@ Skip:
 	configValidator.setSchema( schema );
 }
 
-QByteArray MarvieController::generateSensorsXSD()
+QByteArray MarvieControl::generateSensorsXSD()
 {
 	QDomDocument doc;
 	auto root = doc.createElement( "xs:schema" );
@@ -2736,7 +2736,7 @@ private:
 	QSpinBox* minSpinBox;
 };
 
-QTreeWidgetItem* MarvieController::insertSensorSettings( int position, QString sensorName, QMap< QString, QString > sensorSettingsValues, bool needUpdateName /*= false*/ )
+QTreeWidgetItem* MarvieControl::insertSensorSettings( int position, QString sensorName, QMap< QString, QString > sensorSettingsValues, bool needUpdateName /*= false*/ )
 {
 	assert( sensorDescMap.contains( sensorName ) );
 	auto& desc = sensorDescMap[sensorName].settings.prmList;
@@ -2961,7 +2961,7 @@ QTreeWidgetItem* MarvieController::insertSensorSettings( int position, QString s
 	return topItem;
 }
 
-void MarvieController::removeSensorSettings( int position, bool needUpdateName )
+void MarvieControl::removeSensorSettings( int position, bool needUpdateName )
 {
 	ui.sensorSettingsTreeWidget->model()->removeRow( position );
 	if( !needUpdateName )
@@ -2970,7 +2970,7 @@ void MarvieController::removeSensorSettings( int position, bool needUpdateName )
 		setSensorSettingsNameNum( position++, position + 1 );
 }
 
-void MarvieController::setSensorSettingsNameNum( int index, int num )
+void MarvieControl::setSensorSettingsNameNum( int index, int num )
 {
 	auto item = ui.sensorSettingsTreeWidget->topLevelItem( index );
 	auto mlist = item->text( 0 ).split( ". " );
@@ -2981,7 +2981,7 @@ void MarvieController::setSensorSettingsNameNum( int index, int num )
 		i->setObjectName( QString( "%1*" ).arg( num ) + i->objectName().split( '*' )[1] );
 }
 
-QMap< QString, QString > MarvieController::sensorSettingsValues( int position )
+QMap< QString, QString > MarvieControl::sensorSettingsValues( int position )
 {
 #define ENAME( prmName ) ( QString ( "%1*" ).arg( position + 1 ) + prmName  )
 	QMap< QString, QString > map;
@@ -3045,7 +3045,7 @@ QMap< QString, QString > MarvieController::sensorSettingsValues( int position )
 	return map;
 }
 
-void MarvieController::fixSensorVPortIds( bool needUpdate )
+void MarvieControl::fixSensorVPortIds( bool needUpdate )
 {
 	auto vPortNames = vPortFullNames();
 	auto list = ui.sensorSettingsTreeWidget->findChildren< QComboBox* >( QRegExp( "\\*vPortID" ) );
@@ -3067,7 +3067,7 @@ void MarvieController::fixSensorVPortIds( bool needUpdate )
 	}
 }
 
-QStringList MarvieController::vPortFullNames()
+QStringList MarvieControl::vPortFullNames()
 {
 	QStringList names;
 	for( int i = 0; i < vPorts.size(); ++i )
@@ -3076,7 +3076,7 @@ QStringList MarvieController::vPortFullNames()
 	return names;
 }
 
-void MarvieController::clearMainConfig()
+void MarvieControl::clearMainConfig()
 {
 	targetDeviceChanged( ui.targetDeviceComboBox->currentText() );
 
@@ -3104,12 +3104,12 @@ void MarvieController::clearMainConfig()
 	ui.sensorsLogModeComboBox->setCurrentIndex( 0 );
 }
 
-void MarvieController::clearSensorsConfig()
+void MarvieControl::clearSensorsConfig()
 {
 	ui.sensorSettingsTreeWidget->clear();
 }
 
-bool MarvieController::loadConfigFromXml( QByteArray xmlData )
+bool MarvieControl::loadConfigFromXml( QByteArray xmlData )
 {
 	xmlData = QString( xmlData ).remove( QRegExp( "(xmlns:xsi|xsi:schemaLocation)=\"[^\"]+\"" ) ).toLocal8Bit();
 	xmlMessageHandler.description.clear();
@@ -3364,7 +3364,7 @@ bool MarvieController::loadConfigFromXml( QByteArray xmlData )
 	return true;
 }
 
-QByteArray MarvieController::saveConfigToXml()
+QByteArray MarvieControl::saveConfigToXml()
 {
 	fixSensorVPortIds( true );
 
@@ -3577,7 +3577,7 @@ QByteArray MarvieController::saveConfigToXml()
 	return /*QByteArray( "<?xml version=\"1.0\"?>\n" ) +*/ saveCanonicalXML( doc ).toLocal8Bit();
 }
 
-void MarvieController::appendSensorsConfig( QDomDocument& doc, QDomElement& root )
+void MarvieControl::appendSensorsConfig( QDomDocument& doc, QDomElement& root )
 {
 	for( int i = 0; i < ui.sensorSettingsTreeWidget->topLevelItemCount(); ++i )
 	{
@@ -3637,7 +3637,7 @@ void MarvieController::appendSensorsConfig( QDomDocument& doc, QDomElement& root
 	}
 }
 
-void MarvieController::updateDeviceCpuLoad( float cpuLoad )
+void MarvieControl::updateDeviceCpuLoad( float cpuLoad )
 {
 	static_cast< QPieSeries* >( ui.cpuLoadChartView->chart()->series()[0] )->slices()[0]->setValue( cpuLoad );
 	static_cast< QPieSeries* >( ui.cpuLoadChartView->chart()->series()[0] )->slices()[1]->setValue( 100.0 - cpuLoad );
@@ -3656,7 +3656,7 @@ void MarvieController::updateDeviceCpuLoad( float cpuLoad )
 	ui.cpuLoadLabel->setText( QString( "CPU\n%1%" ).arg( cpuLoad ) );
 }
 
-void MarvieController::updateDeviceMemoryLoad( const MarviePackets::MemoryLoad* load )
+void MarvieControl::updateDeviceMemoryLoad( const MarviePackets::MemoryLoad* load )
 {
 	uint32_t totalRam = load->totalGRam + load->totalCcRam;
 	uint32_t allocatedRam = totalRam - load->freeGRam - load->freeCcRam;
@@ -3684,7 +3684,7 @@ void MarvieController::updateDeviceMemoryLoad( const MarviePackets::MemoryLoad* 
 	sdStat->setStatistics( load->sdCardCapacity, load->sdCardFreeSpace, load->logSize );
 }
 
-void MarvieController::resetDeviceLoad()
+void MarvieControl::resetDeviceLoad()
 {
 	static_cast< QPieSeries* >( ui.cpuLoadChartView->chart()->series()[0] )->slices()[0]->setValue( 0.0 );
 	static_cast< QPieSeries* >( ui.cpuLoadChartView->chart()->series()[0] )->slices()[1]->setValue( 100.0 );
@@ -3704,12 +3704,12 @@ void MarvieController::resetDeviceLoad()
 	sdStat->setStatistics( 0, 0, 0 );
 }
 
-void MarvieController::updateDeviceVersion()
+void MarvieControl::updateDeviceVersion()
 {
 	ui.deviceVersionLabel->setText( "Version: " + deviceCoreVersion );
 }
 
-void MarvieController::updateDeviceStatus( const MarviePackets::DeviceStatus* status )
+void MarvieControl::updateDeviceStatus( const MarviePackets::DeviceStatus* status )
 {
 	ui.deviceDateTimeLabel->setText( QString( "Time: " ) + printDateTime( toQtDateTime( status->dateTime ) ) );
 	ui.deviceStateLabel->setToolTip( "" );
@@ -3823,14 +3823,14 @@ QString printIp( uint32_t ip )
 		arg( ( ip >> 8 ) & 0xFF ).arg( ip & 0xFF );
 }
 
-void MarvieController::updateEthernetStatus( const MarviePackets::EthernetStatus* status )
+void MarvieControl::updateEthernetStatus( const MarviePackets::EthernetStatus* status )
 {
 	ui.lanIpLabel->setText( QString( "IP: " ) + printIp( status->ip ) );
 	ui.lanNetmaskLabel->setText( QString( "Netmask: " ) + printIp( status->netmask ) );
 	ui.lanGatewayLabel->setText( QString( "Gateway: " ) + printIp( status->gateway ) );
 }
 
-void MarvieController::updateGsmStatus( const MarviePackets::GsmStatus* status )
+void MarvieControl::updateGsmStatus( const MarviePackets::GsmStatus* status )
 {
 	switch( status->state )
 	{
@@ -3871,7 +3871,7 @@ void MarvieController::updateGsmStatus( const MarviePackets::GsmStatus* status )
 	ui.gsmIpLabel->setText( QString( "IP: " ) + printIp( status->ip ) );
 }
 
-void MarvieController::updateServiceStatistics( const MarviePackets::ServiceStatistics* stat )
+void MarvieControl::updateServiceStatistics( const MarviePackets::ServiceStatistics* stat )
 {
 	if( stat->tcpModbusRtuClientsCount == -1 )
 		ui.modbusRtuStatusLabel->setText( "ModbusRTU: off" );
@@ -3887,7 +3887,7 @@ void MarvieController::updateServiceStatistics( const MarviePackets::ServiceStat
 		ui.modbusTcpStatusLabel->setText( QString( "ModbusTcp: %1" ).arg( stat->tcpModbusIpClientsCount ) );
 }
 
-void MarvieController::resetDeviceInfo()
+void MarvieControl::resetDeviceInfo()
 {
 	// Device status
 	deviceState = DeviceState::Unknown;
@@ -3919,19 +3919,19 @@ void MarvieController::resetDeviceInfo()
 	ui.modbusAsciiStatusLabel->setText( "ModbusASCII: unknown" );
 }
 
-DateTime MarvieController::toDeviceDateTime( const QDateTime& dateTime )
+DateTime MarvieControl::toDeviceDateTime( const QDateTime& dateTime )
 {
 	return DateTime( Date( dateTime.date().year(), dateTime.date().month(), dateTime.date().day(), dateTime.date().dayOfWeek() ),
 					 Time( dateTime.time().hour(), dateTime.time().minute(), dateTime.time().second(), dateTime.time().msec() ) );
 }
 
-QDateTime MarvieController::toQtDateTime( const DateTime& dateTime )
+QDateTime MarvieControl::toQtDateTime( const DateTime& dateTime )
 {
 	return QDateTime( QDate( dateTime.date().year(), dateTime.date().month(), dateTime.date().day() ),
 					  QTime( dateTime.time().hour(), dateTime.time().min(), dateTime.time().sec(), dateTime.time().msec() ) );
 }
 
-QString MarvieController::printDateTime( const QDateTime& dateTime )
+QString MarvieControl::printDateTime( const QDateTime& dateTime )
 {
 	return QString( "%1.%2.%3/%4:%5:%6" ).arg( dateTime.date().day(), 2, 10, QChar( '0' ) )
 										 .arg( dateTime.date().month(), 2, 10, QChar( '0' ) )
@@ -3941,7 +3941,7 @@ QString MarvieController::printDateTime( const QDateTime& dateTime )
 										 .arg( dateTime.time().second(), 2, 10, QChar( '0' ) );
 }
 
-QString MarvieController::saveCanonicalXML( const QDomDocument& doc, int indent ) const
+QString MarvieControl::saveCanonicalXML( const QDomDocument& doc, int indent ) const
 {
 	QString xmlData;
 	QXmlStreamWriter stream( &xmlData );
@@ -3965,7 +3965,7 @@ QString MarvieController::saveCanonicalXML( const QDomDocument& doc, int indent 
 	return xmlData;
 }
 
-void MarvieController::writeDomNodeCanonically( QXmlStreamWriter &stream, const QDomNode &domNode ) const
+void MarvieControl::writeDomNodeCanonically( QXmlStreamWriter &stream, const QDomNode &domNode ) const
 {
 	if( stream.hasError() )
 		return;
@@ -4014,7 +4014,7 @@ void MarvieController::writeDomNodeCanonically( QXmlStreamWriter &stream, const 
 		stream.writeCharacters( domNode.nodeValue() );
 }
 
-QString MarvieController::toText( const QDomNode &domNode, int indent )
+QString MarvieControl::toText( const QDomNode &domNode, int indent )
 {
 	QString xmlData;
 	QXmlStreamWriter stream( &xmlData );
@@ -4025,7 +4025,7 @@ QString MarvieController::toText( const QDomNode &domNode, int indent )
 	return xmlData;
 }
 
-void MarvieController::XmlMessageHandler::handleMessage( QtMsgType type, const QString &description, const QUrl &identifier, const QSourceLocation &sourceLocation )
+void MarvieControl::XmlMessageHandler::handleMessage( QtMsgType type, const QString &description, const QUrl &identifier, const QSourceLocation &sourceLocation )
 {
 	Q_UNUSED( type );
 	Q_UNUSED( identifier );
@@ -4034,7 +4034,7 @@ void MarvieController::XmlMessageHandler::handleMessage( QtMsgType type, const Q
 	this->sourceLocation = sourceLocation;
 }
 
-bool MarvieController::VPortIdComboBoxEventFilter::eventFilter( QObject *obj, QEvent *event )
+bool MarvieControl::VPortIdComboBoxEventFilter::eventFilter( QObject *obj, QEvent *event )
 {
 	QComboBox* comboBox = static_cast< QComboBox* >( obj );
 	if( event->type() == QEvent::Type::MouseButtonPress || event->type() == QEvent::Type::KeyPress )
@@ -4054,7 +4054,7 @@ bool MarvieController::VPortIdComboBoxEventFilter::eventFilter( QObject *obj, QE
 	return false;
 }
 
-MarvieController::MemStatistics::MemStatistics()
+MarvieControl::MemStatistics::MemStatistics()
 {
 	QVBoxLayout *verticalLayout_3;
 	QLabel *label;
@@ -4266,7 +4266,7 @@ MarvieController::MemStatistics::MemStatistics()
 	ccMemLargestLabel->setText( "0B" );
 }
 
-void MarvieController::MemStatistics::setStatistics( uint32_t gmemMaxUsed, uint32_t gmemHeap, uint32_t gmemFragments, uint32_t gmemLargestFragment, uint32_t ccmemMaxUsed, uint32_t ccmemHeap, uint32_t ccmemFragments, uint32_t ccmemLargestFragment )
+void MarvieControl::MemStatistics::setStatistics( uint32_t gmemMaxUsed, uint32_t gmemHeap, uint32_t gmemFragments, uint32_t gmemLargestFragment, uint32_t ccmemMaxUsed, uint32_t ccmemHeap, uint32_t ccmemFragments, uint32_t ccmemLargestFragment )
 {
 	gMemMaxUsedLabel->setText( QString( "%1" ).arg( gmemMaxUsed ) );
 	gMemHeapLabel->setText( QString( "%1" ).arg( gmemHeap ) );
@@ -4279,7 +4279,7 @@ void MarvieController::MemStatistics::setStatistics( uint32_t gmemMaxUsed, uint3
 	ccMemLargestLabel->setText( QString( "%1" ).arg( ccmemLargestFragment ) );
 }
 
-void MarvieController::MemStatistics::show( QPoint point )
+void MarvieControl::MemStatistics::show( QPoint point )
 {
 	auto rect = geometry();
 	rect.moveCenter( point + QPoint( 0, height() / 2 ) );
@@ -4288,12 +4288,12 @@ void MarvieController::MemStatistics::show( QPoint point )
 	setFocus();
 }
 
-void MarvieController::MemStatistics::focusOutEvent( QFocusEvent *event )
+void MarvieControl::MemStatistics::focusOutEvent( QFocusEvent *event )
 {
 	hide();
 }
 
-MarvieController::SdStatistics::SdStatistics()
+MarvieControl::SdStatistics::SdStatistics()
 {
 	ui.setupUi( this );
 
@@ -4305,14 +4305,14 @@ MarvieController::SdStatistics::SdStatistics()
 	setStatistics( 0, 0, 0 );
 }
 
-void MarvieController::SdStatistics::setStatistics( uint64_t totalSize, uint64_t freeSize, uint64_t logSize )
+void MarvieControl::SdStatistics::setStatistics( uint64_t totalSize, uint64_t freeSize, uint64_t logSize )
 {
 	ui.totalSizeLabel->setText( printSize( totalSize ) );
 	ui.freeSizeLabel->setText( printSize( freeSize ) );
 	ui.logSizeLabel->setText( printSize( logSize ) );
 }
 
-void MarvieController::SdStatistics::show( QPoint point )
+void MarvieControl::SdStatistics::show( QPoint point )
 {
 	auto rect = geometry();
 	rect.moveCenter( point + QPoint( 0, height() / 2 ) );
@@ -4321,12 +4321,12 @@ void MarvieController::SdStatistics::show( QPoint point )
 	setFocus();
 }
 
-void MarvieController::SdStatistics::focusOutEvent( QFocusEvent *event )
+void MarvieControl::SdStatistics::focusOutEvent( QFocusEvent *event )
 {
 	hide();
 }
 
-QString MarvieController::SdStatistics::printSize( uint64_t size )
+QString MarvieControl::SdStatistics::printSize( uint64_t size )
 {
 	if( size < 1024 )
 		return QString( "%1 B" ).arg( size );

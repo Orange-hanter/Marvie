@@ -1,32 +1,32 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <QTDIR>C:\Qt\5.10.0\msvc2017_64</QTDIR>
     <RemoteDebuggerConnection>RemoteWithoutAuthentication</RemoteDebuggerConnection>
-    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
     <RemoteDebuggerServerName>25.94.145.201</RemoteDebuggerServerName>
-    <RemoteDebuggerCommand>C:\Users\Orange-hanter\Desktop\MarvieController\MarvieController.exe</RemoteDebuggerCommand>
+    <RemoteDebuggerCommand>C:\Users\Orange-hanter\Desktop\MarvieControl\MarvieControl.exe</RemoteDebuggerCommand>
     <RemoteDebuggerCommandArguments>
     </RemoteDebuggerCommandArguments>
-    <RemoteDebuggerWorkingDirectory>C:\Users\Orange-hanter\Desktop\MarvieController</RemoteDebuggerWorkingDirectory>
+    <RemoteDebuggerWorkingDirectory>C:\Users\Orange-hanter\Desktop\MarvieControl</RemoteDebuggerWorkingDirectory>
     <RemoteDebuggerDebuggerType>Auto</RemoteDebuggerDebuggerType>
-    <DeploymentDirectory>C:\Users\Orange-hanter\Desktop\MarvieController</DeploymentDirectory>
+    <DeploymentDirectory>C:\Users\Orange-hanter\Desktop\MarvieControl</DeploymentDirectory>
     <AdditionalFiles>
     </AdditionalFiles>
     <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <QTDIR>C:\Qt\5.10.0\msvc2017_64</QTDIR>
-    <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <RemoteDebuggerConnection>RemoteWithoutAuthentication</RemoteDebuggerConnection>
     <RemoteDebuggerServerName>25.94.145.201</RemoteDebuggerServerName>
-    <RemoteDebuggerCommand>C:\Users\Orange-hanter\Desktop\MarvieController\MarvieController.exe</RemoteDebuggerCommand>
+    <RemoteDebuggerCommand>C:\Users\Orange-hanter\Desktop\MarvieControl\MarvieControl.exe</RemoteDebuggerCommand>
     <RemoteDebuggerCommandArguments>
     </RemoteDebuggerCommandArguments>
-    <RemoteDebuggerWorkingDirectory>C:\Users\Orange-hanter\Desktop\MarvieController</RemoteDebuggerWorkingDirectory>
+    <RemoteDebuggerWorkingDirectory>C:\Users\Orange-hanter\Desktop\MarvieControl</RemoteDebuggerWorkingDirectory>
     <RemoteDebuggerDebuggerType>Auto</RemoteDebuggerDebuggerType>
-    <DeploymentDirectory>C:\Users\Orange-hanter\Desktop\MarvieController</DeploymentDirectory>
+    <DeploymentDirectory>C:\Users\Orange-hanter\Desktop\MarvieControl</DeploymentDirectory>
     <AdditionalFiles>
     </AdditionalFiles>
     <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>

@@ -5,10 +5,16 @@
   <xs:complexType>
    <xs:sequence>
     <xs:choice maxOccurs="unbounded" minOccurs="1">
+     <xs:element ref="ART01"/>
      <xs:element ref="CE301"/>
      <xs:element ref="GeneralSRSensor"/>
+     <xs:element ref="MR01"/>
      <xs:element ref="SimpleSensor"/>
+     <xs:element ref="TEM05M"/>
      <xs:element ref="TEM104"/>
+     <xs:element ref="TEM104M1"/>
+     <xs:element ref="TEM104U"/>
+     <xs:element ref="TERM0204"/>
      <xs:element ref="TestSRSensorA"/>
      <xs:element ref="TestSensorA"/>
      <xs:element ref="TestSensorB"/>
@@ -19,6 +25,24 @@
  <!--===============================================-->
  <!--===============================================-->
  <!--===============================================-->
+ <xs:element name="ART01">
+  <xs:complexType>
+   <xs:complexContent>
+    <xs:extension base="brSensorBase">
+     <xs:sequence>
+      <xs:element name="address">
+       <xs:simpleType>
+        <xs:restriction base="xs:int">
+         <xs:minInclusive value="0"/>
+         <xs:maxInclusive value="255"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+     </xs:sequence>
+    </xs:extension>
+   </xs:complexContent>
+  </xs:complexType>
+ </xs:element>
  <xs:element name="CE301">
   <xs:complexType>
    <xs:complexContent>
@@ -81,6 +105,24 @@
    </xs:complexContent>
   </xs:complexType>
  </xs:element>
+ <xs:element name="MR01">
+  <xs:complexType>
+   <xs:complexContent>
+    <xs:extension base="brSensorBase">
+     <xs:sequence>
+      <xs:element name="address">
+       <xs:simpleType>
+        <xs:restriction base="xs:int">
+         <xs:minInclusive value="0"/>
+         <xs:maxInclusive value="9999"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+     </xs:sequence>
+    </xs:extension>
+   </xs:complexContent>
+  </xs:complexType>
+ </xs:element>
  <xs:element name="SimpleSensor">
   <xs:complexType>
    <xs:complexContent>
@@ -122,6 +164,15 @@
    </xs:complexContent>
   </xs:complexType>
  </xs:element>
+ <xs:element name="TEM05M">
+  <xs:complexType>
+   <xs:complexContent>
+    <xs:extension base="brSensorBase">
+     <xs:sequence/>
+    </xs:extension>
+   </xs:complexContent>
+  </xs:complexType>
+ </xs:element>
  <xs:element name="TEM104">
   <xs:complexType>
    <xs:complexContent>
@@ -132,6 +183,60 @@
         <xs:restriction base="xs:int">
          <xs:minInclusive value="0"/>
          <xs:maxInclusive value="255"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+     </xs:sequence>
+    </xs:extension>
+   </xs:complexContent>
+  </xs:complexType>
+ </xs:element>
+ <xs:element name="TEM104M1">
+  <xs:complexType>
+   <xs:complexContent>
+    <xs:extension base="brSensorBase">
+     <xs:sequence>
+      <xs:element name="address">
+       <xs:simpleType>
+        <xs:restriction base="xs:int">
+         <xs:minInclusive value="0"/>
+         <xs:maxInclusive value="255"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+     </xs:sequence>
+    </xs:extension>
+   </xs:complexContent>
+  </xs:complexType>
+ </xs:element>
+ <xs:element name="TEM104U">
+  <xs:complexType>
+   <xs:complexContent>
+    <xs:extension base="brSensorBase">
+     <xs:sequence>
+      <xs:element name="address">
+       <xs:simpleType>
+        <xs:restriction base="xs:int">
+         <xs:minInclusive value="0"/>
+         <xs:maxInclusive value="255"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+     </xs:sequence>
+    </xs:extension>
+   </xs:complexContent>
+  </xs:complexType>
+ </xs:element>
+ <xs:element name="TERM0204">
+  <xs:complexType>
+   <xs:complexContent>
+    <xs:extension base="brSensorBase">
+     <xs:sequence>
+      <xs:element name="address">
+       <xs:simpleType>
+        <xs:restriction base="xs:int">
+         <xs:minInclusive value="0"/>
+         <xs:maxInclusive value="9999"/>
         </xs:restriction>
        </xs:simpleType>
       </xs:element>

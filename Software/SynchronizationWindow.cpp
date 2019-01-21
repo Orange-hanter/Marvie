@@ -8,7 +8,7 @@ SynchronizationWindow::SynchronizationWindow( QWidget* mainWindow ) : QDialog( n
 	QPalette pal = palette();
 	pal.setColor( QPalette::Window, Qt::white );
 	setPalette( pal );
-	movie.setFileName( ":/MarvieController/Animations/loading.gif" );
+	movie.setFileName( ":/MarvieControl/Animations/loading.gif" );
 	QVBoxLayout* layout = new QVBoxLayout( this );
 	layout->setContentsMargins( 0, 0, 0, 0 );
 	QFrame* frame = new QFrame;

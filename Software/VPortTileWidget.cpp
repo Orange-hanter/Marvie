@@ -24,14 +24,14 @@ VPortTileWidget::VPortTileWidget( QWidget* parent /*= nullptr */ ) : QWidget( pa
 	statusLabel = new QLabel( this );
 	statusLabel->setMinimumSize( QSize( 25, 25 ) );
 	statusLabel->setMaximumSize( QSize( 25, 25 ) );
-	statusLabel->setPixmap( QPixmap( ":/MarvieController/icons/icons8-checkmark-64.png" ) );
+	statusLabel->setPixmap( QPixmap( ":/MarvieControl/icons/icons8-checkmark-64.png" ) );
 	statusLabel->setScaledContents( true );
 	horizontalLayout->addWidget( statusLabel );
 
 	QToolButton* button = new QToolButton( this );
 	button->setMinimumSize( QSize( 25, 25 ) );
 	QIcon icon;
-	icon.addFile( ":/MarvieController/icons/icons8-chevron-right-filled-50.png", QSize(), QIcon::Normal, QIcon::Off );
+	icon.addFile( ":/MarvieControl/icons/icons8-chevron-right-filled-50.png", QSize(), QIcon::Normal, QIcon::Off );
 	button->setIcon( icon );
 	button->setAutoRaise( true );
 	horizontalLayout->addWidget( button );
@@ -161,7 +161,7 @@ void VPortTileWidget::resetNextSensorRead()
 void VPortTileWidget::addSensorReadError( uint sensorId, QString sensorName, SensorError error, uint8_t errorCode, QDateTime date )
 {
 	if( model.rowCount() == 0 )
-		statusLabel->setPixmap( QPixmap( ":/MarvieController/icons/icons8-box-important-42.png" ) );
+		statusLabel->setPixmap( QPixmap( ":/MarvieControl/icons/icons8-box-important-42.png" ) );
 	model.addSensorReadError( sensorId, sensorName, error, errorCode, date );
 }
 
@@ -169,13 +169,13 @@ void VPortTileWidget::removeSensorReadError( uint sensorId )
 {
 	model.removeSensorReadError( sensorId );
 	if( model.rowCount() == 0 )
-		statusLabel->setPixmap( QPixmap( ":/MarvieController/icons/icons8-checkmark-64.png" ) );
+		statusLabel->setPixmap( QPixmap( ":/MarvieControl/icons/icons8-checkmark-64.png" ) );
 }
 
 void VPortTileWidget::clearSensorErrorsList()
 {
 	model.clear();
-	statusLabel->setPixmap( QPixmap( ":/MarvieController/icons/icons8-checkmark-64.png" ) );
+	statusLabel->setPixmap( QPixmap( ":/MarvieControl/icons/icons8-checkmark-64.png" ) );
 }
 
 void VPortTileWidget::buttonClicked()
