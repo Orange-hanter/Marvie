@@ -1354,9 +1354,12 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 
 		if( modbusEnabled )
 		{
-			modbusRegisters = new uint16_t[modbusOffset / 2];
-			memset( modbusRegisters, 0, modbusOffset );
-			modbusRegistersCount = modbusOffset / 2;
+			if( modbusOffset )
+			{
+				modbusRegisters = new uint16_t[modbusOffset / 2];
+				memset( modbusRegisters, 0, modbusOffset );
+				modbusRegistersCount = modbusOffset / 2;
+			}
 
 			rawModbusServers = new RawModbusServer[rawModbusServersCount];
 			for( uint32_t iPort = 0, iServer = 0; iPort < MarviePlatform::comPortsCount; ++iPort )
