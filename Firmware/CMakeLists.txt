@@ -3,10 +3,10 @@ cmake_minimum_required(VERSION 3.11)
 enable_language(ASM)
 #set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-#set(STM32_FLASH_ORIGIN "0x08008400")
-#set(STM32_FLASH_SIZE "479K")
-#set(STM32_RAM_SIZE "128K")
-#set(STM32_CCRAM_SIZE "64K")
+set(STM32_FLASH_ORIGIN "0x08008400")
+set(STM32_FLASH_SIZE "479K")
+set(STM32_RAM_SIZE "128K")
+set(STM32_CCRAM_SIZE "64K")
 
 set(WIN32 1)
 #set(USE_PRINTF_FLOAT 1)
@@ -146,7 +146,7 @@ set(test_SRCS
 
 add_definitions(
 	            -DCORTEX_USE_FPU=FALSE
-                -DUSE_ASSERT=TRUE
+                #-DUSE_ASSERT=TRUE
 )
 
 set(STM32_LINKER_SCRIPT ${ChibiOS_LINKER_SCRIPT})

@@ -89,6 +89,7 @@ namespace MarviePackets
 	struct DeviceStatus
 	{
 		DateTime dateTime;
+		uint32_t workingTime;
 		enum class DeviceState : uint8_t { Reconfiguration, Working, IncorrectConfiguration } state;
 		enum class ConfigError : uint8_t { NoError, NoConfiglFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorReadingConfigError, LogConfigError, SensorsConfigError } configError;
 		enum class SdCardStatus : uint8_t { NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } sdCardStatus;

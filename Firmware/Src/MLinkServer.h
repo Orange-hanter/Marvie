@@ -123,7 +123,7 @@ private:
 		MSS = MTU - sizeof( Header ),
 		DataChannelMSS = MTU - sizeof( Header ) - sizeof( ChannelHeader ),
 		PacketBufferSize = ( MSS + sizeof( BufferHeader ) ) * 2,
-		MaxPacketTransferInterval = 1500,
+		MaxPacketTransferInterval = 2500,
 		PingInterval = 1500, // must be <= MaxPacketTransferInterval
 	};
 	State linkState;

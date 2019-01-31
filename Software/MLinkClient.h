@@ -81,7 +81,7 @@ private:
 		MTU = 1400,
 		MSS = MTU - sizeof( Header ),
 		DataChannelMSS = MTU - sizeof( Header ) - sizeof( ChannelHeader ),
-		MaxPacketTransferInterval = 1500,
+		MaxPacketTransferInterval = 2500,
 		PingInterval = 1000, // must be <= MaxPacketTransferInterval
 	};
 	State _state;

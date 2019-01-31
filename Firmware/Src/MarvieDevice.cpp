@@ -20,6 +20,7 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	backup->init();
 	incorrectShutdown = backup->failureDesc.pwrDown.power;
 	backup->failureDesc.pwrDown.power = true;
+	startDateTime = DateTimeService::currentDateTime();
 
 	MarviePlatform::comPortAssignments( comPortAssignments );
 
@@ -107,7 +108,7 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 
 	// SimGsm PWR KEY // TEMP!
 	palSetPadMode( GPIOD, 1, PAL_MODE_OUTPUT_PUSHPULL | PAL_STM32_OSPEED_HIGHEST );
-	if( MarviePlatform::coreVersion[strlen( MarviePlatform::coreVersion ) - 1] == 'C' )
+	if( MarviePlatform::coreVersion[strlen( MarviePlatform::coreVersion ) - 1] == 'L' )
 		palClearPad( GPIOD, 1 );
 	else
 		palSetPad( GPIOD, 1 );
@@ -183,7 +184,6 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	mLinkServer = new MLinkServer;
 	mLinkServer->setAuthenticationCallback( this );
 	mLinkServer->setDataChannelCallback( this );
-	//mLinkServer->setIODevice( comPorts[MarviePlatform::mLinkComPort] );
 
 	mainThread = nullptr;
 	miskTasksThread = nullptr;
@@ -216,11 +216,11 @@ void MarvieDevice::exec()
 		server->exec();
 	}, 2048, NORMALPRIO );
 
-	Concurrent::run( []()
+	/*Concurrent::run( []()
 	{
 		UdpStressTestServer* server = new UdpStressTestServer( 1114 );
 		server->exec();
-	}, 2048, NORMALPRIO );
+	}, 2048, NORMALPRIO );*/
 
 	Concurrent::run( [this]()
 	{
@@ -256,7 +256,7 @@ void MarvieDevice::exec()
 		}
 	}, 2048, NORMALPRIO );
 
-	TcpServer* server = new TcpServer;
+	/*TcpServer* server = new TcpServer;
 	server->listen( 42420 );
 	while( server->isListening() )
 	{
@@ -285,7 +285,7 @@ End:
 				delete socket;
 			}, 2048, NORMALPRIO );
 		}
-	}
+	}*/
 
 	thread_reference_t ref = nullptr;
 	chSysLock();
@@ -1928,6 +1928,7 @@ void MarvieDevice::sendDeviceStatus()
 {
 	MarviePackets::DeviceStatus status;
 	status.dateTime = DateTimeService::currentDateTime();
+	status.workingTime = startDateTime.msecsTo( status.dateTime ) / 1000;
 	chSysLock();
 	switch( deviceState )
 	{

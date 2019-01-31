@@ -3712,6 +3712,11 @@ void MarvieControl::updateDeviceVersion()
 void MarvieControl::updateDeviceStatus( const MarviePackets::DeviceStatus* status )
 {
 	ui.deviceDateTimeLabel->setText( QString( "Time: " ) + printDateTime( toQtDateTime( status->dateTime ) ) );
+	ui.deviceWorkingTimeLabel->setText( QString( "Working time: %1:%2:%3:%4" )
+										.arg( status->workingTime / 86400 )
+										.arg( ( status->workingTime / 3600 ) % 24, 2, 10, QChar( '0' ) )
+										.arg( ( status->workingTime / 60 ) % 60, 2, 10, QChar( '0' ) )
+										.arg( status->workingTime % 60, 2, 10, QChar( '0' ) ) );
 	ui.deviceStateLabel->setToolTip( "" );
 	switch( status->state )
 	{
@@ -3896,6 +3901,7 @@ void MarvieControl::resetDeviceInfo()
 
 	ui.deviceVersionLabel->setText( "Version: unknown" );
 	ui.deviceDateTimeLabel->setText( "Time: unknown" );
+	ui.deviceWorkingTimeLabel->setText( "Working time: unknown" );
 	ui.deviceStateLabel->setText( "State: unknown" );
 	ui.sdCardStatusLabel->setText( "SD card: unknown" );
 
