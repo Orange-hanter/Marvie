@@ -121,7 +121,17 @@ namespace ModbusPotato
                 m_crc16_calc = crc16_calc;
     }
 
-    unsigned long CModbusRTU::poll()
+
+	void CModbusRTU::finish_dump_state()
+	{
+		if(m_state == state_dump)
+		{
+			m_state = state_idle;
+			m_stream->communicationStatus(false, false);
+		}
+	}
+
+	unsigned long CModbusRTU::poll()
     {
         // state machine for handling incoming data
         //

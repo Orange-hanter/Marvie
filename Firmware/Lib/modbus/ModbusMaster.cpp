@@ -19,28 +19,34 @@ namespace ModbusPotato
                              / m_time_provider->microseconds_per_tick();
     }
 
-    void CModbusMaster::poll (void)
+
+	void CModbusMaster::reset_processing_error()
+	{
+		if(m_state == state::processing_error)
+			m_state = state::idle;
+	}
+
+	unsigned long CModbusMaster::poll(void)
     {
+		unsigned long elapsed;
         switch (m_state)
         {
-            case state::idle:
-            default:
-                break;
             case state::waiting_for_reply:
-                if (m_time_provider->ticks() - m_timer <= m_response_time_out)
-                    break;
+				elapsed = m_time_provider->ticks() - m_timer;
+				if (elapsed < m_response_time_out)
+					return m_response_time_out - elapsed;
                 m_state = m_handler->response_time_out()
                         ? state::idle
                         : state::processing_error;
-                break;
-            case state::processing_reply:
-                break;
+				return 0;
             case state::waiting_turnaround_reply:
-                if (m_time_provider->ticks() - m_timer >= m_turnaround_delay)
-                    m_state = state::idle;
-                break;
-            case state::processing_error:
-                break;
+				elapsed = m_time_provider->ticks() - m_timer;
+                if (elapsed < m_turnaround_delay)
+					return m_turnaround_delay - elapsed;
+				m_state = state::idle;
+				return 0;
+			default:
+				return 0;
         }
     }
 
@@ -211,10 +217,8 @@ namespace ModbusPotato
         }
         for (const uint16_t* i = begin; i != end; ++i)
         {
-            const uint16_t d = htons(*i);
-
-            *buffer++ = (uint8_t) (d >> 8);
-            *buffer++ = (uint8_t) d;
+            *buffer++ = (uint8_t) ((*i) >> 8);
+            *buffer++ = (uint8_t) *i;
         }
 
         m_write_starting_address = address;
@@ -275,10 +279,8 @@ namespace ModbusPotato
         *buffer++ = (uint8_t) 2*write_n;
         for (const uint16_t* i = write_begin; i != write_end; ++i)
         {
-            const uint16_t d = htons(*i);
-
-            *buffer++ = (uint8_t) (d >> 8);
-            *buffer++ = (uint8_t) d;
+            *buffer++ = (uint8_t) ((*i) >> 8);
+            *buffer++ = (uint8_t) *i;
         }
 
         m_read_starting_address  = read_address;

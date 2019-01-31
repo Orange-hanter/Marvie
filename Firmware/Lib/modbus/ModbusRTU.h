@@ -42,6 +42,7 @@ namespace ModbusPotato
         /// in microseconds.
         /// </remarks>
         void setup(unsigned long baud, unsigned int inter_frame_delay = 0 /* us */, unsigned int inter_char_delay = 0 /* us */, Crc16CalcFunc crc16_calc = nullptr);
+		void finish_dump_state();
 
         unsigned long poll();
         bool begin_send();

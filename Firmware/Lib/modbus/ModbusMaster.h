@@ -13,6 +13,27 @@ namespace ModbusPotato
     public:
         CModbusMaster(IMasterHandler* handler, IFramer* framer, ITimeProvider* timer, unsigned int response_time_out = 200, unsigned int turnaround_delay = 1000);
 
+		inline void set_handler(IMasterHandler* handler)
+		{
+			m_handler = handler;
+		}
+		inline void set_framer(IFramer* framer)
+		{
+			m_framer = framer;
+		}
+		inline void set_timer(ITimeProvider* timer)
+		{
+			m_time_provider = timer;
+		}
+		inline void set_response_time_out(unsigned int response_time_out)
+		{
+			m_response_time_out = response_time_out;
+		}
+		inline void set_turnaround_delay(unsigned int turnaround_delay)
+		{
+			m_turnaround_delay = turnaround_delay;
+		}
+
         bool read_coils_req(void);
         bool read_discrete_inputs_req(void);
         inline bool read_holding_registers_req(const uint8_t slave, const uint16_t address, const uint16_t n)
@@ -68,7 +89,9 @@ namespace ModbusPotato
             return read_write_registers_req(function_code::read_write_multiple_registers, slave, read_address, read_n, write_address, write_begin, write_end);
         }
 
-        void poll(void);
+		void reset_processing_error();
+
+        unsigned long poll(void);
 
         void frame_ready(IFramer* framer) override;
 

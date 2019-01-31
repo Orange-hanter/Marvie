@@ -1,5 +1,4 @@
 #include "ModbusDevice.h"
-#include "hal.h"
 
 ModbusDevice::TimerProvider ModbusDevice::timerProvider;
 

@@ -36,10 +36,12 @@ include_directories(
 )
 
 set(apps_SRCS
-    ${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/ModbusDevice.cpp
+	${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/ModbusIODeviceStream.cpp
 	${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/ModbusServer.cpp
+	${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/RawModbusClient.cpp
 	${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/RawModbusServer.cpp
 	${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/TcpModbusServer.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/ModbusDevice.cpp
 )
 
 set(core_SRCS
