@@ -76,6 +76,7 @@ set(drivers_SRCS
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Tem104Sensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Tem104USensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Term0204Sensor.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Term0208Sensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/TestSensorA.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/TestSensorB.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/TestSRSensorA.cpp
@@ -124,6 +125,7 @@ set(sensorService_SRCS
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem104SensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem104USensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Term0204SensorType.cpp
+	${CMAKE_SOURCE_DIR}/Src/SensorService/Term0208SensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/TestSensorAType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/TestSensorBType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/TestSRSensorAType.cpp

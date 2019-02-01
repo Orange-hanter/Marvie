@@ -15,6 +15,7 @@
      <xs:element ref="TEM104M1"/>
      <xs:element ref="TEM104U"/>
      <xs:element ref="TERM0204"/>
+     <xs:element ref="TERM0208"/>
      <xs:element ref="TestSRSensorA"/>
      <xs:element ref="TestSensorA"/>
      <xs:element ref="TestSensorB"/>
@@ -237,6 +238,24 @@
         <xs:restriction base="xs:int">
          <xs:minInclusive value="0"/>
          <xs:maxInclusive value="9999"/>
+        </xs:restriction>
+       </xs:simpleType>
+      </xs:element>
+     </xs:sequence>
+    </xs:extension>
+   </xs:complexContent>
+  </xs:complexType>
+ </xs:element>
+ <xs:element name="TERM0208">
+  <xs:complexType>
+   <xs:complexContent>
+    <xs:extension base="brSensorBase">
+     <xs:sequence>
+      <xs:element name="address">
+       <xs:simpleType>
+        <xs:restriction base="xs:int">
+         <xs:minInclusive value="0"/>
+         <xs:maxInclusive value="255"/>
         </xs:restriction>
        </xs:simpleType>
       </xs:element>

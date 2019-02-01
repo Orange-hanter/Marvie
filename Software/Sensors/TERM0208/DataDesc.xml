@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<DataDesc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="file:// ../../Xml/schemas/SensorData.xsd">
+  <group name="Instant">
+    <array type="float" count="3">G</array>
+    <array type="float" count="3">M</array>
+    <array type="int32" count="2">Q</array>
+    <array type="float" count="4">t</array>
+    <array type="float" count="4">p</array>
+    <array type="uint8" count="4">err</array>
+    <unused size="4"/>
+  </group>
+  <group name="Integrated">
+    <array type="double" count="3">G</array>
+    <array type="double" count="3">M</array>
+    <array type="uint64" count="2">Q</array>
+    <array type="uint32" count="2">timeWork</array>
+    <array type="uint32" count="2">timeErr</array>
+    <group name="PerHour">
+      <array type="double" count="3">V</array>
+      <array type="double" count="3">M</array>
+      <array type="uint64" count="2">Q</array>
+      <array type="uint8" count="4">err</array>
+      <unused size="4"/>
+    </group>
+    <group name="PerDay">
+      <array type="double" count="3">V</array>
+      <array type="double" count="3">M</array>
+      <array type="uint64" count="2">Q</array>
+      <array type="uint8" count="4">err</array>
+      <unused size="4"/>
+    </group>
+  </group>
+</DataDesc>
