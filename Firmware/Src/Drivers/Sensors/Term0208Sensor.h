@@ -96,6 +96,5 @@ private:
 	uint32_t baudrate;
     RawModbusClient modbusClient;
     uint8_t buffer[( 0x60 + 0x0C ) * 2];
-    int gg[5] = {};
 	Data data;
 };
