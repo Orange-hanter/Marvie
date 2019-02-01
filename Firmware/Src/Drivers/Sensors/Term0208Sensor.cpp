@@ -59,9 +59,9 @@ Term0208Sensor::Data* Term0208Sensor::readData()
 	parseInstantValuesResponse();
 
 	// read inegrated values
-    if( !modbusClient.readInputRegisters( address, 0x3000, 0x60, reinterpret_cast< uint16_t* >( buffer ) ) )
+	if( !modbusClient.readInputRegisters( address, 0x3000, 0x60, reinterpret_cast< uint16_t* >( buffer ) ) )
 		returnError( ( modbusClient.error() == ModbusDevice::Error::TimeoutError ? SensorData::Error::NoResponseError : SensorData::Error::CrcError ), 2 );
-    if( !modbusClient.readInputRegisters( address, 0x3070, 0x0C, reinterpret_cast< uint16_t* >( buffer ) + 0x60 ) )
+	if( !modbusClient.readInputRegisters( address, 0x3070, 0x0C, reinterpret_cast< uint16_t* >( buffer ) + 0x60 ) )
 		returnError( ( modbusClient.error() == ModbusDevice::Error::TimeoutError ? SensorData::Error::NoResponseError : SensorData::Error::CrcError ), 3 );
 	parseIntegratedValuesResponse();
 
