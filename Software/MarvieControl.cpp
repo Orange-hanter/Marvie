@@ -3841,7 +3841,7 @@ void MarvieControl::updateGsmStatus( const MarviePackets::GsmStatus* status )
 	{
 	case MarviePackets::GsmStatus::State::Stopped:
 		if( status->error == MarviePackets::GsmStatus::Error::AuthenticationError )
-			ui.gsmStateLabel->setText( "State: incorrect PIN" );
+			ui.gsmStateLabel->setText( "State: auth error" );
 		else
 			ui.gsmStateLabel->setText( "State: stopped" );
 		break;
