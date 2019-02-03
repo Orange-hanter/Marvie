@@ -1,4 +1,4 @@
-#include "Drivers/Sensors/GeneralSRSensor.h"
+#include "Drivers/Sensors/AnalogSensor.h"
 #include "MarviePlatform.h"
 #include "SensorService.h"
 #include <string.h>
@@ -7,21 +7,21 @@ using namespace tinyxml2;
 
 static AbstractSensor* generalSRSensorAllocate()
 {
-	return new GeneralSRSensor;
+	return new AnalogSensor;
 }
 
-GeneralSRSensor::FilterType filterType( const char* filterName )
+AnalogSensor::FilterType filterType( const char* filterName )
 {
 	if( strcmp( filterName, "LowPassAlpha" ) == 0 )
-		return GeneralSRSensor::FilterType::LowPassAlpha;
+		return AnalogSensor::FilterType::LowPassAlpha;
 	if( strcmp( filterName, "LowPassFreq" ) == 0 )
-		return GeneralSRSensor::FilterType::LowPassFreq;
+		return AnalogSensor::FilterType::LowPassFreq;
 	if( strcmp( filterName, "MovingAvg" ) == 0 )
-		return GeneralSRSensor::FilterType::MovingAvg;
+		return AnalogSensor::FilterType::MovingAvg;
 	if( strcmp( filterName, "Median" ) == 0 )
-		return GeneralSRSensor::FilterType::Median;
+		return AnalogSensor::FilterType::Median;
 
-	return GeneralSRSensor::FilterType::None;
+	return AnalogSensor::FilterType::None;
 }
 
 static bool generalSRSensorTune( AbstractSensor* sensor, XMLElement* e, uint32_t defaultValue )
@@ -66,9 +66,9 @@ static bool generalSRSensorTune( AbstractSensor* sensor, XMLElement* e, uint32_t
 	if( !c0 || c0->QueryFloatText( &b ) != XML_SUCCESS )
 		return false;
 
-	static_cast< GeneralSRSensor* >( sensor )->setSignalChannel( blockId, line );
-	static_cast< GeneralSRSensor* >( sensor )->setFilterSettings( filterType( filterAName ), prmA, filterType( filterBName ), prmB, MarviePlatform::srSensorUpdatePeriodMs / 1000.0f );
-	static_cast< GeneralSRSensor* >( sensor )->setLinearMappingSettings( k, b );
+	static_cast< AnalogSensor* >( sensor )->setSignalChannel( blockId, line );
+	static_cast< AnalogSensor* >( sensor )->setFilterSettings( filterType( filterAName ), prmA, filterType( filterBName ), prmB, MarviePlatform::srSensorUpdatePeriodMs / 1000.0f );
+	static_cast< AnalogSensor* >( sensor )->setLinearMappingSettings( k, b );
 
 	return true;
 }
@@ -77,7 +77,7 @@ static SensorService::Node* generalSRSensorType = []()
 {
 	static SensorService::Node node;
 	node.value.type = AbstractSensor::Type::SR;
-	node.value.name = GeneralSRSensor::sName();
+	node.value.name = AnalogSensor::sName();
 	node.value.allocator = generalSRSensorAllocate;
 	node.value.tuner = generalSRSensorTune;
 	SensorService::registerSensorType( &node );

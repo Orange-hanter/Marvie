@@ -1,7 +1,7 @@
-#include "GeneralSRSensor.h"
+#include "AnalogSensor.h"
 #include "Core/DateTimeService.h"
 
-GeneralSRSensor::GeneralSRSensor()
+AnalogSensor::AnalogSensor()
 {
 	blockId = 0;
 	line = 0;
@@ -10,47 +10,47 @@ GeneralSRSensor::GeneralSRSensor()
 	b = 0.0f;
 }
 
-GeneralSRSensor::~GeneralSRSensor()
+AnalogSensor::~AnalogSensor()
 {
 	delete filterA;
 	delete filterB;
 }
 
-const char* GeneralSRSensor::name() const
+const char* AnalogSensor::name() const
 {
 	return sName();
 }
 
-void GeneralSRSensor::setSignalChannel( uint16_t blockId, uint16_t line )
+void AnalogSensor::setSignalChannel( uint16_t blockId, uint16_t line )
 {
 	this->blockId = blockId;
 	this->line = line;
 }
 
-void GeneralSRSensor::setFilterSettings( FilterType filterAType, float prmA, FilterType filterBType, float prmB, float dt )
+void AnalogSensor::setFilterSettings( FilterType filterAType, float prmA, FilterType filterBType, float prmB, float dt )
 {
 	uint32_t prm;
 	switch( filterAType )
 	{
-	case GeneralSRSensor::FilterType::None:
+	case AnalogSensor::FilterType::None:
 		delete filterA;
 		filterA = nullptr;
 		break;
-	case GeneralSRSensor::FilterType::LowPassAlpha:
+	case AnalogSensor::FilterType::LowPassAlpha:
 		filterA = new LowPassFilter;
 		static_cast< LowPassFilter* >( filterA )->setAlpha( prmA );
 		break;
-	case GeneralSRSensor::FilterType::LowPassFreq:
+	case AnalogSensor::FilterType::LowPassFreq:
 		filterA = new LowPassFilter;
 		static_cast< LowPassFilter* >( filterA )->setFreq( dt, prmA );
 		break;
-	case GeneralSRSensor::FilterType::MovingAvg:
+	case AnalogSensor::FilterType::MovingAvg:
 		prm = ( uint32_t )prmA;
 		if( prm < 2 )
 			prm = 2;
 		filterA = new MovingAvgFilter( prm );
 		break;
-	case GeneralSRSensor::FilterType::Median:
+	case AnalogSensor::FilterType::Median:
 		prm = ( uint32_t )prmA;
 		if( prm < 3 )
 			prm = 3;
@@ -63,25 +63,25 @@ void GeneralSRSensor::setFilterSettings( FilterType filterAType, float prmA, Fil
 	}
 	switch( filterBType )
 	{
-	case GeneralSRSensor::FilterType::None:
+	case AnalogSensor::FilterType::None:
 		delete filterB;
 		filterB = nullptr;
 		break;
-	case GeneralSRSensor::FilterType::LowPassAlpha:
+	case AnalogSensor::FilterType::LowPassAlpha:
 		filterB = new LowPassFilter;
 		static_cast< LowPassFilter* >( filterB )->setAlpha( prmB );
 		break;
-	case GeneralSRSensor::FilterType::LowPassFreq:
+	case AnalogSensor::FilterType::LowPassFreq:
 		filterB = new LowPassFilter;
 		static_cast< LowPassFilter* >( filterB )->setFreq( dt, prmB );
 		break;
-	case GeneralSRSensor::FilterType::MovingAvg:
+	case AnalogSensor::FilterType::MovingAvg:
 		prm = ( uint32_t )prmB;
 		if( prm < 2 )
 			prm = 2;
 		filterB = new MovingAvgFilter( prm );
 		break;
-	case GeneralSRSensor::FilterType::Median:
+	case AnalogSensor::FilterType::Median:
 		prm = ( uint32_t )prmB;
 		if( prm < 3 )
 			prm = 3;
@@ -99,13 +99,13 @@ void GeneralSRSensor::setFilterSettings( FilterType filterAType, float prmA, Fil
 		filterB->reset( signalProvider->analogSignal( blockId, line ) );
 }
 
-void GeneralSRSensor::setLinearMappingSettings( float k, float b )
+void AnalogSensor::setLinearMappingSettings( float k, float b )
 {
 	this->k = k;
 	this->b = b;
 }
 
-GeneralSRSensor::Data* GeneralSRSensor::readData()
+AnalogSensor::Data* AnalogSensor::readData()
 {
 	data.t = DateTimeService::currentDateTime();
 	float value = signalProvider->analogSignal( blockId, line );
@@ -118,12 +118,12 @@ GeneralSRSensor::Data* GeneralSRSensor::readData()
 	return &data;
 }
 
-GeneralSRSensor::Data* GeneralSRSensor::sensorData()
+AnalogSensor::Data* AnalogSensor::sensorData()
 {
 	return &data;
 }
 
-uint32_t GeneralSRSensor::sensorDataSize()
+uint32_t AnalogSensor::sensorDataSize()
 {
 	return sizeof( Data ) - sizeof( SensorData );
 }

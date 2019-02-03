@@ -67,9 +67,9 @@ set(drivers_SRCS
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Network/SimGsm/SimGsmATResponseParsers.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Network/SimGsm/SimGsmPppModem.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/AbstractSensor.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/AnalogSensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Art01Sensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Ce301Sensor.cpp
-	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/GeneralSRSensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Mr01Sensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Tem05MSensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Tem104M1Sensor.cpp
@@ -115,9 +115,9 @@ set(network_SRCS
 )
 
 set(sensorService_SRCS
+	${CMAKE_SOURCE_DIR}/Src/SensorService/AnalogSensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Art01SensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Ce301SensorType.cpp
-	${CMAKE_SOURCE_DIR}/Src/SensorService/GeneralSRSensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Mr01SensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/SensorService.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem05MSensorType.cpp

@@ -5,12 +5,12 @@
 #include "Filters/MedianFilter.h"
 #include "Filters/MovingAvgFilter.h"
 
-class GeneralSRSensor : public AbstractSRSensor
+class AnalogSensor : public AbstractSRSensor
 {
 public:
 	class Data : public SensorData
 	{
-		friend class GeneralSRSensor;
+		friend class AnalogSensor;
 	public:
 		Data()
 		{
@@ -27,10 +27,10 @@ public:
 		Median
 	};
 
-	explicit GeneralSRSensor();
-	~GeneralSRSensor();
+	explicit AnalogSensor();
+	~AnalogSensor();
 
-	inline static const char* sName() { return "GeneralSRSensor"; }
+	inline static const char* sName() { return "AnalogSensor"; }
 	const char* name() const final override;
 
 	void setSignalChannel( uint16_t blockId, uint16_t line );
