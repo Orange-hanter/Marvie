@@ -1,17 +1,27 @@
 #pragma once
 
-#include "thirdparty/FramelessWindow/FramelessWindow.h"
+#ifdef USE_FRAMELESS_WINDOW 
+#include "FramelessWindow/FramelessWindow.h"
+#else
+#include <QDialog>
+#endif
+#include <QCloseEvent>
+#include <QToolButton>
 #include "MLinkClient.h"
 #include <QProgressBar>
 
+#ifdef USE_FRAMELESS_WINDOW 
 class DataTransferProgressWindow : public FramelessDialog
+#else
+class DataTransferProgressWindow : public QDialog
+#endif
 {
 	Q_OBJECT
 
 public:
 	enum class TransferDir { Receiving, Sending };
 
-	DataTransferProgressWindow( MLinkClient* link, uint8_t channelId, TransferDir dir, QWidget* parent, int errPacketId = -1 );
+	DataTransferProgressWindow( QString titleText, MLinkClient* link, uint8_t channelId, TransferDir dir, QWidget* parent, int errPacketId = -1 );
 
 private slots:
 	void buttonClicked();

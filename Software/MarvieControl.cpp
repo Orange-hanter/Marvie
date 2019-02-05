@@ -1,4 +1,8 @@
 #include "MarvieControl.h"
+#include <QCoreApplication>
+#include <QDesktopWidget>
+#include <QGraphicsLayout>
+#include <QClipboard>
 #include <QSerialPortInfo>
 #include <QSerialPort>
 #include <QUdpSocket>
@@ -35,6 +39,7 @@ QByteArray randBytes( uint size )
 	return m;
 }
 
+#ifdef USE_FRAMELESS_WINDOW 
 MarvieControl::MarvieControl( QWidget *parent ) : FramelessWidget( parent ), vPortIdComboBoxEventFilter( vPorts )
 {
 	QWidget* centralWindget = new QWidget;
@@ -49,10 +54,25 @@ MarvieControl::MarvieControl( QWidget *parent ) : FramelessWidget( parent ), vPo
 	mainWindowRect.moveCenter( qApp->desktop()->rect().center() );
 	setGeometry( mainWindowRect );
 
-	mlinkIODevice = nullptr;
-
 	accountWindow = new AccountWindow;
 	accountWindow->setPalette( centralWindget->palette() );
+#else
+MarvieControl::MarvieControl( QWidget *parent ) : QWidget( parent ), vPortIdComboBoxEventFilter( vPorts )
+{
+	ui.setupUi( this );
+	ui.lineForFramelessWindow->hide();
+	setWindowTitle( "MarvieControl" );
+
+	setMinimumSize( QSize( 544, 650 ) );
+	QRect mainWindowRect( 0, 0, 540, 650 );
+	mainWindowRect.moveCenter( qApp->desktop()->rect().center() );
+	setGeometry( mainWindowRect );
+
+	accountWindow = new AccountWindow;
+	accountWindow->setPalette( palette() );
+#endif
+
+	mlinkIODevice = nullptr;
 
 	sensorsInit();
 
@@ -849,8 +869,7 @@ void MarvieControl::deviceVersionMenuActionTriggered( QAction* action )
 
 	file.open( QIODevice::ReadOnly );
 	mlink.sendChannelData( MarviePackets::ComplexChannel::FirmwareChannel, file.readAll() );
-	DataTransferProgressWindow window( &mlink, MarviePackets::ComplexChannel::FirmwareChannel, DataTransferProgressWindow::TransferDir::Sending, this );
-	window.setTitleText( "Uploading firmware" );
+	DataTransferProgressWindow window( "Uploading firmware", &mlink, MarviePackets::ComplexChannel::FirmwareChannel, DataTransferProgressWindow::TransferDir::Sending, this );
 	window.exec();
 }
 
@@ -1435,8 +1454,7 @@ void MarvieControl::uploadConfigButtonClicked()
 	}
 
 	mlink.sendChannelData( MarviePackets::ComplexChannel::XmlConfigChannel, data );
-	DataTransferProgressWindow window( &mlink, MarviePackets::ComplexChannel::XmlConfigChannel, DataTransferProgressWindow::TransferDir::Sending, this );
-	window.setTitleText( "Uploading config" );
+	DataTransferProgressWindow window( "Uploading config", &mlink, MarviePackets::ComplexChannel::XmlConfigChannel, DataTransferProgressWindow::TransferDir::Sending, this );
 	window.exec();
 }
 
@@ -1446,8 +1464,7 @@ void MarvieControl::downloadConfigButtonClicked()
 		return;
 
 	mlink.sendPacket( MarviePackets::Type::GetConfigXmlType, QByteArray() );
-	DataTransferProgressWindow window( &mlink, MarviePackets::ComplexChannel::XmlConfigChannel, DataTransferProgressWindow::TransferDir::Receiving, this, MarviePackets::Type::ConfigXmlMissingType );
-	window.setTitleText( "Downloading config" );
+	DataTransferProgressWindow window( "Downloading config", &mlink, MarviePackets::ComplexChannel::XmlConfigChannel, DataTransferProgressWindow::TransferDir::Receiving, this, MarviePackets::Type::ConfigXmlMissingType );
 	window.exec();
 }
 

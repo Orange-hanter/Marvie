@@ -1783,989 +1783,1032 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
               <number>0</number>
              </property>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_33">
-               <property name="leftMargin">
-                <number>3</number>
+              <layout class="QHBoxLayout" name="horizontalLayout_63" stretch="0,1">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
                </property>
                <property name="rightMargin">
                 <number>0</number>
                </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
                <item>
-                <layout class="QVBoxLayout" name="verticalLayout_19">
-                 <property name="spacing">
-                  <number>6</number>
+                <widget class="QWidget" name="widget_11" native="true">
+                 <property name="minimumSize">
+                  <size>
+                   <width>350</width>
+                   <height>24</height>
+                  </size>
                  </property>
-                 <item>
-                  <widget class="QLabel" name="label_14">
-                   <property name="text">
-                    <string>Device status:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_31">
-                   <property name="spacing">
-                    <number>6</number>
-                   </property>
-                   <property name="leftMargin">
-                    <number>1</number>
-                   </property>
-                   <item>
-                    <widget class="QWidget" name="widget_6" native="true">
-                     <property name="minimumSize">
-                      <size>
-                       <width>3</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>3</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="palette">
-                      <palette>
-                       <active>
-                        <colorrole role="Base">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>255</green>
-                           <blue>255</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                        <colorrole role="Window">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                       </active>
-                       <inactive>
-                        <colorrole role="Base">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>255</green>
-                           <blue>255</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                        <colorrole role="Window">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                       </inactive>
-                       <disabled>
-                        <colorrole role="Base">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                        <colorrole role="Window">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                       </disabled>
-                      </palette>
-                     </property>
-                     <property name="autoFillBackground">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_5">
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_44">
-                       <property name="spacing">
-                        <number>6</number>
-                       </property>
-                       <item>
-                        <widget class="QLabel" name="deviceVersionLabel">
-                         <property name="text">
-                          <string>Version: unknown</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QToolButton" name="deviceVersionMenuButton">
-                         <property name="enabled">
-                          <bool>true</bool>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>20</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>20</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                         <property name="toolTip">
-                          <string/>
-                         </property>
-                         <property name="text">
-                          <string/>
-                         </property>
-                         <property name="icon">
-                          <iconset resource="MarvieControl.qrc">
-                           <normaloff>:/MarvieControl/icons/icons8-down-button-48.png</normaloff>:/MarvieControl/icons/icons8-down-button-48.png</iconset>
-                         </property>
-                         <property name="iconSize">
-                          <size>
-                           <width>25</width>
-                           <height>25</height>
-                          </size>
-                         </property>
-                         <property name="autoRaise">
-                          <bool>true</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_36">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeType">
-                          <enum>QSizePolicy::Fixed</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>5</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_27">
-                       <item>
-                        <widget class="QLabel" name="deviceDateTimeLabel">
-                         <property name="text">
-                          <string>Time: unknown</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QToolButton" name="syncDateTimeButton">
-                         <property name="enabled">
-                          <bool>true</bool>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>20</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>20</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                         <property name="toolTip">
-                          <string>Synchronize</string>
-                         </property>
-                         <property name="text">
-                          <string/>
-                         </property>
-                         <property name="icon">
-                          <iconset resource="MarvieControl.qrc">
-                           <normaloff>:/MarvieControl/icons/icons8-refresh-96.png</normaloff>:/MarvieControl/icons/icons8-refresh-96.png</iconset>
-                         </property>
-                         <property name="iconSize">
-                          <size>
-                           <width>25</width>
-                           <height>25</height>
-                          </size>
-                         </property>
-                         <property name="autoRaise">
-                          <bool>true</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_4">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeType">
-                          <enum>QSizePolicy::Fixed</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>5</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_61">
-                       <item>
-                        <widget class="QLabel" name="deviceWorkingTimeLabel">
-                         <property name="text">
-                          <string>Working time: unknown</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_44">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeType">
-                          <enum>QSizePolicy::Fixed</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>5</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_10">
-                       <item>
-                        <widget class="QLabel" name="deviceStateLabel">
-                         <property name="text">
-                          <string>State: unknown</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_6">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeType">
-                          <enum>QSizePolicy::Expanding</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>5</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_8">
-                       <property name="spacing">
-                        <number>6</number>
-                       </property>
-                       <item>
-                        <widget class="QLabel" name="sdCardStatusLabel">
-                         <property name="text">
-                          <string>SD card: unknown</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QToolButton" name="sdCardMenuButton">
-                         <property name="enabled">
-                          <bool>true</bool>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>20</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>20</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                         <property name="toolTip">
-                          <string/>
-                         </property>
-                         <property name="text">
-                          <string/>
-                         </property>
-                         <property name="icon">
-                          <iconset resource="MarvieControl.qrc">
-                           <normaloff>:/MarvieControl/icons/icons8-down-button-48.png</normaloff>:/MarvieControl/icons/icons8-down-button-48.png</iconset>
-                         </property>
-                         <property name="iconSize">
-                          <size>
-                           <width>25</width>
-                           <height>25</height>
-                          </size>
-                         </property>
-                         <property name="autoRaise">
-                          <bool>true</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_3">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeType">
-                          <enum>QSizePolicy::Fixed</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>5</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_50">
-                       <item>
-                        <widget class="QLabel" name="logStateLabel">
-                         <property name="text">
-                          <string>Log: unknown</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QToolButton" name="logMenuButton">
-                         <property name="enabled">
-                          <bool>true</bool>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>20</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>20</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                         <property name="toolTip">
-                          <string/>
-                         </property>
-                         <property name="text">
-                          <string/>
-                         </property>
-                         <property name="icon">
-                          <iconset resource="MarvieControl.qrc">
-                           <normaloff>:/MarvieControl/icons/icons8-down-button-48.png</normaloff>:/MarvieControl/icons/icons8-down-button-48.png</iconset>
-                         </property>
-                         <property name="iconSize">
-                          <size>
-                           <width>25</width>
-                           <height>25</height>
-                          </size>
-                         </property>
-                         <property name="autoRaise">
-                          <bool>true</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_40">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeType">
-                          <enum>QSizePolicy::Fixed</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>5</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_17">
-                   <property name="text">
-                    <string>Ethernet status:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_43">
-                   <property name="spacing">
-                    <number>6</number>
-                   </property>
-                   <property name="leftMargin">
-                    <number>1</number>
-                   </property>
-                   <item>
-                    <widget class="QWidget" name="widget_9" native="true">
-                     <property name="minimumSize">
-                      <size>
-                       <width>3</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>3</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="palette">
-                      <palette>
-                       <active>
-                        <colorrole role="Base">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>255</green>
-                           <blue>255</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                        <colorrole role="Window">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                       </active>
-                       <inactive>
-                        <colorrole role="Base">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>255</green>
-                           <blue>255</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                        <colorrole role="Window">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                       </inactive>
-                       <disabled>
-                        <colorrole role="Base">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                        <colorrole role="Window">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                       </disabled>
-                      </palette>
-                     </property>
-                     <property name="autoFillBackground">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_22">
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_47">
-                       <item>
-                        <widget class="QLabel" name="lanIpLabel">
-                         <property name="text">
-                          <string>IP: 0.0.0.0</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_41">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeType">
-                          <enum>QSizePolicy::Expanding</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>5</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_48">
-                       <item>
-                        <widget class="QLabel" name="lanNetmaskLabel">
-                         <property name="text">
-                          <string>Netmask: 0.0.0.0</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_42">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeType">
-                          <enum>QSizePolicy::Expanding</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>5</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_49">
-                       <item>
-                        <widget class="QLabel" name="lanGatewayLabel">
-                         <property name="text">
-                          <string>Gateway: 255.255.255.255</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_43">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeType">
-                          <enum>QSizePolicy::Expanding</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>5</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <spacer name="verticalSpacer_11">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>20</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
+                 <layout class="QHBoxLayout" name="horizontalLayout_64">
+                  <property name="leftMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_19">
+                    <property name="spacing">
+                     <number>6</number>
+                    </property>
+                    <item>
+                     <widget class="QLabel" name="label_14">
+                      <property name="text">
+                       <string>Device status:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_31">
+                      <property name="spacing">
+                       <number>6</number>
+                      </property>
+                      <property name="leftMargin">
+                       <number>1</number>
+                      </property>
+                      <item>
+                       <widget class="QWidget" name="widget_6" native="true">
+                        <property name="minimumSize">
+                         <size>
+                          <width>3</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>3</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="palette">
+                         <palette>
+                          <active>
+                           <colorrole role="Base">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>255</green>
+                              <blue>255</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                           <colorrole role="Window">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                          </active>
+                          <inactive>
+                           <colorrole role="Base">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>255</green>
+                              <blue>255</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                           <colorrole role="Window">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                          </inactive>
+                          <disabled>
+                           <colorrole role="Base">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                           <colorrole role="Window">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                          </disabled>
+                         </palette>
+                        </property>
+                        <property name="autoFillBackground">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QVBoxLayout" name="verticalLayout_5">
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_44">
+                          <property name="spacing">
+                           <number>6</number>
+                          </property>
+                          <item>
+                           <widget class="QLabel" name="deviceVersionLabel">
+                            <property name="text">
+                             <string>Version: unknown</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QToolButton" name="deviceVersionMenuButton">
+                            <property name="enabled">
+                             <bool>true</bool>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>20</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>20</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="toolTip">
+                             <string/>
+                            </property>
+                            <property name="text">
+                             <string/>
+                            </property>
+                            <property name="icon">
+                             <iconset resource="MarvieControl.qrc">
+                              <normaloff>:/MarvieControl/icons/icons8-down-button-48.png</normaloff>:/MarvieControl/icons/icons8-down-button-48.png</iconset>
+                            </property>
+                            <property name="iconSize">
+                             <size>
+                              <width>25</width>
+                              <height>25</height>
+                             </size>
+                            </property>
+                            <property name="autoRaise">
+                             <bool>true</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_36">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                             <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_27">
+                          <item>
+                           <widget class="QLabel" name="deviceDateTimeLabel">
+                            <property name="text">
+                             <string>Time: unknown</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QToolButton" name="syncDateTimeButton">
+                            <property name="enabled">
+                             <bool>true</bool>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>20</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>20</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="toolTip">
+                             <string>Synchronize</string>
+                            </property>
+                            <property name="text">
+                             <string/>
+                            </property>
+                            <property name="icon">
+                             <iconset resource="MarvieControl.qrc">
+                              <normaloff>:/MarvieControl/icons/icons8-refresh-96.png</normaloff>:/MarvieControl/icons/icons8-refresh-96.png</iconset>
+                            </property>
+                            <property name="iconSize">
+                             <size>
+                              <width>25</width>
+                              <height>25</height>
+                             </size>
+                            </property>
+                            <property name="autoRaise">
+                             <bool>true</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_4">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                             <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_61">
+                          <item>
+                           <widget class="QLabel" name="deviceWorkingTimeLabel">
+                            <property name="text">
+                             <string>Working time: unknown</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_44">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                             <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_10">
+                          <item>
+                           <widget class="QLabel" name="deviceStateLabel">
+                            <property name="text">
+                             <string>State: unknown</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_6">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                             <enum>QSizePolicy::Expanding</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_8">
+                          <property name="spacing">
+                           <number>6</number>
+                          </property>
+                          <item>
+                           <widget class="QLabel" name="sdCardStatusLabel">
+                            <property name="text">
+                             <string>SD card: unknown</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QToolButton" name="sdCardMenuButton">
+                            <property name="enabled">
+                             <bool>true</bool>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>20</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>20</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="toolTip">
+                             <string/>
+                            </property>
+                            <property name="text">
+                             <string/>
+                            </property>
+                            <property name="icon">
+                             <iconset resource="MarvieControl.qrc">
+                              <normaloff>:/MarvieControl/icons/icons8-down-button-48.png</normaloff>:/MarvieControl/icons/icons8-down-button-48.png</iconset>
+                            </property>
+                            <property name="iconSize">
+                             <size>
+                              <width>25</width>
+                              <height>25</height>
+                             </size>
+                            </property>
+                            <property name="autoRaise">
+                             <bool>true</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_3">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                             <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_50">
+                          <item>
+                           <widget class="QLabel" name="logStateLabel">
+                            <property name="text">
+                             <string>Log: unknown</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QToolButton" name="logMenuButton">
+                            <property name="enabled">
+                             <bool>true</bool>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>20</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>20</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="toolTip">
+                             <string/>
+                            </property>
+                            <property name="text">
+                             <string/>
+                            </property>
+                            <property name="icon">
+                             <iconset resource="MarvieControl.qrc">
+                              <normaloff>:/MarvieControl/icons/icons8-down-button-48.png</normaloff>:/MarvieControl/icons/icons8-down-button-48.png</iconset>
+                            </property>
+                            <property name="iconSize">
+                             <size>
+                              <width>25</width>
+                              <height>25</height>
+                             </size>
+                            </property>
+                            <property name="autoRaise">
+                             <bool>true</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_40">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                             <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_17">
+                      <property name="text">
+                       <string>Ethernet status:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_43">
+                      <property name="spacing">
+                       <number>6</number>
+                      </property>
+                      <property name="leftMargin">
+                       <number>1</number>
+                      </property>
+                      <item>
+                       <widget class="QWidget" name="widget_9" native="true">
+                        <property name="minimumSize">
+                         <size>
+                          <width>3</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>3</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="palette">
+                         <palette>
+                          <active>
+                           <colorrole role="Base">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>255</green>
+                              <blue>255</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                           <colorrole role="Window">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                          </active>
+                          <inactive>
+                           <colorrole role="Base">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>255</green>
+                              <blue>255</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                           <colorrole role="Window">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                          </inactive>
+                          <disabled>
+                           <colorrole role="Base">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                           <colorrole role="Window">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                          </disabled>
+                         </palette>
+                        </property>
+                        <property name="autoFillBackground">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QVBoxLayout" name="verticalLayout_22">
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_47">
+                          <item>
+                           <widget class="QLabel" name="lanIpLabel">
+                            <property name="text">
+                             <string>IP: 0.0.0.0</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_41">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                             <enum>QSizePolicy::Expanding</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_48">
+                          <item>
+                           <widget class="QLabel" name="lanNetmaskLabel">
+                            <property name="text">
+                             <string>Netmask: 0.0.0.0</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_42">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                             <enum>QSizePolicy::Expanding</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_49">
+                          <item>
+                           <widget class="QLabel" name="lanGatewayLabel">
+                            <property name="text">
+                             <string>Gateway: 255.255.255.255</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_43">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                             <enum>QSizePolicy::Expanding</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <spacer name="verticalSpacer_11">
+                      <property name="orientation">
+                       <enum>Qt::Vertical</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>20</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_20">
+                    <property name="spacing">
+                     <number>7</number>
+                    </property>
+                    <item>
+                     <widget class="QLabel" name="label_15">
+                      <property name="text">
+                       <string>GSM status:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_32">
+                      <property name="spacing">
+                       <number>6</number>
+                      </property>
+                      <property name="leftMargin">
+                       <number>1</number>
+                      </property>
+                      <item>
+                       <widget class="QWidget" name="widget_5" native="true">
+                        <property name="minimumSize">
+                         <size>
+                          <width>3</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>3</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="palette">
+                         <palette>
+                          <active>
+                           <colorrole role="Base">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>255</green>
+                              <blue>255</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                           <colorrole role="Window">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                          </active>
+                          <inactive>
+                           <colorrole role="Base">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>255</green>
+                              <blue>255</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                           <colorrole role="Window">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                          </inactive>
+                          <disabled>
+                           <colorrole role="Base">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                           <colorrole role="Window">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                          </disabled>
+                         </palette>
+                        </property>
+                        <property name="autoFillBackground">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QVBoxLayout" name="verticalLayout_6">
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_12">
+                          <item>
+                           <widget class="QLabel" name="gsmStateLabel">
+                            <property name="text">
+                             <string>State: unknown</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_8">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_30">
+                          <item>
+                           <widget class="QLabel" name="gsmIpLabel">
+                            <property name="text">
+                             <string>IP: 0.0.0.0</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_29">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_16">
+                      <property name="text">
+                       <string>Network services:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_34">
+                      <property name="spacing">
+                       <number>6</number>
+                      </property>
+                      <property name="leftMargin">
+                       <number>1</number>
+                      </property>
+                      <item>
+                       <widget class="QWidget" name="widget_7" native="true">
+                        <property name="minimumSize">
+                         <size>
+                          <width>3</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>3</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="palette">
+                         <palette>
+                          <active>
+                           <colorrole role="Base">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>255</green>
+                              <blue>255</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                           <colorrole role="Window">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                          </active>
+                          <inactive>
+                           <colorrole role="Base">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>255</green>
+                              <blue>255</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                           <colorrole role="Window">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                          </inactive>
+                          <disabled>
+                           <colorrole role="Base">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                           <colorrole role="Window">
+                            <brush brushstyle="SolidPattern">
+                             <color alpha="255">
+                              <red>255</red>
+                              <green>201</green>
+                              <blue>14</blue>
+                             </color>
+                            </brush>
+                           </colorrole>
+                          </disabled>
+                         </palette>
+                        </property>
+                        <property name="autoFillBackground">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QVBoxLayout" name="verticalLayout_21">
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_36">
+                          <item>
+                           <widget class="QLabel" name="modbusTcpStatusLabel">
+                            <property name="text">
+                             <string>ModbusTCP: unknown</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_31">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_35">
+                          <item>
+                           <widget class="QLabel" name="modbusRtuStatusLabel">
+                            <property name="text">
+                             <string>ModbusRTU: unknown</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_30">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_37">
+                          <item>
+                           <widget class="QLabel" name="modbusAsciiStatusLabel">
+                            <property name="text">
+                             <string>ModbusASCII: unknown</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_32">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <spacer name="verticalSpacer_12">
+                      <property name="orientation">
+                       <enum>Qt::Vertical</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>20</width>
+                        <height>40</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
                </item>
                <item>
-                <layout class="QVBoxLayout" name="verticalLayout_20">
-                 <property name="spacing">
-                  <number>7</number>
+                <spacer name="horizontalSpacer_46">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
                  </property>
-                 <item>
-                  <widget class="QLabel" name="label_15">
-                   <property name="text">
-                    <string>GSM status:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_32">
-                   <property name="spacing">
-                    <number>6</number>
-                   </property>
-                   <property name="leftMargin">
-                    <number>1</number>
-                   </property>
-                   <item>
-                    <widget class="QWidget" name="widget_5" native="true">
-                     <property name="minimumSize">
-                      <size>
-                       <width>3</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>3</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="palette">
-                      <palette>
-                       <active>
-                        <colorrole role="Base">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>255</green>
-                           <blue>255</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                        <colorrole role="Window">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                       </active>
-                       <inactive>
-                        <colorrole role="Base">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>255</green>
-                           <blue>255</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                        <colorrole role="Window">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                       </inactive>
-                       <disabled>
-                        <colorrole role="Base">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                        <colorrole role="Window">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                       </disabled>
-                      </palette>
-                     </property>
-                     <property name="autoFillBackground">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_6">
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_12">
-                       <item>
-                        <widget class="QLabel" name="gsmStateLabel">
-                         <property name="text">
-                          <string>State: unknown</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_8">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>5</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_30">
-                       <item>
-                        <widget class="QLabel" name="gsmIpLabel">
-                         <property name="text">
-                          <string>IP: 0.0.0.0</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_29">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>5</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_16">
-                   <property name="text">
-                    <string>Network services:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_34">
-                   <property name="spacing">
-                    <number>6</number>
-                   </property>
-                   <property name="leftMargin">
-                    <number>1</number>
-                   </property>
-                   <item>
-                    <widget class="QWidget" name="widget_7" native="true">
-                     <property name="minimumSize">
-                      <size>
-                       <width>3</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>3</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="palette">
-                      <palette>
-                       <active>
-                        <colorrole role="Base">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>255</green>
-                           <blue>255</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                        <colorrole role="Window">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                       </active>
-                       <inactive>
-                        <colorrole role="Base">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>255</green>
-                           <blue>255</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                        <colorrole role="Window">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                       </inactive>
-                       <disabled>
-                        <colorrole role="Base">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                        <colorrole role="Window">
-                         <brush brushstyle="SolidPattern">
-                          <color alpha="255">
-                           <red>255</red>
-                           <green>201</green>
-                           <blue>14</blue>
-                          </color>
-                         </brush>
-                        </colorrole>
-                       </disabled>
-                      </palette>
-                     </property>
-                     <property name="autoFillBackground">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_21">
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_36">
-                       <item>
-                        <widget class="QLabel" name="modbusTcpStatusLabel">
-                         <property name="text">
-                          <string>ModbusTCP: unknown</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_31">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>5</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_35">
-                       <item>
-                        <widget class="QLabel" name="modbusRtuStatusLabel">
-                         <property name="text">
-                          <string>ModbusRTU: unknown</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_30">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>5</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_37">
-                       <item>
-                        <widget class="QLabel" name="modbusAsciiStatusLabel">
-                         <property name="text">
-                          <string>ModbusASCII: unknown</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_32">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>5</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <spacer name="verticalSpacer_12">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>20</width>
-                     <height>40</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
               </layout>
              </item>
@@ -3883,7 +3926,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>400</width>
+                <width>366</width>
                 <height>698</height>
                </rect>
               </property>

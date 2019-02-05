@@ -2,7 +2,11 @@
 #include <QHBoxLayout>
 #include <QToolButton>
 
-DataTransferProgressWindow::DataTransferProgressWindow( MLinkClient* link, uint8_t channelId, TransferDir dir, QWidget* parent, int errPacketId ) : FramelessDialog( parent )
+#ifdef USE_FRAMELESS_WINDOW 
+DataTransferProgressWindow::DataTransferProgressWindow( QString titleText, MLinkClient* link, uint8_t channelId, TransferDir dir, QWidget* parent, int errPacketId ) : FramelessDialog( parent )
+#else
+DataTransferProgressWindow::DataTransferProgressWindow( QString titleText, MLinkClient* link, uint8_t channelId, TransferDir dir, QWidget* parent, int errPacketId ) : QDialog( parent )
+#endif
 {
 	this->link = link;
 	this->channelId = channelId;
@@ -26,10 +30,15 @@ DataTransferProgressWindow::DataTransferProgressWindow( MLinkClient* link, uint8
 	button->setToolTip( "Cancel" );
 	layout->addWidget( button );
 
+#ifdef USE_FRAMELESS_WINDOW 
 	setPalette( parent->palette() );
 	setCentralWidget( centralWindget );
 	windowButtons()->setButtonColor( ButtonType::Minimize | ButtonType::Maximize | ButtonType::Close, QColor( 100, 100, 100 ) );
 	windowButtons()->setButtons( 0 );
+	setTitleText( titleText );
+#else
+	setWindowTitle( titleText );
+#endif
 
 	setFixedSize( 315, 86 );
 	QRect windowRect( 0, 0, 315, 86 );

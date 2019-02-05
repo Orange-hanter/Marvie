@@ -1,6 +1,8 @@
 #pragma once
 
+#ifdef USE_FRAMELESS_WINDOW 
 #include "FramelessWindow/FramelessWindow.h"
+#endif
 #include "MLinkClient.h"
 #include "AccountWindow.h"
 #include <QList>
@@ -11,6 +13,7 @@
 #include "MonitoringDataTreeWidget.h"
 #include <QMenu>
 #include <QMessageBox>
+#include <QListWidget>
 #include "VPortOverIpModel.h"
 #include "VPortsOverIpDelegate.h"
 #include "MonitoringDataModel.h"
@@ -23,7 +26,11 @@
 #include "ui_MarvieControl.h"
 #include "ui_SdStatistics.h"
 
+#ifdef USE_FRAMELESS_WINDOW
 class MarvieControl : public FramelessWidget
+#else
+class MarvieControl : public QWidget
+#endif
 {
 	Q_OBJECT
 

@@ -128,9 +128,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="MarvieControl.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="thirdparty\FramelessWindow\FramelessWindow.h">
       <Filter>Header Files\thirdparty\FramelessWindow</Filter>
     </QtMoc>
@@ -165,6 +162,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="MLinkClient.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="MarvieControl.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
