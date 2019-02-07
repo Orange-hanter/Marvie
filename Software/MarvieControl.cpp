@@ -251,6 +251,8 @@ MarvieControl::MarvieControl( QWidget *parent ) : QWidget( parent ), vPortIdComb
 	monitoringDataViewMenu->addAction( "Copy value" );
 	monitoringDataViewMenu->addAction( "Copy row" );
 	monitoringDataViewMenu->addSeparator();
+	monitoringDataViewMenu->addAction( "Expand groups" );
+	monitoringDataViewMenu->addAction( "Collapse arrays" );
 	monitoringDataViewMenu->addAction( "Expand all" );
 	monitoringDataViewMenu->addAction( "Collapse all" );
 	monitoringDataViewMenu->addSeparator();
@@ -976,6 +978,55 @@ void MarvieControl::monitoringDataViewMenuActionTriggered( QAction* action )
 		QApplication::clipboard()->setText( fullName + '\t' +
 											index.sibling( index.row(), 1 ).data( Qt::DisplayRole ).toString() + '\t' +
 											index.sibling( index.row(), 2 ).data( Qt::DisplayRole ).toString() );
+	}
+	else if( action->text() == "Expand groups" )
+	{
+		std::function< void( const QModelIndex& ) > expand = [&expand, this]( const QModelIndex& index )
+		{
+			ui.monitoringDataTreeView->expand( index );
+			auto rowCount = index.model()->rowCount( index );
+			for( auto i = 0; i < rowCount; ++i )
+			{
+				QModelIndex childIndex = index.child( i, 2 );
+				QString typeName = childIndex.data( Qt::DisplayRole ).toString();
+				if( typeName.isEmpty() )
+					expand( childIndex );
+			}
+		};
+		auto rowCount = ui.monitoringDataTreeView->dataModel()->rowCount();
+		for( auto i = 0; i < rowCount; ++i )
+		{
+			QModelIndex childIndex = ui.monitoringDataTreeView->model()->index( i, 2 );
+			QString typeName = childIndex.data( Qt::DisplayRole ).toString();
+			if( typeName.isEmpty() )
+				expand( childIndex );
+		}
+	}
+	else if( action->text() == "Collapse arrays" )
+	{
+		std::function< void( const QModelIndex& ) > collapse = [&collapse, this]( const QModelIndex& index )
+		{
+			auto rowCount = index.model()->rowCount( index );
+			for( auto i = 0; i < rowCount; ++i )
+			{
+				QModelIndex childIndex = index.child( i, 2 );
+				QString typeName = childIndex.data( Qt::DisplayRole ).toString();
+				if( typeName.isEmpty() )
+					collapse( childIndex );
+				else if( typeName.back() == ']' || typeName.back() == ')' )
+					ui.monitoringDataTreeView->collapse( index.child( i, 0 ) );
+			}
+		};
+		auto rowCount = ui.monitoringDataTreeView->dataModel()->rowCount();
+		for( auto i = 0; i < rowCount; ++i )
+		{
+			QModelIndex childIndex = ui.monitoringDataTreeView->model()->index( i, 2 );
+			QString typeName = childIndex.data( Qt::DisplayRole ).toString();
+			if( typeName.isEmpty() )
+				collapse( childIndex );
+			else if( typeName.back() == ']' || typeName.back() == ')' )
+				ui.monitoringDataTreeView->collapse( ui.monitoringDataTreeView->model()->index( i, 0 ) );
+		}
 	}
 	else if( action->text() == "Expand all" )
 		ui.monitoringDataTreeView->expandAll();
