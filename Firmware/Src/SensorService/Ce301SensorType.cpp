@@ -1,5 +1,5 @@
 #include "SensorService.h"
-#include "Drivers/Sensors/CE301Sensor.h"
+#include "Drivers/Sensors/Ce301Sensor.h"
 
 using namespace tinyxml2;
 

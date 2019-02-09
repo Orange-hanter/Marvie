@@ -1,7 +1,7 @@
 #include "hal.h"
-#include "lib/modbus/ModbusRTU.h"
-#include "lib/modbus/ModbusASCII.h"
-#include "lib/modbus/ModbusSlave.h"
+#include "Lib/modbus/ModbusRTU.h"
+#include "Lib/modbus/ModbusASCII.h"
+#include "Lib/modbus/ModbusSlave.h"
 
 namespace ModbusTest
 {
