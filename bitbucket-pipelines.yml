@@ -12,13 +12,13 @@ pipelines:
                 cmake -GNinja
                 -DCMAKE_BUILD_TYPE=Release
                 -DSTM32_CHIP=STM32F407VE
-                -DCMAKE_MODULE_PATH=CMake/
-                -DCMAKE_TOOLCHAIN_FILE=CMake/gcc_stm32.cmake
-                -DCHIBIOS_ROOT=ChibiOS
+                -DCMAKE_MODULE_PATH=$BITBUCKET_CLONE_DIR/Firmware/CMake/
+                -DCMAKE_TOOLCHAIN_FILE=$BITBUCKET_CLONE_DIR/Firmware/CMake/gcc_stm32.cmake
+                -DCHIBIOS_ROOT=$BITBUCKET_CLONE_DIR/Firmware/ChibiOS
                 -DCHIBIOS_PROCESS_STACK_SIZE=0x800
                 -DCHIBIOS_MAIN_STACK_SIZE=0x800
                 ..
-              - cmake --build . --target marvie_firmware.elf.bin
+              - cmake --build . --config Release --target marvie_firmware.elf.bin
         - step:
             name: Build bootloader
             script:
@@ -27,10 +27,10 @@ pipelines:
                 cmake -GNinja
                 -DCMAKE_BUILD_TYPE=Release
                 -DSTM32_CHIP=STM32F407VE
-                -DCMAKE_MODULE_PATH=../CMake/
-                -DCMAKE_TOOLCHAIN_FILE=../CMake/gcc_stm32.cmake
-                -DCHIBIOS_ROOT=../ChibiOS
+                -DCMAKE_MODULE_PATH=$BITBUCKET_CLONE_DIR/Firmware/CMake/
+                -DCMAKE_TOOLCHAIN_FILE=$BITBUCKET_CLONE_DIR/Firmware/CMake/gcc_stm32.cmake
+                -DCHIBIOS_ROOT=$BITBUCKET_CLONE_DIR/Firmware/ChibiOS
                 -DCHIBIOS_PROCESS_STACK_SIZE=0x800
                 -DCHIBIOS_MAIN_STACK_SIZE=0x800
                 ..
-              - cmake --build . --target bootloader.elf.bin
+              - cmake --build . --config Release --target bootloader.elf.bin
