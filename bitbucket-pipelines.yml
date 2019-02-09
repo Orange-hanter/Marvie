@@ -1,0 +1,36 @@
+image: rushmash/gcc-arm-embedded-docker:latest
+
+pipelines:
+  branches:
+    "2.0":
+      - parallel:
+        - step:
+            name: Build firmware
+            script:
+              - cd Firmware && mkdir build && cd build
+              - >
+                cmake -GNinja
+                -DCMAKE_BUILD_TYPE=Release
+                -DSTM32_CHIP=STM32F407VE
+                -DCMAKE_MODULE_PATH=CMake/
+                -DCMAKE_TOOLCHAIN_FILE=CMake/gcc_stm32.cmake
+                -DCHIBIOS_ROOT=ChibiOS
+                -DCHIBIOS_PROCESS_STACK_SIZE=0x800
+                -DCHIBIOS_MAIN_STACK_SIZE=0x800
+                ..
+              - cmake --build . --target marvie_firmware.elf.bin
+        - step:
+            name: Build bootloader
+            script:
+              - cd Firmware/Bootloader && mkdir build && cd build
+              - >
+                cmake -GNinja
+                -DCMAKE_BUILD_TYPE=Release
+                -DSTM32_CHIP=STM32F407VE
+                -DCMAKE_MODULE_PATH=../CMake/
+                -DCMAKE_TOOLCHAIN_FILE=../CMake/gcc_stm32.cmake
+                -DCHIBIOS_ROOT=../ChibiOS
+                -DCHIBIOS_PROCESS_STACK_SIZE=0x800
+                -DCHIBIOS_MAIN_STACK_SIZE=0x800
+                ..
+              - cmake --build . --target bootloader.elf.bin
