@@ -3,36 +3,8 @@ image: rushmash/gcc-arm-embedded-docker:latest
 pipelines:
   branches:
     "2.0":
-      - parallel:
-        - step:
-            name: Build firmware
-            script:
-              - cd Firmware && mkdir build && cd build
-              - >
-                cmake -GNinja
-                -DCMAKE_BUILD_TYPE=Release
-                -DSTM32_CHIP=STM32F407VE
-                -DCMAKE_MODULE_PATH=$BITBUCKET_CLONE_DIR/Firmware/CMake/
-                -DCMAKE_TOOLCHAIN_FILE=$BITBUCKET_CLONE_DIR/Firmware/CMake/gcc_stm32.cmake
-                -DCHIBIOS_ROOT=$BITBUCKET_CLONE_DIR/Firmware/ChibiOS
-                -DCHIBIOS_PROCESS_STACK_SIZE=0x800
-                -DCHIBIOS_MAIN_STACK_SIZE=0x800
-                ..
-              - cmake --build . --config Release --target marvie_firmware.elf.bin
-              - curl -X POST "https://${BB_UPLOADER_AUTH_STRING}@api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"marvie_firmware.elf.bin;filename=marvie.firmware.$(date '+%Y.%m.%d-%H.%M').bin"
-        - step:
-            name: Build bootloader
-            script:
-              - cd Firmware/Bootloader && mkdir build && cd build
-              - >
-                cmake -GNinja
-                -DCMAKE_BUILD_TYPE=Release
-                -DSTM32_CHIP=STM32F407VE
-                -DCMAKE_MODULE_PATH=$BITBUCKET_CLONE_DIR/Firmware/CMake/
-                -DCMAKE_TOOLCHAIN_FILE=$BITBUCKET_CLONE_DIR/Firmware/CMake/gcc_stm32.cmake
-                -DCHIBIOS_ROOT=$BITBUCKET_CLONE_DIR/Firmware/ChibiOS
-                -DCHIBIOS_PROCESS_STACK_SIZE=0x800
-                -DCHIBIOS_MAIN_STACK_SIZE=0x800
-                ..
-              - cmake --build . --config Release --target bootloader.elf.bin
-              - curl -X POST "https://${BB_UPLOADER_AUTH_STRING}@api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"bootloader.elf.bin;filename=marvie.bootloader.$(date '+%Y.%m.%d-%H.%M').bin"
+      - step:
+          name: Build firmware && bootloader
+          script:
+            - ./build_ci.sh $BITBUCKET_CLONE_DIR
+            - ./upload_artifacts_ci.sh $BITBUCKET_CLONE_DIR $BB_UPLOADER_AUTH_STRING $BITBUCKET_REPO_OWNER $BITBUCKET_REPO_SLUG
