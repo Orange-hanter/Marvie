@@ -19,6 +19,7 @@ pipelines:
                 -DCHIBIOS_MAIN_STACK_SIZE=0x800
                 ..
               - cmake --build . --config Release --target marvie_firmware.elf.bin
+              - curl -X POST "https://${BB_UPLOADER_AUTH_STRING}@api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"marvie_firmware.elf.bin;filename=marvie.firmware.$(date '+%Y.%m.%d-%H.%M').bin"
         - step:
             name: Build bootloader
             script:
@@ -34,3 +35,4 @@ pipelines:
                 -DCHIBIOS_MAIN_STACK_SIZE=0x800
                 ..
               - cmake --build . --config Release --target bootloader.elf.bin
+              - curl -X POST "https://${BB_UPLOADER_AUTH_STRING}@api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"bootloader.elf.bin;filename=marvie.bootloader.$(date '+%Y.%m.%d-%H.%M').bin"
