@@ -1,14 +1,14 @@
 #pragma once
 
 #include "BaseDynamicThread.h"
-#include <type_traits>
+#include <utility>
 
 template< typename Functor >
 class FunctorThread : public BaseDynamicThread
 {
 public:
-	inline FunctorThread( Functor functor, uint32_t stackSize, bool tryCCM = true, bool _autoDelete = false ) :
-		BaseDynamicThread( stackSize, tryCCM ), functor( functor ), _autoDelete( _autoDelete ) {}
+	inline FunctorThread( Functor&& functor, uint32_t stackSize, bool tryCCM = true, bool _autoDelete = false ) :
+		BaseDynamicThread( stackSize, tryCCM ), functor( std::forward< Functor >( functor ) ), _autoDelete( _autoDelete ) {}
 
 	bool autoDelete() { return _autoDelete; }
 	void setAutoDelete( bool _autoDelete ) { this->_autoDelete = _autoDelete; }
@@ -16,29 +16,27 @@ public:
 private:
 	void main() final override
 	{
-		_main( functor );
+		_main< Functor >();
 	}
 
-	template< typename F > typename std::enable_if< std::is_void< typename std::__invoke_result< F >::type >::value, F >::type
-		_main( F t )
+	template< typename F > 
+	std::enable_if_t< std::is_void< typename std::__invoke_result< F >::type >::value, void > _main()
 	{
 		functor();
 		chSysLock();
 		if( _autoDelete )
 			deleteLater();
 		exitS( 0 );
-		return t;
 	}
 
-	template< typename F > typename std::enable_if< !std::is_void< typename std::__invoke_result< F >::type >::value, F >::type
-		_main( F t )
+	template< typename F > 
+	std::enable_if_t< !std::is_void< typename std::__invoke_result< F >::type >::value, void > _main()
 	{
 		msg_t msg = ( msg_t )functor();
 		chSysLock();
 		if( _autoDelete )
 			deleteLater();
 		exitS( msg );
-		return t;
 	}
 
 private:
