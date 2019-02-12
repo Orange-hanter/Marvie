@@ -4,7 +4,7 @@ pipelines:
   branches:
     "2.0":
       - step:
-          name: Build firmware && bootloader
+          name: Firmware
           script:
             - ./build_ci.sh $BITBUCKET_CLONE_DIR
-            - ./upload_artifacts_ci.sh $BITBUCKET_CLONE_DIR $BB_UPLOADER_AUTH_STRING $BITBUCKET_REPO_OWNER $BITBUCKET_REPO_SLUG
+            - ./deploy_ci.sh $BITBUCKET_CLONE_DIR $BB_UPLOADER_AUTH_STRING $BITBUCKET_REPO_OWNER $BITBUCKET_REPO_SLUG
