@@ -9,13 +9,13 @@
             "request": "launch",
             "servertype": "jlink",
             "cwd": "${workspaceRoot}",
-            "executable": "./build/firmware.elf",
+            "executable": "./build/marvie_firmware.elf",
             "name": "Debug (J-Link)",
             "device": "STM32F407VE",
             "interface": "swd",
             "armToolchainPath": "C:/SysGCC/arm-none-eabi/bin",
             //"rtos": "ChibiOS",
-            "svdFile": "STM32F40x.svd",//"C:/Users/User/Desktop/STM32F407.svd",
+            "svdFile": "STM32F40x.svd", //"C:/Users/User/Desktop/STM32F407.svd",
             "preLaunchTask": "build",
             //"showDevDebugOutput": true
             //"ipAddress": "127.0.0.1",
@@ -27,11 +27,11 @@
             "request": "launch",
             "preLaunchTask": "build",
             "cwd": "${workspaceRoot}",
-            "target": "./build/firmware.elf",
+            "target": "./build/marvie_firmware.elf",
             "gdbpath": "C:/SysGCC/arm-eabi/bin/arm-eabi-gdb.exe",
             "autorun": [
                 "target remote localhost:2331",
-                "symbol-file ./build/firmware.elf",
+                "symbol-file ./build/marvie_firmware.elf",
                 "load",
                 "monitor reset"
             ]

@@ -1,5 +1,7 @@
 {
     "cmake.configureArgs": [
+        "-DWIN32=1",
+        "-DMODEM_PWRKEY_LEVEL=H",
         "-DCMAKE_MODULE_PATH=${workspaceFolder}/CMake/",
         "-DTOOLCHAIN_PREFIX=C:/SysGCC/arm-eabi",
         "-DCMAKE_TOOLCHAIN_FILE=${workspaceFolder}/CMake/gcc_stm32.cmake",
@@ -7,9 +9,9 @@
         "-DSTM32_CHIP=STM32F407VE",
         "-DSTM32_FAMILY=F4",
         "-DCHIBIOS_ROOT=${workspaceFolder}/ChibiOS",
-        "-DCHIBIOS_CHCONF_FILE=${workspaceFolder}/Config/chconf.h",
-        "-DCHIBIOS_HALCONF_FILE=${workspaceFolder}/Config/halconf.h",
-        "-DCHIBIOS_HALCONF_COMMUNITY_FILE=${workspaceFolder}/Config/halconf_community.h",
+        //"-DCHIBIOS_CHCONF_FILE=${workspaceFolder}/Config/chconf.h",
+        //"-DCHIBIOS_HALCONF_FILE=${workspaceFolder}/Config/halconf.h",
+        //"-DCHIBIOS_HALCONF_COMMUNITY_FILE=${workspaceFolder}/Config/halconf_community.h",
         "-DCHIBIOS_PROCESS_STACK_SIZE=0x800",
         "-DCHIBIOS_MAIN_STACK_SIZE=0x800"
     ],
