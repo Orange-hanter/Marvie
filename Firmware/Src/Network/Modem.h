@@ -8,7 +8,7 @@
 
 enum class ModemState { Stopped, Initializing, Working, Stopping };
 enum class ModemError { NoError, AuthenticationError, TimeoutError, UnknownError };
-enum class ModemEvent { Error = 1, StatusChanged = 2, NetworkAddressChanged = 4 };
+enum class ModemEvent { Error = 1, StateChanged = 2, NetworkAddressChanged = 4 };
 
 class Modem : protected BaseDynamicThread
 {

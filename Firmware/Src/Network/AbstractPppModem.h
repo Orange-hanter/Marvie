@@ -34,6 +34,7 @@ private:
 	enum { IOEvent = 2, TimerEvent = 4, LinkDownEvent = 8, LinkUpEvent = 16 };
 	netif pppNetif;
 	ppp_pcb* pppPcb;
+	int attemptNumber;
 	uint32_t len;
 	uint8_t buffer[256];
 	virtual_timer_t timer;

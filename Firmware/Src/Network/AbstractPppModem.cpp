@@ -12,6 +12,7 @@ AbstractPppModem::AbstractPppModem( uint32_t stackSize ) : Modem( stackSize )
 	netif_set_status_callback( &pppNetif, netifStatusCallback );
 	netif_get_client_data( &pppNetif, LWIP_NETIF_CLIENT_DATA_INDEX_MAX ) = this;
 	UNLOCK_TCPIP_CORE();
+	attemptNumber = 0;
 	len = 0;
 	chVTObjectInit( &timer );
 }
@@ -46,9 +47,25 @@ void AbstractPppModem::main()
 	err_t err;
 	EvtListener ioListener;
 	mError = ModemError::NoError;
+	LowLevelError llErr;
+	attemptNumber = 0;
 
 Start:
-	LowLevelError llErr = lowLevelStart();
+	if( ++attemptNumber > 3 )
+	{
+		int n = attemptNumber - 3;
+		if( n > 4 )
+			n = 4;
+		sysinterval_t timeout = TIME_S2I( 2 * 60 * n );
+		while( timeout )
+		{
+			chThdSleepMilliseconds( 200 );
+			timeout -= TIME_MS2I( 200 );
+			if( mState == ModemState::Stopping )
+				goto End;
+		}
+	}
+	llErr = lowLevelStart();
 	if( llErr != LowLevelError::NoError )
 		goto End;
 	chEvtGetAndClearEvents( ~StopRequestEvent );
@@ -92,6 +109,7 @@ Start:
 				chSchRescheduleS();
 			}
 			chSysUnlock();
+			attemptNumber = 0;
 		}
 		if( em & IOEvent )
 		{

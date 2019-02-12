@@ -497,7 +497,7 @@ void MarvieDevice::mainThreadMain()
 			eventflags_t flags = gsmModemMainThreadListener.getAndClearFlags();
 			if( gsmModem )
 			{
-				if( flags & ( eventflags_t )ModemEvent::StatusChanged || flags & ( eventflags_t )ModemEvent::NetworkAddressChanged )
+				if( flags & ( eventflags_t )ModemEvent::StateChanged || flags & ( eventflags_t )ModemEvent::NetworkAddressChanged )
 				{
 					if( gsmModem->state() == ModemState::Initializing )
 						fileLog.addRecorg( "Start gsm modem initializing" );

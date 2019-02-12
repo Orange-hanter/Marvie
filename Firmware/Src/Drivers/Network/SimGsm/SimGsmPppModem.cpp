@@ -116,7 +116,7 @@ GsmReinit:
 			goto GsmReinit;
 	}
 	else if( cpinStatus == CPinParsingResult::Status::NotInserted )
-		SHUTDOWN_AND_RETURN( LowLevelError::SimCardNotInsertedError )
+		goto GsmReinit /*piece of shit*/; // SHUTDOWN_AND_RETURN( LowLevelError::SimCardNotInsertedError )
 	else if( cpinStatus != CPinParsingResult::Status::Ready )
 		//SHUTDOWN_AND_RETURN( LowLevelError::PinCodeError );
 		goto GsmReinit;

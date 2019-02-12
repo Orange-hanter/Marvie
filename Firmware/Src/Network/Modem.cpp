@@ -31,7 +31,7 @@ bool Modem::startModem( tprio_t prio /*= NORMALPRIO */ )
 
 	mError = ModemError::NoError;
 	mState = ModemState::Initializing;
-	extEventSource.broadcastFlags( ( eventflags_t )ModemEvent::StatusChanged );
+	extEventSource.broadcastFlags( ( eventflags_t )ModemEvent::StateChanged );
 	start( prio );
 	return true;
 }
@@ -45,7 +45,7 @@ void Modem::stopModem()
 		return;
 	}
 	mState = ModemState::Stopping;
-	extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::StatusChanged );
+	extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::StateChanged );
 	chEvtSignalI( thread_ref, StopRequestEvent );
 	chSchRescheduleS();
 	chSysUnlock();
@@ -130,7 +130,7 @@ EvtSource* Modem::eventSource()
 void Modem::setModemStateS( ModemState s )
 {
 	mState = s;
-	extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::StatusChanged );
+	extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::StateChanged );
 	chThdDequeueNextI( &waitingQueue, MSG_OK );
 }
 
