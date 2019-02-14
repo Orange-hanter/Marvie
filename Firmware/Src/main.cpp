@@ -21,7 +21,7 @@
 #include <algorithm>
 
 int main()
-
+{
 	/*for( int i = 0x10000000; i < 0x10000000 + 64 * 1024; i += 4 )
 		*( uint32_t* )i = 0;*/
 	halInit();
