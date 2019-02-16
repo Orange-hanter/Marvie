@@ -93,7 +93,7 @@ public:
 		friend class NameGroup;
 		QMap< quint64, QMap< qint32, QSharedPointer< Entry > > >& nameGroup;
 		QMap< quint64, QMap< qint32, QSharedPointer< Entry > > >::iterator groupIterator;
-		inline constexpr DayGroup( QMap< quint64, QMap< qint32, QSharedPointer< Entry > > >& nameGroup, QMap< quint64, QMap< qint32, QSharedPointer< Entry > > >::iterator& groupIterator )
+		inline constexpr DayGroup( QMap< quint64, QMap< qint32, QSharedPointer< Entry > > >& nameGroup, const QMap< quint64, QMap< qint32, QSharedPointer< Entry > > >::iterator& groupIterator )
 			: nameGroup( nameGroup ), groupIterator( groupIterator ) {}
 
 	public:

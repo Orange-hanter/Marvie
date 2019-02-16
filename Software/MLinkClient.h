@@ -47,13 +47,13 @@ private:
 	Request nextDataChannelPartRequest( uint8_t channel, OutputCData& cdata );
 	Request closeDataChannelRequest( uint8_t channel, uint32_t id, bool canceled );
 	Request remoteCloseDataChannelRequest( uint8_t channel, uint32_t id );
-	void pushBackRequest( Request& req );
-	void pushFrontRequest( Request& req );
+    void pushBackRequest( const Request& req );
+    void pushFrontRequest( const Request& req );
 	void closeLink( Error e );
 
 private slots:
 	void processBytes();
-	void processPacket( Header& header, QByteArray& packetData );
+    void processPacket( Header& header, const QByteArray& packetData );
 	void bytesWritten();
 	void socketConnected();
 	void socketDisconnected();

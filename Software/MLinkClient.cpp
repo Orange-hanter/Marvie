@@ -228,14 +228,14 @@ MLinkClient::Request MLinkClient::remoteCloseDataChannelRequest( uint8_t channel
 	return req;
 }
 
-void MLinkClient::pushBackRequest( Request& req )
+void MLinkClient::pushBackRequest( const Request& req )
 {
 	reqList.append( req );
 	if( socket->bytesToWrite() == 0 )
 		bytesWritten();
 }
 
-void MLinkClient::pushFrontRequest( Request& req )
+void MLinkClient::pushFrontRequest( const Request& req )
 {
 	reqList.push_front( req );
 	if( socket->bytesToWrite() == 0 )
@@ -286,7 +286,7 @@ void MLinkClient::processBytes()
 	}
 }
 
-void MLinkClient::processPacket( Header& header, QByteArray& packetData )
+void MLinkClient::processPacket( Header& header, const QByteArray& packetData )
 {
 	if( _state == State::Connected )
 	{
