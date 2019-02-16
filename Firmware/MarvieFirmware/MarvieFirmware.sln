@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{803FD0C6-D64E-4E16-9DC3-1DAEC859A3D2}") = "MarvieFirmware", "MarvieFirmware\MarvieFirmware.vgdbcmake", "{D309EBE5-1011-4432-AE7E-69347A063652}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|VisualGDB = Debug|VisualGDB
+		MinSizeRel|VisualGDB = MinSizeRel|VisualGDB
+		Release|VisualGDB = Release|VisualGDB
+		RelWithDebInfo|VisualGDB = RelWithDebInfo|VisualGDB
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D309EBE5-1011-4432-AE7E-69347A063652}.Debug|VisualGDB.ActiveCfg = Debug|VisualGDB
+		{D309EBE5-1011-4432-AE7E-69347A063652}.Debug|VisualGDB.Build.0 = Debug|VisualGDB
+		{D309EBE5-1011-4432-AE7E-69347A063652}.MinSizeRel|VisualGDB.ActiveCfg = MinSizeRel|VisualGDB
+		{D309EBE5-1011-4432-AE7E-69347A063652}.MinSizeRel|VisualGDB.Build.0 = MinSizeRel|VisualGDB
+		{D309EBE5-1011-4432-AE7E-69347A063652}.Release|VisualGDB.ActiveCfg = Release|VisualGDB
+		{D309EBE5-1011-4432-AE7E-69347A063652}.Release|VisualGDB.Build.0 = Release|VisualGDB
+		{D309EBE5-1011-4432-AE7E-69347A063652}.RelWithDebInfo|VisualGDB.ActiveCfg = RelWithDebInfo|VisualGDB
+		{D309EBE5-1011-4432-AE7E-69347A063652}.RelWithDebInfo|VisualGDB.Build.0 = RelWithDebInfo|VisualGDB
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {72E62CA3-E0CF-4F6A-A055-EF38731AEEA8}
+	EndGlobalSection
+EndGlobal

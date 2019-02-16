@@ -24,6 +24,10 @@
       "ctestCommandArgs": "",
       "variables": [
         {
+          "name": "WIN32",
+          "value": "1"
+        },
+        {
           "name": "CMAKE_MODULE_PATH",
           "value": "${workspaceRoot}/CMake/"
         },
@@ -79,6 +83,10 @@
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
+        {
+          "name": "WIN32",
+          "value": "1"
+        },
         {
           "name": "CMAKE_MODULE_PATH",
           "value": "${workspaceRoot}/CMake/"
@@ -136,6 +144,10 @@
       "ctestCommandArgs": "",
       "variables": [
         {
+          "name": "WIN32",
+          "value": "1"
+        },
+        {
           "name": "CMAKE_MODULE_PATH",
           "value": "${workspaceRoot}/CMake/"
         },
@@ -191,6 +203,10 @@
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
+        {
+          "name": "WIN32",
+          "value": "1"
+        },
         {
           "name": "CMAKE_MODULE_PATH",
           "value": "${workspaceRoot}/CMake/"

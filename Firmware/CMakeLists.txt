@@ -20,6 +20,7 @@ set(STM32_CCRAM_SIZE "64K")
 set(USE_SCANF_FLOAT 1)
 include(gcc_stm32)
 
+set(CHIBIOS_ROOT "${CMAKE_SOURCE_DIR}/ChibiOS/")
 set(CHIBIOS_CONFIG_DIR "Config/Firmware")
 find_package(ChibiOS 18 COMPONENTS rt hal REQUIRED)
 
