@@ -7,7 +7,7 @@
       <PathStyle>MinGWUnixSlash</PathStyle>
       <LocalDirForAbsolutePaths>$(ToolchainDir)</LocalDirForAbsolutePaths>
     </CustomSourceDirectories>
-    <MainSourceDirectory>C:\Users\Danil\OneDrive\Documents\marvie\Firmware</MainSourceDirectory>
+    <MainSourceDirectory>$(ProjectDir)/../../</MainSourceDirectory>
     <ExportAdvancedBuildVariables>false</ExportAdvancedBuildVariables>
     <EmbeddedProfileFile>stm32.xml</EmbeddedProfileFile>
   </Project>
@@ -45,7 +45,7 @@
         <HostName>BuildMachine</HostName>
         <Transport>BuiltinShortcut</Transport>
       </RemoteHost>
-      <Command>C:\Users\Danil\AppData\Local\VisualGDB\CMake\bin\cmake.exe</Command>
+      <Command>cmake.exe</Command>
       <Environment>
         <Records />
         <EnvironmentSetupFiles />
