@@ -33,7 +33,7 @@
         },
         {
           "name": "TOOLCHAIN_PREFIX",
-          "value": "C:/SysGCC/arm-eabi"
+          "value": "C:/GCC/arm-none-eabi/8.2.1/"
         },
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
@@ -41,7 +41,7 @@
         },
         {
           "name": "TARGET_TRIPLET",
-          "value": "arm-eabi"
+          "value": "arm-none-eabi"
         },
         {
           "name": "STM32_CHIP",

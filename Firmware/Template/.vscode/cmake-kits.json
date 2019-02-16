@@ -1,9 +1,16 @@
 [
     {
-        "name": "GCC",
+        "name": "arm-eabi-gcc",
         "compilers": {
             "CXX": "C:/SysGCC/arm-eabi/bin/arm-eabi-g++.exe",
             "C": "C:/SysGCC/arm-eabi/bin/arm-eabi-gcc.exe"
+        }
+    },
+    {
+        "name": "arm-none-eabi-gcc",
+        "compilers": {
+            "CXX": "C:/GCC/arm-none-eabi/8.2.1/bin/arm-none-eabi-g++.exe",
+            "C": "C:/GCC/arm-none-eabi/8.2.1/bin/arm-none-eabi-gcc.exe"
         }
     }
 ]
