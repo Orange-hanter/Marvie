@@ -2,7 +2,7 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <QTDIR>C:\Qt\5.10.0\msvc2017_64</QTDIR>
+    <QTDIR>C:\Qt\5.12.1\msvc2017_64</QTDIR>
     <RemoteDebuggerConnection>RemoteWithoutAuthentication</RemoteDebuggerConnection>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <RemoteDebuggerServerName>25.94.145.201</RemoteDebuggerServerName>
@@ -16,8 +16,21 @@
     </AdditionalFiles>
     <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <QTDIR>C:\Qt\5.12.1\msvc2017</QTDIR>
+    <RemoteDebuggerConnection>RemoteWithoutAuthentication</RemoteDebuggerConnection>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <RemoteDebuggerServerName>25.94.145.201</RemoteDebuggerServerName>
+    <RemoteDebuggerCommand>C:\Users\Orange-hanter\Desktop\MarvieControl\MarvieControl.exe</RemoteDebuggerCommand>
+    <RemoteDebuggerCommandArguments />
+    <RemoteDebuggerWorkingDirectory>C:\Users\Orange-hanter\Desktop\MarvieControl</RemoteDebuggerWorkingDirectory>
+    <RemoteDebuggerDebuggerType>Auto</RemoteDebuggerDebuggerType>
+    <DeploymentDirectory>C:\Users\Orange-hanter\Desktop\MarvieControl</DeploymentDirectory>
+    <AdditionalFiles />
+    <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QTDIR>C:\Qt\5.10.0\msvc2017_64</QTDIR>
+    <QTDIR>C:\Qt\5.12.1\msvc2017_64</QTDIR>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <RemoteDebuggerConnection>RemoteWithoutAuthentication</RemoteDebuggerConnection>
     <RemoteDebuggerServerName>25.94.145.201</RemoteDebuggerServerName>
@@ -29,6 +42,19 @@
     <DeploymentDirectory>C:\Users\Orange-hanter\Desktop\MarvieControl</DeploymentDirectory>
     <AdditionalFiles>
     </AdditionalFiles>
+    <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <QTDIR>C:\Qt\5.12.1\msvc2017</QTDIR>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <RemoteDebuggerConnection>RemoteWithoutAuthentication</RemoteDebuggerConnection>
+    <RemoteDebuggerServerName>25.94.145.201</RemoteDebuggerServerName>
+    <RemoteDebuggerCommand>C:\Users\Orange-hanter\Desktop\MarvieControl\MarvieControl.exe</RemoteDebuggerCommand>
+    <RemoteDebuggerCommandArguments />
+    <RemoteDebuggerWorkingDirectory>C:\Users\Orange-hanter\Desktop\MarvieControl</RemoteDebuggerWorkingDirectory>
+    <RemoteDebuggerDebuggerType>Auto</RemoteDebuggerDebuggerType>
+    <DeploymentDirectory>C:\Users\Orange-hanter\Desktop\MarvieControl</DeploymentDirectory>
+    <AdditionalFiles />
     <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
   </PropertyGroup>
 </Project>
