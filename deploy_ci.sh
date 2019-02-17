@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 #
 # expects the following parameters to be passed in this specific order:
+#  - artifact type                                e.g. firmware/software
 #  - project root folder                          e.g. BITBUCKET_CLONE_DIR
 #  - user credentials in form username:password   e.g. BB_UPLOADER_AUTH_STRING
 #  - username of the repository owner             e.g. BITBUCKET_REPO_OWNER
 #  - repository name                              e.g. BITBUCKET_REPO_SLUG
 
-repository_root_dir="$1"
-auth="$2"
-repo_owner="$3"
-repo_slug="$4"
+artifact_type="$1"
+repository_root_dir="$2"
+auth="$3"
+repo_owner="$4"
+repo_slug="$5"
 
 artifacts_dir="${repository_root_dir}/artifacts"
 marvie_version=$(cat "${repository_root_dir}/version")
@@ -32,5 +34,6 @@ function deploy_firmware ()
   wait
 }
 
-
-deploy_firmware
+if [[ "${artifact_type}" == 'firmware' ]]; then
+  deploy_firmware
+fi

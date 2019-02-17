@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 #
 # expects the following parameters to be passed in this specific order:
+#  - build type,          e.g. firmware/software
 #  - project root folder, e.g. BITBUCKET_CLONE_DIR
 set -e
 
-repository_root_dir="$1"
+build_target="$1"
+repository_root_dir="$2"
 artifacts_dir="${repository_root_dir}/artifacts"
 
 # these settings can be changed safely
 firmware_build_type="RelWithDebInfo"
+#software_build_type="Release"
 
 function configure_cmake ()
 {
@@ -97,8 +100,23 @@ function build_bootloader ()
   generate_build_info "${artifacts_dir}/bootloader"
 }
 
-build_firmware 'L'
-build_firmware 'H'
-build_bootloader
+function build_software ()
+{
+  local project_dir="${repository_root_dir}/Software"
+  local project_build_dir="${project_dir}/build"
 
-echo $marvie_base_version > "${repository_root_dir}"/version
+  # build
+  # TODO: specify release/debug build type
+  mkdir -p "${project_build_dir}" && cd "${project_build_dir}"
+  qmake "${project_dir}/MarvieControl.pro"
+  make -j 4
+}
+
+if [[ "${build_target}" == 'firmware' ]]; then
+  build_firmware 'L'
+  build_firmware 'H'
+  build_bootloader
+  echo $marvie_base_version > "${repository_root_dir}/version"
+elif [[ "${build_target}" == 'software' ]]; then
+  build_software
+fi
