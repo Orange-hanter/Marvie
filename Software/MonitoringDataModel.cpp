@@ -61,34 +61,33 @@ void MonitoringDataModel::setHexadecimalOutput( bool enable )
 }
 
 template< typename T >
-QString printArray( const QVector< T >& v, bool hexadecimal = false )
+QString printValue( QString format, T v, bool hexadecimal = false )
 {
-	QString s( "{ " );
-	for( auto i : v )
-		s.append( printValue( "%1, ", i, hexadecimal ) );
-	s[s.size() - 2] = ' ';
-	s[s.size() - 1] = '}';
-
-	return s;
+    if( hexadecimal )
+    {
+        if( sizeof( T ) == 1 )
+            return format.arg( QString( "0x" ) + QString( "%1" ).arg( ( uint )*reinterpret_cast< uint8_t* >( &v ), 2, 16, QChar( '0' ) ).toUpper() );
+        if( sizeof( T ) == 2 )
+            return format.arg( QString( "0x" ) + QString( "%1" ).arg( ( uint )*reinterpret_cast< uint16_t* >( &v ), 4, 16, QChar( '0' ) ).toUpper() );
+        if( sizeof( T ) == 4 )
+            return format.arg( QString( "0x" ) + QString( "%1" ).arg( ( uint )*reinterpret_cast< uint32_t* >( &v ), 8, 16, QChar( '0' ) ).toUpper() );
+        if( sizeof( T ) == 8 )
+            return format.arg( QString( "0x" ) + QString( "%1" ).arg( ( unsigned long long )*reinterpret_cast< uint64_t* >( &v ), 16, 16, QChar( '0' ) ).toUpper() );
+    }
+    return QString( format ).arg( v );
 }
 
 template< typename T >
-QString printValue( QString format, T v, bool hexadecimal = false )
+QString printArray( const QVector< T >& v, bool hexadecimal = false )
 {
-	if( hexadecimal )
-	{
-		if( sizeof( T ) == 1 )
-			return format.arg( QString( "0x" ) + QString( "%1" ).arg( ( uint )*reinterpret_cast< uint8_t* >( &v ), 2, 16, QChar( '0' ) ).toUpper() );
-		if( sizeof( T ) == 2 )
-			return format.arg( QString( "0x" ) + QString( "%1" ).arg( ( uint )*reinterpret_cast< uint16_t* >( &v ), 4, 16, QChar( '0' ) ).toUpper() );
-		if( sizeof( T ) == 4 )
-			return format.arg( QString( "0x" ) + QString( "%1" ).arg( ( uint )*reinterpret_cast< uint32_t* >( &v ), 8, 16, QChar( '0' ) ).toUpper() );
-		if( sizeof( T ) == 8 )
-			return format.arg( QString( "0x" ) + QString( "%1" ).arg( ( unsigned long long )*reinterpret_cast< uint64_t* >( &v ), 16, 16, QChar( '0' ) ).toUpper() );
-	}
-	return QString( format ).arg( v );
-}
+    QString s( "{ " );
+    for( auto i : v )
+        s.append( printValue( "%1, ", i, hexadecimal ) );
+    s[s.size() - 2] = ' ';
+    s[s.size() - 1] = '}';
 
+    return s;
+}
 
 QVariant MonitoringDataModel::data( const QModelIndex &index, int role ) const
 {
