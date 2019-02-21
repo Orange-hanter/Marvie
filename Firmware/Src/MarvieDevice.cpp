@@ -2,6 +2,7 @@
 #include "Core/CCMemoryAllocator.h"
 #include "Core/DateTimeService.h"
 #include "Core/CCMemoryHeap.h"
+#include "Network/PingService.h"
 #include "lwipthread.h"
 #include "Network/UdpSocket.h"
 #include "Network/TcpServer.h"
@@ -185,6 +186,10 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	mLinkServer->setAuthenticationCallback( this );
 	mLinkServer->setDataChannelCallback( this );
 
+	PingService::instance()->startService();
+	networkTestState = NetworkTestState::Off;
+	testIpAddr = IpAddress( 8, 8, 8, 8 );
+
 	mainThread = nullptr;
 	miskTasksThread = nullptr;
 	adInputsReadThread = nullptr;
@@ -207,6 +212,7 @@ void MarvieDevice::exec()
 	adInputsReadThread       = Concurrent::run( [this]() { adInputsReadThreadMain(); },       512,  NORMALPRIO + 2 );
 	mLinkServerHandlerThread = Concurrent::run( [this]() { mLinkServerHandlerThreadMain(); }, 2048, NORMALPRIO );
 	uiThread                 = Concurrent::run( [this]() { uiThreadMain(); },                 1024, NORMALPRIO );
+	networkTestThread        = Concurrent::run( [this]() { networkTestThreadMain(); },        1024, NORMALPRIO );
 
 	//mLinkServer->startListening( NORMALPRIO );
 
@@ -304,6 +310,8 @@ void MarvieDevice::mainThreadMain()
 		gsmModem->setPinCode( backup->settings.gsm.pinCode );
 		gsmModem->setApn( backup->settings.gsm.apn );
 		gsmModem->startModem();
+		
+		setNetworkTestState( NetworkTestState::On );
 	}
 	configMutex.unlock();
 
@@ -537,6 +545,16 @@ void MarvieDevice::mainThreadMain()
 				file = nullptr;
 			}
 			datFilesMutex.unlock();
+		}
+		if( em & MainThreadEvent::RestartNetworkInterfaceEvent )
+		{
+			if( gsmModem )
+			{
+				fileLog.addRecorg( "Google no response" );
+				gsmModem->stopModem();
+				gsmModem->waitForStateChange();
+				gsmModem->startModem();
+			}
 		}
 		if( em & MainThreadEvent::CleanMonitoringLogRequestEvent )
 		{
@@ -805,6 +823,39 @@ void MarvieDevice::uiThreadMain()
 	thread_reference_t ref = nullptr;
 	chSysLock();
 	chThdSuspendS( &ref );
+}
+
+void MarvieDevice::networkTestThreadMain()
+{
+	volatile int n = 0;
+	while( true )
+	{
+		chEvtWaitAny( ALL_EVENTS );
+		while( networkTestState == NetworkTestState::On )
+		{
+			systime_t t = chVTGetSystemTimeX();
+			volatile bool ok = false;
+			for( int i = 0; i < 8 && networkTestState == NetworkTestState::On; ++i )
+			{
+				if( PingService::instance()->ping( testIpAddr ) )
+				{
+					ok = true;
+					break;
+				}
+			}
+			if( ok )
+				n = 0;
+			else
+				++n;
+			if( n == 10 )
+			{
+				n = 0;
+				mainThread->signalEvents( MainThreadEvent::RestartNetworkInterfaceEvent );
+			}
+			chThdSleep( TIME_S2I( 60 ) - chVTTimeElapsedSinceX( t ) );
+		}
+		n = 0;
+	}
 }
 
 void MarvieDevice::createGsmModemObjectM()
@@ -1085,7 +1136,10 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 	{
 		auto gsmConf = static_cast< GsmModemConf* >( comPortsConf[MarviePlatform::gsmModemComPort] );
 		if( !gsmModem )
+		{
 			createGsmModemObjectM();
+			setNetworkTestState( NetworkTestState::On );
+		}
 		MarvieBackup* backup = MarvieBackup::instance();
 		if( gsmModem->pinCode() != gsmConf->pinCode || strcmp( gsmModem->apn(), gsmConf->apn ) != 0 || !backup->settings.flags.gsmEnabled )
 		{
@@ -1117,6 +1171,8 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 		gsmModem->eventSource()->unregister( &gsmModemMainThreadListener );
 		delete gsmModem;
 		gsmModem = nullptr;
+
+		setNetworkTestState( NetworkTestState::Off );
 	}
 
 	vPortsCount = 0;
@@ -1507,6 +1563,15 @@ void MarvieDevice::removeConfigRelatedObjectM()
 	tcpModbusIpServer = nullptr;
 	modbusRegisters = nullptr;
 	modbusRegistersCount = 0;
+}
+
+
+void MarvieDevice::setNetworkTestState( NetworkTestState state )
+{
+	chSysLock();
+	networkTestState = state;
+	networkTestThread->signalEventsI( NetworkTestThreadEvent::NetworkTestEvent );
+	chSysUnlock();
 }
 
 void MarvieDevice::copySensorDataToModbusRegisters( AbstractSensor* sensor )

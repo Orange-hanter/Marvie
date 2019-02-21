@@ -2,8 +2,8 @@
 
 //uint8_t data[513] __attribute__( ( section( ".ram4" ) ) );
 
-#include "Drivers/Network/Ethernet/EthernetThread.h"
 #include "Core/DateTimeService.h"
+#include "Drivers/Network/Ethernet/EthernetThread.h"
 
 #include "Tests/FileSystemTest.hpp"
 #include "Tests/GsmPPPTest.hpp"
@@ -17,6 +17,7 @@
 #include "Tests/Sim800AtTest.hpp"
 #include "Tests/UdpStressTestServer/UdpStressTestServer.h"
 //#include "Tests/UsbSduTest.hpp"
+#include "Tests/PingTest.hpp"
 
 #include <algorithm>
 
@@ -68,25 +69,31 @@ int main()
 	wdgStart( &WDGD1, &wdgConfig );
 	wdgReset( &WDGD1 );
 
-	//{
-	//	tcpip_init( nullptr, nullptr );
+	//  {
+	//  	ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );
+	//  	tcpip_init( nullptr, nullptr );
 
-	//	auto conf = EthernetThread::instance()->currentConfig();
-	//	conf.addressMode = EthernetThread::AddressMode::Static;
-	//	conf.ipAddress = IpAddress( 192, 168, 10, 10 );
-	//	conf.netmask = 0xFFFFFF00;
-	//	conf.gateway = IpAddress( 192, 168, 10, 1 );
-	//	EthernetThread::instance()->setConfig( conf );
-	//	EthernetThread::instance()->startThread();
+	//  	auto conf = EthernetThread::instance()->currentConfig();
+	//  	conf.addressMode = EthernetThread::AddressMode::Static;
+	//  	conf.ipAddress = IpAddress( 192, 168, 10, 10 );
+	//  	conf.netmask = 0xFFFFFF00;
+	//  	conf.gateway = IpAddress( 192, 168, 10, 1 );
+	//  	EthernetThread::instance()->setConfig( conf );
+	//  	EthernetThread::instance()->startThread();
 
-	//	/*thread_reference_t ref = nullptr;
-	//	chSysLock();
-	//	chThdSuspendS( &ref );
-	//	chSysUnlock();*/
+	//  	chThdSleepMilliseconds( 3000 );
+	//  	PingTest::test();
+	//  	while( true )
+	//  		;
 
-	//	MLinkTest::test();
-	//	while( true );
-	//}
+	//  	//	/*thread_reference_t ref = nullptr;
+	//  	//	chSysLock();
+	//  	//	chThdSuspendS( &ref );
+	//  	//	chSysUnlock();*/
+
+	//  	//	MLinkTest::test();
+	//  	//	while( true );
+	//  }
 
 	tcpip_init( nullptr, nullptr );
 

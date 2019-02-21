@@ -1,7 +1,7 @@
 ﻿{
   "environments": [
     {
-      "elfName": "firmware.elf"
+      "elfName": "marvie_firmware.elf"
     }
   ],
   "configurations": [

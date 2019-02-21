@@ -48,6 +48,7 @@ private:
 	void adInputsReadThreadMain();
 	void mLinkServerHandlerThreadMain();
 	void uiThreadMain();
+	void networkTestThreadMain();
 
 	void createGsmModemObjectM();
 	void logFailure();
@@ -59,6 +60,9 @@ private:
 	void applyConfigM( char* xmlData, uint32_t len );
 	void removeConfigRelatedObject();
 	void removeConfigRelatedObjectM();
+
+	enum class NetworkTestState;
+	inline void setNetworkTestState( NetworkTestState state );
 
 	void copySensorDataToModbusRegisters( AbstractSensor* sensor );
 
@@ -174,8 +178,8 @@ private:
 	uint16_t* modbusRegisters;
 	uint32_t modbusRegistersCount;
 	// ======================================================================================
-	
-	BaseDynamicThread* mainThread, *miskTasksThread, *adInputsReadThread, *mLinkServerHandlerThread, *uiThread;
+
+	BaseDynamicThread* mainThread, *miskTasksThread, *adInputsReadThread, *mLinkServerHandlerThread, *uiThread, *networkTestThread;
 	volatile bool mLinkComPortEnable = true;  // shared resource
 	Mutex configXmlFileMutex;
 
@@ -185,7 +189,7 @@ private:
 		SdCardStatusChanged = 1, NewBootloaderDatFile = 2, NewFirmwareDatFile = 4, NewXmlConfigDatFile = 8,
 		PowerDownDetected = 16, StartSensorReaders = 32, StopSensorReaders = 64, BrSensorReaderEvent = 128,
 		SrSensorsTimerEvent = 256, EjectSdCardRequest = 512, FormatSdCardRequest = 1024, CleanMonitoringLogRequestEvent = 2048,
-		CleanSystemLogRequestEvent = 4096, RestartRequestEvent = 8192, GsmModemMainEvent = 16384
+		CleanSystemLogRequestEvent = 4096, RestartRequestEvent = 8192, GsmModemMainEvent = 16384, RestartNetworkInterfaceEvent = 32768
 	};
 	enum class DeviceState { /*Initialization,*/ Reconfiguration, Working, IncorrectConfiguration } deviceState;
 	enum class ConfigError { NoError, NoConfigFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorReadingConfigError, LogConfigError, SensorsConfigError } configError;
@@ -219,5 +223,11 @@ private:
 	volatile bool sdCardInserted;
 	volatile bool sdCardStatusEventPending;
 	MarviePackets::MemoryLoad memoryLoad;
+
+	// Network test thread resources ===================================================================
+	enum NetworkTestThreadEvent : eventmask_t { NetworkTestEvent = 1 };
+	IpAddress testIpAddr;
+	enum class NetworkTestState { On, Off } networkTestState;
+
 	// UI thread resources ===================================================================
 };

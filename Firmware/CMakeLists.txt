@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.11)
 enable_language(ASM)
 #set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-set(MARVIE_FIRMWARE_VERSION_BASE "0.8.0.5" CACHE STRING "Marvie base firmware version")
+set(MARVIE_FIRMWARE_VERSION_BASE "0.8.0.6")
 if(NOT MODEM_PWRKEY_LEVEL)
 	set(MODEM_PWRKEY_LEVEL "H")
 endif()
@@ -117,6 +117,7 @@ set(network_SRCS
 	${CMAKE_SOURCE_DIR}/Src/Network/IpAddress.cpp
 	${CMAKE_SOURCE_DIR}/Src/Network/LwipSocketPrivate.cpp
 	${CMAKE_SOURCE_DIR}/Src/Network/Modem.cpp
+	${CMAKE_SOURCE_DIR}/Src/Network/PingService.cpp
 	${CMAKE_SOURCE_DIR}/Src/Network/TcpServer.cpp
 	${CMAKE_SOURCE_DIR}/Src/Network/TcpSocket.cpp
 	${CMAKE_SOURCE_DIR}/Src/Network/UdpSocket.cpp
