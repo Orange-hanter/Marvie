@@ -103,18 +103,27 @@ function build_bootloader ()
 function build_software ()
 {
   local project_dir="${repository_root_dir}/Software"
-  local project_build_dir="${project_dir}/build"
+  local project_appdir="${project_dir}/appdir"
 
   # build
-  # TODO: specify release/debug build type
-  mkdir -p "${project_build_dir}" && cd "${project_build_dir}"
-  qmake "${project_dir}/MarvieControl.pro"
-  make -j 4
+  cd "${project_dir}"
+  qmake CONFIG+=release PREFIX=/usr
+  make -j$(nproc)
+  make INSTALL_ROOT=appdir -j$(nproc) install; find appdir/
+  unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
+
+  mkdir -p "${project_appdir}"/usr/share/MarvieControl/
+  cp -R "${project_dir}/Sensors" "${project_appdir}"/usr/share/MarvieControl/
+  cp -R "${project_dir}/Animations" "${project_appdir}"/usr/share/MarvieControl/
+  cp -R "${project_dir}/Xml" "${project_appdir}"/usr/share/MarvieControl/
+  cp    "${project_dir}/MarvieControl.png" "${project_appdir}"
+
+  linuxdeployqt "${project_appdir}"/usr/share/applications/*.desktop -appimage
 }
 
 if [[ "${build_target}" == 'firmware' ]]; then
-  build_firmware 'L'
-  build_firmware 'H'
+  build_firmware L
+  build_firmware H
   build_bootloader
   echo $marvie_base_version > "${repository_root_dir}/version"
 elif [[ "${build_target}" == 'software' ]]; then

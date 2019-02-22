@@ -84,15 +84,31 @@ HEADERS += \
     VPortTileListWidget.h \
     VPortTileWidget.h
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
-
 RESOURCES += \
     MarvieControl.qrc
 
 FORMS += \
     AccountWindow.ui \
     MarvieControl.ui \
-    SdStatistics.ui \
+    SdStatistics.ui
+
+# Rules for deployment.
+unix {
+    isEmpty(PREFIX) {
+        PREFIX = /usr/local
+    }
+
+    target.path = $$PREFIX/bin
+
+    desktop.path = /usr/share/applications
+    desktop.files += marviecontrol.desktop
+    icons.path = /usr/share/icons/hicolor/48x48/apps
+    icons.files += MarvieControl.ico
+
+    data.path = $$PREFIX/share/MarvieControl/
+
+    INSTALLS += target desktop icons data
+}
+
+DISTFILES += \
+    marviecontrol.desktop

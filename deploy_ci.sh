@@ -34,6 +34,15 @@ function deploy_firmware ()
   wait
 }
 
+function deploy_software ()
+{
+  # TODO: rewrite
+  local target_name="${repository_root_dir}"/Software/MarvieControl-x86_64.AppImage
+  upload_to_bitbucket "${target_name}"
+}
+
 if [[ "${artifact_type}" == 'firmware' ]]; then
   deploy_firmware
+elif [[ "${artifact_type}" == 'software' ]]; then
+  deploy_software
 fi
