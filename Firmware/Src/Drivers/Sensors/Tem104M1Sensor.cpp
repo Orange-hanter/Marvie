@@ -108,22 +108,6 @@ SensorData::Error Tem104M1Sensor::waitResponse( uint32_t size )
 	return SensorData::Error::NoError;
 }
 
-constexpr inline uint32_t reverse( uint32_t data )
-{
-	return ( ( data & 0x000000FF ) << 24 ) | ( ( data & 0x0000FF00 ) << 8 ) | ( ( data & 0x00FF0000 ) >> 8 ) | ( ( data & 0xFF000000 ) >> 24 );
-}
-
-constexpr inline uint16_t reverse( uint16_t data )
-{
-	return ( ( data & 0x00FF ) << 8 ) | ( ( data & 0xFF00 ) >> 8 );
-}
-
-constexpr inline float reverse( float data )
-{
-	const uint32_t gg = reverse( ( uint32_t& )data );
-	return ( float& )gg;
-}
-
 void Tem104M1Sensor::parseTimerResponse()
 {
 	data.lock();
@@ -220,8 +204,8 @@ void Tem104M1Sensor::parseRamResponse()
 			float pwr;
 		} ram;
 		io->read( ( uint8_t* )&ram, sizeof( ram ), TIME_IMMEDIATE );
-		data.instant.rshv = reverse( ram.rshv );
-		data.instant.rshm = reverse( ram.rshm );
+		data.instant.rshv = ram.rshv;
+		data.instant.rshm = ram.rshm;
 	}
 	io->read( nullptr, io->readAvailable(), TIME_IMMEDIATE );
 	data.unlock();
