@@ -14,7 +14,6 @@ struct MultipliersDegrees
              V : 4,
              M : 4;
 };
-
 const static MultipliersDegrees table[24] =
 {
     { 5, 3, 4, 3, 3 },
@@ -47,6 +46,22 @@ const static MultipliersDegrees table[24] =
     { 3, 1, 2, 1, 1 },
     { 3, 1, 2, 1, 1 },
 };
+
+const static uint8_t pipeDiameterList[8] = 
+{ 
+	10, 15, 25, 50, 
+	80, 100, 150, 32
+ };
+
+ const static float GmaxList[24] = 
+ {
+	 0.25f, 0.5f, 1.0f, 1.25f,
+	 2.5f, 5.0f, 2.5f, 5.0f,
+	 10.0f, 10.0f, 20.0f, 40.0f,
+	 25.0f, 50.0f, 100.0f, 50.0f,
+	 100.0f, 200.0f, 100.0f, 200.0f,
+	 400.0f, 5.0f, 10.0f, 20.0f,
+ };
 
 const char Tem05MSensor::Name[] = "TEM05M";
 
@@ -119,13 +134,14 @@ uint32_t Tem05MSensor::sensorDataSize()
 
 bool Tem05MSensor::parseData()
 {
-	uint8_t codeA, codeB, tmp[37];
-	io->peek( 0x0012, &codeA, 1 );
-	io->peek( 0x0013, &codeB, 1 );
+	uint8_t head[11], tmp[37];
+	io->peek( 0x0011, head, 11 );
 	io->peek( 0x0020, tmp, 31 );
 	io->peek( 0x00CE, tmp + 31, 6 );
 	io->read( nullptr, 344 );
 
+	const uint8_t& codeA = head[1]; // 0x0012
+	const uint8_t& codeB = head[2]; // 0x0013
 	if( codeA >= 24 || codeB >= 24 )
 		return false;
 
@@ -133,6 +149,16 @@ bool Tem05MSensor::parseData()
 
 	data.t = DateTimeService::currentDateTime();
 	data.errType = SensorData::Error::NoError;
+
+	data.scheme = head[0]; // 0x0011
+	data.pipeDiameter[0] = pipeDiameterList[codeA / 3];
+	data.pipeDiameter[1] = pipeDiameterList[codeB / 3];
+	data.ch[0].Gmax = GmaxList[codeA];
+	data.ch[1].Gmax = GmaxList[codeB];
+	data.ch[0].Gmin = ( ( head[3] >> 0 ) & 0x0F ) * data.ch[0].Gmax * 0.01f; // 0x0014
+	data.ch[1].Gmin = ( ( head[3] >> 4 ) & 0x0F ) * data.ch[1].Gmax * 0.01f; // 0x0014
+	data.t3 = head[4] * 0.1f; // 0x0015
+	data.workingTime = _V3( head + 8 ) * 60 + head[7]; // 0x0018 - 0x001C
 
 	// 0x0020 - 0x002F
 	data.ch[0].G = _V3( tmp + 0 ) * multipliers[table[codeA].G];

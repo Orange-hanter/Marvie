@@ -21,15 +21,21 @@ public:
 
 		struct Channel
 		{
-			float G; // m^3/h
-			float P; // KW
-			float Q; // MW*h
-			float V; // m^3
-			float M; // tn
-			float t; // Celsius
+			float Gmax; // m^3/h
+			float Gmin; // m^3/h
+			float G;    // m^3/h
+			float P;    // KW
+			float Q;    // MW*h
+			float V;    // m^3
+			float M;    // tn
+			float t;    // Celsius
 		} ch[2];
-		float tCW;   //temperature cold water
-		uint32_t error;
+		float t3;       // programmable temperature
+		float tCW;      // cold water temperature
+		uint32_t workingTime;
+		uint8_t scheme;
+		uint8_t pipeDiameter[2];
+		uint8_t error;
 	};
 
 	explicit Tem05MSensor();

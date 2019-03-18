@@ -2,6 +2,8 @@
 <DataDesc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="file:// ../../Xml/schemas/SensorData.xsd">
   <groupArray count="2">
     <group name="Channel">
+      <float>Gmax</float>
+      <float>Gmin</float>
       <float>G</float>
       <float>P</float>
       <float>Q</float>
@@ -10,6 +12,10 @@
       <float>t</float>
     </group>
   </groupArray>
+  <float>t3</float>
   <float>tCW</float>
-  <uint32>error</uint32>
+  <uint32>workingTime</uint32>
+  <uint8>scheme</uint8>
+  <array type="uint8" count="2">pipeDiameter</array>
+  <uint8>error</uint8>
 </DataDesc>
