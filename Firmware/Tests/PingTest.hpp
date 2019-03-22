@@ -16,7 +16,7 @@ namespace PingTest
 
 		for( int i = 0; i < 8; ++i )
 		{
-			Concurrent::run( [&flag, pingService, i]() {
+			Concurrent::_run( [&flag, pingService, i]() {
 				while( pingService->state() == PingService::State::Working )
 				{
 					PingService::TimeMeasurement tm;

@@ -18,6 +18,8 @@
 #include "Tests/UdpStressTestServer/UdpStressTestServer.h"
 //#include "Tests/UsbSduTest.hpp"
 #include "Tests/PingTest.hpp"
+#include "Tests/ThreadTest.hpp"
+#include "Tests/EventTest.hpp"
 
 #include <algorithm>
 
@@ -28,6 +30,21 @@ int main()
 	halInit();
 	chSysInit();
 	rccEnableAHB1( RCC_AHB1ENR_BKPSRAMEN, true );
+
+	static_assert( __gthread_active_p() == 1, "__gthread_active_p() != 1" );
+	static_assert( std::__default_lock_policy == std::_S_atomic, "__default_lock_policy != _S_atomic" );
+
+	{
+		//ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );
+		//EventTest::test();
+		//while( true );
+	}
+
+	{
+		//ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );
+		//ThreadTest::test();
+		//while( true );
+	}
 
 	/*Sim800Test::test();
 	while(true);*/
@@ -120,7 +137,7 @@ int main()
 	terminal->open( 115200 );
 	terminal->write( ( uint8_t* )"Start ethernet...\r", 18, TIME_INFINITE );*/
 
-	Concurrent::run( []() {
+	Concurrent::_run( []() {
 		UdpStressTestServer* server = new UdpStressTestServer( 1112 );
 		server->exec();
 	} );
@@ -147,7 +164,7 @@ int main()
  		}
  	}*/
 
-	Concurrent::run( []() {
+	Concurrent::_run( []() {
 		TcpServer* server = new TcpServer;
 		server->listen( 42420 );
 		while( server->isListening() )
@@ -155,7 +172,7 @@ int main()
 			if( server->waitForNewConnection( TIME_MS2I( 100 ) ) )
 			{
 				TcpSocket* socket = server->nextPendingConnection();
-				Concurrent::run( [socket]() {
+				Concurrent::_run( [socket]() {
 					uint8_t* data = new uint8_t[2048];
 					while( true )
 					{

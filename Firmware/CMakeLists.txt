@@ -26,6 +26,7 @@ find_package(ChibiOS 18 COMPONENTS rt hal REQUIRED)
 
 include_directories(
 	${ChibiOS_INCLUDE_DIRS}
+	${CMAKE_SOURCE_DIR}/GCC/
 	${CMAKE_SOURCE_DIR}/ChibiOS/os/various
 	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/lwip_bindings/
     ${CMAKE_SOURCE_DIR}/Config/
@@ -54,13 +55,16 @@ set(apps_SRCS
 
 set(core_SRCS
 	${CMAKE_SOURCE_DIR}/Src/Core/BaseDynamicThread.cpp
-    ${CMAKE_SOURCE_DIR}/Src/Core/ByteRingBuffer.cpp
 	${CMAKE_SOURCE_DIR}/Src/Core/CCMemoryAllocator.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/Thread.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Core/ByteRingBuffer.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/CCMemoryHeap.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/CpuUsageMonitor.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/DateTime.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/DateTimeService.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Core/Event.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/IODevice.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Core/MemoryStatus.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/NewDelete.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/Object.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/ObjectMemoryUtilizer.cpp

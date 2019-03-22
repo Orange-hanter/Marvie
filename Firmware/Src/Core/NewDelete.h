@@ -1,11 +1,6 @@
 #pragma once
+#include <stddef.h>
 
-//#include <iostream>
-
-//class NewCCM {};
-//class TryNewCCM {};
-//
-//void* operator new( std::size_t size, const NewCCM& );
-//void* operator new[]( std::size_t size, const NewCCM& );
-//void* operator new( std::size_t size, const TryNewCCM& );
-//void* operator new[]( std::size_t size, const TryNewCCM& );
+enum class MemoryAllocPolicy { Default, CCM, TryCCM };
+void* operator new( size_t size, MemoryAllocPolicy memPolicy );
+void* operator new[]( size_t size, MemoryAllocPolicy memPolicy );

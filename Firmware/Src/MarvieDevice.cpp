@@ -207,16 +207,16 @@ MarvieDevice* MarvieDevice::instance()
 
 void MarvieDevice::exec()
 {
-	mainThread               = Concurrent::run( [this]() { mainThreadMain(); },               2560, NORMALPRIO );
-	miskTasksThread          = Concurrent::run( [this]() { miskTasksThreadMain(); },          2048, NORMALPRIO );
-	adInputsReadThread       = Concurrent::run( [this]() { adInputsReadThreadMain(); },       512,  NORMALPRIO + 2 );
-	mLinkServerHandlerThread = Concurrent::run( [this]() { mLinkServerHandlerThreadMain(); }, 2048, NORMALPRIO );
-	uiThread                 = Concurrent::run( [this]() { uiThreadMain(); },                 1024, NORMALPRIO );
-	networkTestThread        = Concurrent::run( [this]() { networkTestThreadMain(); },        1024, NORMALPRIO );
+	mainThread               = Concurrent::_run( [this]() { mainThreadMain(); },               2560, NORMALPRIO );
+	miskTasksThread          = Concurrent::_run( [this]() { miskTasksThreadMain(); },          2048, NORMALPRIO );
+	adInputsReadThread       = Concurrent::_run( [this]() { adInputsReadThreadMain(); },       512,  NORMALPRIO + 2 );
+	mLinkServerHandlerThread = Concurrent::_run( [this]() { mLinkServerHandlerThreadMain(); }, 2048, NORMALPRIO );
+	uiThread                 = Concurrent::_run( [this]() { uiThreadMain(); },                 1024, NORMALPRIO );
+	networkTestThread        = Concurrent::_run( [this]() { networkTestThreadMain(); },        1024, NORMALPRIO );
 
 	//mLinkServer->startListening( NORMALPRIO );
 
-	Concurrent::run( []()
+	Concurrent::_run( []()
 	{
 		UdpStressTestServer* server = new UdpStressTestServer( 1112 );
 		server->exec();
@@ -228,7 +228,7 @@ void MarvieDevice::exec()
 		server->exec();
 	}, 2048, NORMALPRIO );*/
 
-	Concurrent::run( [this]()
+	Concurrent::_run( [this]()
 	{
 		UdpSocket* socket = new UdpSocket;
 		uint8_t buf[32];
@@ -1741,7 +1741,7 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 			auto channel = mLinkServer->createDataChannel();
 			if( channel->open( MarviePackets::ComplexChannel::XmlConfigChannel, "", xmlDataSize ) )
 			{
-				Concurrent::run( [this, channel, xmlData, xmlDataSize]()
+				Concurrent::_run( [this, channel, xmlData, xmlDataSize]()
 				{
 					channel->sendData( ( uint8_t* )xmlData, xmlDataSize );
 					channel->close();

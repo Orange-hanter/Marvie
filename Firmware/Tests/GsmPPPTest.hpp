@@ -113,7 +113,7 @@ int gsmPPPTest()
 	modem->waitForStateChange();
 	modem->setAsDefault();
 
-	Concurrent::run( []()
+	Concurrent::_run( []()
 	{
 		UdpStressTestServer* server = new UdpStressTestServer( 1114 );
 		server->exec();
