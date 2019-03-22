@@ -92,29 +92,30 @@
  * @note    Multiple Event Listeners can specify the same bits to be ORed to
  *          different threads.
  *
- * @param[in] esp       pointer to the  @p event_source_t structure
- * @param[in] elp       pointer to the @p event_listener_t structure
- * @param[in] events    events to be ORed to the thread when
- *                      the event source is broadcasted
- * @param[in] wflags    mask of flags the listening thread is interested in
+ * @param[in] esp                pointer to the  @p event_source_t structure
+ * @param[in] elp                pointer to the @p event_listener_t structure
+ * @param[in] listener_thread    thread interested in the event source
+ * @param[in] events             events to be ORed to the thread when
+ *                               the event source is broadcasted
+ * @param[in] wflags             mask of flags the listening thread is interested in
  *
  * @api
  */
-void chEvtRegisterMaskWithFlags(event_source_t *esp,
-                                event_listener_t *elp,
-                                eventmask_t events,
-                                eventflags_t wflags) {
+void chEvtRegisterThreadMaskWithFlagsI(event_source_t *esp,
+                                      event_listener_t *elp,
+                                      thread_t* listener_thread,
+                                      eventmask_t events,
+                                      eventflags_t wflags) {
 
+  chDbgCheckClassI();
   chDbgCheck((esp != NULL) && (elp != NULL));
 
-  chSysLock();
   elp->next     = esp->next;
   esp->next     = elp;
-  elp->listener = currp;
+  elp->listener = listener_thread;
   elp->events   = events;
   elp->flags    = (eventflags_t)0;
   elp->wflags   = wflags;
-  chSysUnlock();
 }
 
 /**
@@ -130,15 +131,15 @@ void chEvtRegisterMaskWithFlags(event_source_t *esp,
  *
  * @api
  */
-void chEvtUnregister(event_source_t *esp, event_listener_t *elp) {
+void chEvtUnregisterI(event_source_t *esp, event_listener_t *elp) {
   event_listener_t *p;
 
+  chDbgCheckClassI();
   chDbgCheck((esp != NULL) && (elp != NULL));
 
   /*lint -save -e9087 -e740 [11.3, 1.3] Cast required by list handling.*/
   p = (event_listener_t *)esp;
   /*lint -restore*/
-  chSysLock();
   /*lint -save -e9087 -e740 [11.3, 1.3] Cast required by list handling.*/
   while (p->next != (event_listener_t *)esp) {
   /*lint -restore*/
@@ -148,7 +149,6 @@ void chEvtUnregister(event_source_t *esp, event_listener_t *elp) {
     }
     p = p->next;
   }
-  chSysUnlock();
 }
 
 /**
@@ -258,7 +258,7 @@ eventflags_t chEvtGetAndClearFlags(event_listener_t *elp) {
   eventflags_t flags;
 
   chSysLock();
-  flags = elp->flags;
+  flags = elp->flags & elp->wflags;
   elp->flags = (eventflags_t)0;
   chSysUnlock();
 
@@ -346,7 +346,7 @@ void chEvtBroadcastFlags(event_source_t *esp, eventflags_t flags) {
 eventflags_t chEvtGetAndClearFlagsI(event_listener_t *elp) {
   eventflags_t flags;
 
-  flags = elp->flags;
+  flags = elp->flags & elp->wflags;
   elp->flags = (eventflags_t)0;
 
   return flags;
