@@ -46,7 +46,13 @@ void ObjectMemoryUtilizer::stopUtilizer()
 void ObjectMemoryUtilizer::utilize( Object* p )
 {
 	syssts_t sysStatus = chSysGetStatusAndLockX();
-	chMBPostTimeoutS( &mailbox, reinterpret_cast< msg_t >( p ), TIME_INFINITE );
+	if( port_is_isr_context() )
+	{
+		if( chMBPostI( &mailbox, reinterpret_cast< msg_t >( p ) ) != MSG_OK )
+			chSysHalt( "ObjectMemoryUtilizer" );
+	}
+	else
+		chMBPostTimeoutS( &mailbox, reinterpret_cast< msg_t >( p ), TIME_INFINITE );
 	chSysRestoreStatusX( sysStatus );
 }
 

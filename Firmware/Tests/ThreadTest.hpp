@@ -9,36 +9,37 @@ namespace ThreadTest
 	class NonmovableType
 	{
 	public:
-		NonmovableType() : v( 0 ) {}
-		NonmovableType( int v ) : v( v ) {}
-		NonmovableType( const NonmovableType& other ) : v( other.v ) {}
-		NonmovableType( NonmovableType&& other ) = delete;
-		NonmovableType& operator=( const NonmovableType& other ) { v = other.v; return *this; }
-		NonmovableType& operator=( NonmovableType&& other ) = delete;
-		int v;	
+		NonmovableType() : v( 0 ), c( 0 ) {}
+		NonmovableType( int v ) : v( v ), c( 0 ) {}
+		NonmovableType( const NonmovableType& other ) : v( other.v ), c( other.c + 1 ) {}
+		//NonmovableType( NonmovableType&& other ) = delete;
+		NonmovableType& operator=( const NonmovableType& other ) { v = other.v; c = other.c + 1; return *this; }
+		//NonmovableType& operator=( NonmovableType&& other ) = delete;
+		int v, c;	
 	};
 
 	class NoncopyableType
 	{
 	public:
-		NoncopyableType() : v( 0 ) {}
-		NoncopyableType( int v ) : v( v ) {}
+		NoncopyableType() : v( 0 ), m( 0 ) {}
+		NoncopyableType( int v ) : v( v ), m( 0 ) {}
 		NoncopyableType( const NoncopyableType& other ) = delete;
-		NoncopyableType( NoncopyableType&& other ) : NoncopyableType() { std::swap( v, other.v ); }
+		NoncopyableType( NoncopyableType&& other ) : NoncopyableType() { std::swap( v, other.v ); m = other.m + 1; }
 		NoncopyableType& operator=( const NoncopyableType& other ) = delete;
-		NoncopyableType& operator=( NoncopyableType&& other ) { std::swap( v, other.v ); return *this; }
-		int v;
+		NoncopyableType& operator=( NoncopyableType&& other ) { std::swap( v, other.v ); m = other.m + 1; return *this; }
+		int v, m;
 	};
 
 	class CopymovableType
 	{
 	public:
-		CopymovableType() : c( 0 ), m( 0 ) {}
-		CopymovableType( const CopymovableType& other ) : c( other.c + 1 ), m( other.m ) {}
-		CopymovableType( CopymovableType&& other ) : c( other.c ), m( other.m + 1 ) {}
-		CopymovableType& operator=( const CopymovableType& other ) { c = other.c + 1, m = other.m; return *this; }
-		CopymovableType& operator=( CopymovableType&& other ) { m = other.m + 1, c = other.c; return *this; }
-		int c, m;
+		CopymovableType() : v( 0 ), c( 0 ), m( 0 ) {}
+		CopymovableType( int v ) : v( v ), c( 0 ), m( 0 ) {}
+		CopymovableType( const CopymovableType& other ) : v( other.v ), c( other.c + 1 ), m( other.m ) {}
+		CopymovableType( CopymovableType&& other ) : c( other.c ), m( other.m + 1 ) { std::swap( v, other.v ); }
+		CopymovableType& operator=( const CopymovableType& other ) { v = other.v; c = other.c + 1, m = other.m; return *this; }
+		CopymovableType& operator=( CopymovableType&& other ) { std::swap( v, other.v ); m = other.m + 1, c = other.c; return *this; }
+		int v, c, m;
 	};
 	
 	int test()
@@ -52,7 +53,7 @@ namespace ThreadTest
 			Thread::sleep( TIME_MS2I( 10 ) );
 		}, 42, 73 );
 		assert( thread->start() == false );
-		Thread::sleep( TIME_MS2I( 2000 ) );
+		Thread::sleep( TIME_MS2I( 5 ) );
 		thread->wait();
 		delete thread;
 
@@ -67,6 +68,21 @@ namespace ThreadTest
 		assert( thread->start() == true );
 		thread->wait();
 		delete thread;
+		assert( mem0 == MemoryStatus::freeSpace( MemoryStatus::Region::All ) );
+
+		thread = Thread::create( []( int a )
+        {
+			assert( a == 42 );
+		}, 42 );
+		assert( thread->start() == true );
+		thread->wait();
+		assert( thread->start() == true );
+		thread->wait();
+		thread->setStackSize( 2048 );
+		assert( thread->start() == true );
+		thread->wait();
+		delete thread;
+		assert( mem0 == MemoryStatus::freeSpace( MemoryStatus::Region::All ) );
 
 		constexpr ThreadProperties threadProps( 2048, NORMALPRIO );
 		thread = Thread::create( threadProps, []( int a, float b, int c )
@@ -99,7 +115,9 @@ namespace ThreadTest
 				Thread::sleep( TIME_MS2I( 10 ) );
 				return a;
 			}, 314 );
+			assert( future.isValid() == true );
 			assert( future.get() == 314 );
+			assert( future.isValid() == false );
 			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 10 ) <= 1 );
 		}
 
@@ -110,7 +128,9 @@ namespace ThreadTest
 				Thread::sleep( TIME_MS2I( 10 ) );
 				return;
 			}, 314 );
+			assert( future.isValid() == true );
 			future.get();
+			assert( future.isValid() == false );
 			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 10 ) <= 1 );
 		}
 
@@ -143,7 +163,41 @@ namespace ThreadTest
 				return NoncopyableType( 314 );
 			} );
 			assert( future.get().v == 314 );
-			assert( future.get().v == 0 );
+			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 10 ) <= 1 );
+		}
+
+		{
+			systime_t t0 = chVTGetSystemTimeX();
+			auto future = Concurrent::run( []( NoncopyableType v ) {
+				Thread::sleep( TIME_MS2I( 10 ) );
+				assert( v.v == 42 );
+				return;
+			}, NoncopyableType( 42 ) );
+			future.get();
+			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 10 ) <= 1 );
+		}
+
+		{
+			systime_t t0 = chVTGetSystemTimeX();
+			auto future = Concurrent::run( []( NoncopyableType v ) {
+				Thread::sleep( TIME_MS2I( 10 ) );
+				assert( v.v == 42 );
+				return NoncopyableType( 314 );
+			}, NoncopyableType( 42 ) );
+			assert( future.get().v == 314 );
+			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 10 ) <= 1 );
+		}
+
+		{
+			systime_t t0 = chVTGetSystemTimeX();
+			auto future = Concurrent::run( []( NonmovableType v ) {
+				Thread::sleep( TIME_MS2I( 10 ) );
+				assert( v.v == 42 );
+				return NonmovableType( 314 );
+			}, NonmovableType( 42 ) );
+			auto res = future.get();
+			assert( res.v == 314 );
+			assert( res.c == 2 )
 			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 10 ) <= 1 );
 		}
 
@@ -151,11 +205,12 @@ namespace ThreadTest
 			systime_t t0 = chVTGetSystemTimeX();
 			auto future = Concurrent::run( []() {
 				Thread::sleep( TIME_MS2I( 10 ) );
-				return CopymovableType();
+				return CopymovableType( 314 );
 			} );
-			assert( future.get().c == 1 );
-			assert( future.get().m == 1 );
-			assert( future.get().c == 1 );
+			auto res = future.get();
+			assert( res.v == 314 );
+			assert( res.c == 0 );
+			assert( res.m == 2 );
 			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 10 ) <= 1 );
 		}
 
@@ -176,8 +231,9 @@ namespace ThreadTest
 				Thread::sleep( TIME_MS2I( 10 ) );
 				return gg;
 			} );
+			assert( future.isValid() == true );
 			assert( &future.get() == &gg );
-			assert( &future.get() == &gg );
+			assert( future.isValid() == false );
 			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 10 ) <= 1 );
 		}
 
@@ -189,7 +245,6 @@ namespace ThreadTest
 				Thread::sleep( TIME_MS2I( 10 ) );
 				return gg;
 			}, 314 );
-			assert( &future.get() == &gg );
 			assert( &future.get() == &gg );
 			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 10 ) <= 1 );
 		}

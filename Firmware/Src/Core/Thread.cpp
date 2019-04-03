@@ -35,7 +35,8 @@ Thread& Thread::operator=( Thread&& other )
 
 void Thread::setStackSize( uint32_t size, MemoryAllocPolicy memPolicy /*= MemoryAllocPolicy::TryCCM */ )
 {
-	if( threadRef && threadRef->state != CH_STATE_FINAL )
+	if( ( threadRef && threadRef->state != CH_STATE_FINAL ) ||
+	    ( this->size == size && this->stackPolicy == memPolicy ) )
 		return;
 
 	threadRef = nullptr;
@@ -56,9 +57,12 @@ bool Thread::start()
 		return false;
 
 	uint32_t waSize = THD_WORKING_AREA_SIZE( size );
-	wa = new( stackPolicy ) uint8_t[waSize];
 	if( wa == nullptr )
-		return false;
+	{
+		wa = new( stackPolicy ) uint8_t[waSize];
+		if( wa == nullptr )
+			return false;
+	}
 	threadRef = chThdCreateStatic( wa, waSize, threadPrio, thdStart, this );
 	return true;
 }

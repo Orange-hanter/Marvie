@@ -13,7 +13,7 @@ namespace Concurrent
 		return thread;
 	}
 
-	template< typename Function, typename... Args >
+	template< typename Function, typename... Args, typename = std::enable_if_t< !std::is_same< ThreadProperties, std::decay_t< Function > >::value > >
 	inline auto run( Function&& function, Args&&... args )
 	{
 		return _createFutureThread( defaultThreadProperties, std::forward< Function >( function ), std::forward< Args >( args )... );

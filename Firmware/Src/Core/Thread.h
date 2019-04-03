@@ -117,7 +117,7 @@ private:
 	template< std::size_t... Indices >
 	inline void call( std::index_sequence< Indices... > )
 	{
-		function( std::get< Indices >( args )... );
+		function( std::forward< Args >( std::get< Indices >( args ) )... );
 	}
 
 	void main() override

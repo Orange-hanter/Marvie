@@ -20,6 +20,7 @@
 #include "Tests/PingTest.hpp"
 #include "Tests/ThreadTest.hpp"
 #include "Tests/EventTest.hpp"
+#include "Tests/TimerTest.hpp"
 
 #include <algorithm>
 
@@ -33,6 +34,12 @@ int main()
 
 	static_assert( __gthread_active_p() == 1, "__gthread_active_p() != 1" );
 	static_assert( std::__default_lock_policy == std::_S_atomic, "__default_lock_policy != _S_atomic" );
+
+	{
+		ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );
+		TimerTest::test();
+		while( true );
+	}
 
 	{
 		//ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );

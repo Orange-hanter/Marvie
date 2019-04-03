@@ -80,7 +80,8 @@ class Future
 	SharedFutureData sharedData;
 
 	template< typename Function, typename... Args >
-	friend auto _createFutureThread( const ThreadProperties& props, Function&& function, Args&&... args ) -> Future< decltype( function( args... ) ) >;
+	friend auto _createFutureThread( const ThreadProperties& props, Function&& function, Args&&... args )
+	    -> Future< decltype( function( std::forward< Args >( args )... ) ) >;
 	friend class Future< void >;
 
 	Future( const SharedFutureData& sharedData ) : sharedData( sharedData ) {}
@@ -136,8 +137,9 @@ public:
 	Type get()
 	{
 		assert( sharedData != nullptr );
+		auto sharedData( std::move( this->sharedData ) );
 		sharedData->wait( TIME_INFINITE );
-		return static_cast< std::conditional_t< std::is_copy_constructible< Type >::value, const Type&, Type&& > >( sharedData->value );
+		return std::move( sharedData->value );
 	}
 };
 
@@ -148,7 +150,8 @@ class Future< Type& >
 	SharedFutureData sharedData;
 
 	template< typename Function, typename... Args >
-	friend auto _createFutureThread( const ThreadProperties& props, Function&& function, Args&&... args ) -> Future< decltype( function( args... ) ) >;
+	friend auto _createFutureThread( const ThreadProperties& props, Function&& function, Args&&... args )
+	    -> Future< decltype( function( std::forward< Args >( args )... ) ) >;
 	friend class Future< void >;
 
 	Future( const SharedFutureData& sharedData ) : sharedData( sharedData ) {}
@@ -204,6 +207,7 @@ public:
 	Type& get()
 	{
 		assert( sharedData != nullptr );
+		auto sharedData( std::move( this->sharedData ) );
 		sharedData->wait( TIME_INFINITE );
 		return *sharedData->value;
 	}
@@ -211,12 +215,13 @@ public:
 
 template<>
 class Future< void >
-{
+{public:
 	using SharedFutureData = std::shared_ptr< _BaseFutureData<> >;
 	SharedFutureData sharedData;
 
 	template< typename Function, typename... Args >
-	friend auto _createFutureThread( const ThreadProperties& props, Function&& function, Args&&... args ) -> Future< decltype( function( args... ) ) >;
+	friend auto _createFutureThread( const ThreadProperties& props, Function&& function, Args&&... args )
+	    -> Future< decltype( function( std::forward< Args >( args )... ) ) >;
 
 	Future( const SharedFutureData& sharedData ) : sharedData( sharedData )
 	{
@@ -291,6 +296,7 @@ public:
 	void get()
 	{
 		assert( sharedData != nullptr );
+		auto sharedData( std::move( this->sharedData ) );
 		sharedData->wait( TIME_INFINITE );
 		return;
 	}
@@ -313,7 +319,7 @@ public:
 	template< std::size_t... Indices >
 	inline void call( std::index_sequence< Indices... > )
 	{
-		sharedData->setValue( function( std::get< Indices >( args )... ) );
+		sharedData->setValue( function( std::forward< Args >( std::get< Indices >( args ) )... ) );
 	}
 
 	void main() override
@@ -341,7 +347,7 @@ public:
 	template< std::size_t... Indices >
 	inline void call( std::index_sequence< Indices... > )
 	{
-		function( std::get< Indices >( args )... );
+		function( std::forward< Args >( std::get< Indices >( args ) )... );
 		sharedData->setValue();
 	}
 
@@ -354,9 +360,10 @@ public:
 };
 
 template< typename Function, typename... Args >
-auto _createFutureThread( const ThreadProperties& props, Function&& function, Args&&... args ) -> Future< decltype( function( args... ) ) >
+auto _createFutureThread( const ThreadProperties& props, Function&& function, Args&&... args )
+    -> Future< decltype( function( std::forward< Args >( args )... ) ) >
 {
-	using FunctionResultType = decltype( function( args... ) );
+	using FunctionResultType = decltype( function( std::forward< Args >( args )... ) );
 	auto sharedFutureData = std::make_shared< _FutureData< FunctionResultType > >();
 	auto thread = new _FutureThread< Function, FunctionResultType, Args... >( sharedFutureData, std::forward< Function >( function ), std::forward< Args >( args )... );
 	if( thread == nullptr )

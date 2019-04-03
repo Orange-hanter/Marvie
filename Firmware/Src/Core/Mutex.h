@@ -5,6 +5,8 @@
 
 class Mutex
 {
+	friend class MutexLocker;
+
 public:
 	Mutex() noexcept
 	{
@@ -43,6 +45,8 @@ private:
 
 class DynamicMutex
 {
+	friend class MutexLocker;
+
 public:
 	DynamicMutex() : mtx( new mutex_t )
 	{
