@@ -57,6 +57,7 @@ set(core_SRCS
 	${CMAKE_SOURCE_DIR}/Src/Core/BaseDynamicThread.cpp
 	${CMAKE_SOURCE_DIR}/Src/Core/CCMemoryAllocator.cpp
 	${CMAKE_SOURCE_DIR}/Src/Core/Thread.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/Timer.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/ByteRingBuffer.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/CCMemoryHeap.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/CpuUsageMonitor.cpp
