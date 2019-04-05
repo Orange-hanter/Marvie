@@ -215,7 +215,7 @@ public:
 
 template<>
 class Future< void >
-{public:
+{
 	using SharedFutureData = std::shared_ptr< _BaseFutureData<> >;
 	SharedFutureData sharedData;
 

@@ -1,5 +1,6 @@
 #include "CriticalSectionLocker.h"
 #include "Object.h"
+#include "Support/Meta/FunctionInfo.hpp"
 #include <cstring>
 #include <memory>
 #include <tuple>
@@ -285,11 +286,24 @@ private:
 	uint8_t block[FunctionDataSize < MinBlockSize ? MinBlockSize : FunctionDataSize];
 };
 
+template< typename Function, Function Pointer >
 class BasicTimer
 {
+	using Info = Meta::FunctionInfo< Function >;
+	static constexpr bool isVoid = std::is_void< typename Info::ClassType >::value;
+	using Parameter = std::conditional_t< isVoid, typename Info::template ArgType< 0 >, typename Info::ClassType* >;
+
+	static_assert( ( !isVoid && Info::ArgsCount == 0 ) || ( isVoid && Info::ArgsCount <= 1 ), "too much arguments" );
+	static_assert( !isVoid || ( isVoid && ( std::is_pointer< Parameter >::value ||
+							  ( sizeof( void* ) >= sizeof( Parameter ) && ( std::is_integral< Parameter >::value ||
+							  std::is_floating_point< Parameter >::value ) ) ) ), "invalid argumet type" );
+
+	virtual_timer_t vt;
+
 public:
 	inline BasicTimer()
 	{
+		vt.par = nullptr;
 		chVTObjectInit( &vt );
 	}
 	BasicTimer( const BasicTimer& ) = delete;
@@ -303,11 +317,10 @@ public:
 	BasicTimer& operator=( const BasicTimer& other ) = delete;
 	BasicTimer& operator=( BasicTimer&& other ) = delete;
 
-	using CallbackFunction = void( * )( void* );
-	inline void start( sysinterval_t interval, CallbackFunction function, void* prm = nullptr )
+	inline void start( sysinterval_t interval )
 	{
 		CriticalSectionLocker locker;
-		chVTSetI( &vt, interval, function, prm );
+		chVTSetI( &vt, interval, callback< true >, vt.par );
 	}
 
 	inline void stop()
@@ -316,6 +329,48 @@ public:
 		chVTResetI( &vt );
 	}
 
+	inline void setParameter( Parameter prm )
+	{
+		_setParameter< true >( prm );
+	}
+
 private:
-	virtual_timer_t vt;
+	template< bool >
+	inline std::enable_if_t< std::is_floating_point< Parameter >::value > _setParameter( Parameter prm )
+	{
+		vt.par = reinterpret_cast< void* >( *reinterpret_cast< uint32_t* >( &prm ) );
+	}
+
+	template< bool >
+	inline std::enable_if_t< !std::is_floating_point< Parameter >::value && isVoid > _setParameter( Parameter prm )
+	{
+		vt.par = reinterpret_cast< void* >( static_cast< std::intptr_t >( prm ) );
+	}
+
+	template< bool >
+	inline std::enable_if_t< !std::is_floating_point< Parameter >::value && !isVoid > _setParameter( Parameter prm )
+	{
+		vt.par = reinterpret_cast< void* >( prm );
+	}
+
+	template< bool >
+	static std::enable_if_t< isVoid && std::is_floating_point< Parameter >::value > callback( void* p )
+	{
+		Parameter prm;
+		*reinterpret_cast< uint32_t* >( &prm ) = reinterpret_cast< std::intptr_t >( p );
+		Pointer( prm );
+	}
+
+	template< bool >
+	static std::enable_if_t< isVoid && !std::is_floating_point< Parameter >::value > callback( void* p )
+	{
+		Pointer( static_cast< Parameter >( reinterpret_cast< std::intptr_t >( p ) ) );
+	}
+
+	template< bool >
+	static std::enable_if_t< !isVoid > callback( void* p )
+	{
+		auto obj = reinterpret_cast< typename Info::ClassType* >( p );
+		( obj->*Pointer )();
+	}
 };

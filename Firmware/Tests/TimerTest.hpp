@@ -26,6 +26,30 @@ namespace TimerTest
 		return 0;
 	}
 
+	void basicTimerIntCallback( int a )
+	{
+		assert( a == 42 );
+		tq.dequeueNext( MSG_OK );
+	}
+
+	void basicTimerFloatCallback( float a )
+	{
+		assert( a == 3.14f );
+		tq.dequeueNext( MSG_OK );
+	}
+
+	void basicTimerCharCallback( char a )
+	{
+		assert( a == 'g' );
+		tq.dequeueNext( MSG_OK );
+	}
+
+	void basicTimerBoolCallback( bool a )
+	{
+		assert( a == true );
+		tq.dequeueNext( MSG_OK );
+	}
+
 	class NonmovableType
 	{
 	public:
@@ -235,13 +259,50 @@ namespace TimerTest
 		assert( mem0 == MemoryStatus::freeSpace( MemoryStatus::Region::All ) );
 
 		{
-			BasicTimer timer;
+			BasicTimer< decltype( &basicTimerIntCallback ), &basicTimerIntCallback > timer;
 			auto t0 = chVTGetSystemTimeX();
-			timer.start( TIME_MS2I( 5 ), []( void* p )
+			timer.setParameter( 42 );
+			timer.start( TIME_MS2I( 5 ) );
+			tq.enqueueSelf( TIME_INFINITE );
+			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 5 ) <= 1 );
+		}
+		{
+			BasicTimer< decltype( &basicTimerFloatCallback ), &basicTimerFloatCallback > timer;
+			auto t0 = chVTGetSystemTimeX();
+			timer.setParameter( 3.14f );
+			timer.start( TIME_MS2I( 5 ) );
+			tq.enqueueSelf( TIME_INFINITE );
+			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 5 ) <= 1 );
+		}
+		{
+			BasicTimer< decltype( &basicTimerCharCallback ), &basicTimerCharCallback > timer;
+			auto t0 = chVTGetSystemTimeX();
+			timer.setParameter( 'g' );
+			timer.start( TIME_MS2I( 5 ) );
+			tq.enqueueSelf( TIME_INFINITE );
+			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 5 ) <= 1 );
+		}
+		{
+			BasicTimer< decltype( &basicTimerBoolCallback ), &basicTimerBoolCallback > timer;
+			auto t0 = chVTGetSystemTimeX();
+			timer.setParameter( true );
+			timer.start( TIME_MS2I( 5 ) );
+			tq.enqueueSelf( TIME_INFINITE );
+			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 5 ) <= 1 );
+		}
+		{
+			class Callback
 			{
-				assert( ( uint32_t )p == 42 );
-				tq.dequeueNext( MSG_OK );
-			}, ( void* )42 );
+			public:
+				void f()
+				{
+					tq.dequeueNext( MSG_OK );
+				}
+			} callback;
+			BasicTimer< decltype( &Callback::f ), &Callback::f > timer;
+			auto t0 = chVTGetSystemTimeX();
+			timer.setParameter( &callback );
+			timer.start( TIME_MS2I( 5 ) );
 			tq.enqueueSelf( TIME_INFINITE );
 			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 5 ) <= 1 );
 		}
