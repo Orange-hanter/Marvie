@@ -1,11 +1,9 @@
+#pragma once
+
 #include "CriticalSectionLocker.h"
 #include "Object.h"
 #include "Support/Meta/FunctionInfo.hpp"
-#include <cstring>
 #include <memory>
-#include <tuple>
-#include <type_traits>
-#include <utility>
 
 struct AbstractTimerFunctionData
 {
@@ -320,7 +318,7 @@ public:
 	inline void start( sysinterval_t interval )
 	{
 		CriticalSectionLocker locker;
-		chVTSetI( &vt, interval, callback< true >, vt.par );
+		chVTSetI( &vt, interval, callback< Parameter, isVoid >, vt.par );
 	}
 
 	inline void stop()
@@ -331,44 +329,44 @@ public:
 
 	inline void setParameter( Parameter prm )
 	{
-		_setParameter< true >( prm );
+		_setParameter< Parameter, isVoid >( prm );
 	}
 
 private:
-	template< bool >
-	inline std::enable_if_t< std::is_floating_point< Parameter >::value > _setParameter( Parameter prm )
+	template< typename _Parameter, bool _IsVoid >
+	inline std::enable_if_t< std::is_floating_point< _Parameter >::value && _IsVoid > _setParameter( Parameter prm )
 	{
-		vt.par = reinterpret_cast< void* >( *reinterpret_cast< uint32_t* >( &prm ) );
+		vt.par = reinterpret_cast< void* >( *reinterpret_cast< std::intptr_t* >( &prm ) );
 	}
 
-	template< bool >
-	inline std::enable_if_t< !std::is_floating_point< Parameter >::value && isVoid > _setParameter( Parameter prm )
+	template< typename _Parameter, bool _IsVoid >
+	inline std::enable_if_t< !std::is_floating_point< _Parameter >::value && _IsVoid > _setParameter( Parameter prm )
 	{
 		vt.par = reinterpret_cast< void* >( static_cast< std::intptr_t >( prm ) );
 	}
 
-	template< bool >
-	inline std::enable_if_t< !std::is_floating_point< Parameter >::value && !isVoid > _setParameter( Parameter prm )
+	template< typename _Parameter, bool _IsVoid >
+	inline std::enable_if_t< !std::is_floating_point< _Parameter >::value && !_IsVoid > _setParameter( Parameter prm )
 	{
 		vt.par = reinterpret_cast< void* >( prm );
 	}
 
-	template< bool >
-	static std::enable_if_t< isVoid && std::is_floating_point< Parameter >::value > callback( void* p )
+	template< typename _Parameter, bool _IsVoid >
+	static std::enable_if_t< _IsVoid && std::is_floating_point< _Parameter >::value > callback( void* p )
 	{
 		Parameter prm;
 		*reinterpret_cast< uint32_t* >( &prm ) = reinterpret_cast< std::intptr_t >( p );
 		Pointer( prm );
 	}
 
-	template< bool >
-	static std::enable_if_t< isVoid && !std::is_floating_point< Parameter >::value > callback( void* p )
+	template< typename _Parameter, bool _IsVoid >
+	static std::enable_if_t< _IsVoid && !std::is_floating_point< _Parameter >::value > callback( void* p )
 	{
 		Pointer( static_cast< Parameter >( reinterpret_cast< std::intptr_t >( p ) ) );
 	}
 
-	template< bool >
-	static std::enable_if_t< !isVoid > callback( void* p )
+	template< typename _Parameter, bool _IsVoid >
+	static std::enable_if_t< !_IsVoid > callback( void* p )
 	{
 		auto obj = reinterpret_cast< typename Info::ClassType* >( p );
 		( obj->*Pointer )();

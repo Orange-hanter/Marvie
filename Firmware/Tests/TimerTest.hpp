@@ -1,7 +1,8 @@
-#include "Core/Timer.h"
-#include "Core/ThreadsQueue.h"
 #include "Core/Assert.h"
 #include "Core/MemoryStatus.h"
+#include "Core/Thread.h"
+#include "Core/ThreadsQueue.h"
+#include "Core/Timer.h"
 
 namespace TimerTest
 {
