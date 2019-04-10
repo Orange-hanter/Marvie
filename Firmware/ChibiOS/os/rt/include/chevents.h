@@ -195,7 +195,7 @@ static inline void chEvtRegisterMaskWithFlags(event_source_t *esp,
                                               eventflags_t wflags) {
 
   chSysLock();
-  chEvtRegisterThreadMaskWithFlagsI(esp, elp, currp, events, (eventflags_t)-1);
+  chEvtRegisterThreadMaskWithFlagsI(esp, elp, currp, events, wflags);
   chSysUnlock();
 }
 
