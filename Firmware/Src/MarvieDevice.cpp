@@ -534,6 +534,8 @@ void MarvieDevice::mainThreadMain()
 		}
 		if( em & MainThreadEvent::RestartRequestEvent )
 		{
+			mLinkServer->stopListening();
+			mLinkServer->waitForStateChanged();
 			ejectSdCard();
 			backup->failureDesc.pwrDown.power = false;
 			__NVIC_SystemReset();
@@ -758,38 +760,44 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 		}
 		if( mLinkServer->state() != MLinkServer::State::Connected )
 			continue;
-		if( em & MLinkThreadEvent::ConfigResetEvent )
+		if( mLinkServer->accountIndex() != 0 )
 		{
-			mLinkServer->sendPacket( MarviePackets::Type::ConfigResetType, nullptr, 0 );
-			syncConfigNum = ( uint32_t )-1;
-		}
-		if( em & MLinkThreadEvent::ConfigChangedEvent )
-			mLinkSync( false );
-		if( em & MLinkThreadEvent::SensorUpdateEvent )
-		{
-			configMutex.lock();
-			if( syncConfigNum == configNum )
+			if( em & MLinkThreadEvent::ConfigResetEvent )
 			{
-				for( uint i = 0; i < sensorsCount; ++i )
-				{
-					if( !sensors[i].updatedForMLink )
-						continue;
-					sensors[i].updatedForMLink = false;
-					sendSensorDataM( i, sensorDataChannel );
-				}
+				mLinkServer->sendPacket( MarviePackets::Type::ConfigResetType, nullptr, 0 );
+				syncConfigNum = ( uint32_t )-1;
 			}
-			configMutex.unlock();
+			if( em & MLinkThreadEvent::ConfigChangedEvent )
+				mLinkSync( false );
+			if( em & MLinkThreadEvent::SensorUpdateEvent )
+			{
+				configMutex.lock();
+				if( syncConfigNum == configNum )
+				{
+					for( uint i = 0; i < sensorsCount; ++i )
+					{
+						if( !sensors[i].updatedForMLink )
+							continue;
+						sensors[i].updatedForMLink = false;
+						sendSensorDataM( i, sensorDataChannel );
+					}
+				}
+				configMutex.unlock();
+			}
 		}
 		if( em & MLinkThreadEvent::StatusUpdateEvent )
 		{
 			chVTSet( &timer, TIME_MS2I( StatusInterval ), mLinkServerHandlerThreadTimersCallback, ( void* )MLinkThreadEvent::StatusUpdateEvent );
 			sendDeviceStatus();
-			sendAnalogInputsData();
-			sendDigitInputsData();
+			if( mLinkServer->accountIndex() != 0 )
+			{
+				sendAnalogInputsData();
+				sendDigitInputsData();
+			}
 
 			configMutex.lock();
 			sendServiceStatisticsM();
-			if( syncConfigNum == configNum )
+			if( mLinkServer->accountIndex() != 0 && syncConfigNum == configNum )
 			{
 				for( uint i = 0; i < vPortsCount; ++i )
 					sendVPortStatusM( i );
@@ -1679,15 +1687,20 @@ uint32_t MarvieDevice::digitSignals( uint32_t block )
 int MarvieDevice::authenticate( char* accountName, char* password )
 {
 	MarvieBackup* backup = MarvieBackup::instance();
-	if( strcmp( accountName, "admin" ) == 0 )
+	if( strcmp( accountName, "__system" ) == 0 )
 	{
 		if( strcmp( password, backup->settings.passwords.adminPassword ) == 0 )
 			return 0;
 	}
+	if( strcmp( accountName, "admin" ) == 0 )
+	{
+		if( strcmp( password, backup->settings.passwords.adminPassword ) == 0 )
+			return 1;
+	}
 	else if( strcmp( accountName, "observer" ) == 0 )
 	{
 		if( strcmp( password, backup->settings.passwords.observerPassword ) == 0 )
-			return 1;
+			return 2;
 	}
 
 	return -1;
@@ -1834,7 +1847,7 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 	}
 	else
 	{
-		if( mLinkServer->accountIndex() != 0 )
+		if( mLinkServer->accountIndex() != 0 && mLinkServer->accountIndex() != 1 )
 		{
 			if( type != MarviePackets::Type::TerminalInput )
 				mLinkServer->sendPacket( MarviePackets::Type::IllegalAccessType, nullptr, 0 );
@@ -1858,7 +1871,7 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 			{
 				MarvieBackup* backup = MarvieBackup::instance();
 				backup->acquire();
-				if( index == 0 )
+				if( index == 0 || index == 1 )
 					strcpy( backup->settings.passwords.adminPassword, newPassword->newPassword );
 				else
 					strcpy( backup->settings.passwords.observerPassword, newPassword->newPassword );
@@ -1926,37 +1939,25 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 void MarvieDevice::mLinkSync( bool coldSync )
 {
 	mLinkServer->sendPacket( MarviePackets::Type::SyncStartType, nullptr, 0 );
-	auto channel = mLinkServer->createDataChannel();
 	if( coldSync )
 	{
-		auto channel = mLinkServer->createDataChannel();
-		if( channel->open( MarviePackets::ComplexChannel::SupportedSensorsListChannel, "", 0 ) )
-		{
-			char* data = new char[1024];
-			uint32_t n = 0;
-			for( auto i = SensorService::beginSensorsList(); i != SensorService::endSensorsList(); ++i )
-			{
-				uint32_t len = strlen( ( *i ).name );
-				if( 1024 - n < len )
-					channel->sendData( ( uint8_t* )data, n ), n = 0;
-				memcpy( data + n, ( *i ).name, len );
-				n += len;
-				if( i + 1 != SensorService::endSensorsList() )
-				{
-					if( n == 1024 )
-						channel->sendData( ( uint8_t* )data, n ), n = 0;
-					data[n++] = ',';
-				}
-			}
-			channel->sendData( ( uint8_t* )data, n );
-			channel->close();
-			delete data;
-		}
-		delete channel;
-
 		sendFirmwareDesc();
+		sendSupportedSensorsList();
 	}
 
+	sendDeviceStatus();
+	sendEthernetStatus();
+	configMutex.lock();
+	sendGsmModemStatusM();
+	sendServiceStatisticsM();
+	configMutex.unlock();
+	if( mLinkServer->accountIndex() == 0 )
+	{
+		mLinkServer->sendPacket( MarviePackets::Type::SyncEndType, nullptr, 0 );
+		return;
+	}
+
+	auto channel = mLinkServer->createDataChannel();
 	syncConfigNum = configNum;
 
 	// sending config.xml
@@ -1965,25 +1966,19 @@ void MarvieDevice::mLinkSync( bool coldSync )
 	if( xmlDataSize )
 	{
 		configXmlDataSendingSemaphore.wait( TIME_INFINITE );
-		auto channel = mLinkServer->createDataChannel();
 		if( channel->open( MarviePackets::ComplexChannel::XmlConfigSyncChannel, "", xmlDataSize ) )
 		{
 			channel->sendData( ( uint8_t* )xmlData, xmlDataSize );
 			channel->close();
 		}
-		delete channel;
 		delete xmlData;
 		configXmlDataSendingSemaphore.signal();
 	}
 
-	sendDeviceStatus();
-	sendEthernetStatus();
 	sendAnalogInputsData();
 	sendDigitInputsData();
 
 	configMutex.lock();
-	sendGsmModemStatusM();
-	sendServiceStatisticsM();
 	if( syncConfigNum == configNum )
 	{
 		mLinkServer->sendPacket( MarviePackets::Type::VPortCountType, ( uint8_t* )&vPortsCount, sizeof( vPortsCount ) );
@@ -2004,6 +1999,34 @@ void MarvieDevice::sendFirmwareDesc()
 	strcpy( desc.coreVersion, MarviePlatform::coreVersion );
 	strcpy( desc.targetName, MarviePlatform::platformType );
 	mLinkServer->sendPacket( MarviePackets::Type::FirmwareDescType, ( uint8_t* )&desc, sizeof( desc ) );
+}
+
+void MarvieDevice::sendSupportedSensorsList()
+{
+	auto channel = mLinkServer->createDataChannel();
+	if( channel->open( MarviePackets::ComplexChannel::SupportedSensorsListChannel, "", 0 ) )
+	{
+		char* data = new char[1024];
+		uint32_t n = 0;
+		for( auto i = SensorService::beginSensorsList(); i != SensorService::endSensorsList(); ++i )
+		{
+			uint32_t len = strlen( ( *i ).name );
+			if( 1024 - n < len )
+				channel->sendData( ( uint8_t* )data, n ), n = 0;
+			memcpy( data + n, ( *i ).name, len );
+			n += len;
+			if( i + 1 != SensorService::endSensorsList() )
+			{
+				if( n == 1024 )
+					channel->sendData( ( uint8_t* )data, n ), n = 0;
+				data[n++] = ',';
+			}
+		}
+		channel->sendData( ( uint8_t* )data, n );
+		channel->close();
+		delete data;
+	}
+	delete channel;
 }
 
 void MarvieDevice::sendVPortStatusM( uint32_t vPortId )

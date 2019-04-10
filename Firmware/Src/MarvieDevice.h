@@ -85,6 +85,7 @@ private:
 	void mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t size );
 	void mLinkSync( bool coldSync );
 	void sendFirmwareDesc();
+	void sendSupportedSensorsList();
 	void sendVPortStatusM( uint32_t vPortId );
 	void sendSensorDataM( uint32_t sensorId, MLinkServer::DataChannel* channel );
 	void sendDeviceStatus();
