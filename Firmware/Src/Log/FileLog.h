@@ -19,5 +19,5 @@ public:
 
 private:
 	File file;
-	chibios_rt::Mutex mutex;
+	chibios_rt::_Mutex mutex;
 };

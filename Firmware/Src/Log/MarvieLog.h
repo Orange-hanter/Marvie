@@ -76,7 +76,7 @@ private:
 	AbstractSRSensor::SignalProvider* signalProvider;
 
 	File file;
-	Mutex mutex;
+	_Mutex mutex;
 	struct SensorDesc
 	{
 		SensorDesc( AbstractSensor* sensor, const std::string* name ) : sensor( sensor ), name( name ) {}

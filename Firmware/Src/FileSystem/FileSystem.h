@@ -93,6 +93,8 @@ public:
 	static Error createFileSystem( const TCHAR* path, Format format, ClusterSize clusterSize, uint8_t* work = nullptr, uint32_t workSize = 0 );
 
 	Error lastError();
+	const char* lastErrorString();
+	static const char* errorString( Error err );
 
 private:
 	FATFS fs;

@@ -21,6 +21,7 @@
 #include "Tests/ThreadTest.hpp"
 #include "Tests/EventTest.hpp"
 #include "Tests/TimerTest.hpp"
+#include"Tests/RemoteTerminalTest.hpp"
 
 #include <algorithm>
 
@@ -36,9 +37,9 @@ int main()
 	static_assert( std::__default_lock_policy == std::_S_atomic, "__default_lock_policy != _S_atomic" );
 
 	{
-		ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );
-		TimerTest::test();
-		while( true );
+		//ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );
+		//TimerTest::test();
+		//while( true );
 	}
 
 	{
@@ -124,7 +125,23 @@ int main()
 	/*LwipEthernetTest::test();
 	while( true );*/
 
+	/*GsmPPPTest::test();
+	while( true );*/
+
 	ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );
+
+	{
+		/*auto conf = EthernetThread::instance()->currentConfig();
+		conf.addressMode = EthernetThread::AddressMode::Static;
+		conf.ipAddress = IpAddress( 192, 168, 10, 10 );
+		conf.netmask = 0xFFFFFF00;
+		conf.gateway = IpAddress( 192, 168, 10, 1 );
+		EthernetThread::instance()->setConfig( conf );
+		EthernetThread::instance()->startThread();
+		RemoteTerminalTest::test();
+		while( true )
+			;*/
+	}
 
 	MarvieDevice::instance()->exec();
 	while( true )

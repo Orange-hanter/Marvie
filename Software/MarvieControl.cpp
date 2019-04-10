@@ -72,8 +72,6 @@ MarvieControl::MarvieControl( QWidget *parent ) : QWidget( parent ), vPortIdComb
 	accountWindow->setPalette( palette() );
 #endif
 
-	mlinkIODevice = nullptr;
-
 	sensorsInit();
 
 	sensorNameTimer.setInterval( 300 );
@@ -338,12 +336,16 @@ MarvieControl::MarvieControl( QWidget *parent ) : QWidget( parent ), vPortIdComb
 	validator->setRegExp( QRegExp( "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$" ) );
 	ui.gatewayLineEdit->setValidator( validator );
 
+	ui.terminal->setFrameShape( QFrame::Shape::NoFrame );
+	mlinkTerminal = new MLinkTerminal( &mlink, ui.terminal );
+
 	resetDeviceInfo();
 
 	QObject::connect( ui.controlButton, &QToolButton::released, this, &MarvieControl::mainMenuButtonClicked );
 	QObject::connect( ui.monitoringButton, &QToolButton::released, this, &MarvieControl::mainMenuButtonClicked );
 	QObject::connect( ui.logButton, &QToolButton::released, this, &MarvieControl::mainMenuButtonClicked );
 	QObject::connect( ui.settingsButton, &QToolButton::released, this, &MarvieControl::mainMenuButtonClicked );
+	QObject::connect( ui.terminalButton, &QToolButton::released, this, &MarvieControl::mainMenuButtonClicked );
 	QObject::connect( ui.mainSettingsButton, &QToolButton::released, this, &MarvieControl::settingsMenuButtonClicked );
 	QObject::connect( ui.securitySettingsButton, &QToolButton::released, this, &MarvieControl::settingsMenuButtonClicked );
 	QObject::connect( ui.sensorsSettingsButton, &QToolButton::released, this, &MarvieControl::settingsMenuButtonClicked );
@@ -447,7 +449,7 @@ MarvieControl::MarvieControl( QWidget *parent ) : QWidget( parent ), vPortIdComb
 	ui.rs232ComboBox->installEventFilter( this );
 
 	newConfigButtonClicked();
-
+	//ui.terminalButton->hide();
 	//////////////////////////////////////////////////////////////////////////
 	//struct Data
 	//{
@@ -630,7 +632,7 @@ bool MarvieControl::eventFilter( QObject *obj, QEvent *event )
 
 void MarvieControl::mainMenuButtonClicked()
 {
-	QToolButton* buttons[] = { ui.controlButton, ui.monitoringButton, ui.logButton, ui.settingsButton };
+	QToolButton* buttons[] = { ui.controlButton, ui.monitoringButton, ui.logButton, ui.settingsButton, ui.terminalButton };
 	QObject* s = sender();
 	for( int i = 0; i < sizeof( buttons ) / sizeof( *buttons ); ++i )
 	{
@@ -2185,7 +2187,7 @@ void MarvieControl::sensorsInit()
 		{
 			if( c1.tagName() == "int" )
 			{
-				static const QString minStr = QString( "%1" ).arg( std::numeric_limits< int >::min() );
+				static const QString minStr = QString( "%1" ).arg( std::numeric_limits< int >::lowest() );
 				static const QString maxStr = QString( "%1" ).arg( std::numeric_limits< int >::max() );
 				desc.settings.prmList.append( PrmPointer(
 					new SensorDesc::Settings::IntParameter( c1.text(),
@@ -2195,7 +2197,7 @@ void MarvieControl::sensorsInit()
 			}
 			else if( c1.tagName() == "float" )
 			{
-				static const QString minStr = QString( "%1" ).arg( std::numeric_limits< float >::min() );
+				static const QString minStr = QString( "%1" ).arg( std::numeric_limits< float >::lowest() );
 				static const QString maxStr = QString( "%1" ).arg( std::numeric_limits< float >::max() );
 				desc.settings.prmList.append( PrmPointer(
 					new SensorDesc::Settings::FloatParameter( c1.text(),
@@ -2205,7 +2207,7 @@ void MarvieControl::sensorsInit()
 			}
 			else if( c1.tagName() == "double" )
 			{
-				static const QString minStr = QString( "%1" ).arg( std::numeric_limits< double >::min() );
+				static const QString minStr = QString( "%1" ).arg( std::numeric_limits< double >::lowest() );
 				static const QString maxStr = QString( "%1" ).arg( std::numeric_limits< double >::max() );
 				desc.settings.prmList.append( PrmPointer(
 					new SensorDesc::Settings::DoubleParameter( c1.text(),
@@ -4409,4 +4411,95 @@ QString MarvieControl::SdStatistics::printSize( uint64_t size )
 	if( size < 1024 * 1024 * 1024 )
 		return QString( "%1.%2 MB" ).arg( size / 1024 / 1024 ).arg( ( ( size + 1 ) % ( 1024 * 1024 ) ) * 100 / ( 1024 * 1024 ), 2, 10, QChar( '0' ) );
 	return QString( "%1.%2 GB" ).arg( size / 1024 / 1024 / 1024 ).arg( ( ( size + 1 ) % ( 1024 * 1024 * 1024 ) ) * 100 / ( 1024 * 1024 * 1024 ), 2, 10, QChar( '0' ) );
+}
+
+
+MLinkTerminal::MLinkTerminal( MLinkClient* mlink, RemoteTerminalClient* terminal ) : mlink( mlink ), terminal( terminal )
+{
+	QObject::connect( mlink, &MLinkClient::stateChanged, this, &MLinkTerminal::mlinkStateChanged, Qt::QueuedConnection );
+	QObject::connect( mlink, &MLinkClient::newPacketAvailable, this, &MLinkTerminal::mlinkNewPacketAvailable, Qt::QueuedConnection );
+	QObject::connect( &timer, &QTimer::timeout, this, &MLinkTerminal::timeout );
+
+	open( QIODevice::ReadWrite );
+	terminal->setIODevice( this );
+}
+
+
+MLinkTerminal::~MLinkTerminal()
+{
+	terminal->disable();
+	terminal->setIODevice( nullptr );
+}
+
+qint64 MLinkTerminal::writeData( const char *data, qint64 len )
+{
+	if( !timer.isActive() )
+		timer.start( 50 );
+	out.append( data, len );
+	return len;
+}
+
+qint64 MLinkTerminal::readData( char *data, qint64 maxlen )
+{
+	if( maxlen > in.size() )
+		maxlen = in.size();
+	qCopy( in.begin(), in.begin() + maxlen, data );
+	in.remove( 0, maxlen );
+
+	return maxlen;
+}
+
+qint64 MLinkTerminal::bytesAvailable() const
+{
+	return QIODevice::bytesAvailable() + in.size();
+}
+
+qint64 MLinkTerminal::bytesToWrite() const
+{
+	return 0;
+}
+
+bool MLinkTerminal::isSequential() const
+{
+	return true;
+}
+
+void MLinkTerminal::mlinkStateChanged( MLinkClient::State state )
+{
+	if( state == MLinkClient::State::Connected )
+	{
+		terminal->synchronize();
+	}
+	else if( state == MLinkClient::State::Disconnected )
+	{
+		terminal->disable();
+		readAll();
+		out.clear();
+		timer.stop();
+	}
+}
+
+void MLinkTerminal::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
+{
+	if( type == ( uint8_t )MarviePackets::TerminalOutput )
+	{
+		in.append( data );
+		readyRead();
+	}
+}
+
+void MLinkTerminal::timeout()
+{
+	auto _out = std::move( out );
+	const char* data = _out.constData();
+	auto size = _out.size();
+	while( size )
+	{
+		auto partSize = size;
+		if( partSize > 255 )
+			partSize = 255;
+		mlink->sendPacket( ( uint8_t )MarviePackets::TerminalInput, QByteArray( data, partSize ) );
+		size -= partSize;
+		data += partSize;
+	}
 }

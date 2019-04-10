@@ -6,6 +6,8 @@
 #include "Core/Concurrent.h"
 #include "Core/CpuUsageMonitor.h"
 #include "Core/ObjectMemoryUtilizer.h"
+#include "Core/Thread.h"
+#include "Core/Timer.h"
 #include "Drivers/Interfaces/Rs485.h"
 #include "Drivers/Interfaces/SharedRs485.h"
 #include "Drivers/Interfaces/Usart.h"
@@ -20,6 +22,7 @@
 #include "MarvieXmlConfigParsers.h"
 #include "MultipleBRSensorsReader.h"
 #include "NetworkSensorReader.h"
+#include "RemoteTerminal/RemoteTerminalServer.h"
 #include "SensorService/SensorService.h"
 #include "SingleBRSensorReader.h"
 #include "_Sha1.h"
@@ -47,6 +50,7 @@ private:
 	void miskTasksThreadMain();
 	void adInputsReadThreadMain();
 	void mLinkServerHandlerThreadMain();
+	void terminalOutputThreadMain();
 	void uiThreadMain();
 	void networkTestThreadMain();
 
@@ -76,6 +80,8 @@ private:
 	bool newDataReceived( uint8_t channel, const uint8_t* data, uint32_t size ) final override;
 	void onClosing( uint8_t channel, bool canceled ) final override;
 
+	static void terminalOutput( const uint8_t* data, uint32_t size, void* p );
+
 	void mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t size );
 	void mLinkSync( bool coldSync );
 	void sendFirmwareDesc();
@@ -98,6 +104,7 @@ private:
 	static void mainTaskThreadTimersCallback( void* p );
 	static void miskTaskThreadTimersCallback( void* p );
 	static void mLinkServerHandlerThreadTimersCallback( void* p );
+	void terminalOutputTimerCallback();
 	static void adInputsReadThreadTimersCallback( void* p );
 	static void adcCallback( ADCDriver *adcp, adcsample_t *buffer, size_t n );
 	static void adcErrorCallback( ADCDriver *adcp, adcerror_t err );
@@ -106,6 +113,9 @@ public:
 	static void powerDownExtiCallback( void* );
 	static void faultHandler();
 	static void systemHaltHook( const char* reason );
+
+private:
+	static int lgbt( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] );
 
 private:
 	static MarvieDevice* _inst;
@@ -143,7 +153,7 @@ private:
 	FileLog fileLog;
 
 	// ======================================================================================
-	Mutex configMutex;
+	_Mutex configMutex;
 	uint32_t configNum;
 	uint32_t vPortsCount;
 	IODevice** vPorts;
@@ -174,14 +184,15 @@ private:
 	TcpModbusServer* tcpModbusRtuServer;
 	TcpModbusServer* tcpModbusAsciiServer;
 	TcpModbusServer* tcpModbusIpServer;
-	Mutex modbusRegistersMutex;
+	_Mutex modbusRegistersMutex;
 	uint16_t* modbusRegisters;
 	uint32_t modbusRegistersCount;
 	// ======================================================================================
 
 	BaseDynamicThread* mainThread, *miskTasksThread, *adInputsReadThread, *mLinkServerHandlerThread, *uiThread, *networkTestThread;
+	Thread* terminalOutputThread;
 	volatile bool mLinkComPortEnable = true;  // shared resource
-	Mutex configXmlFileMutex;
+	_Mutex configXmlFileMutex;
 
 	// Main thread resources =================================================================
 	enum MainThreadEvent : eventmask_t 
@@ -200,7 +211,7 @@ private:
 	FATFS fatFs;
 	FRESULT fsError;
 	SHA1::Digest configXmlHash;
-	Timer srSensorsUpdateTimer;
+	_Timer srSensorsUpdateTimer;
 	uint32_t srSensorPeriodCounter;
 	uint64_t monitoringLogSize;
 
@@ -213,10 +224,16 @@ private:
 	};
 	MLinkServer* mLinkServer;
 	uint8_t mLinkBuffer[255];
-	Mutex datFilesMutex;
+	_Mutex datFilesMutex;
 	FIL* datFiles[3]; // shared resource
 	uint32_t syncConfigNum;
-	BinarySemaphore configXmlDataSendingSemaphore;
+	_BinarySemaphore configXmlDataSendingSemaphore;
+
+	// TerminalOutput thread resources ================================================================
+	enum TerminalOutputThreadEvent : eventmask_t { TerminalOutputEvent = 1 };
+	RemoteTerminalServer terminalServer;
+	BasicTimer< decltype( &MarvieDevice::terminalOutputTimerCallback ), &MarvieDevice::terminalOutputTimerCallback > terminalOutputTimer;
+	StaticRingBuffer< uint8_t, 1024 > terminalOutputBuffer;
 
 	// Misk tasks thread resources ===========================================================
 	enum MiskTaskThreadEvent : eventmask_t { SdCardTestEvent = 1, MemoryTestEvent = 2 };

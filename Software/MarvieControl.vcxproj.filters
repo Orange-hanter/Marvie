@@ -126,6 +126,9 @@
     <ClCompile Include="MLinkClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RemoteTerminalClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="thirdparty\FramelessWindow\FramelessWindow.h">
@@ -165,6 +168,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="MarvieControl.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="RemoteTerminalClient.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

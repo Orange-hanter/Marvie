@@ -6,6 +6,7 @@
 #include "lwipthread.h"
 #include "Network/UdpSocket.h"
 #include "Network/TcpServer.h"
+#include "RemoteTerminal/CommandLineUtility.h"
 #include "stm32f4xx_flash.h"
 
 #include "Tests/UdpStressTestServer/UdpStressTestServer.h"
@@ -185,6 +186,15 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	mLinkServer = new MLinkServer;
 	mLinkServer->setAuthenticationCallback( this );
 	mLinkServer->setDataChannelCallback( this );
+	terminalServer.setOutputCallback( terminalOutput, this );
+	terminalServer.registerFunction( "ls", CommandLineUtility::ls );
+	terminalServer.registerFunction( "mkdir", CommandLineUtility::mkdir );
+	terminalServer.registerFunction( "rm", CommandLineUtility::rm );
+	terminalServer.registerFunction( "cat", CommandLineUtility::cat );
+	terminalServer.registerFunction( "ping", CommandLineUtility::ping );
+	terminalServer.registerFunction( "lgbt", lgbt );
+	terminalOutputTimer.setParameter( this );
+	terminalServer.startServer();
 
 	PingService::instance()->startService();
 	networkTestState = NetworkTestState::Off;
@@ -194,7 +204,9 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	miskTasksThread = nullptr;
 	adInputsReadThread = nullptr;
 	mLinkServerHandlerThread = nullptr;
+	terminalOutputThread = nullptr;
 	uiThread = nullptr;
+	networkTestThread = nullptr;
 }
 
 MarvieDevice* MarvieDevice::instance()
@@ -213,6 +225,7 @@ void MarvieDevice::exec()
 	mLinkServerHandlerThread = Concurrent::_run( [this]() { mLinkServerHandlerThreadMain(); }, 2048, NORMALPRIO );
 	uiThread                 = Concurrent::_run( [this]() { uiThreadMain(); },                 1024, NORMALPRIO );
 	networkTestThread        = Concurrent::_run( [this]() { networkTestThreadMain(); },        1024, NORMALPRIO );
+	terminalOutputThread     = Thread::createAndStart( ThreadProperties( 1024 ), [this]() { terminalOutputThreadMain(); } );
 
 	//mLinkServer->startListening( NORMALPRIO );
 
@@ -729,7 +742,7 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 					chVTSet( &timer, TIME_MS2I( StatusInterval ), mLinkServerHandlerThreadTimersCallback, ( void* )MLinkThreadEvent::StatusUpdateEvent );
 				}
 				else
-					chVTReset( &timer );
+					chVTReset( &timer ), terminalServer.reset();
 			}
 			if( flags & ( eventflags_t )MLinkServer::Event::NewPacketAvailable )
 			{
@@ -823,6 +836,43 @@ void MarvieDevice::uiThreadMain()
 	thread_reference_t ref = nullptr;
 	chSysLock();
 	chThdSuspendS( &ref );
+}
+
+void MarvieDevice::terminalOutputThreadMain()
+{
+	while( true )
+	{
+		auto em = Thread::waitAnyEvent( ALL_EVENTS );
+		if( em & TerminalOutputThreadEvent::TerminalOutputEvent )
+		{
+			uint32_t totalSize = terminalOutputBuffer.readAvailable();
+			if( totalSize )
+			{
+				uint8_t* data[2];
+				uint32_t dataSize[2];
+				ringToLinearArrays( terminalOutputBuffer.begin(), totalSize, data, dataSize, data + 1, dataSize + 1 );
+				while( dataSize[0] )
+				{
+					uint32_t partSize = dataSize[0];
+					if( partSize > 255 )
+						partSize = 255;
+					mLinkServer->sendPacket( MarviePackets::Type::TerminalOutput, data[0], partSize );
+					data[0] += partSize;
+					dataSize[0] -= partSize;
+				}
+				while( dataSize[1] )
+				{
+					uint32_t partSize = dataSize[1];
+					if( partSize > 255 )
+						partSize = 255;
+					mLinkServer->sendPacket( MarviePackets::Type::TerminalOutput, data[1], partSize );
+					data[1] += partSize;
+					dataSize[1] -= partSize;
+				}
+				terminalOutputBuffer.read( nullptr, totalSize );
+			}
+		}
+	}
 }
 
 void MarvieDevice::networkTestThreadMain()
@@ -1727,6 +1777,31 @@ void MarvieDevice::onClosing( uint8_t ch, bool canceled )
 	datFilesMutex.unlock();
 }
 
+
+void MarvieDevice::terminalOutput( const uint8_t* data, uint32_t size, void* p )
+{
+	MarvieDevice* marvieDevice = reinterpret_cast< MarvieDevice* >( p );
+	CriticalSectionLocker locker;
+	while( size )
+	{
+		if( marvieDevice->mLinkServer->state() != MLinkServer::State::Connected )
+			return;
+		uint32_t partSize = size;
+		if( partSize > marvieDevice->terminalOutputBuffer.capacity() )
+			partSize = marvieDevice->terminalOutputBuffer.capacity();
+		if( marvieDevice->terminalOutputBuffer.writeAvailable() <= partSize )
+		{
+			marvieDevice->terminalOutputThread->signalEventsI( TerminalOutputThreadEvent::TerminalOutputEvent );
+			marvieDevice->terminalOutputTimer.stop();
+		}
+		else
+			marvieDevice->terminalOutputTimer.start( TIME_MS2I( 1 ) );
+		marvieDevice->terminalOutputBuffer.write( data, partSize, TIME_INFINITE );
+		data += partSize;
+		size -= partSize;
+	}
+}
+
 void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t size )
 {
 	if( type == MarviePackets::Type::GetConfigXmlType )
@@ -1761,11 +1836,16 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 	{
 		if( mLinkServer->accountIndex() != 0 )
 		{
-			mLinkServer->sendPacket( MarviePackets::Type::IllegalAccessType, nullptr, 0 );
+			if( type != MarviePackets::Type::TerminalInput )
+				mLinkServer->sendPacket( MarviePackets::Type::IllegalAccessType, nullptr, 0 );
 			return;
 		}
 
-		if( type == MarviePackets::Type::ChangeAccountPasswordType )
+		if( type == MarviePackets::Type::TerminalInput )
+		{
+			terminalServer.input( data, size );
+		}
+		else if( type == MarviePackets::Type::ChangeAccountPasswordType )
 		{
 			auto newPassword = reinterpret_cast< MarviePackets::AccountNewPassword* >( data );
 			int index = authenticate( newPassword->name, newPassword->currentPassword );
@@ -2415,6 +2495,14 @@ void MarvieDevice::mLinkServerHandlerThreadTimersCallback( void* p )
 	chSysUnlockFromISR();
 }
 
+
+void MarvieDevice::terminalOutputTimerCallback()
+{
+	chSysLockFromISR();
+	terminalOutputThread->signalEventsI( TerminalOutputThreadEvent::TerminalOutputEvent );
+	chSysUnlockFromISR();
+}
+
 void MarvieDevice::adInputsReadThreadTimersCallback( void* p )
 {
 	chSysLockFromISR();
@@ -2480,6 +2568,36 @@ void MarvieDevice::systemHaltHook( const char* reason )
 	strncpy( failureDesc.threadName, "none", 5 ); // fix this!
 	assert( false );
 	NVIC_SystemReset();
+}
+
+int MarvieDevice::lgbt( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] )
+{
+	const char text[] = "LGBT LGBT LGBT LGBT LGBT LGBT LGBT LGBT\n";
+	terminal->setBackgroundColor( 225, 23, 23 );
+	terminal->setTextColor( 225, 23, 23 );
+	terminal->stdOutWrite( ( uint8_t* )text, sizeof( text ) - 1 );
+
+	terminal->setBackgroundColor( 252, 144, 25 );
+	terminal->setTextColor( 252, 144, 25 );
+	terminal->stdOutWrite( ( uint8_t* )text, sizeof( text ) - 1 );
+
+	terminal->setBackgroundColor( 252, 242, 25 );
+	terminal->setTextColor( 252, 242, 25 );
+	terminal->stdOutWrite( ( uint8_t* )text, sizeof( text ) - 1 );
+
+	terminal->setBackgroundColor( 7, 130, 38 );
+	terminal->setTextColor( 7, 130, 38 );
+	terminal->stdOutWrite( ( uint8_t* )text, sizeof( text ) - 1 );
+
+	terminal->setBackgroundColor( 48, 50, 254 );
+	terminal->setTextColor( 48, 50, 254 );
+	terminal->stdOutWrite( ( uint8_t* )text, sizeof( text ) - 1 );
+
+	terminal->setBackgroundColor( 117, 0, 135 );
+	terminal->setTextColor( 117, 0, 135 );
+	terminal->stdOutWrite( ( uint8_t* )text, sizeof( text ) - 1 );
+
+	return 0;
 }
 
 extern "C"

@@ -63,7 +63,7 @@ private:
 		sysinterval_t interval;
 		binary_semaphore_t sem;
 	};
-	Mutex mutex;
+	_Mutex mutex;
 	NanoList< Request* > reqList;
 	sysinterval_t pongTimeout;
 	uint16_t seqNum;

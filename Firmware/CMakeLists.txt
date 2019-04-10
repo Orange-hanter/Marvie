@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.11)
 enable_language(ASM)
 #set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-set(MARVIE_FIRMWARE_VERSION_BASE "0.8.0.7" CACHE STRING "Marvie base firmware version" FORCE)
+set(MARVIE_FIRMWARE_VERSION_BASE "0.8.1.0" CACHE STRING "Marvie base firmware version" FORCE)
 if(NOT MODEM_PWRKEY_LEVEL)
 	set(MODEM_PWRKEY_LEVEL "H")
 endif()
@@ -100,6 +100,7 @@ set(fileSystem_SRCS
 	${CMAKE_SOURCE_DIR}/Src/FileSystem/Dir.cpp
 	${CMAKE_SOURCE_DIR}/Src/FileSystem/File.cpp
 	${CMAKE_SOURCE_DIR}/Src/FileSystem/FileInfo.cpp
+	${CMAKE_SOURCE_DIR}/Src/FileSystem/FileInfoReader.cpp
 	${CMAKE_SOURCE_DIR}/Src/FileSystem/FileSystem.cpp
 )
 
@@ -126,6 +127,12 @@ set(network_SRCS
 	${CMAKE_SOURCE_DIR}/Src/Network/TcpServer.cpp
 	${CMAKE_SOURCE_DIR}/Src/Network/TcpSocket.cpp
 	${CMAKE_SOURCE_DIR}/Src/Network/UdpSocket.cpp
+)
+
+set(remoteTerminal_SRCS
+	${CMAKE_SOURCE_DIR}/Src/RemoteTerminal/CommandLineParser.cpp
+	${CMAKE_SOURCE_DIR}/Src/RemoteTerminal/CommandLineUtility.cpp
+	${CMAKE_SOURCE_DIR}/Src/RemoteTerminal/RemoteTerminalServer.cpp
 )
 
 set(sensorService_SRCS
@@ -173,18 +180,18 @@ set(STM32_LINKER_SCRIPT ${ChibiOS_LINKER_SCRIPT})
 
 set(firmware_SRCS
 	${CMAKE_SOURCE_DIR}/Config/board.c
+	${CMAKE_SOURCE_DIR}/Src/MarvieBackup.cpp
+	${CMAKE_SOURCE_DIR}/Src/MarviePlatform.cpp
+	${CMAKE_SOURCE_DIR}/Src/SingleBRSensorReader.cpp
+	${CMAKE_SOURCE_DIR}/Src/stm32f4xx_flash.c
     ${CMAKE_SOURCE_DIR}/Src/BRSensorReader.cpp
     ${CMAKE_SOURCE_DIR}/Src/Crc32HW.cpp
     ${CMAKE_SOURCE_DIR}/Src/main.cpp
     ${CMAKE_SOURCE_DIR}/Src/MarvieDevice.cpp
-	${CMAKE_SOURCE_DIR}/Src/MarviePlatform.cpp
-	${CMAKE_SOURCE_DIR}/Src/MarvieBackup.cpp
     ${CMAKE_SOURCE_DIR}/Src/MarvieXmlConfigParsers.cpp
     ${CMAKE_SOURCE_DIR}/Src/MLinkServer.cpp
     ${CMAKE_SOURCE_DIR}/Src/MultipleBRSensorsReader.cpp
     ${CMAKE_SOURCE_DIR}/Src/NetworkSensorReader.cpp
-    ${CMAKE_SOURCE_DIR}/Src/SingleBRSensorReader.cpp
-	${CMAKE_SOURCE_DIR}/Src/stm32f4xx_flash.c
 	#${CMAKE_SOURCE_DIR}/Src/usbcfg.c
 )
 
@@ -197,6 +204,7 @@ add_executable(${CMAKE_PROJECT_NAME}_firmware.elf
 	${filters_SRCS}
 	${log_SRCS}
 	${network_SRCS}
+	${remoteTerminal_SRCS}
 	${sensorService_SRCS}
 	${support_SRCS}
 	${ChibiOS_SOURCES}

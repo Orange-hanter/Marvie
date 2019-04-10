@@ -4,7 +4,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <QTDIR>C:\Qt\5.12.1\msvc2017_64</QTDIR>
     <RemoteDebuggerConnection>RemoteWithoutAuthentication</RemoteDebuggerConnection>
-    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
     <RemoteDebuggerServerName>25.94.145.201</RemoteDebuggerServerName>
     <RemoteDebuggerCommand>C:\Users\Orange-hanter\Desktop\MarvieControl\MarvieControl.exe</RemoteDebuggerCommand>
     <RemoteDebuggerCommandArguments>

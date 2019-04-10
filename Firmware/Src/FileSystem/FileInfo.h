@@ -7,8 +7,11 @@ class FileInfo
 {
 	friend class Dir;
 	friend class File;
+	friend class FileInfoReader;
 
 	FileInfo();
+	FileInfo( FILINFO* info );
+	void set( FILINFO* info );
 
 public:
 	using Error = FileSystem::Error;

@@ -22,3 +22,7 @@ Software/Tests/SdDataDownloader/SdDataDownloader/x64/
 Software/Tests/SdDataDownloader/x64/
 Software/Win32/
 Software/x64/
+Software/Tests/RemoteTerminalTest/RemoteTerminalTest/x64/
+Software/Tests/RemoteTerminalTest/x64/
+Software/Tests/RemoteTerminalTest/.vs/
+Software/Tests/RemoteTerminalTest/RemoteTerminalTest/GeneratedFiles/

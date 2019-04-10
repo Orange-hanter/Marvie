@@ -39,7 +39,7 @@ public:
 
 	bool start() override;
 
-	template< typename Function, typename... Args >
+	template< typename Function, typename... Args, typename = std::enable_if_t< !std::is_same< ThreadProperties, std::decay_t< Function > >::value > >
 	static Thread* create( Function&& function, Args&&... args )
 	{
 		return new _FunctionThread< Function, Args... >( std::forward< Function >( function ), std::forward< Args >( args )... );
@@ -57,7 +57,7 @@ public:
 		return thread;
 	}
 
-	template< typename Function, typename... Args >
+	template< typename Function, typename... Args, typename = std::enable_if_t< !std::is_same< ThreadProperties, std::decay_t< Function > >::value > >
 	static Thread* createAndStart( Function&& function, Args&&... args )
 	{
 		auto thread = new _FunctionThread< Function, Args... >( std::forward< Function >( function ), std::forward< Args >( args )... );
@@ -78,7 +78,7 @@ public:
 		if( thread == nullptr )
 			return nullptr;
 		thread->setStackSize( props.stackSize, props.stackPolicy );
-		thread->setPrioriry( props.priority );
+		thread->setPriority( props.priority );
 		thread->setName( props.name );
 		if( !thread->start() )
 		{

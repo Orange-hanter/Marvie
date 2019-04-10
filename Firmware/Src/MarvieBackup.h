@@ -83,5 +83,5 @@ struct MarvieBackup
 	void release();
 
 private:
-	static chibios_rt::Mutex mutex;
+	static chibios_rt::_Mutex mutex;
 };

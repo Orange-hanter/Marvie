@@ -76,8 +76,8 @@ private:
 
 private:
 	Usart* usart;
-	Mutex mutex;
-	BinarySemaphore sem;
+	_Mutex mutex;
+	_BinarySemaphore sem;
 	NanoList< SharedRs485* > list;
 	SharedRs485* current;
 };

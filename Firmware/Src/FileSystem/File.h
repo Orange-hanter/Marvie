@@ -34,6 +34,7 @@ public:
 	uint64_t size();
 
 	Error lastError();
+	const char* lastErrorString();
 
 private:
 	string _name;

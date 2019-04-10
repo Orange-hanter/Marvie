@@ -26,6 +26,8 @@
 #include "ui_MarvieControl.h"
 #include "ui_SdStatistics.h"
 
+class MLinkTerminal;
+
 #ifdef USE_FRAMELESS_WINDOW
 class MarvieControl : public FramelessWidget
 #else
@@ -155,7 +157,6 @@ private:
 
 private:
 	MLinkClient mlink;
-	QIODevice* mlinkIODevice;
 	AccountWindow* accountWindow;
 
 	class XmlMessageHandler : public QAbstractMessageHandler
@@ -243,5 +244,31 @@ private:
 	enum class SdCardStatus : uint8_t { Unknown, NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } deviceSdCardStatus;
 	enum class LogState : uint8_t { Unknown, Off, Stopped, Working, Archiving, Stopping } deviceLogState;
 
+	MLinkTerminal* mlinkTerminal;
+
 	Ui::MarvieControlClass ui;
+};
+
+class MLinkTerminal : public QIODevice
+{
+	Q_OBJECT
+
+	MLinkClient* mlink;
+	RemoteTerminalClient* terminal;
+	QByteArray in, out;
+	QTimer timer;
+
+public:
+	MLinkTerminal( MLinkClient* mlink, RemoteTerminalClient* terminal );
+	~MLinkTerminal();
+	qint64 writeData( const char *data, qint64 len ) override;
+	qint64 readData( char *data, qint64 maxlen ) override;
+	qint64 bytesAvailable() const override;
+	qint64 bytesToWrite() const override;
+	bool isSequential() const override;
+
+private slots:
+	void mlinkStateChanged( MLinkClient::State );
+	void mlinkNewPacketAvailable( uint8_t type, QByteArray data );
+	void timeout();
 };

@@ -5,10 +5,12 @@
 
 int main( int argc, char *argv[] )
 {
- 	QApplication a( argc, argv );
- 	a.setStyle( "Fusion" );
- 	QLocale::setDefault( QLocale( QLocale::English, QLocale::UnitedKingdom ) );
- 	qsrand( time( nullptr ) );
+	QApplication a( argc, argv );
+	QFontDatabase::addApplicationFont( ":/MarvieControl/fonts/Droid Sans Mono.ttf" );
+	QFontDatabase::addApplicationFont( ":/MarvieControl/fonts/Tahoma.ttf" );
+	a.setStyle( "Fusion" );
+	QLocale::setDefault( QLocale( QLocale::English, QLocale::UnitedKingdom ) );
+	qsrand( time( nullptr ) );
 
 	/*MonitoringLog monitoringLog;
 	QList< MonitoringLog::SensorDesc > list;

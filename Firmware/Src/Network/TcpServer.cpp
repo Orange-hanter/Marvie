@@ -8,7 +8,7 @@
 #error "Need recursive mutexes"
 #endif
 
-BinarySemaphore TcpServer::sem( false );
+_BinarySemaphore TcpServer::sem( false );
 netconn* TcpServer::blockCon = nullptr;
 
 TcpServer::TcpServer()

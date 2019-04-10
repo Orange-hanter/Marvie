@@ -35,6 +35,6 @@ private:
 	mutable int32_t recvCounter;
 	volatile bool prevState;
 	EvtSource evtSource;
-	static BinarySemaphore sem;
+	static _BinarySemaphore sem;
 	static netconn* blockCon;
 };

@@ -35,7 +35,9 @@ namespace MarviePackets
 		ChangeAccountPasswordType,
 		ChangeAccountPasswordResultType,
 		AnalogInputsDataType,
-		DigitInputsDataType
+		DigitInputsDataType,
+		TerminalInput,
+		TerminalOutput
 	};
 	enum ComplexChannel
 	{

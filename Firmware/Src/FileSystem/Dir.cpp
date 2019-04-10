@@ -237,9 +237,22 @@ uint64_t Dir::contentSize()
 	return totalSize;
 }
 
+
+Dir::Error Dir::lastError()
+{
+	return _err;
+}
+
+
+const char* Dir::lastErrorString()
+{
+	return FileSystem::errorString( _err );
+}
+
 void Dir::swap( Dir& other )
 {
 	_path.swap( other._path );
+	std::swap( _err, other._err );
 }
 
 Dir& Dir::operator=( Dir&& other )

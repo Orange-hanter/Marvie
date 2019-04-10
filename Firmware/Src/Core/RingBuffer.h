@@ -25,6 +25,7 @@ public:
 	bool isOverflowed() const;
 	void resetOverflowFlag();
 	void clear();
+	uint32_t capacity();
 
 	Type& first();
 	Type& back();
@@ -282,6 +283,12 @@ void BaseRingBuffer< Type >::clear()
 	wrPtr = rdPtr = buffer;
 	overflowFlag = false;
 	chSysRestoreStatusX( sysStatus );
+}
+
+template< typename Type >
+uint32_t BaseRingBuffer<Type>::capacity()
+{
+	return size;
 }
 
 template< typename Type >

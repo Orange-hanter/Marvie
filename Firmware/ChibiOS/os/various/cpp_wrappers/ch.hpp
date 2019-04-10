@@ -33,7 +33,7 @@
 namespace chibios_rt {
 
   /* Forward declarations */
-  class Mutex;
+  class _Mutex;
 
   /*------------------------------------------------------------------------*
    * chibios_rt::System                                                     *
@@ -270,14 +270,14 @@ namespace chibios_rt {
   /**
    * @brief   Timer class.
    */
-  class Timer {
+  class _Timer {
   public:
     /**
      * @brief   Embedded @p VirtualTimer structure.
      */
     ::virtual_timer_t timer_ref;
 	
-	Timer();
+	_Timer();
 
     /**
      * @brief   Enables a virtual timer.
@@ -861,7 +861,7 @@ namespace chibios_rt {
      *
      * @api
      */
-    static void unlockMutex(Mutex *mp);
+    static void unlockMutex(_Mutex *mp);
 
     /**
      * @brief   Unlocks the next owned mutex in reverse lock order.
@@ -875,7 +875,7 @@ namespace chibios_rt {
      *
      * @sclass
      */
-    static void unlockMutexS(Mutex *mp);
+    static void unlockMutexS(_Mutex *mp);
 
     /**
      * @brief   Unlocks all the mutexes owned by the invoking thread.
@@ -1132,7 +1132,7 @@ namespace chibios_rt {
   /**
    * @brief   Class encapsulating a binary semaphore.
    */
-  class BinarySemaphore {
+  class _BinarySemaphore {
   public:
     /**
      * @brief   Embedded @p ::Semaphore structure.
@@ -1150,7 +1150,7 @@ namespace chibios_rt {
      *
      * @init
      */
-    BinarySemaphore(bool taken);
+    _BinarySemaphore(bool taken);
 
     /**
      * @brief   Wait operation on the binary semaphore.
@@ -1288,7 +1288,7 @@ namespace chibios_rt {
   /**
    * @brief   Class encapsulating a mutex.
    */
-  class Mutex {
+  class _Mutex {
   public:
     /**
      * @brief   Embedded @p ::Mutex structure.
@@ -1301,7 +1301,7 @@ namespace chibios_rt {
      *
      * @init
      */
-    Mutex(void);
+    _Mutex(void);
 
     /**
      * @brief   Tries to lock a mutex.
