@@ -3,13 +3,13 @@ cmake_minimum_required(VERSION 3.11)
 enable_language(ASM)
 #set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-set(MARVIE_FIRMWARE_VERSION_BASE "0.8.0.7" CACHE STRING "Marvie base firmware version" FORCE)
+set(MARVIE_FIRMWARE_VERSION_BASE "0.8.0.9" CACHE STRING "Marvie base firmware version" FORCE)
 if(NOT MODEM_PWRKEY_LEVEL)
 	set(MODEM_PWRKEY_LEVEL "H")
 endif()
 set(MARVIE_FIRMWARE_VERSION "${MARVIE_FIRMWARE_VERSION_BASE}${MODEM_PWRKEY_LEVEL}")
 configure_file(${CMAKE_SOURCE_DIR}/Src/MarviePlatform.h.in ${CMAKE_SOURCE_DIR}/Src/MarviePlatform.h)
-
+message(${MODEM_PWRKEY_LEVEL})
 set(STM32_FLASH_ORIGIN "0x08008400")
 set(STM32_FLASH_SIZE "479K")
 set(STM32_RAM_SIZE "128K")
@@ -81,6 +81,7 @@ set(drivers_SRCS
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Mr01Sensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Tem05MSensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Tem104M1Sensor.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Tem104M2Sensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Tem104Sensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Tem104USensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Term0204Sensor.cpp
@@ -131,6 +132,7 @@ set(sensorService_SRCS
 	${CMAKE_SOURCE_DIR}/Src/SensorService/SensorService.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem05MSensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem104M1SensorType.cpp
+	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem104M2SensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem104SensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem104USensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Term0204SensorType.cpp

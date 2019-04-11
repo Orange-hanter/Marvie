@@ -8,7 +8,7 @@ enum class SensorEventFlag { DataUpdated = 1 };
 class SensorData
 {
 public:
-	enum class Error : uint8_t { NoError, NoResponseError, CrcError };
+	enum class Error : uint8_t { NoError, NoResponseError, CrcError/*, PackageError*/ };
 
 	SensorData() { errType = Error::NoError; errCode = 0; chMtxObjectInit( &mutex ); }
 

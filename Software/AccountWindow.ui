@@ -135,6 +135,9 @@
           <property name="text">
            <string>Log in</string>
           </property>
+          <property name="shortcut">
+           <string>Alt+L</string>
+          </property>
          </widget>
         </item>
        </layout>

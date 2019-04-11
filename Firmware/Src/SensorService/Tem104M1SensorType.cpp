@@ -23,7 +23,7 @@ static bool tem104M1Tune( AbstractSensor* sensor, XMLElement* e, uint32_t defaul
 	return true;
 }
 
-static SensorService::Node* tem104UType = []()
+static SensorService::Node* tem104M1Type = []()
 {
 	static SensorService::Node node;
 	node.value.type = AbstractSensor::Type::BR;

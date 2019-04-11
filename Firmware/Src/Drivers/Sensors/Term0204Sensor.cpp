@@ -118,10 +118,10 @@ void TERM0204Sensor::parseTimerResponse()
 	data.instantValues.ch[1].G = b3ToFloat( buf + 6 ) * 3600.0f;
 	data.instantValues.ch[0].P = b3ToFloat( buf + 12 ) * 3600.0f;
 	data.instantValues.ch[1].P = b3ToFloat( buf + 18 ) * 3600.0f;
-	data.instantValues.ch[0].tmpSupply = b3ToFloat( buf + 24 ) * 1000.0f;
-	data.instantValues.ch[0].tmpReturn = b3ToFloat( buf + 30 ) * 1000.0f;
-	data.instantValues.ch[1].tmpSupply = b3ToFloat( buf + 36 ) * 1000.0f;
-	data.instantValues.ch[1].tmpReturn = b3ToFloat( buf + 42 ) * 1000.0f;
+	data.instantValues.ch[0].tmpSupply = b3ToFloat( buf + 24 );
+	data.instantValues.ch[0].tmpReturn = b3ToFloat( buf + 30 );
+	data.instantValues.ch[1].tmpSupply = b3ToFloat( buf + 36 );
+	data.instantValues.ch[1].tmpReturn = b3ToFloat( buf + 42 );
 	data.instantValues.pSupply = b3ToFloat( buf + 48 );
 	data.instantValues.pReturn = b3ToFloat( buf + 54 );
 	data.instantValues.vAddition = b3ToFloat( buf + 60 );

@@ -2185,7 +2185,7 @@ void MarvieControl::sensorsInit()
 		{
 			if( c1.tagName() == "int" )
 			{
-				static const QString minStr = QString( "%1" ).arg( std::numeric_limits< int >::min() );
+				static const QString minStr = QString( "%1" ).arg( std::numeric_limits< int >::lowest() );
 				static const QString maxStr = QString( "%1" ).arg( std::numeric_limits< int >::max() );
 				desc.settings.prmList.append( PrmPointer(
 					new SensorDesc::Settings::IntParameter( c1.text(),
@@ -2195,7 +2195,7 @@ void MarvieControl::sensorsInit()
 			}
 			else if( c1.tagName() == "float" )
 			{
-				static const QString minStr = QString( "%1" ).arg( std::numeric_limits< float >::min() );
+				static const QString minStr = QString( "%1" ).arg( std::numeric_limits< float >::lowest() );
 				static const QString maxStr = QString( "%1" ).arg( std::numeric_limits< float >::max() );
 				desc.settings.prmList.append( PrmPointer(
 					new SensorDesc::Settings::FloatParameter( c1.text(),
@@ -2205,7 +2205,7 @@ void MarvieControl::sensorsInit()
 			}
 			else if( c1.tagName() == "double" )
 			{
-				static const QString minStr = QString( "%1" ).arg( std::numeric_limits< double >::min() );
+				static const QString minStr = QString( "%1" ).arg( std::numeric_limits< double >::lowest() );
 				static const QString maxStr = QString( "%1" ).arg( std::numeric_limits< double >::max() );
 				desc.settings.prmList.append( PrmPointer(
 					new SensorDesc::Settings::DoubleParameter( c1.text(),

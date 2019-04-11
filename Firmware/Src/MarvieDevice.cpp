@@ -675,7 +675,7 @@ void MarvieDevice::adInputsReadThreadMain()
 			uint32_t avg = 0;
 			for( int iSample = 0; iSample < 8; ++iSample )
 				avg += adcSamples[iSample];
-			//avg /= 8;
+			//TODO
 			analogInput[i] = float( ( avg * 3300 ) / ( 4096 * 8 ) ) /*/ 1000*/;
 		}
 
