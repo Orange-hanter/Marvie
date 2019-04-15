@@ -20,6 +20,7 @@
 #include "SensorFieldAddressMapModel.h"
 #include "MonitoringLog.h"
 #include "SynchronizationWindow.h"
+#include "DeviceFirmwareInfoWidget.h"
 
 #include "../Firmware/Src/MarviePackets.h"
 
@@ -140,7 +141,7 @@ private:
 	void updateDeviceCpuLoad( float cpuLoad );
 	void updateDeviceMemoryLoad( const MarviePackets::MemoryLoad* memoryLoad );
 	void resetDeviceLoad();
-	void updateDeviceVersion();
+	void updateDeviceVersion( QString version );
 	void updateDeviceStatus( const MarviePackets::DeviceStatus* );
 	void updateEthernetStatus( const MarviePackets::EthernetStatus* );
 	void updateGsmStatus( const MarviePackets::GsmStatus* );
@@ -221,7 +222,6 @@ private:
 	}*sdStat;
 
 	QMenu* deviceVersionMenu, *sdCardMenu, *logMenu;
-
 	QMenu* monitoringDataViewMenu;
 
 	MonitoringLog monitoringLog;
@@ -238,7 +238,7 @@ private:
 
 	SynchronizationWindow* syncWindow;
 
-	QString deviceCoreVersion;
+	DeviceFirmwareInfoWidget* deviceFirmwareInfoWidget;
 	QVector< QString > deviceVPorts, deviceSensors, deviceSupportedSensors;
 	enum class DeviceState { Unknown, IncorrectConfiguration, Working, Reconfiguration } deviceState;
 	enum class SdCardStatus : uint8_t { Unknown, NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } deviceSdCardStatus;

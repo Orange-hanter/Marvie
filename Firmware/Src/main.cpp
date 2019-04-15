@@ -25,16 +25,25 @@
 
 #include <algorithm>
 
+extern char bootloaderVersion[15 + 1];
+
 int main()
 {
-	/*for( int i = 0x10000000; i < 0x10000000 + 64 * 1024; i += 4 )
-		*( uint32_t* )i = 0;*/
-	halInit();
-	chSysInit();
-	rccEnableAHB1( RCC_AHB1ENR_BKPSRAMEN, true );
-
 	static_assert( __gthread_active_p() == 1, "__gthread_active_p() != 1" );
 	static_assert( std::__default_lock_policy == std::_S_atomic, "__default_lock_policy != _S_atomic" );
+
+	/*for( int i = 0x10000000; i < 0x10000000 + 64 * 1024; i += 4 )
+		*( uint32_t* )i = 0;*/
+	rccEnableAHB1( RCC_AHB1ENR_BKPSRAMEN, true );
+	halInit();
+	chSysInit();
+
+	struct BootloaderMetaData
+	{
+		char version[15 + 1];
+	}* metaData = reinterpret_cast< BootloaderMetaData* >( 0x10000000 + 42 * 1024 );
+	metaData->version[15] = 0;
+	strcpy( bootloaderVersion, metaData->version );
 
 	{
 		//ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );

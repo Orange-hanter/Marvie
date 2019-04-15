@@ -1,0 +1,1 @@
+static char version[] = "${MARVIE_BOOTLOADER_VERSION}";

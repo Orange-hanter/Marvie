@@ -120,6 +120,26 @@ int CommandLineUtility::rm( RemoteTerminalServer::Terminal* terminal, int argc, 
 	return 0;
 }
 
+int CommandLineUtility::mv( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] )
+{
+	if( argc != 2 )
+	{
+		const char errMsg[] = "invalid arguments";
+		terminal->stdErrWrite( ( uint8_t* )errMsg, sizeof( errMsg ) - 1 );
+		return -1;
+	}
+
+	Dir dir;
+	if( !dir.rename( argv[0], argv[1] ) )
+	{
+		const char* errMsg = dir.lastErrorString();
+		terminal->stdErrWrite( ( uint8_t* )errMsg, strlen( errMsg ) );
+		return -1;
+	}
+
+	return 0;
+}
+
 int CommandLineUtility::cat( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] )
 {
 	struct Resources

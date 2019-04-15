@@ -1,4 +1,5 @@
 #include "RemoteTerminalClient.h"
+#include <QTextDocumentFragment>
 #include <QGuiApplication>
 #include <QClipboard>
 #include <QMouseEvent>
@@ -254,14 +255,14 @@ void RemoteTerminalClient::contextMenuEvent( QContextMenuEvent* e )
 		{
 			if( state == State::Input && textCursor().selectionStart() >= limitPosition )
 			{
-				QGuiApplication::clipboard()->setText( textCursor().selectedText() );
+				QGuiApplication::clipboard()->setText( textCursor().selection().toPlainText() );
 				textCursor().removeSelectedText();
 			}
 		}
 		else if( action->text() == "Copy" )
 		{
 			if( state == State::Input || state == State::Disabled )
-				QGuiApplication::clipboard()->setText( textCursor().selectedText() );
+				QGuiApplication::clipboard()->setText( textCursor().selection().toPlainText() );
 		}
 		else if( action->text() == "Paste" )
 		{

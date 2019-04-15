@@ -48,6 +48,7 @@ void FileLog::addRecorg( const char* data, uint32_t lenght )
 	file.write( ( uint8_t* )str, s - str );
 	file.write( ( uint8_t* )data, lenght );
 	file.write( ( uint8_t* )"\n", 1 );
+	file.flush();
 	mutex.unlock();
 }
 

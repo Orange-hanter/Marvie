@@ -221,6 +221,7 @@
     <ClCompile Include="Crc32SW.cpp" />
     <ClCompile Include="DataTransferProgressWindow.cpp" />
     <ClCompile Include="AccountWindow.cpp" />
+    <ClCompile Include="DeviceFirmwareInfoWidget.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MarvieControl.cpp" />
     <ClCompile Include="MLinkClient.cpp" />
@@ -249,6 +250,7 @@
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="AccountWindow.ui" />
+    <QtUic Include="DeviceFirmwareInfoWidget.ui" />
     <QtUic Include="MarvieControl.ui" />
     <QtUic Include="SdStatistics.ui" />
   </ItemGroup>
@@ -273,6 +275,7 @@
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtBluetooth;$(QTDIR)\include\QtCharts;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtDataVisualization;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtPrintSupport;$(QTDIR)\include\QtSerialBus;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtXmlPatterns;$(QTDIR)\include\QtWinExtras</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtBluetooth;$(QTDIR)\include\QtCharts;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtDataVisualization;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtPrintSupport;$(QTDIR)\include\QtSerialBus;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtXmlPatterns;$(QTDIR)\include\QtWinExtras</IncludePath>
     </QtMoc>
+    <ClInclude Include="DeviceFirmwareInfoWidget.h" />
     <ClInclude Include="SensorUnfoldedDesc.h" />
     <ClInclude Include="MonitoringDataTreeWidget.h" />
     <ClInclude Include="MonitoringLog.h" />

@@ -57,7 +57,9 @@ private:
 	void createGsmModemObjectM();
 	void logFailure();
 	void ejectSdCard();
-	inline void formatSdCard();
+	void formatSdCard();
+	std::unique_ptr< File > findBootloaderFile();
+	void updateBootloader( File* file );
 
 	void reconfig();
 	void configShutdown();
@@ -149,7 +151,7 @@ private:
 	UsartBasedDevice* comPorts[MarviePlatform::comPortsCount];
 	uint8_t* comUsartInputBuffers[MarviePlatform::comUsartsCount];
 	uint8_t* comUsartOutputBuffers[MarviePlatform::comUsartsCount];
-	uint32_t buffer[1024];
+	uint8_t buffer[1024];
 	SHA1 sha;
 	FileLog fileLog;
 

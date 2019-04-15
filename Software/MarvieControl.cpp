@@ -221,7 +221,9 @@ MarvieControl::MarvieControl( QWidget *parent ) : QWidget( parent ), vPortIdComb
 	resetDeviceLoad();
 
 	deviceVersionMenu = new QMenu( this );
-	deviceVersionMenu->addAction( QIcon( ":/MarvieControl/icons/icons8-uninstalling-updates-96.png" ), "Update firmware" );
+	deviceVersionMenu->addAction( QIcon( ":/MarvieControl/icons/icons8-uninstalling-updates-96.png" ), "Upload firmware" );
+	deviceVersionMenu->addAction( QIcon( ":/MarvieControl/icons/icons8-uninstalling-updates-96.png" ), "Upload bootloader" );
+	deviceVersionMenu->addAction( QIcon( ":/MarvieControl/icons/icons8-info-96.png" ), "Info" );
 	deviceVersionMenu->setFixedWidth( 150 );
 
 	sdCardMenu = new QMenu( this );
@@ -335,6 +337,9 @@ MarvieControl::MarvieControl( QWidget *parent ) : QWidget( parent ), vPortIdComb
 	validator = new QRegExpValidator( ui.gatewayLineEdit );
 	validator->setRegExp( QRegExp( "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$" ) );
 	ui.gatewayLineEdit->setValidator( validator );
+
+	deviceFirmwareInfoWidget = new DeviceFirmwareInfoWidget;
+	deviceFirmwareInfoWidget->setPalette( palette() );
 
 	ui.terminal->setFrameShape( QFrame::Shape::NoFrame );
 	mlinkTerminal = new MLinkTerminal( &mlink, ui.terminal );
@@ -864,17 +869,45 @@ void MarvieControl::logMenuButtonClicked()
 
 void MarvieControl::deviceVersionMenuActionTriggered( QAction* action )
 {
-	QSettings setting( "settings.ini", QSettings::Format::IniFormat );
-	QString name = QFileDialog::getOpenFileName( this, "Select firmware file", setting.value( "firmwareFileDir", QDir::currentPath() ).toString(), "Bin files (*.bin)" );
-	if( name.isEmpty() )
-		return;
-	setting.setValue( "firmwareFileDir", QDir( name ).absolutePath().remove( QDir( name ).dirName() ) );
-	QFile file( name );
+	if( action->text() == "Upload firmware" )
+	{
+		QSettings setting( "settings.ini", QSettings::Format::IniFormat );
+		QString name = QFileDialog::getOpenFileName( this, "Select firmware file", setting.value( "firmwareFileDir", QDir::currentPath() ).toString(), "Bin files (*.bin)" );
+		if( name.isEmpty() )
+			return;
+		setting.setValue( "firmwareFileDir", QDir( name ).absolutePath().remove( QDir( name ).dirName() ) );
+		QFile file( name );
 
-	file.open( QIODevice::ReadOnly );
-	mlink.sendChannelData( MarviePackets::ComplexChannel::FirmwareChannel, file.readAll() );
-	DataTransferProgressWindow window( "Uploading firmware", &mlink, MarviePackets::ComplexChannel::FirmwareChannel, DataTransferProgressWindow::TransferDir::Sending, this );
-	window.exec();
+		file.open( QIODevice::ReadOnly );
+		mlink.sendChannelData( MarviePackets::ComplexChannel::FirmwareChannel, file.readAll() );
+		DataTransferProgressWindow window( "Uploading firmware", &mlink, MarviePackets::ComplexChannel::FirmwareChannel, DataTransferProgressWindow::TransferDir::Sending, this );
+		window.exec();
+	}
+	else if( action->text() == "Upload bootloader" )
+	{
+		QSettings setting( "settings.ini", QSettings::Format::IniFormat );
+		QString name = QFileDialog::getOpenFileName( this, "Select bootloader file", setting.value( "bootloaderFileDir", QDir::currentPath() ).toString(), "Bin files (*.bin)" );
+		if( name.isEmpty() )
+			return;
+		setting.setValue( "bootloaderFileDir", QDir( name ).absolutePath().remove( QDir( name ).dirName() ) );
+		QFile file( name );
+
+		file.open( QIODevice::ReadOnly );
+		mlink.sendChannelData( MarviePackets::ComplexChannel::BootloaderChannel, file.readAll() );
+		DataTransferProgressWindow window( "Uploading bootloader", &mlink, MarviePackets::ComplexChannel::BootloaderChannel, DataTransferProgressWindow::TransferDir::Sending, this );
+		window.exec();
+	}
+	else if( action->text() == "Info" )
+	{
+		if( !deviceFirmwareInfoWidget->isVisible() )
+		{
+			auto r = deviceFirmwareInfoWidget->rect();
+			r.moveCenter( mapToGlobal( rect().center() ) );
+			deviceFirmwareInfoWidget->setGeometry( r );
+		}
+		deviceFirmwareInfoWidget->hide();
+		deviceFirmwareInfoWidget->show();
+	}
 }
 
 void MarvieControl::sdCardMenuActionTriggered( QAction* action )
@@ -1802,6 +1835,7 @@ void MarvieControl::mlinkStateChanged( MLinkClient::State s )
 		deviceSensors.clear();
 		ui.deviceSensorsComboBox->clear();
 		deviceSupportedSensors.clear();
+		deviceFirmwareInfoWidget->clear();
 		resetDeviceInfo();
 		deviceState = DeviceState::Unknown;
 		syncWindow->hide();
@@ -1981,9 +2015,11 @@ void MarvieControl::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
 	case MarviePackets::Type::FirmwareDescType:
 	{
 		const MarviePackets::FirmwareDesc* desc = reinterpret_cast< const MarviePackets::FirmwareDesc* >( data.constData() );
-		deviceCoreVersion = desc->coreVersion;
-		updateDeviceVersion();
-		QString targetName = QString( desc->targetName );
+		updateDeviceVersion( desc->firmwareVersion );
+		deviceFirmwareInfoWidget->setFirmwareVersion( desc->firmwareVersion );
+		deviceFirmwareInfoWidget->setBootloaderVersion( desc->bootloaderVersion );
+		deviceFirmwareInfoWidget->setModelName( desc->modelName );
+		QString targetName = QString( desc->modelName );
 		ui.targetDeviceComboBox->setCurrentText( targetName );
 		if( ui.targetDeviceComboBox->currentText() != targetName )
 			ui.targetDeviceComboBox->setCurrentIndex( -1 );
@@ -2103,7 +2139,12 @@ void MarvieControl::mlinkNewComplexPacketAvailable( uint8_t channelId, QString n
 		}
 	}
 	else if( channelId == MarviePackets::ComplexChannel::SupportedSensorsListChannel )
-		deviceSupportedSensors = QString( data ).split( ',' ).toVector();
+	{
+		auto list = QString( data ).split( ',' );
+		list.sort( Qt::CaseInsensitive );
+		deviceFirmwareInfoWidget->setSupportedSensorList( list );
+		deviceSupportedSensors = list.toVector();
+	}
 	else if( channelId == MarviePackets::ComplexChannel::SensorDataChannel )
 	{
 		uint8_t sensorId = ( uint8_t )data.constData()[0];
@@ -3774,9 +3815,9 @@ void MarvieControl::resetDeviceLoad()
 	sdStat->setStatistics( 0, 0, 0 );
 }
 
-void MarvieControl::updateDeviceVersion()
+void MarvieControl::updateDeviceVersion( QString version )
 {
-	ui.deviceVersionLabel->setText( "Version: " + deviceCoreVersion );
+	ui.deviceVersionLabel->setText( "Version: " + version );
 }
 
 void MarvieControl::updateDeviceStatus( const MarviePackets::DeviceStatus* status )

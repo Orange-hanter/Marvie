@@ -51,8 +51,9 @@ namespace MarviePackets
 
 	struct FirmwareDesc
 	{
-		char coreVersion[15 + 1];
-		char targetName[25 + 1];
+		char bootloaderVersion[15 + 1];
+		char firmwareVersion[15 + 1];
+		char modelName[15 + 1];
 	};
 	struct CpuLoad 
 	{

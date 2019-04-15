@@ -129,6 +129,9 @@
     <ClCompile Include="RemoteTerminalClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DeviceFirmwareInfoWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="thirdparty\FramelessWindow\FramelessWindow.h">
@@ -192,6 +195,9 @@
     <QtUic Include="AccountWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="DeviceFirmwareInfoWidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_MarvieControl.h">
@@ -222,6 +228,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SensorUnfoldedDesc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceFirmwareInfoWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

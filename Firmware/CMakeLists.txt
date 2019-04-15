@@ -1,9 +1,9 @@
-project(marvie)
+project(marvie_firmware)
 cmake_minimum_required(VERSION 3.11)
 enable_language(ASM)
 #set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-set(MARVIE_FIRMWARE_VERSION_BASE "0.8.1.0" CACHE STRING "Marvie base firmware version" FORCE)
+set(MARVIE_FIRMWARE_VERSION_BASE "0.8.2.0" CACHE STRING "Marvie base firmware version" FORCE)
 if(NOT MODEM_PWRKEY_LEVEL)
 	set(MODEM_PWRKEY_LEVEL "H")
 endif()
@@ -195,7 +195,7 @@ set(firmware_SRCS
 	#${CMAKE_SOURCE_DIR}/Src/usbcfg.c
 )
 
-add_executable(${CMAKE_PROJECT_NAME}_firmware.elf
+add_executable(${CMAKE_PROJECT_NAME}.elf
 	${firmware_SRCS}
 	${apps_SRCS}
 	${core_SRCS}
@@ -211,7 +211,7 @@ add_executable(${CMAKE_PROJECT_NAME}_firmware.elf
 	${chibios_various_SRCS}
 	${test_SRCS}
 )
-target_link_libraries(${CMAKE_PROJECT_NAME}_firmware.elf
+target_link_libraries(${CMAKE_PROJECT_NAME}.elf
     lwipcore
 	fatfs
 	modbus
@@ -219,6 +219,11 @@ target_link_libraries(${CMAKE_PROJECT_NAME}_firmware.elf
 	_sha1
 )
 
-STM32_SET_TARGET_PROPERTIES(${CMAKE_PROJECT_NAME}_firmware.elf)
-STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}_firmware.elf)
-STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}_firmware.elf)
+STM32_SET_TARGET_PROPERTIES(${CMAKE_PROJECT_NAME}.elf)
+STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}.elf)
+STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}.elf)
+if(NOT WIN32)
+    add_custom_command(TARGET ${CMAKE_PROJECT_NAME}.elf.bin POST_BUILD COMMAND echo.exe -n __${MARVIE_FIRMWARE_VERSION}__MARVIE_FIRMWARE__ >> ${CMAKE_PROJECT_NAME}.elf.bin)
+else()
+    add_custom_command(TARGET ${CMAKE_PROJECT_NAME}.elf.bin POST_BUILD COMMAND ${CMAKE_SOURCE_DIR}/echo.exe -n __${MARVIE_FIRMWARE_VERSION}__MARVIE_FIRMWARE__ >> ${CMAKE_PROJECT_NAME}.elf.bin)
+endif()

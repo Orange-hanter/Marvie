@@ -1,12 +1,13 @@
 #include "MarvieDevice.h"
 #include "Core/CCMemoryAllocator.h"
-#include "Core/DateTimeService.h"
 #include "Core/CCMemoryHeap.h"
+#include "Core/DateTimeService.h"
+#include "FileSystem/FileInfoReader.h"
 #include "Network/PingService.h"
-#include "lwipthread.h"
-#include "Network/UdpSocket.h"
 #include "Network/TcpServer.h"
+#include "Network/UdpSocket.h"
 #include "RemoteTerminal/CommandLineUtility.h"
+#include "lwipthread.h"
 #include "stm32f4xx_flash.h"
 
 #include "Tests/UdpStressTestServer/UdpStressTestServer.h"
@@ -14,6 +15,7 @@
 using namespace MarvieXmlConfigParsers;
 
 MarvieDevice* MarvieDevice::_inst = nullptr;
+char bootloaderVersion[15 + 1];
 
 MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 {
@@ -190,6 +192,7 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	terminalServer.registerFunction( "ls", CommandLineUtility::ls );
 	terminalServer.registerFunction( "mkdir", CommandLineUtility::mkdir );
 	terminalServer.registerFunction( "rm", CommandLineUtility::rm );
+	terminalServer.registerFunction( "mv", CommandLineUtility::mv );
 	terminalServer.registerFunction( "cat", CommandLineUtility::cat );
 	terminalServer.registerFunction( "ping", CommandLineUtility::ping );
 	terminalServer.registerFunction( "lgbt", lgbt );
@@ -369,6 +372,9 @@ void MarvieDevice::mainThreadMain()
 								fileLog.addRecorg( ( char* )buffer );
 							}
 							logFailure();
+							auto file = findBootloaderFile();
+							if( file )
+								updateBootloader( file.get() );
 							monitoringLogSize = Dir( "/Log/Monitoring" ).contentSize();
 							if( marvieLog )
 								marvieLog->startLogging( LOWPRIO );
@@ -534,6 +540,10 @@ void MarvieDevice::mainThreadMain()
 		}
 		if( em & MainThreadEvent::RestartRequestEvent )
 		{
+			auto file = findBootloaderFile();
+			if( file )
+				updateBootloader( file.get() );
+
 			mLinkServer->stopListening();
 			mLinkServer->waitForStateChanged();
 			ejectSdCard();
@@ -555,6 +565,25 @@ void MarvieDevice::mainThreadMain()
 				f_close( file );
 				f_rename( path, "/firmware.bin" );
 				fileLog.addRecorg( "New firmware is downloaded" );
+
+				delete file;
+				file = nullptr;
+			}
+			datFilesMutex.unlock();
+		}
+		if( em & MainThreadEvent::NewBootloaderDatFile )
+		{
+			datFilesMutex.lock();
+			auto& file = datFiles[MarviePackets::ComplexChannel::BootloaderChannel];
+			if( file )
+			{
+				char path[] = "/Temp/0.dat";
+				path[6] = '0' + MarviePackets::ComplexChannel::BootloaderChannel;
+
+				f_unlink( "/bootloader.bin" );
+				f_close( file );
+				f_rename( path, "/bootloader.bin" );
+				fileLog.addRecorg( "New bootloader is downloaded" );
 
 				delete file;
 				file = nullptr;
@@ -1016,6 +1045,89 @@ void MarvieDevice::formatSdCard()
 			sdCardStatus = SdCardStatus::BadFileSystem;
 		configXmlHash = SHA1::Digest();
 	}
+}
+
+std::unique_ptr< File > MarvieDevice::findBootloaderFile()
+{
+	return std::unique_ptr< File >();
+	std::unique_ptr< File > file;
+	FileInfoReader reader;
+	uint8_t data[sizeof( "__MARVIE_BOOTLOADER__" ) - 1];
+	while( reader.next() )
+	{
+		auto& info = reader.info();
+		if( !info.attributes().testFlag( FileSystem::FileAttribute::ArchiveAttr ) ||
+		    info.fileName().size() < sizeof( "bootloader.bin" ) - 1 ||
+		    info.fileName().find( "bootloader" ) != 0 ||
+		    info.fileName().find_last_of( ".bin" ) != info.fileName().size() - 1 ||
+		    info.fileSize() >= 32 * 1024 || info.fileSize() < sizeof( "__MARVIE_BOOTLOADER__" ) - 1 )
+			continue;
+
+		if( !file )
+			file.reset( new File( info.fileName() ) );
+		if( !file )
+			return std::unique_ptr< File >();
+		if( !file->open( FileSystem::OpenExisting | FileSystem::Read ) ||
+		    !file->seek( file->size() - sizeof( data ) ) ||
+		    file->read( data, sizeof( data ) ) != sizeof( data ) )
+			return std::unique_ptr< File >();
+		if( strncmp( ( const char* )data, "__MARVIE_BOOTLOADER__", sizeof( data ) ) != 0 )
+		{
+			file->close();
+			continue;
+		}
+		if( !file->seek( 0 ) )
+			return std::unique_ptr< File >();
+
+		return file;
+	}
+
+	return std::unique_ptr< File >();
+}
+
+void MarvieDevice::updateBootloader( File* file )
+{
+	mLinkServer->stopListening();
+	mLinkServer->waitForStateChanged();
+	configShutdown();
+	EthernetThread::instance()->stopThread();
+	EthernetThread::instance()->waitForStop();
+
+	FLASH_Unlock();
+	FLASH_EraseSector( FLASH_Sector_0, VoltageRange_3 ); // 0x08000000-0x08004000 (16 кБ) 16KB
+	FLASH_EraseSector( FLASH_Sector_1, VoltageRange_3 ); // 0x08004000-0x08008000 (16 кБ) 32KB
+
+	uint32_t totalSize = ( uint32_t )file->size();
+	uint32_t size = totalSize;
+	while( size )
+	{
+		uint32_t partSize = size;
+		if( partSize > 1024 )
+			partSize = 1024;
+		else
+		{
+			for( uint32_t i = partSize; i < ( partSize + 3 ) && i < 1024; ++i )
+				buffer[i] = 0xFF;
+		}
+
+		file->read( buffer, partSize );
+		for( uint32_t i = 0; i < partSize; i += 4 )
+		{
+			do
+			{
+				FLASH_ProgramWord( 0x08000000 + totalSize - size + i, *( uint32_t* )( buffer + i ) );
+			} while( *( uint32_t* )( 0x08000000 + totalSize - size + i ) != *( uint32_t* )( buffer + i ) );
+		}
+		size -= partSize;
+	}
+	FLASH_Lock();
+
+	file->close();
+	Dir().remove( file->fileName().c_str() );
+
+	ejectSdCard();
+	MarvieBackup::instance()->failureDesc.pwrDown.power = false;
+	__NVIC_SystemReset();
 }
 
 void MarvieDevice::reconfig()
@@ -1709,10 +1821,10 @@ int MarvieDevice::authenticate( char* accountName, char* password )
 bool MarvieDevice::onOpennig( uint8_t ch, const char* name, uint32_t size )
 {
 	datFilesMutex.lock();
-	if( sdCardStatus != SdCardStatus::Working || ch >= 3 || datFiles[ch] || mLinkServer->accountIndex() != 0 )
+	if( sdCardStatus != SdCardStatus::Working || ch >= 3 || datFiles[ch] || mLinkServer->accountIndex() > 1 )
 	{
 		datFilesMutex.unlock();
-		if( mLinkServer->accountIndex() != 0 )
+		if( mLinkServer->accountIndex() > 1 )
 			mLinkServer->sendPacket( MarviePackets::Type::IllegalAccessType, nullptr, 0 );
 		return false;
 	}
@@ -1847,7 +1959,7 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 	}
 	else
 	{
-		if( mLinkServer->accountIndex() != 0 && mLinkServer->accountIndex() != 1 )
+		if( mLinkServer->accountIndex() > 1 )
 		{
 			if( type != MarviePackets::Type::TerminalInput )
 				mLinkServer->sendPacket( MarviePackets::Type::IllegalAccessType, nullptr, 0 );
@@ -1996,8 +2108,9 @@ void MarvieDevice::mLinkSync( bool coldSync )
 void MarvieDevice::sendFirmwareDesc()
 {
 	MarviePackets::FirmwareDesc desc;
-	strcpy( desc.coreVersion, MarviePlatform::coreVersion );
-	strcpy( desc.targetName, MarviePlatform::platformType );
+	strcpy( desc.bootloaderVersion, bootloaderVersion );
+	strcpy( desc.firmwareVersion, MarviePlatform::coreVersion );
+	strcpy( desc.modelName, MarviePlatform::platformType );
 	mLinkServer->sendPacket( MarviePackets::Type::FirmwareDescType, ( uint8_t* )&desc, sizeof( desc ) );
 }
 

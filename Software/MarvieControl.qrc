@@ -67,5 +67,6 @@
         <file>icons/icons8-console-filled-100.png</file>
         <file>fonts/Droid Sans Mono.ttf</file>
         <file>fonts/Tahoma.ttf</file>
+        <file>icons/icons8-info-96.png</file>
     </qresource>
 </RCC>
