@@ -59,6 +59,7 @@ void FileLog::clean()
 	{
 		file.seek( 0 );
 		file.truncate();
+		file.flush();
 	}
 	mutex.unlock();
 }
