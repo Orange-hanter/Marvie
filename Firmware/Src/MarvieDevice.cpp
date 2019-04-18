@@ -1049,7 +1049,6 @@ void MarvieDevice::formatSdCard()
 
 std::unique_ptr< File > MarvieDevice::findBootloaderFile()
 {
-	return std::unique_ptr< File >();
 	std::unique_ptr< File > file;
 	FileInfoReader reader;
 	uint8_t data[sizeof( "__MARVIE_BOOTLOADER__" ) - 1];

@@ -15,7 +15,6 @@ set(STM32_FLASH_SIZE "479K")
 set(STM32_RAM_SIZE "128K")
 set(STM32_CCRAM_SIZE "64K")
 
-#set(WIN32 1)
 #set(USE_PRINTF_FLOAT 1)
 set(USE_SCANF_FLOAT 1)
 include(gcc_stm32)
