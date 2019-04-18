@@ -121,7 +121,10 @@ function build_software ()
   linuxdeployqt "${project_appdir}"/usr/share/applications/*.desktop -appimage
 }
 
-if [[ "${build_target}" == 'firmware' ]]; then
+if [[ "${build_target}" == 'firmware_develop' ]]; then
+  build_firmware H
+  build_bootloader
+elif [[ "${build_target}" == 'firmware' ]]; then
   build_firmware L
   build_firmware H
   build_bootloader
