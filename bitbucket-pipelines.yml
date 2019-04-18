@@ -1,6 +1,6 @@
 pipelines:
   branches:
-    "2.0":
+    "master":
       - parallel:
           - step:
               name: Firmware
