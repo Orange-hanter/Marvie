@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.11)
 enable_language(ASM)
 #set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-set(MARVIE_BOOTLOADER_VERSION "1.1.0.0")
+set(MARVIE_BOOTLOADER_VERSION "1.1.0.0" CACHE STRING "Marvie base bootloader version" FORCE)
 configure_file(${CMAKE_SOURCE_DIR}/Src/version.h.in ${CMAKE_SOURCE_DIR}/Src/version.h)
 
 set(STM32_FLASH_ORIGIN "0x08000000")

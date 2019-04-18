@@ -81,15 +81,15 @@ function build_bootloader ()
 
   # build
   configure_cmake "${project_dir}"
-  cmake --build "${project_build_dir}" --config "${firmware_build_type}" --target bootloader.elf.bin
+  cmake --build "${project_build_dir}" --config "${firmware_build_type}" --target marvie_bootloader.elf.bin
 
   # set proper name of *.bin binary and get its sha256
   local new_filename_mask="${project_build_dir}/marvie.bootloader"
-  mv "${project_build_dir}/bootloader.elf.bin" "${new_filename_mask}.bin"
+  mv "${project_build_dir}/marvie_bootloader.elf.bin" "${new_filename_mask}.bin"
   calc_sha256 "${new_filename_mask}.bin"
 
   # set proper name of *.bin binary and get its sha256
-  mv "${project_build_dir}/bootloader.elf" "${new_filename_mask}.elf"
+  mv "${project_build_dir}/marvie_bootloader.elf" "${new_filename_mask}.elf"
   calc_sha256 "${new_filename_mask}.elf"
 
   mkdir -p "${artifacts_dir}/bootloader/"
