@@ -1,16 +1,16 @@
 pipelines:
   branches:
-    "2.0":
+    "develop":
       - parallel:
           - step:
               name: Firmware
               image: rushmash/gcc-arm-embedded-docker:latest
               script:
                 - ./build_ci.sh firmware $BITBUCKET_CLONE_DIR
-                - ./deploy_ci.sh firmware $BITBUCKET_CLONE_DIR $BB_UPLOADER_AUTH_STRING $BITBUCKET_REPO_OWNER $BITBUCKET_REPO_SLUG
-          - step:
-              name: Software
-              image: a12e/docker-qt:5.12-gcc_64
-              script:
-                - ./build_ci.sh software $BITBUCKET_CLONE_DIR
-                - ./deploy_ci.sh software $BITBUCKET_CLONE_DIR $BB_UPLOADER_AUTH_STRING $BITBUCKET_REPO_OWNER $BITBUCKET_REPO_SLUG
+#                - ./deploy_ci.sh firmware $BITBUCKET_CLONE_DIR $BB_UPLOADER_AUTH_STRING $BITBUCKET_REPO_OWNER $BITBUCKET_REPO_SLUG
+#          - step:
+#              name: Software
+#              image: a12e/docker-qt:5.12-gcc_64
+#              script:
+#                - ./build_ci.sh software $BITBUCKET_CLONE_DIR
+#                - ./deploy_ci.sh software $BITBUCKET_CLONE_DIR $BB_UPLOADER_AUTH_STRING $BITBUCKET_REPO_OWNER $BITBUCKET_REPO_SLUG
