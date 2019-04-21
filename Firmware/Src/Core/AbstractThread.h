@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CriticalSectionLocker.h"
 #include "ThreadRef.h"
 #include <utility>
 
@@ -27,11 +28,6 @@ public:
 	}
 
 	virtual bool start() = 0;
-	inline bool start( tprio_t prio )
-	{
-		setPriority( prio );
-		return start();
-	}
 
 	inline void setName( const char* name )
 	{
@@ -45,8 +41,8 @@ public:
 	inline tprio_t setPriority( tprio_t newprio )
 	{
 		threadPrio = newprio;
-		if( threadRef )
-			newprio = chThdSetPriority( newprio );
+		//if( threadRef )
+		//	newprio = chThdSetPriority( newprio );
 		return newprio;
 	}
 
@@ -78,7 +74,8 @@ public:
 
 	inline void requestInterruption()
 	{
-		chThdTerminate( threadRef );
+		CriticalSectionLocker locker;
+		threadRef->flags |= CH_FLAG_TERMINATE;
 	}
 
 	inline bool isInterruptionRequested() const

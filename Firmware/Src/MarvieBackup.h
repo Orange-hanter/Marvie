@@ -1,7 +1,7 @@
 #include "Core/DateTime.h"
 #include "Network/IpAddress.h"
 #include "Crc32HW.h"
-#include "cpp_wrappers/ch.hpp"
+#include "Core/Mutex.h"
 
 struct MarvieBackup
 {
@@ -83,5 +83,5 @@ struct MarvieBackup
 	void release();
 
 private:
-	static chibios_rt::_Mutex mutex;
+	static Mutex mutex;
 };

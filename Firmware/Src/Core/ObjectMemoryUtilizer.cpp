@@ -1,8 +1,9 @@
 #include "ObjectMemoryUtilizer.h"
+#include "CriticalSectionLocker.h"
 
 ObjectMemoryUtilizer* ObjectMemoryUtilizer::inst = nullptr;
 
-ObjectMemoryUtilizer::ObjectMemoryUtilizer() : BaseDynamicThread( 256 )
+ObjectMemoryUtilizer::ObjectMemoryUtilizer() : Thread( 256 )
 {
 	state = State::Stopped;
 	chMBObjectInit( &mailbox, mboxBuffer, 8 );
@@ -21,31 +22,31 @@ ObjectMemoryUtilizer* ObjectMemoryUtilizer::instance()
 	return inst;
 }
 
-void ObjectMemoryUtilizer::runUtilizer( tprio_t prio )
+bool ObjectMemoryUtilizer::runUtilizer( tprio_t prio )
 {
-	if( state == State::Stopped )
-	{
-		state = State::Running;
-		start( prio );
-	}
-	else
-		chThdSetPriority( prio );
+	if( state != State::Stopped )
+		return false;
+
+	setPriority( prio );
+	state = State::Running;
+	if( !start() )
+		state = State::Stopped;
+
+	return state == State::Running;
 }
 
 void ObjectMemoryUtilizer::stopUtilizer()
 {
 	if( state == State::Stopped )
 		return;
-	chThdTerminate( this->thread_ref );
-	chSysLock();
-	chMBPostI( &mailbox, 0 );
-	chSysUnlock();
-	chThdWait( this->thread_ref );
+	requestInterruption();
+	chMBPostTimeout( &mailbox, 0, TIME_INFINITE );
+	wait();
 }
 
 void ObjectMemoryUtilizer::utilize( Object* p )
 {
-	syssts_t sysStatus = chSysGetStatusAndLockX();
+	CriticalSectionLocker locker;
 	if( port_is_isr_context() )
 	{
 		if( chMBPostI( &mailbox, reinterpret_cast< msg_t >( p ) ) != MSG_OK )
@@ -53,12 +54,11 @@ void ObjectMemoryUtilizer::utilize( Object* p )
 	}
 	else
 		chMBPostTimeoutS( &mailbox, reinterpret_cast< msg_t >( p ), TIME_INFINITE );
-	chSysRestoreStatusX( sysStatus );
 }
 
 void ObjectMemoryUtilizer::main()
 {
-	while( !chThdShouldTerminateX() )
+	while( !isInterruptionRequested() )
 	{
 		msg_t msg;
 		chMBFetchTimeout( &mailbox, &msg, TIME_INFINITE );

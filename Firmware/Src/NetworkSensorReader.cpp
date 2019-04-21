@@ -29,8 +29,8 @@ void NetworkSensorReader::main()
 {
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
-	EvtListener socketListener;
-	socket.eventSource()->registerMask( &socketListener, InnerEventFlag::NetworkFlag );
+	EventListener socketListener;
+	socket.eventSource().registerMask( &socketListener, InnerEventFlag::NetworkFlag );
 	signalEvents( InnerEventFlag::NetworkFlag );
 
 	sensor->setIODevice( &socket );
@@ -112,7 +112,7 @@ void NetworkSensorReader::main()
 	}
 
 End:
-	socket.eventSource()->unregister( &socketListener );
+	socketListener.unregister();
 	chVTReset( &timer );
 	socket.disconnect();
 
@@ -120,7 +120,6 @@ End:
 	tState = State::Stopped;
 	wState = WorkingState::Connecting;
 	nextInterval = 0;
-	extEventSource.broadcastFlagsI( ( eventflags_t )EventFlag::StateChanged );
-	chThdDequeueNextI( &waitingQueue, MSG_OK );
-	exitS( MSG_OK );
+	extEventSource.broadcastFlags( ( eventflags_t )EventFlag::StateChanged );
+	waitingQueue.dequeueNext( MSG_OK );
 }

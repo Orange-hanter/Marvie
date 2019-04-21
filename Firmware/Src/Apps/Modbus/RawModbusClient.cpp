@@ -165,8 +165,8 @@ bool RawModbusClient::writeMultipleRegisters( uint8_t slave, uint16_t address, s
 
 bool RawModbusClient::waitForResponse()
 {
-	EvtListener listener;
-	stream.io->eventSource()->registerMask( &listener, ServiceEvent::TimeoutServiceEvent );
+	EventListener listener;
+	stream.io->eventSource().registerMask( &listener, ServiceEvent::TimeoutServiceEvent );
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
 	chEvtAddEvents( ServiceEvent::TimeoutServiceEvent );
@@ -184,7 +184,7 @@ bool RawModbusClient::waitForResponse()
 			chVTSet( &timer, ( sysinterval_t )nextInterval, timerCallback, chThdGetSelfX() );
 	}
 
-	stream.io->eventSource()->unregister( &listener );
+	listener.unregister();
 	chVTReset( &timer );
 
 	return err == ModbusDevice::Error::NoError;

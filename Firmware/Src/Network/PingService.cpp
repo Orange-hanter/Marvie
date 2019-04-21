@@ -1,15 +1,15 @@
 #include "PingService.h"
+#include "Core/CriticalSectionLocker.h"
 #include "lwip/icmp.h"
 #include "lwip/inet_chksum.h"
 #include "lwip/raw.h"
 
 PingService* PingService::inst = nullptr;
 
-PingService::PingService() : BaseDynamicThread( 1024 )
+PingService::PingService() : Thread( 1024 )
 {
 	sState = State::Stopped;
 	sError = Error::NoError;
-	chThdQueueObjectInit( &waitingQueue );
 	chVTObjectInit( &timer );
 	pongTimeout = TIME_MS2I( 4000 );
 	seqNum = 0;
@@ -38,24 +38,24 @@ bool PingService::startService( tprio_t prio /*= NORMALPRIO */ )
 
 	sState = State::Working;
 	sError = Error::NoError;
+	setPriority( prio );
+	if( !start() )
+	{
+		sState = State::Stopped;
+		return false;
+	}
 	extEventSource.broadcastFlags( ( eventflags_t )Event::StateChanged );
-	start( prio );
 	return true;
 }
 
 void PingService::stopService()
 {
-	chSysLock();
+	CriticalSectionLocker locker;
 	if( sState == State::Stopped || sState == State::Stopping )
-	{
-		chSysUnlock();
 		return;
-	}
 	sState = State::Stopping;
-	extEventSource.broadcastFlagsI( ( eventflags_t )Event::StateChanged );
-	chEvtSignalI( thread_ref, StopRequestEvent );
-	chSchRescheduleS();
-	chSysUnlock();
+	extEventSource.broadcastFlags( ( eventflags_t )Event::StateChanged );
+	signalEventsI( StopRequestEvent );
 }
 
 bool PingService::waitForStopped( sysinterval_t timeout /*= TIME_INFINITE */ )
@@ -63,7 +63,7 @@ bool PingService::waitForStopped( sysinterval_t timeout /*= TIME_INFINITE */ )
 	msg_t msg = MSG_OK;
 	chSysLock();
 	if( sState == State::Stopping )
-		msg = chThdEnqueueTimeoutS( &waitingQueue, timeout );
+		msg = waitingQueue.enqueueSelf( timeout );
 	chSysUnlock();
 
 	return msg == MSG_OK;
@@ -92,7 +92,7 @@ int PingService::ping( IpAddress addr, uint32_t count /*= 1*/, TimeMeasurement* 
 	while( count )
 	{
 		chSysLock();
-		mutex.lockS();
+		mutex.lock();
 		if( sState != State::Working )
 		{
 			chSysUnlock();
@@ -101,9 +101,9 @@ int PingService::ping( IpAddress addr, uint32_t count /*= 1*/, TimeMeasurement* 
 			return nOk;
 		}
 		reqList.pushBack( &node );
-		chEvtSignalI( thread_ref, PingRequestEvent );
-		mutex.unlockS();
-		chBSemWaitS( &req.sem );
+		signalEventsI( PingRequestEvent );
+		mutex.unlock();
+		req.sem.acquire();
 		chSysUnlock();
 
 		if( req.result )
@@ -140,7 +140,7 @@ void PingService::setPongTimeout( uint32_t timeoutMs )
 	pongTimeout = TIME_MS2I( timeoutMs );
 }
 
-chibios_rt::EvtSource* PingService::eventSource()
+EventSourceRef PingService::eventSource()
 {
 	return &extEventSource;
 }
@@ -196,7 +196,7 @@ void PingService::main()
 									req->interval = chVTTimeElapsedSinceX( req->sendingTime );
 									req->result = ICMPH_TYPE( iecho ) == ICMP_ER;
 									req->processing = false;
-									chBSemSignal( &req->sem );
+									req->sem.release();
 									break;
 								}
 							}
@@ -230,7 +230,7 @@ void PingService::main()
 						reqList.remove( i++ );
 						req->result = false;
 						req->processing = false;
-						chBSemSignal( &req->sem );
+						req->sem.release();
 						continue;
 					}
 				}
@@ -253,7 +253,7 @@ void PingService::main()
 					{
 						reqList.remove( i++ );
 						req->result = false;
-						chBSemSignal( &req->sem );
+						req->sem.release();
 						continue;
 					}
 
@@ -281,18 +281,17 @@ End:
 		reqList.remove( i++ );
 		req->result = false;
 		req->processing = false;
-		chBSemSignal( &req->sem );
+		req->sem.release();
 	}
 	mutex.unlock();
 
 	chSysLock();
 	sState = State::Stopped;
 	if( sError != Error::NoError )
-		extEventSource.broadcastFlagsI( ( eventflags_t )Event::Error | ( eventflags_t )Event::StateChanged );
+		extEventSource.broadcastFlags( ( eventflags_t )Event::Error | ( eventflags_t )Event::StateChanged );
 	else
-		extEventSource.broadcastFlagsI( ( eventflags_t )Event::StateChanged );
-	chThdDequeueAllI( &waitingQueue, MSG_OK );
-	exitS( MSG_OK );
+		extEventSource.broadcastFlags( ( eventflags_t )Event::StateChanged );
+	waitingQueue.dequeueAll( MSG_OK );
 }
 
 err_t PingService::sendPing( IpAddress address )
@@ -331,13 +330,13 @@ void PingService::netconnCallback( netconn* conn, netconn_evt evt, u16_t len )
 	chSysLock();
 	if( evt == NETCONN_EVT_RCVPLUS )
 	{
-		chEvtSignalI( inst->thread_ref, PingService::NetconnRecvEvent );
+		inst->signalEventsI( PingService::NetconnRecvEvent );
 		++inst->recvCount;
 	}
 	else if( evt == NETCONN_EVT_RCVMINUS )
 		--inst->recvCount;
 	else if( evt == NETCONN_EVT_ERROR )
-		chEvtSignalI( inst->thread_ref, PingService::NetconnErrorEvent );
+		inst->signalEventsI( PingService::NetconnErrorEvent );
 	chSchRescheduleS();
 	chSysUnlock();
 }
@@ -345,7 +344,7 @@ void PingService::netconnCallback( netconn* conn, netconn_evt evt, u16_t len )
 void PingService::timerCallback( void* p )
 {
 	chSysLockFromISR();
-	chEvtSignalI( inst->thread_ref, PingService::TimerEvent );
+	inst->signalEventsI( PingService::TimerEvent );
 	chVTSetI( &inst->timer, TIME_MS2I( 100 ), timerCallback, nullptr );
 	chSysUnlockFromISR();
 }

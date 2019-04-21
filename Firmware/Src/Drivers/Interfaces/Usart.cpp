@@ -280,21 +280,19 @@ bool Usart::waitForBytesWritten( sysinterval_t timeout )
 	chVTObjectInit( &timer );
 	chVTSet( &timer, timeout, timerCallback, chThdGetSelfX() );
 
-	EvtListener listener;
-	eventSource()->registerMaskWithFlags( &listener, DataServiceEvent, CHN_TRANSMISSION_END );
+	EventListener listener;
+	eventSource().registerMaskWithFlags( &listener, DataServiceEvent, CHN_TRANSMISSION_END );
 
 	chSysLock();
 	if( oqIsEmptyI( &sd->oqueue ) && sd->usart->SR & USART_SR_TC )
 	{
 		chSysUnlock();
-		eventSource()->unregister( &listener );
 		chVTReset( &timer );
 		return true;
 	}
 	chSysUnlock();
 
 	eventmask_t em = chEvtWaitAny( DataServiceEvent | TimeoutServiceEvent );
-	eventSource()->unregister( &listener );
 	chVTReset( &timer );
 
 	if( em & TimeoutServiceEvent )
@@ -317,8 +315,8 @@ bool Usart::waitForReadAvailable( uint32_t size, sysinterval_t timeout )
 	chVTObjectInit( &timer );
 	chVTSet( &timer, timeout, timerCallback, chThdGetSelfX() );
 
-	EvtListener usartListener;
-	eventSource()->registerMaskWithFlags( &usartListener, DataServiceEvent, CHN_INPUT_AVAILABLE );
+	EventListener usartListener;
+	eventSource().registerMaskWithFlags( &usartListener, DataServiceEvent, CHN_INPUT_AVAILABLE );
 	while( readAvailable() < size )
 	{
 		eventmask_t em = chEvtWaitAny( DataServiceEvent | TimeoutServiceEvent );
@@ -326,7 +324,6 @@ bool Usart::waitForReadAvailable( uint32_t size, sysinterval_t timeout )
 			break;
 	}
 
-	eventSource()->unregister( &usartListener );
 	chVTReset( &timer );
 
 	return readAvailable() >= size;
@@ -406,9 +403,9 @@ void Usart::resetInputBufferOverflowFlag()
 	listener.flags &= ~( SD_QUEUE_FULL_ERROR | SD_OVERRUN_ERROR );
 }
 
-EvtSource* Usart::eventSource()
+EventSourceRef Usart::eventSource()
 {
-	return reinterpret_cast< EvtSource* >( &sd->event );
+	return &sd->event;
 }
 
 void Usart::timerCallback( void* p )

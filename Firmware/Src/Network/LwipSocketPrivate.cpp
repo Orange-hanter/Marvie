@@ -8,7 +8,6 @@ LwipSocketPrivate::LwipSocketPrivate( netconn_type type )
 	lastNetbuf = nullptr;
 	offset = 0;
 	recvCounter = 0;
-	chThdQueueObjectInit( &readWaitingQueue );
 
 	con = netconn_new_with_callback( type, netconnCallback );
 	con->socket = ( int )this;
@@ -21,7 +20,6 @@ LwipSocketPrivate::LwipSocketPrivate( uint32_t )
 	lastNetbuf = nullptr;
 	offset = 0;
 	recvCounter = 0;
-	chThdQueueObjectInit( &readWaitingQueue );
 	con = nullptr;
 }
 
@@ -203,7 +201,7 @@ uint32_t LwipSocketPrivate::read( uint8_t* data, uint32_t size, sysinterval_t ti
 		{
 			msg_t msg = MSG_RESET;
 			if( isOpen() )
-				msg = chThdEnqueueTimeoutS( &readWaitingQueue, nextTimeout );
+				msg = readWaitingQueue.enqueueSelf( nextTimeout );
 			chSysUnlock();
 			if( msg != MSG_OK )
 				return max - size;
@@ -324,7 +322,7 @@ bool LwipSocketPrivate::waitForReadAvailable( uint32_t size, sysinterval_t timeo
 
 		msg_t msg;
 		if( timeout == TIME_INFINITE || timeout == TIME_IMMEDIATE )
-			msg = chThdEnqueueTimeoutS( &readWaitingQueue, timeout );
+			msg = readWaitingQueue.enqueueSelf( timeout );
 		else
 		{
 			sysinterval_t nextTimeout = ( sysinterval_t )( deadline - chVTGetSystemTimeX() );
@@ -333,7 +331,7 @@ bool LwipSocketPrivate::waitForReadAvailable( uint32_t size, sysinterval_t timeo
 			if( nextTimeout > timeout )
 				break;
 
-			msg = chThdEnqueueTimeoutS( &readWaitingQueue, nextTimeout );
+			msg = readWaitingQueue.enqueueSelf( nextTimeout );
 		}
 
 		// timeout expired or queue reseted
@@ -425,7 +423,7 @@ void LwipSocketPrivate::updateStateS()
 	auto current = state();
 	if( prevState != current )
 	{
-		evtSource.broadcastFlagsI( ( eventflags_t )SocketEventFlag::StateChanged );
+		evtSource.broadcastFlags( ( eventflags_t )SocketEventFlag::StateChanged );
 		prevState = current;
 	}
 }
@@ -438,21 +436,21 @@ void LwipSocketPrivate::netconnCallback( netconn* con, netconn_evt evt, u16_t le
 		chSysLock();
 		socket->recvCounter += len;
 		if( len )
-			chThdDequeueNextI( &socket->readWaitingQueue, MSG_OK );
+			socket->readWaitingQueue.dequeueNext( MSG_OK );
 		else
 		{
 			socket->updateStateS();
-			chThdDequeueNextI( &socket->readWaitingQueue, MSG_RESET );
+			socket->readWaitingQueue.dequeueNext( MSG_RESET );
 		}
-		socket->evtSource.broadcastFlagsI( ( eventflags_t )SocketEventFlag::InputAvailable );
+		socket->evtSource.broadcastFlags( ( eventflags_t )SocketEventFlag::InputAvailable );
 		chSchRescheduleS();
 		chSysUnlock();
 	}
 	else if( evt == NETCONN_EVT_ERROR )
 	{
 		chSysLock();
-		chThdDequeueNextI( &socket->readWaitingQueue, MSG_RESET );
-		socket->evtSource.broadcastFlagsI( ( eventflags_t )SocketEventFlag::Error );
+		socket->readWaitingQueue.dequeueNext( MSG_RESET );
+		socket->evtSource.broadcastFlags( ( eventflags_t )SocketEventFlag::Error );
 		socket->updateStateS();
 		chSchRescheduleS();
 		chSysUnlock();

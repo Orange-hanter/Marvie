@@ -1,7 +1,7 @@
 #include "MarvieBackup.h"
 #include <string.h>
 
-chibios_rt::_Mutex MarvieBackup::mutex;
+Mutex MarvieBackup::mutex;
 
 bool MarvieBackup::Settings::isValid()
 {

@@ -74,8 +74,8 @@ ByteRingIterator AbstractBRSensor::waitForResponse( const char* response, uint32
 		nextInterval = SENSOR_TERMINATE_TEST_INTERVAL;
 	chVTSet( &timer, nextInterval, timerCallback, chThdGetSelfX() );
 
-	EvtListener ioDeviceListener;
-	io->eventSource()->registerMaskWithFlags( &ioDeviceListener, DataServiceEvent, CHN_INPUT_AVAILABLE );
+	EventListener ioDeviceListener;
+	io->eventSource().registerMaskWithFlags( &ioDeviceListener, DataServiceEvent, CHN_INPUT_AVAILABLE );
 	while( true )
 	{
 		ByteRingIterator end = io->inputBuffer()->end();
@@ -108,7 +108,6 @@ ByteRingIterator AbstractBRSensor::waitForResponse( const char* response, uint32
 	}
 
 Leave:
-	io->eventSource()->unregister( &ioDeviceListener );
 	chVTReset( &timer );
 
 	if( pos == responseLen )

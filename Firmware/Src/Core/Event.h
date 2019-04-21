@@ -19,6 +19,8 @@ public:
 	EventListener& operator=( EventListener&& other ) = delete;
 
 	void setThread( ThreadRef thread );
+	ThreadRef thread();
+	eventmask_t eventMask();
 	eventflags_t getAndClearFlags();
 	void unregister();
 	bool isListening();

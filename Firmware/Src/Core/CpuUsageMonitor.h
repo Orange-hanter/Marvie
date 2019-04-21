@@ -1,8 +1,6 @@
 #pragma once
 
-#include "cpp_wrappers/ch.hpp"
-
-using namespace chibios_rt;
+#include "Event.h"
 
 class CpuUsageMonitor
 {
@@ -20,7 +18,7 @@ public:
 
 	uint32_t usage();
 
-	inline EvtSource* eventSource() { return &eSource; };
+	inline EventSourceRef eventSource() { return &eSource; };
 
 private:
 	inline void idleEnter();
@@ -35,5 +33,5 @@ private:
 	rtcnt_t idleLast;
 	rtcnt_t idleSum;
 	uint32_t cpuUsage;
-	EvtSource eSource;
+	EventSource eSource;
 };

@@ -1,14 +1,17 @@
 #pragma once
 
-#include "Core/BaseDynamicThread.h"
 #include "Core/ByteRingBuffer.h"
+#include "Core/Event.h"
+#include "Core/Mutex.h"
 #include "Core/NanoList.h"
+#include "Core/Thread.h"
+#include "Core/ThreadsQueue.h"
 #include "Network/TcpServer.h"
 #include <list>
 
 #define MLINK_STACK_SIZE           1280
 
-class MLinkServer : private BaseDynamicThread
+class MLinkServer : private Thread
 {
 public:
 	enum class State { Stopped, Listening, Authenticating, Connected, Stopping };
@@ -56,7 +59,7 @@ public:
 	Error error() const;
 
 	void setAuthenticationCallback( AuthenticationCallback* callback );
-	void startListening( tprio_t prio );
+	bool startListening( tprio_t prio );
 	void stopListening();
 	bool waitForStateChanged( sysinterval_t timeout = TIME_INFINITE );
 
@@ -70,7 +73,7 @@ public:
 	bool hasPendingPacket();
 	uint32_t readPacket( uint8_t* type, uint8_t* data, uint32_t maxSize );
 
-	EvtSource* eventSource();
+	EventSourceRef eventSource();
 
 private:
 	void main() final override;
@@ -130,17 +133,17 @@ private:
 	Error linkError;
 	TcpServer server;
 	TcpSocket* socket;
-	EvtListener socketListener;
+	EventListener socketListener;
 	AuthenticationCallback* authCallback;
 	DataChannelCallback* inputDataChCallback;
 	uint32_t idCounter;
 	int accountId;
 	bool sessionConfirmed;
-	threads_queue_t stateWaitingQueue;
-	threads_queue_t packetWaitingQueue;
-	mutex_t ioMutex;
+	ThreadsQueue stateWaitingQueue;
+	ThreadsQueue packetWaitingQueue;
+	Mutex ioMutex;
 	virtual_timer_t timer, pingTimer;
-	EvtSource extEventSource;
+	EventSource extEventSource;
 	NanoList< DataChannel* > activeODCList; // output data channel list
 	struct IDC
 	{

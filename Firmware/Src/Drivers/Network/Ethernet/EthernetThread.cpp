@@ -23,7 +23,7 @@
 
 EthernetThread* EthernetThread::ethThread = nullptr;
 
-EthernetThread::EthernetThread() : BaseDynamicThread( 1024 )
+EthernetThread::EthernetThread() : Thread( 1024 )
 {
 	config.macAddress[0] = EthMacAddr0;
 	config.macAddress[1] = EthMacAddr1;
@@ -71,9 +71,15 @@ bool EthernetThread::startThread( tprio_t prio /*= NORMALPRIO */ )
 {
 	if( started )
 		return false;
+
+	setPriority( prio );
 	started = true;
+	if( !start() )
+	{
+		started = false;
+		return false;
+	}
 	eSource.broadcastFlags( StateChanged );
-	start( prio );
 	return true;
 }
 
@@ -81,7 +87,7 @@ void EthernetThread::stopThread()
 {
 	if( !started )
 		return;
-	chEvtSignal( thread_ref, StopRequestEvent );
+	signalEvents( StopRequestEvent );
 }
 
 void EthernetThread::waitForStop()
@@ -124,7 +130,7 @@ void EthernetThread::setAsDefault()
 	netif_set_default( &thisif );
 }
 
-EvtSource* EthernetThread::eventSource()
+EventSourceRef EthernetThread::eventSource()
 {
 	return &eSource;
 }
@@ -255,9 +261,8 @@ End:
 	macStop( &ETHD1 );
 
 	chSysLock();
-	eSource.broadcastFlagsI( StateChanged );
+	eSource.broadcastFlags( StateChanged );
 	started = false;
-	exitS( MSG_OK );
 }
 
 void EthernetThread::lowLevelInit( netif *netif )

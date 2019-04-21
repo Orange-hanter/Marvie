@@ -1,13 +1,15 @@
 #pragma once
 
-#include "Core/BaseDynamicThread.h"
+#include "Core/Mutex.h"
+#include "Core/Thread.h"
+#include "Core/ThreadsQueue.h"
 #include "Drivers/Sensors/AbstractSensor.h"
-#include "FileSystem/File.h"
 #include "FileSystem/Dir.h"
-#include <vector>
+#include "FileSystem/File.h"
 #include <list>
+#include <vector>
 
-class MarvieLog : private BaseDynamicThread
+class MarvieLog : private Thread
 {
 public:
 	enum class State { Stopped, Working, Archiving, Stopping };
@@ -52,7 +54,7 @@ private:
 private:
 	enum : eventmask_t { StopRequestEvent = 1, CleanRequestEvent = 2, DigitSignalTimerEvent = 4, AnalogSignalTimerEvent = 8, PendingSensorEvent = 16 };
 	State logState;
-	threads_queue_t waitingQueue;
+	ThreadsQueue waitingQueue;
 	uint8_t buffer[512 + 18]; // > 128
 
 	Dir rootDir;
@@ -76,7 +78,7 @@ private:
 	AbstractSRSensor::SignalProvider* signalProvider;
 
 	File file;
-	_Mutex mutex;
+	Mutex mutex;
 	struct SensorDesc
 	{
 		SensorDesc( AbstractSensor* sensor, const std::string* name ) : sensor( sensor ), name( name ) {}

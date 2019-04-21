@@ -1,5 +1,6 @@
 #include "MultipleBRSensorsReader.h"
 #include "Core/Assert.h"
+#include "Core/CriticalSectionLocker.h"
 #include "chmemcore.h"
 
 #define SENSOR_ELEMENT( i ) ( static_cast< SensorElement* >( static_cast< SensorNode* >( i ) ) )
@@ -91,25 +92,26 @@ bool MultipleBRSensorsReader::startReading( tprio_t prio )
 		return false;
 
 	tState = State::Working;
+	setPriority( prio );
+	if( !start() )
+	{
+		tState = State::Stopped;
+		return false;
+	}
 	extEventSource.broadcastFlags( ( eventflags_t )EventFlag::StateChanged );
-	start( prio );
 
 	return true;
 }
 
 void MultipleBRSensorsReader::stopReading()
 {
-	syssts_t sysStatus = chSysGetStatusAndLockX();
+	CriticalSectionLocker locker;
 	if( tState == State::Stopped || tState == State::Stopping )
-	{
-		chSysRestoreStatusX( sysStatus );
 		return;
-	}
 	tState = State::Stopping;
-	thread_ref->flags |= CH_FLAG_TERMINATE;
-	extEventSource.broadcastFlagsI( ( eventflags_t )EventFlag::StateChanged );
+	requestInterruption();
+	extEventSource.broadcastFlags( ( eventflags_t )EventFlag::StateChanged );
 	signalEventsI( InnerEventFlag::StopRequestFlag );
-	chSysRestoreStatusX( sysStatus );
 }
 
 void MultipleBRSensorsReader::forceOne( AbstractBRSensor* sensor )
@@ -326,7 +328,7 @@ void MultipleBRSensorsReader::main()
 				else
 				{
 					updatedSensorsRoot = static_cast< SensorElement* >( currentNode )->next = static_cast< SensorElement* >( currentNode );
-					extEventSource.broadcastFlagsI( EventFlag::SensorDataUpdated );
+					extEventSource.broadcastFlags( EventFlag::SensorDataUpdated );
 					chSchRescheduleS();
 				}
 			}
@@ -347,9 +349,8 @@ void MultipleBRSensorsReader::main()
 	_nextSensor = nullptr;
 	nextInterval = 0;
 	forcedSensor = nullptr;
-	extEventSource.broadcastFlagsI( ( eventflags_t )EventFlag::StateChanged );
-	chThdDequeueNextI( &waitingQueue, MSG_OK );
-	exitS( MSG_OK );
+	extEventSource.broadcastFlags( ( eventflags_t )EventFlag::StateChanged );
+	waitingQueue.dequeueNext( MSG_OK );
 }
 
 void MultipleBRSensorsReader::prepareList()

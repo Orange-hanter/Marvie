@@ -36,9 +36,9 @@ private:
 		SocketStream* stream;
 		uint8_t* buffer;
 		ModbusPotato::IFramer* framer;
-		EvtListener listener;
+		EventListener listener;
 		virtual_timer_t timer;
 	}** clients;
 	TcpServer tcpServer;
-	EvtListener listener;
+	EventListener listener;
 };

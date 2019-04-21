@@ -5,7 +5,9 @@
 #include "Core/Assert.h"
 #include "Core/Concurrent.h"
 #include "Core/CpuUsageMonitor.h"
+#include "Core/Mutex.h"
 #include "Core/ObjectMemoryUtilizer.h"
+#include "Core/Semaphore.h"
 #include "Core/Thread.h"
 #include "Core/Timer.h"
 #include "Drivers/Interfaces/Rs485.h"
@@ -104,11 +106,11 @@ private:
 
 	ModbusPotato::modbus_exception_code::modbus_exception_code read_input_registers( uint16_t, uint16_t, uint16_t* ) override;
 
-	static void mainTaskThreadTimersCallback( void* p );
-	static void miskTaskThreadTimersCallback( void* p );
-	static void mLinkServerHandlerThreadTimersCallback( void* p );
+	static void mainTaskThreadTimersCallback( eventmask_t emask );
+	static void miskTaskThreadTimersCallback( eventmask_t emask );
+	static void mLinkServerHandlerThreadTimersCallback( eventmask_t emask );
 	void terminalOutputTimerCallback();
-	static void adInputsReadThreadTimersCallback( void* p );
+	static void adInputsReadThreadTimersCallback( eventmask_t emask );
 	static void adcCallback( ADCDriver *adcp, adcsample_t *buffer, size_t n );
 	static void adcErrorCallback( ADCDriver *adcp, adcerror_t err );
 
@@ -156,7 +158,7 @@ private:
 	FileLog fileLog;
 
 	// ======================================================================================
-	_Mutex configMutex;
+	Mutex configMutex;
 	uint32_t configNum;
 	uint32_t vPortsCount;
 	IODevice** vPorts;
@@ -176,26 +178,25 @@ private:
 		volatile bool readyForLog;
 	} *sensors;
 	BRSensorReader** brSensorReaders;
-	EvtListener* brSensorReaderListeners;
+	EventListener* brSensorReaderListeners;
 	MarvieLog* marvieLog;
 	volatile bool sensorLogEnabled;
 	AbstractPppModem* gsmModem;
-	EvtListener gsmModemMainThreadListener;
-	EvtListener gsmModemMLinkThreadListener;
+	EventListener gsmModemMainThreadListener;
+	EventListener gsmModemMLinkThreadListener;
 	RawModbusServer* rawModbusServers;
 	uint32_t rawModbusServersCount;
 	TcpModbusServer* tcpModbusRtuServer;
 	TcpModbusServer* tcpModbusAsciiServer;
 	TcpModbusServer* tcpModbusIpServer;
-	_Mutex modbusRegistersMutex;
+	Mutex modbusRegistersMutex;
 	uint16_t* modbusRegisters;
 	uint32_t modbusRegistersCount;
 	// ======================================================================================
 
-	BaseDynamicThread* mainThread, *miskTasksThread, *adInputsReadThread, *mLinkServerHandlerThread, *uiThread, *networkTestThread;
-	Thread* terminalOutputThread;
+	Thread* mainThread, *miskTasksThread, *adInputsReadThread, *mLinkServerHandlerThread, *terminalOutputThread, *uiThread, *networkTestThread;
 	volatile bool mLinkComPortEnable = true;  // shared resource
-	_Mutex configXmlFileMutex;
+	Mutex configXmlFileMutex;
 
 	// Main thread resources =================================================================
 	enum MainThreadEvent : eventmask_t 
@@ -214,7 +215,7 @@ private:
 	FATFS fatFs;
 	FRESULT fsError;
 	SHA1::Digest configXmlHash;
-	_Timer srSensorsUpdateTimer;
+	BasicTimer< decltype( &MarvieDevice::mainTaskThreadTimersCallback ), &MarvieDevice::mainTaskThreadTimersCallback > srSensorsUpdateTimer;
 	uint32_t srSensorPeriodCounter;
 	uint64_t monitoringLogSize;
 
@@ -227,10 +228,10 @@ private:
 	};
 	MLinkServer* mLinkServer;
 	uint8_t mLinkBuffer[255];
-	_Mutex datFilesMutex;
+	Mutex datFilesMutex;
 	FIL* datFiles[3]; // shared resource
 	uint32_t syncConfigNum;
-	_BinarySemaphore configXmlDataSendingSemaphore;
+	BinarySemaphore configXmlDataSendingSemaphore;
 
 	// TerminalOutput thread resources ================================================================
 	enum TerminalOutputThreadEvent : eventmask_t { TerminalOutputEvent = 1 };

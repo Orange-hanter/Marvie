@@ -170,7 +170,7 @@ int main()
 	terminal->open( 115200 );
 	terminal->write( ( uint8_t* )"Start ethernet...\r", 18, TIME_INFINITE );*/
 
-	Concurrent::_run( []() {
+	Concurrent::run( []() {
 		UdpStressTestServer* server = new UdpStressTestServer( 1112 );
 		server->exec();
 	} );
@@ -197,7 +197,7 @@ int main()
  		}
  	}*/
 
-	Concurrent::_run( []() {
+	Concurrent::run( []() {
 		TcpServer* server = new TcpServer;
 		server->listen( 42420 );
 		while( server->isListening() )
@@ -205,7 +205,7 @@ int main()
 			if( server->waitForNewConnection( TIME_MS2I( 100 ) ) )
 			{
 				TcpSocket* socket = server->nextPendingConnection();
-				Concurrent::_run( [socket]() {
+				Concurrent::run( ThreadProperties( 2048, NORMALPRIO ), [socket]() {
 					uint8_t* data = new uint8_t[2048];
 					while( true )
 					{
@@ -225,8 +225,7 @@ int main()
 				End:
 					delete data;
 					delete socket;
-				},
-						 2048, NORMALPRIO );
+				} );
 			}
 		}
 	} );

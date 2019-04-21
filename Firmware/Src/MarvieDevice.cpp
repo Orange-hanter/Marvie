@@ -222,29 +222,26 @@ MarvieDevice* MarvieDevice::instance()
 
 void MarvieDevice::exec()
 {
-	mainThread               = Concurrent::_run( [this]() { mainThreadMain(); },               2560, NORMALPRIO );
-	miskTasksThread          = Concurrent::_run( [this]() { miskTasksThreadMain(); },          2048, NORMALPRIO );
-	adInputsReadThread       = Concurrent::_run( [this]() { adInputsReadThreadMain(); },       512,  NORMALPRIO + 2 );
-	mLinkServerHandlerThread = Concurrent::_run( [this]() { mLinkServerHandlerThreadMain(); }, 2048, NORMALPRIO );
-	uiThread                 = Concurrent::_run( [this]() { uiThreadMain(); },                 1024, NORMALPRIO );
-	networkTestThread        = Concurrent::_run( [this]() { networkTestThreadMain(); },        1024, NORMALPRIO );
+	mainThread               = Thread::createAndStart( ThreadProperties( 2560, NORMALPRIO ), [this]() { mainThreadMain(); } );
+	miskTasksThread          = Thread::createAndStart( ThreadProperties( 2048, NORMALPRIO ), [this]() { miskTasksThreadMain(); } );
+	adInputsReadThread       = Thread::createAndStart( ThreadProperties( 512,  NORMALPRIO + 2 ), [this]() { adInputsReadThreadMain(); } );
+	mLinkServerHandlerThread = Thread::createAndStart( ThreadProperties( 2048, NORMALPRIO ), [this]() { mLinkServerHandlerThreadMain(); } );
 	terminalOutputThread     = Thread::createAndStart( ThreadProperties( 1024 ), [this]() { terminalOutputThreadMain(); } );
+	uiThread                 = Thread::createAndStart( ThreadProperties( 1024, NORMALPRIO ), [this]() { uiThreadMain(); } );
+	networkTestThread        = Thread::createAndStart( ThreadProperties( 1024, NORMALPRIO ), [this]() { networkTestThreadMain(); } );
 
-	//mLinkServer->startListening( NORMALPRIO );
-
-	Concurrent::_run( []()
+	Concurrent::run( ThreadProperties( 2048, NORMALPRIO, "UdpStressTestServerThread" ), []()
 	{
 		UdpStressTestServer* server = new UdpStressTestServer( 1112 );
 		server->exec();
-	}, 2048, NORMALPRIO );
-
-	/*Concurrent::run( []()
+	} );
+	/*Concurrent::run( ThreadProperties( 2048, NORMALPRIO, "UdpStressTestServerThread2" ), []()
 	{
 		UdpStressTestServer* server = new UdpStressTestServer( 1114 );
 		server->exec();
-	}, 2048, NORMALPRIO );*/
+	} );*/
 
-	Concurrent::_run( [this]()
+	Concurrent::run( ThreadProperties( 2048, NORMALPRIO, "" ), [this]()
 	{
 		UdpSocket* socket = new UdpSocket;
 		uint8_t buf[32];
@@ -276,7 +273,7 @@ void MarvieDevice::exec()
 				FLASH_EraseAllBank1Sectors( VoltageRange_3 );
 			}
 		}
-	}, 2048, NORMALPRIO );
+	} );
 
 	/*TcpServer* server = new TcpServer;
 	server->listen( 42420 );
@@ -477,7 +474,8 @@ void MarvieDevice::mainThreadMain()
 		if( em & MainThreadEvent::SrSensorsTimerEvent )
 		{
 			volatile bool mLinkSensorUpdated = false;
-			srSensorsUpdateTimer.set( TIME_MS2I( SrSensorInterval ), mainTaskThreadTimersCallback, ( void* )MainThreadEvent::SrSensorsTimerEvent );
+			srSensorsUpdateTimer.setParameter( MainThreadEvent::SrSensorsTimerEvent );
+			srSensorsUpdateTimer.start( TIME_MS2I( SrSensorInterval ) );
 			--srSensorPeriodCounter;
 			for( uint i = 0; i < sensorsCount; ++i )
 			{
@@ -619,11 +617,10 @@ void MarvieDevice::mainThreadMain()
 
 void MarvieDevice::miskTasksThreadMain()
 {
-	virtual_timer_t sdTestTimer, memoryTestTimer;
-	chVTObjectInit( &sdTestTimer );
-	chVTObjectInit( &memoryTestTimer );
-	chVTSet( &sdTestTimer, TIME_MS2I( SdTestInterval ), miskTaskThreadTimersCallback, ( void* )MiskTaskThreadEvent::SdCardTestEvent );
-	chVTSet( &memoryTestTimer, TIME_MS2I( MemoryTestInterval ), miskTaskThreadTimersCallback, ( void* )MiskTaskThreadEvent::MemoryTestEvent );
+	BasicTimer< void(*)( eventmask_t ), &MarvieDevice::miskTaskThreadTimersCallback > sdTestTimer( MiskTaskThreadEvent::SdCardTestEvent );
+	BasicTimer< void(*)( eventmask_t ), &MarvieDevice::miskTaskThreadTimersCallback > memoryTestTimer( MiskTaskThreadEvent::MemoryTestEvent );
+	sdTestTimer.start( TIME_MS2I( SdTestInterval ) );
+	memoryTestTimer.start( TIME_MS2I( MemoryTestInterval ) );
 	uint32_t counter = 0;
 
 	while( true )
@@ -652,7 +649,7 @@ void MarvieDevice::miskTasksThreadMain()
 					mainThread->signalEvents( MainThreadEvent::SdCardStatusChanged );
 				}
 			}
-			chVTSet( &sdTestTimer, TIME_MS2I( SdTestInterval ), miskTaskThreadTimersCallback, ( void* )MiskTaskThreadEvent::SdCardTestEvent );
+			sdTestTimer.start( TIME_MS2I( SdTestInterval ) );
 		}
 		if( em & MiskTaskThreadEvent::MemoryTestEvent )
 		{
@@ -679,7 +676,7 @@ void MarvieDevice::miskTasksThreadMain()
 			}
 
 			mLinkServerHandlerThread->signalEvents( MLinkThreadEvent::MemoryLoadEvent );
-			chVTSet( &memoryTestTimer, TIME_MS2I( MemoryTestInterval ), miskTaskThreadTimersCallback, ( void* )MiskTaskThreadEvent::MemoryTestEvent );
+			memoryTestTimer.start( TIME_MS2I( MemoryTestInterval ) );
 		}
 	}
 }
@@ -745,13 +742,12 @@ void MarvieDevice::adInputsReadThreadMain()
 
 void MarvieDevice::mLinkServerHandlerThreadMain()
 {
-	EvtListener mLinkListener, ethThreadListener, cpuUsageMonitorListener;
-	mLinkServer->eventSource()->registerMask( &mLinkListener, MLinkThreadEvent::MLinkEvent );
-	EthernetThread::instance()->eventSource()->registerMask( &ethThreadListener, MLinkThreadEvent::EthernetEvent );
-	CpuUsageMonitor::instance()->eventSource()->registerMask( &cpuUsageMonitorListener, MLinkThreadEvent::CpuUsageMonitorEvent );
+	EventListener mLinkListener, ethThreadListener, cpuUsageMonitorListener;
+	mLinkServer->eventSource().registerMask( &mLinkListener, MLinkThreadEvent::MLinkEvent );
+	EthernetThread::instance()->eventSource().registerMask( &ethThreadListener, MLinkThreadEvent::EthernetEvent );
+	CpuUsageMonitor::instance()->eventSource().registerMask( &cpuUsageMonitorListener, MLinkThreadEvent::CpuUsageMonitorEvent );
 
-	virtual_timer_t timer;
-	chVTObjectInit( &timer );
+	BasicTimer< void(*)( eventmask_t ), &MarvieDevice::mLinkServerHandlerThreadTimersCallback > timer( MLinkThreadEvent::StatusUpdateEvent );
 
 	syncConfigNum = ( uint32_t )-1;
 	auto sensorDataChannel = mLinkServer->createDataChannel();
@@ -770,10 +766,10 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 					removeOpenDatFiles();
 					mLinkServer->confirmSession();
 					mLinkSync( true );
-					chVTSet( &timer, TIME_MS2I( StatusInterval ), mLinkServerHandlerThreadTimersCallback, ( void* )MLinkThreadEvent::StatusUpdateEvent );
+					timer.start( TIME_MS2I( StatusInterval ) );
 				}
 				else
-					chVTReset( &timer ), terminalServer.reset();
+					timer.stop(), terminalServer.reset();
 			}
 			if( flags & ( eventflags_t )MLinkServer::Event::NewPacketAvailable )
 			{
@@ -816,7 +812,7 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 		}
 		if( em & MLinkThreadEvent::StatusUpdateEvent )
 		{
-			chVTSet( &timer, TIME_MS2I( StatusInterval ), mLinkServerHandlerThreadTimersCallback, ( void* )MLinkThreadEvent::StatusUpdateEvent );
+			timer.start( TIME_MS2I( StatusInterval ) );
 			sendDeviceStatus();
 			if( mLinkServer->accountIndex() != 0 )
 			{
@@ -956,11 +952,9 @@ void MarvieDevice::createGsmModemObjectM()
 	gsmUsart->setDataFormat( UsartBasedDevice::B8N );
 	gsmUsart->setStopBits( UsartBasedDevice::S1 );
 	gsmModem->setUsart( gsmUsart );
-	gsmModem->eventSource()->registerMask( &gsmModemMainThreadListener, MainThreadEvent::GsmModemMainEvent );
-	gsmModem->eventSource()->registerMask( &gsmModemMLinkThreadListener, MLinkThreadEvent::GsmModemEvent );
-	/* Hack! */
-	gsmModemMLinkThreadListener.ev_listener.listener = mLinkServerHandlerThread->thread_ref;
-	/* You didn't see anything */
+	gsmModem->eventSource().registerMask( &gsmModemMainThreadListener, MainThreadEvent::GsmModemMainEvent );
+	gsmModem->eventSource().registerMask( &gsmModemMLinkThreadListener, MLinkThreadEvent::GsmModemEvent );
+	gsmModemMLinkThreadListener.setThread( mLinkServerHandlerThread->threadReference() );
 }
 
 void MarvieDevice::logFailure()
@@ -1207,7 +1201,7 @@ void MarvieDevice::configShutdown()
 		tcpModbusIpServer->waitForStateChange();
 
 	removeConfigRelatedObject();
-	srSensorsUpdateTimer.reset();
+	srSensorsUpdateTimer.stop();
 	mainThread->getAndClearEvents( MainThreadEvent::BrSensorReaderEvent | MainThreadEvent::SrSensorsTimerEvent );
 }
 
@@ -1336,8 +1330,8 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 
 		gsmModem->stopModem();
 		gsmModem->waitForStateChange();
-		gsmModem->eventSource()->unregister( &gsmModemMLinkThreadListener );
-		gsmModem->eventSource()->unregister( &gsmModemMainThreadListener );
+		gsmModemMLinkThreadListener.unregister();
+		gsmModemMainThreadListener.unregister();
 		delete gsmModem;
 		gsmModem = nullptr;
 
@@ -1378,7 +1372,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 	vPorts = new IODevice*[vPortsCount];
 	vPortBindings = new VPortBinding[vPortsCount];
 	brSensorReaders = new BRSensorReader*[vPortsCount];
-	brSensorReaderListeners = new EvtListener[vPortsCount];
+	brSensorReaderListeners = new EventListener[vPortsCount];
 	for( uint i = 0; i < vPortsCount; ++i )
 	{
 		vPorts[i] = nullptr;
@@ -1670,13 +1664,16 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 			brSensorReaderListeners[i].getAndClearFlags();
 			if( brSensorReaders[i] )
 			{
-				brSensorReaders[i]->eventSource()->registerMask( brSensorReaderListeners + i, MainThreadEvent::BrSensorReaderEvent );
+				brSensorReaders[i]->eventSource().registerMask( brSensorReaderListeners + i, MainThreadEvent::BrSensorReaderEvent );
 				brSensorReaders[i]->startReading( NORMALPRIO );
 			}
 		}
 
 		if( srSensorsEnabled )
-			srSensorsUpdateTimer.set( TIME_MS2I( SrSensorInterval ), mainTaskThreadTimersCallback, ( void* )MainThreadEvent::SrSensorsTimerEvent );
+		{
+			srSensorsUpdateTimer.setParameter( MainThreadEvent::SrSensorsTimerEvent );
+			srSensorsUpdateTimer.start( TIME_MS2I( SrSensorInterval ) );
+		}
 
 		deviceState = DeviceState::Working;
 	}
@@ -1705,7 +1702,7 @@ void MarvieDevice::removeConfigRelatedObjectM()
 	delete vPortBindings;
 	delete[] sensors;
 	delete brSensorReaders;
-	delete brSensorReaderListeners;
+	delete[] brSensorReaderListeners;
 
 	delete marvieLog;
 
@@ -1930,7 +1927,7 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 {
 	if( type == MarviePackets::Type::GetConfigXmlType )
 	{
-		if( configXmlDataSendingSemaphore.wait( TIME_IMMEDIATE ) == MSG_TIMEOUT )
+		if( !configXmlDataSendingSemaphore.acquire( TIME_IMMEDIATE ) )
 			return;
 
 		char* xmlData = nullptr;
@@ -1940,19 +1937,19 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 			auto channel = mLinkServer->createDataChannel();
 			if( channel->open( MarviePackets::ComplexChannel::XmlConfigChannel, "", xmlDataSize ) )
 			{
-				Concurrent::_run( [this, channel, xmlData, xmlDataSize]()
+				Concurrent::run( ThreadProperties( 1024, NORMALPRIO ), [this, channel, xmlData, xmlDataSize]()
 				{
 					channel->sendData( ( uint8_t* )xmlData, xmlDataSize );
 					channel->close();
 					delete xmlData;
 					delete channel;
-					configXmlDataSendingSemaphore.signal();
-				}, 1024, NORMALPRIO );
+					configXmlDataSendingSemaphore.release();
+				} );
 			}
 		}
 		else
 		{
-			configXmlDataSendingSemaphore.signal();
+			configXmlDataSendingSemaphore.release();
 			mLinkServer->sendPacket( MarviePackets::Type::ConfigXmlMissingType, nullptr, 0 );
 		}
 	}
@@ -2076,14 +2073,14 @@ void MarvieDevice::mLinkSync( bool coldSync )
 	uint32_t xmlDataSize = readConfigXmlFile( &xmlData );
 	if( xmlDataSize )
 	{
-		configXmlDataSendingSemaphore.wait( TIME_INFINITE );
+		configXmlDataSendingSemaphore.acquire( TIME_INFINITE );
 		if( channel->open( MarviePackets::ComplexChannel::XmlConfigSyncChannel, "", xmlDataSize ) )
 		{
 			channel->sendData( ( uint8_t* )xmlData, xmlDataSize );
 			channel->close();
 		}
 		delete xmlData;
-		configXmlDataSendingSemaphore.signal();
+		configXmlDataSendingSemaphore.release();
 	}
 
 	sendAnalogInputsData();
@@ -2609,24 +2606,24 @@ ModbusPotato::modbus_exception_code::modbus_exception_code MarvieDevice::read_in
 	return ModbusPotato::modbus_exception_code::ok;
 }
 
-void MarvieDevice::mainTaskThreadTimersCallback( void* p )
+void MarvieDevice::mainTaskThreadTimersCallback( eventmask_t emask )
 {
 	chSysLockFromISR();
-	instance()->mainThread->signalEventsI( ( eventmask_t )p );
+	instance()->mainThread->signalEventsI( emask );
 	chSysUnlockFromISR();
 }
 
-void MarvieDevice::miskTaskThreadTimersCallback( void* p )
+void MarvieDevice::miskTaskThreadTimersCallback( eventmask_t emask )
 {
 	chSysLockFromISR();
-	instance()->miskTasksThread->signalEventsI( ( eventmask_t )p );
+	instance()->miskTasksThread->signalEventsI( emask );
 	chSysUnlockFromISR();
 }
 
-void MarvieDevice::mLinkServerHandlerThreadTimersCallback( void* p )
+void MarvieDevice::mLinkServerHandlerThreadTimersCallback( eventmask_t emask )
 {
 	chSysLockFromISR();
-	instance()->mLinkServerHandlerThread->signalEventsI( ( eventmask_t )p );
+	instance()->mLinkServerHandlerThread->signalEventsI( emask );
 	chSysUnlockFromISR();
 }
 
@@ -2638,10 +2635,10 @@ void MarvieDevice::terminalOutputTimerCallback()
 	chSysUnlockFromISR();
 }
 
-void MarvieDevice::adInputsReadThreadTimersCallback( void* p )
+void MarvieDevice::adInputsReadThreadTimersCallback( eventmask_t emask )
 {
 	chSysLockFromISR();
-	instance()->adInputsReadThread->signalEventsI( ( eventmask_t )p );
+	instance()->adInputsReadThread->signalEventsI( emask );
 	chSysUnlockFromISR();
 }
 
@@ -2666,7 +2663,7 @@ void MarvieDevice::powerDownExtiCallback( void* arg )
 	chSysLockFromISR();
 	failureDesc.pwrDown.dateTime = DateTimeService::currentDateTime();
 	failureDesc.pwrDown.detected = true;
-	chEvtSignalI( MarvieDevice::instance()->mainThread->thread_ref, MarvieDevice::MainThreadEvent::PowerDownDetected );
+	MarvieDevice::instance()->mainThread->signalEventsI( MarvieDevice::MainThreadEvent::PowerDownDetected );
 	chSysUnlockFromISR();
 }
 

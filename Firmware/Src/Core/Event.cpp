@@ -23,6 +23,16 @@ void EventListener::setThread( ThreadRef thread )
 	nativeListener.listener = thread.nativeHandler();
 }
 
+ThreadRef EventListener::thread()
+{
+	return ThreadRef( nativeListener.listener );
+}
+
+eventmask_t EventListener::eventMask()
+{
+	return nativeListener.events;
+}
+
 eventflags_t EventListener::getAndClearFlags()
 {
 	CriticalSectionLocker locker;

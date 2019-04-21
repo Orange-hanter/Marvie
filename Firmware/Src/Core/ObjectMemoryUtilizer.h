@@ -1,10 +1,8 @@
 #pragma once
 
-#include "BaseDynamicThread.h"
+#include "Thread.h"
 
-using namespace chibios_rt;
-
-class ObjectMemoryUtilizer : private BaseDynamicThread
+class ObjectMemoryUtilizer : private Thread
 {
 	ObjectMemoryUtilizer();	
 	~ObjectMemoryUtilizer();
@@ -12,7 +10,7 @@ class ObjectMemoryUtilizer : private BaseDynamicThread
 public:
 	static ObjectMemoryUtilizer* instance();	
 
-	void runUtilizer( tprio_t prio );
+	bool runUtilizer( tprio_t prio );
 	void stopUtilizer();
 
 	void utilize( Object* );

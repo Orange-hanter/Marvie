@@ -1,10 +1,10 @@
 #include "Modem.h"
+#include "Core/CriticalSectionLocker.h"
 
-Modem::Modem( uint32_t stackSize ) : BaseDynamicThread( stackSize )
+Modem::Modem( uint32_t stackSize ) : Thread( stackSize )
 {
 	mState = ModemState::Stopped;
 	mError = ModemError::NoError;
-	chThdQueueObjectInit( &waitingQueue );
 	usart = nullptr;
 
 	mPinCode = 1111;
@@ -31,24 +31,24 @@ bool Modem::startModem( tprio_t prio /*= NORMALPRIO */ )
 
 	mError = ModemError::NoError;
 	mState = ModemState::Initializing;
+	setPriority( prio );
+	if( !start() )
+	{
+		mState = ModemState::Stopped;
+		return false;
+	}
 	extEventSource.broadcastFlags( ( eventflags_t )ModemEvent::StateChanged );
-	start( prio );
 	return true;
 }
 
 void Modem::stopModem()
 {
-	chSysLock();
+	CriticalSectionLocker locker;
 	if( mState == ModemState::Stopped || mState == ModemState::Stopping )
-	{
-		chSysUnlock();
 		return;
-	}
 	mState = ModemState::Stopping;
-	extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::StateChanged );
-	chEvtSignalI( thread_ref, StopRequestEvent );
-	chSchRescheduleS();
-	chSysUnlock();
+	extEventSource.broadcastFlags( ( eventflags_t )ModemEvent::StateChanged );
+	signalEventsI( StopRequestEvent );
 }
 
 bool Modem::waitForStateChange( sysinterval_t timeout )
@@ -56,7 +56,7 @@ bool Modem::waitForStateChange( sysinterval_t timeout )
 	msg_t msg = MSG_OK;
 	chSysLock();
 	if( mState == ModemState::Initializing || mState == ModemState::Stopping )
-		msg = chThdEnqueueTimeoutS( &waitingQueue, timeout );
+		msg = waitingQueue.enqueueSelf( timeout );
 	chSysUnlock();
 
 	return msg == MSG_OK;
@@ -122,7 +122,7 @@ AbstractTcpSocket* Modem::createTcpSocket( uint32_t inputBufferSize, uint32_t ou
 	return nullptr;
 }
 
-EvtSource* Modem::eventSource()
+EventSourceRef Modem::eventSource()
 {
 	return &extEventSource;
 }
@@ -130,19 +130,19 @@ EvtSource* Modem::eventSource()
 void Modem::setModemStateS( ModemState s )
 {
 	mState = s;
-	extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::StateChanged );
-	chThdDequeueNextI( &waitingQueue, MSG_OK );
+	extEventSource.broadcastFlags( ( eventflags_t )ModemEvent::StateChanged );
+	waitingQueue.dequeueNext( MSG_OK );
 }
 
 void Modem::setModemErrorS( ModemError err )
 {
 	mError = err;
 	if( err != ModemError::NoError )
-		extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::Error );
+		extEventSource.broadcastFlags( ( eventflags_t )ModemEvent::Error );
 }
 
 void Modem::setNetworkAddressS( IpAddress addr )
 {
 	netAddress = addr;
-	extEventSource.broadcastFlagsI( ( eventflags_t )ModemEvent::NetworkAddressChanged );
+	extEventSource.broadcastFlags( ( eventflags_t )ModemEvent::NetworkAddressChanged );
 }

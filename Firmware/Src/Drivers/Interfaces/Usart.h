@@ -39,7 +39,7 @@ public:
 	bool isInputBufferOverflowed() const;
 	void resetInputBufferOverflowFlag();
 
-	EvtSource* eventSource();
+	EventSourceRef eventSource();
 
 private:
 	static void timerCallback( void* );

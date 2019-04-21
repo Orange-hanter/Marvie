@@ -115,7 +115,7 @@ namespace GsmPPPTest
 		modem->waitForStateChange();
 		modem->setAsDefault();
 
-		Concurrent::_run( []()
+		Concurrent::run( []()
 		{
 			UdpStressTestServer* server = new UdpStressTestServer( 1114 );
 			server->exec();

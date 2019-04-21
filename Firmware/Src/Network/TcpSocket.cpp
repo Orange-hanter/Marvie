@@ -137,7 +137,7 @@ AbstractWritable* TcpSocket::outputBuffer()
 	return nullptr;
 }
 
-EvtSource* TcpSocket::eventSource()
+EventSourceRef TcpSocket::eventSource()
 {
 	return &evtSource;
 }

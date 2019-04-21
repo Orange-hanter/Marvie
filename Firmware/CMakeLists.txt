@@ -53,7 +53,6 @@ set(apps_SRCS
 )
 
 set(core_SRCS
-	${CMAKE_SOURCE_DIR}/Src/Core/BaseDynamicThread.cpp
 	${CMAKE_SOURCE_DIR}/Src/Core/CCMemoryAllocator.cpp
 	${CMAKE_SOURCE_DIR}/Src/Core/Thread.cpp
 	${CMAKE_SOURCE_DIR}/Src/Core/Timer.cpp
@@ -158,7 +157,6 @@ set(support_SRCS
 
 set(chibios_various_SRCS
 	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/lwip_bindings/arch/sys_arch.c
-	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/cpp_wrappers/ch.cpp
 	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/fatfs_bindings/fatfs_diskio.c
 	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/fatfs_bindings/fatfs_syscall.c
 	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/evtimer.c

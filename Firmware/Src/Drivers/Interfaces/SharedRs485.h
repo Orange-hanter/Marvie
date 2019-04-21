@@ -1,8 +1,10 @@
 #pragma once
 
-#include "Core/NanoList.h"
-#include "Drivers/LogicOutput.h"
 #include "AbstractRs485.h"
+#include "Core/Mutex.h"
+#include "Core/NanoList.h"
+#include "Core/Semaphore.h"
+#include "Drivers/LogicOutput.h"
 
 class SharedRs485Control;
 class SharedRs485 : public AbstractRs485
@@ -40,7 +42,7 @@ public:
 	bool isInputBufferOverflowed() const;
 	void resetInputBufferOverflowFlag();
 
-	EvtSource* eventSource();
+	EventSourceRef eventSource();
 	void acquireDevice();
 	void releaseDevice();
 
@@ -76,8 +78,8 @@ private:
 
 private:
 	Usart* usart;
-	_Mutex mutex;
-	_BinarySemaphore sem;
+	Mutex mutex;
+	BinarySemaphore sem;
 	NanoList< SharedRs485* > list;
 	SharedRs485* current;
 };

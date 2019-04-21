@@ -306,6 +306,10 @@ public:
 	}
 	BasicTimer( const BasicTimer& ) = delete;
 	BasicTimer( BasicTimer&& ) = delete;
+	BasicTimer( Parameter prm ) : BasicTimer()
+	{
+		_setParameter< Parameter, isVoid >( prm );
+	}
 	inline ~BasicTimer()
 	{
 		CriticalSectionLocker locker;

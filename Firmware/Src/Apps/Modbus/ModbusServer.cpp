@@ -1,14 +1,14 @@
 #include "ModbusServer.h"
+#include "Core/CriticalSectionLocker.h"
 
 class DefaulModbusSlaveHandler : public ModbusPotato::ISlaveHandler {} defaultModbusSlaveHandler;
 
-AbstractModbusServer::AbstractModbusServer( uint32_t stackSize ) : BaseDynamicThread( stackSize )
+AbstractModbusServer::AbstractModbusServer( uint32_t stackSize ) : Thread( stackSize )
 {
 	sState = State::Stopped;
 	frameType = FrameType::Rtu;
 	slaveHandler = &defaultModbusSlaveHandler;
 	slave.set_handler( slaveHandler );
-	chThdQueueObjectInit( &waitingQueue );
 }
 
 AbstractModbusServer::~AbstractModbusServer()
@@ -39,25 +39,26 @@ bool AbstractModbusServer::startServer( tprio_t prio /*= NORMALPRIO */ )
 	if( sState != State::Stopped )
 		return false;
 
+	setPriority( prio );
 	sState = State::Working;
+	if( !start() )
+	{
+		sState = State::Stopped;
+		return false;
+	}
 	eSource.broadcastFlags( ( eventflags_t )EventFlag::StateChanged );
-	start( prio );
 
 	return true;
 }
 
 void AbstractModbusServer::stopServer()
 {
-	syssts_t sysStatus = chSysGetStatusAndLockX();
+	CriticalSectionLocker locker;
 	if( sState != State::Working )
-	{
-		chSysRestoreStatusX( sysStatus );
 		return;
-	}
 	sState = State::Stopping;
-	eSource.broadcastFlagsI( ( eventflags_t )EventFlag::StateChanged );
+	eSource.broadcastFlags( ( eventflags_t )EventFlag::StateChanged );
 	signalEventsI( InnerEventFlag::StopRequestFlag );
-	chSysRestoreStatusX( sysStatus );
 }
 
 AbstractModbusServer::State AbstractModbusServer::state()
@@ -70,13 +71,13 @@ bool AbstractModbusServer::waitForStateChange( sysinterval_t timeout /*= TIME_IN
 	msg_t msg = MSG_OK;
 	chSysLock();
 	if( sState == State::Stopping )
-		msg = chThdEnqueueTimeoutS( &waitingQueue, timeout );
+		msg = waitingQueue.enqueueSelf( timeout );
 	chSysUnlock();
 
 	return msg == MSG_OK;
 }
 
-EvtSource* AbstractModbusServer::eventSource()
+EventSourceRef AbstractModbusServer::eventSource()
 {
 	return &eSource;
 }

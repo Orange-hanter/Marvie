@@ -187,8 +187,8 @@ int SimGsmPppModem::executeSetting( uint32_t lexicalAnalyzerState, const char* c
 	chVTObjectInit( &timer );
 	chVTSet( &timer, timeout, timerCallback, this );
 
-	EvtListener usartListener;
-	usart->eventSource()->registerMaskWithFlags( &usartListener, UsartEvent, CHN_INPUT_AVAILABLE );
+	EventListener usartListener;
+	usart->eventSource().registerMaskWithFlags( &usartListener, UsartEvent, CHN_INPUT_AVAILABLE );
 	while( true )
 	{
 		lexicalAnalyzer.processNewBytes();
@@ -209,7 +209,6 @@ int SimGsmPppModem::executeSetting( uint32_t lexicalAnalyzerState, const char* c
 			BREAK( errCode );
 	}
 
-	usart->eventSource()->unregister( &usartListener );
 	chVTReset( &timer );
 
 	return res;
@@ -229,8 +228,8 @@ int SimGsmPppModem::waitForCPinOrPwrDown( sysinterval_t timeout )
 	chVTObjectInit( &timer );
 	chVTSet( &timer, timeout, timerCallback, this );
 
-	EvtListener usartListener;
-	usart->eventSource()->registerMaskWithFlags( &usartListener, UsartEvent, CHN_INPUT_AVAILABLE );
+	EventListener usartListener;
+	usart->eventSource().registerMaskWithFlags( &usartListener, UsartEvent, CHN_INPUT_AVAILABLE );
 
 	while( true )
 	{
@@ -247,7 +246,6 @@ int SimGsmPppModem::waitForCPinOrPwrDown( sysinterval_t timeout )
 			BREAK( ErrorCode::TimeoutError );
 	}
 
-	usart->eventSource()->unregister( &usartListener );
 	chVTReset( &timer );
 
 	return res;
@@ -266,8 +264,8 @@ int SimGsmPppModem::waitForReadyFlags()
 	chVTObjectInit( &timer );
 	chVTSet( &timer, TIME_S2I( 8 ), timerCallback, this );
 
-	EvtListener usartListener;
-	usart->eventSource()->registerMaskWithFlags( &usartListener, UsartEvent, CHN_INPUT_AVAILABLE );
+	EventListener usartListener;
+	usart->eventSource().registerMaskWithFlags( &usartListener, UsartEvent, CHN_INPUT_AVAILABLE );
 
 	while( true )
 	{
@@ -284,7 +282,6 @@ int SimGsmPppModem::waitForReadyFlags()
 			BREAK( ErrorCode::TimeoutError );
 	}
 
-	usart->eventSource()->unregister( &usartListener );
 	chVTReset( &timer );
 
 	return res;
@@ -367,6 +364,6 @@ int SimGsmPppModem::printCGDCONT( char* str )
 void SimGsmPppModem::timerCallback( void* p )
 {
 	chSysLockFromISR();
-	chEvtSignalI( ( ( SimGsmPppModem* )p )->thread_ref, TimeoutEvent );
+	reinterpret_cast< SimGsmPppModem* >( p )->signalEventsI( TimeoutEvent );
 	chSysUnlockFromISR();
 }

@@ -1,10 +1,9 @@
 #include "BRSensorReader.h"
 
-BRSensorReader::BRSensorReader( uint32_t stackSize ) : BaseDynamicThread( stackSize )
+BRSensorReader::BRSensorReader( uint32_t stackSize ) : Thread( stackSize )
 {
 	tState = State::Stopped;
 	wState = WorkingState::Connecting;
-	chThdQueueObjectInit( &waitingQueue );
 }
 
 BRSensorReader::~BRSensorReader()
@@ -22,13 +21,13 @@ bool BRSensorReader::waitForStateChange( sysinterval_t timeout /*= TIME_INFINITE
 	msg_t msg = MSG_OK;
 	chSysLock();
 	if( tState == State::Stopping )
-		msg = chThdEnqueueTimeoutS( &waitingQueue, timeout );
+		msg = waitingQueue.enqueueSelf( timeout );
 	chSysUnlock();
 
 	return msg == MSG_OK;
 }
 
-EvtSource* BRSensorReader::eventSource()
+EventSourceRef BRSensorReader::eventSource()
 {
 	return &extEventSource;
 }

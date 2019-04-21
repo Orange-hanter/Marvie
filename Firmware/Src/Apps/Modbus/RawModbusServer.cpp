@@ -28,6 +28,7 @@ bool RawModbusServer::startServer( tprio_t prio /*= NORMALPRIO */ )
 
 void RawModbusServer::main()
 {
+	EventListener listener;
 	switch( frameType )
 	{
 	case FrameType::Rtu:
@@ -53,8 +54,7 @@ void RawModbusServer::main()
 		goto End;
 	framer->set_handler( &slave );
 
-	EvtListener listener;
-	stream.io->eventSource()->registerMask( &listener, ClientFlag );
+	stream.io->eventSource().registerMask( &listener, ClientFlag );
 	virtual_timer_t timer;
 	chVTObjectInit( &timer );
 	chEvtAddEvents( InnerEventFlag::ClientFlag );
@@ -74,7 +74,7 @@ void RawModbusServer::main()
 		}
 	}
 
-	stream.io->eventSource()->unregister( &listener );
+	listener.unregister();
 	chVTReset( &timer );
 
 End:
@@ -83,9 +83,8 @@ End:
 
 	chSysLock();
 	sState = State::Stopped;
-	eSource.broadcastFlagsI( ( eventflags_t )EventFlag::StateChanged );
-	chThdDequeueNextI( &waitingQueue, MSG_OK );
-	exitS( MSG_OK );
+	eSource.broadcastFlags( ( eventflags_t )EventFlag::StateChanged );
+	waitingQueue.dequeueNext( MSG_OK );
 }
 
 void RawModbusServer::timerCallback( void* p )

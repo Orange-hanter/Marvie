@@ -36,7 +36,7 @@ public:
 	bool isInputBufferOverflowed() const;
 	void resetInputBufferOverflowFlag();
 
-	EvtSource* eventSource();
+	EventSourceRef eventSource();
 
 private:
 	inline void receiveMode();

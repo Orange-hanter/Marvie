@@ -1,13 +1,13 @@
 #include "MarvieLog.h"
-#include "Core/DateTimeService.h"
 #include "Core/Assert.h"
+#include "Core/CriticalSectionLocker.h"
+#include "Core/DateTimeService.h"
 #include "Crc32HW.h"
 #include <string.h>
 
-MarvieLog::MarvieLog() : BaseDynamicThread( 2048 )
+MarvieLog::MarvieLog() : Thread( 2048 )
 {
 	logState = State::Stopped;
-	chThdQueueObjectInit( &waitingQueue );
 	maxSize = 100 * 1024 * 1024;
 	logSize = 0;
 	overwritingEnabled = true;
@@ -112,16 +112,11 @@ void MarvieLog::setSignalProvider( AbstractSRSensor::SignalProvider* signalProvi
 
 bool MarvieLog::clean()
 {
-	chSysLock();
+	CriticalSectionLocker locker;
 	if( logState == State::Stopped || logState == State::Stopping )
-	{
-		chSysUnlock();
 		return false;
-	}
-	chEvtSignalI( thread_ref, CleanRequestEvent );
-	chSchRescheduleS();
-	chSysUnlock();
-	
+	signalEventsI( CleanRequestEvent );
+
 	return true;
 }
 
@@ -131,22 +126,22 @@ bool MarvieLog::startLogging( tprio_t prio /*= NORMALPRIO */ )
 		return false;
 
 	logState = State::Working;
-	start( prio );
+	setPriority( prio );
+	if( !start() )
+	{
+		logState = State::Stopped;
+		return false;
+	}
 	return true;
 }
 
 void MarvieLog::stopLogging()
 {
-	chSysLock();
+	CriticalSectionLocker locker;
 	if( logState == State::Stopped || logState == State::Stopping )
-	{
-		chSysUnlock();
 		return;
-	}
 	logState = State::Stopping;
-	chEvtSignalI( thread_ref, StopRequestEvent );
-	chSchRescheduleS();
-	chSysUnlock();
+	signalEventsI( StopRequestEvent );
 }
 
 bool MarvieLog::waitForStop( sysinterval_t timeout /*= TIME_INFINITE */ )
@@ -154,7 +149,7 @@ bool MarvieLog::waitForStop( sysinterval_t timeout /*= TIME_INFINITE */ )
 	msg_t msg = MSG_OK;
 	chSysLock();
 	if( logState == State::Stopping )
-		msg = chThdEnqueueTimeoutS( &waitingQueue, timeout );
+		msg = waitingQueue.enqueueSelf( timeout );
 	chSysUnlock();
 
 	return msg == MSG_OK;
@@ -175,8 +170,8 @@ void MarvieLog::updateSensor( AbstractSensor* sensor, const std::string* name )
 	chSysLock();
 	if( logState == State::Working || logState == State::Archiving )
 	{
-		mutex.lockS();
-		chEvtSignalI( thread_ref, PendingSensorEvent );
+		mutex.lock();
+		signalEventsI( PendingSensorEvent );
 		chSchRescheduleS();
 		chSysUnlock();
 
@@ -242,8 +237,7 @@ void MarvieLog::main()
 
 	chSysLock();
 	logState = State::Stopped;
-	chThdDequeueNextI( &waitingQueue, MSG_OK );
-	exitS( MSG_OK );
+	waitingQueue.dequeueNext( MSG_OK );
 }
 
 void MarvieLog::logDigitInputs()
@@ -479,13 +473,13 @@ bool MarvieLog::free( uint64_t size )
 void MarvieLog::dTimerCallback( void* p )
 {
 	chSysLockFromISR();
-	chEvtSignalI( ( ( MarvieLog* )p )->thread_ref, DigitSignalTimerEvent );
+	reinterpret_cast< MarvieLog* >( p )->signalEventsI( DigitSignalTimerEvent );
 	chSysUnlockFromISR();
 }
 
 void MarvieLog::aTimerCallback( void* p )
 {
 	chSysLockFromISR();
-	chEvtSignalI( ( ( MarvieLog* )p )->thread_ref, AnalogSignalTimerEvent );
+	reinterpret_cast< MarvieLog* >( p )->signalEventsI( AnalogSignalTimerEvent );
 	chSysUnlockFromISR();
 }

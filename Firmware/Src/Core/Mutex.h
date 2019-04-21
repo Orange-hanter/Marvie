@@ -33,10 +33,10 @@ public:
 		CriticalSectionLocker locker;
 		chMtxUnlockS( &mtx );
 	}
-	inline void tryLock() noexcept
+	inline bool tryLock() noexcept
 	{
 		CriticalSectionLocker locker;
-		chMtxTryLockS( &mtx );
+		return chMtxTryLockS( &mtx );
 	}
 
 private:
@@ -80,10 +80,10 @@ public:
 		CriticalSectionLocker locker;
 		chMtxUnlockS( mtx.get() );
 	}
-	inline void tryLock() noexcept
+	inline bool tryLock() noexcept
 	{
 		CriticalSectionLocker locker;
-		chMtxTryLockS( mtx.get() );
+		return chMtxTryLockS( mtx.get() );
 	}
 
 private:

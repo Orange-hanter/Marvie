@@ -63,7 +63,7 @@ void CpuUsageMonitor::timerCallback( void* p )
 
 	m->idleSum = 0;
 	chVTSetI( &m->timer, TIME_MS2I( 200 ), timerCallback, p );
-	m->eSource.broadcastFlagsI( DataUpdated );
+	m->eSource.broadcastFlags( DataUpdated );
 	chSysUnlockFromISR();
 }
 
