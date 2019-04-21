@@ -45,7 +45,6 @@ set(bootloader_SRCS
 	${CMAKE_SOURCE_DIR}/Src/bootloader.cpp
 	${CMAKE_SOURCE_DIR}/Src/stm32f4xx_flash.c
 
-	${marvie_dir}/ChibiOS/os/various/cpp_wrappers/ch.cpp
 	${marvie_dir}/ChibiOS/os/various/fatfs_bindings/fatfs_diskio.c
 	${marvie_dir}/ChibiOS/os/various/fatfs_bindings/fatfs_syscall.c
 	${marvie_dir}/ChibiOS/os/various/evtimer.c
