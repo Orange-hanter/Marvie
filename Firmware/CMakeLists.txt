@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.11)
 enable_language(ASM)
 #set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-set(MARVIE_FIRMWARE_VERSION_BASE "0.8.2.1" CACHE STRING "Marvie base firmware version" FORCE)
+set(MARVIE_FIRMWARE_VERSION_BASE "0.8.2.2" CACHE STRING "Marvie base firmware version" FORCE)
 if(NOT MODEM_PWRKEY_LEVEL)
 	set(MODEM_PWRKEY_LEVEL "H")
 endif()

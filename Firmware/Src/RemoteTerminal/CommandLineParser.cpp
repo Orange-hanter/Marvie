@@ -107,7 +107,7 @@ bool CommandLineParser::parse( const char* line )
 				return false;
 			}
 
-			if( lex.empty() || !lexEsc && ( lex == "&" || lex == "|" || lex == "&&" || lex == "||" ) )
+			if( lex.empty() || ( !lexEsc && ( lex == "&" || lex == "|" || lex == "&&" || lex == "||" ) ) )
 				break;
 			Redirection redir;
 			if( !lexEsc && ( redir = toRedirection( lex ) ) != Redirection::Unknown )

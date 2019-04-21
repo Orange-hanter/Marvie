@@ -36,13 +36,13 @@ bool FileInfoReader::next()
 
 	if( !impl->opened )
 	{
-		if( ( impl->err = ( Error )f_opendir( &impl->dir, impl->dirName.c_str() ) ) != FR_OK )
+		if( ( impl->err = ( Error )f_opendir( &impl->dir, impl->dirName.c_str() ) ) != Error::NoError )
 			return false;
 		impl->opened = true;
 	}
 
 Next:
-	if( ( impl->err = ( Error )f_readdir( &impl->dir, &impl->fno ) ) == FR_OK && impl->fno.fname[0] )
+	if( ( impl->err = ( Error )f_readdir( &impl->dir, &impl->fno ) ) == Error::NoError && impl->fno.fname[0] )
 	{
 		if( FF_FS_RPATH && impl->fno.fname[0] == '.' )
 			goto Next;

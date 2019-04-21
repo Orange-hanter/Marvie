@@ -721,7 +721,6 @@ int RemoteTerminalServer::Terminal::readLine( uint8_t* data, uint32_t maxSize )
 		};
 
 		uint8_t* p = data;
-		uint8_t* end = data + maxSize;
 		uint32_t size = 0;
 		while( size < maxSize )
 		{
