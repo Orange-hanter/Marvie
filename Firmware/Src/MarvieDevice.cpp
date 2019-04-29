@@ -2,6 +2,7 @@
 #include "Core/CCMemoryAllocator.h"
 #include "Core/CCMemoryHeap.h"
 #include "Core/DateTimeService.h"
+#include "Core/MutexLocker.h"
 #include "FileSystem/FileInfoReader.h"
 #include "Network/PingService.h"
 #include "Network/TcpServer.h"
@@ -143,6 +144,13 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	monitoringLogSize = 0;
 
 	configNum = 0;
+	for( uint i = 0; i < MarviePlatform::comPortsCount; ++i )
+	{
+		comPortCurrentAssignments[i] = MarvieXmlConfigParsers::ComPortAssignment::VPort;
+		comPortServiceRoutines[i] = nullptr;
+		comPortBlockFlags[i] = false;
+		vPortToComPortMap[i] = -1;
+	}
 	vPorts = nullptr;
 	vPortBindings = nullptr;
 	vPortsCount = 0;
@@ -160,6 +168,7 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	tcpModbusIpServer = nullptr;
 	modbusRegisters = nullptr;
 	modbusRegistersCount = 0;
+	sharedComPortIndex = -1;
 
 	syncConfigNum = ( uint32_t )-1;
 	datFiles[0] = datFiles[1] = datFiles[2] = nullptr;
@@ -323,6 +332,9 @@ void MarvieDevice::mainThreadMain()
 		gsmModem->setPinCode( backup->settings.gsm.pinCode );
 		gsmModem->setApn( backup->settings.gsm.apn );
 		gsmModem->startModem();
+
+		comPortCurrentAssignments[MarviePlatform::gsmModemComPort] = MarvieXmlConfigParsers::ComPortAssignment::GsmModem;
+		comPortServiceRoutines[MarviePlatform::gsmModemComPort] = gsmModem;
 		
 		setNetworkTestState( NetworkTestState::On );
 	}
@@ -416,6 +428,8 @@ void MarvieDevice::mainThreadMain()
 		{
 			for( uint i = 0; i < vPortsCount; ++i )
 			{
+				if( i < MarviePlatform::comPortsCount && vPortToComPortMap[i] != -1 && comPortBlockFlags[vPortToComPortMap[i]] )
+					continue;
 				if( brSensorReaders[i] )
 					brSensorReaders[i]->startReading( NORMALPRIO );
 			}
@@ -424,6 +438,8 @@ void MarvieDevice::mainThreadMain()
 		{
 			for( uint i = 0; i < vPortsCount; ++i )
 			{
+				if( i < MarviePlatform::comPortsCount && vPortToComPortMap[i] != -1 && comPortBlockFlags[vPortToComPortMap[i]] )
+					continue;
 				if( brSensorReaders[i] )
 					brSensorReaders[i]->stopReading();
 			}
@@ -590,7 +606,7 @@ void MarvieDevice::mainThreadMain()
 		}
 		if( em & MainThreadEvent::RestartNetworkInterfaceEvent )
 		{
-			if( gsmModem )
+			if( gsmModem && !comPortBlockFlags[MarviePlatform::gsmModemComPort] )
 			{
 				fileLog.addRecorg( "Google no response" );
 				gsmModem->stopModem();
@@ -612,6 +628,73 @@ void MarvieDevice::mainThreadMain()
 			fileLog.clean();
 		if( em & MainThreadEvent::FormatSdCardRequest )
 			formatSdCard();
+		if( em & MainThreadEvent::StartComPortSharingEvent )
+		{
+			auto usartIndex = MarviePlatform::comPortIoLines[sharedComPortIndex].comUsartIndex;
+			for( uint i = 0; i < MarviePlatform::comPortsCount; ++i )
+			{
+				if( MarviePlatform::comPortIoLines[i].comUsartIndex == usartIndex )
+				{
+					if( comPortServiceRoutines[i] )
+					{
+						switch( comPortCurrentAssignments[i] )
+						{
+						case MarvieXmlConfigParsers::ComPortAssignment::VPort:
+							reinterpret_cast< BRSensorReader* >( comPortServiceRoutines[i] )->stopReading();
+							reinterpret_cast< BRSensorReader* >( comPortServiceRoutines[i] )->waitForStateChange();
+							break;
+						case MarvieXmlConfigParsers::ComPortAssignment::GsmModem:
+							reinterpret_cast< AbstractPppModem* >( comPortServiceRoutines[i] )->stopModem();
+							reinterpret_cast< AbstractPppModem* >( comPortServiceRoutines[i] )->waitForStateChange();
+							break;
+						case MarvieXmlConfigParsers::ComPortAssignment::ModbusRtuSlave:
+						case MarvieXmlConfigParsers::ComPortAssignment::ModbusAsciiSlave:
+							reinterpret_cast< RawModbusServer* >( comPortServiceRoutines[i] )->stopServer();
+							reinterpret_cast< RawModbusServer* >( comPortServiceRoutines[i] )->waitForStateChange();
+							break;
+						case MarvieXmlConfigParsers::ComPortAssignment::Multiplexer:
+							break;
+						default:
+							break;
+						}
+					}
+					comPortBlockFlags[i] = true;
+				}
+			}
+			sharingComPortThreadQueue.dequeueNext( MSG_OK );
+		}
+		if( em & MainThreadEvent::StopComPortSharingEvent )
+		{
+			auto usartIndex = MarviePlatform::comPortIoLines[sharedComPortIndex].comUsartIndex;
+			for( uint i = 0; i < MarviePlatform::comPortsCount; ++i )
+			{
+				if( MarviePlatform::comPortIoLines[i].comUsartIndex == usartIndex )
+				{
+					if( comPortServiceRoutines[i] )
+					{
+						switch( comPortCurrentAssignments[i] )
+						{
+						case MarvieXmlConfigParsers::ComPortAssignment::VPort:
+							reinterpret_cast< BRSensorReader* >( comPortServiceRoutines[i] )->startReading( NORMALPRIO );
+							break;
+						case MarvieXmlConfigParsers::ComPortAssignment::GsmModem:
+							reinterpret_cast< AbstractPppModem* >( comPortServiceRoutines[i] )->startModem();
+							break;
+						case MarvieXmlConfigParsers::ComPortAssignment::ModbusRtuSlave:
+						case MarvieXmlConfigParsers::ComPortAssignment::ModbusAsciiSlave:
+							reinterpret_cast< RawModbusServer* >( comPortServiceRoutines[i] )->startServer();
+							break;
+						case MarvieXmlConfigParsers::ComPortAssignment::Multiplexer:
+							break;
+						default:
+							break;
+						}
+					}
+					comPortBlockFlags[i] = false;
+				}
+			}
+			sharingComPortThreadQueue.dequeueNext( MSG_OK );
+		}
 	}
 }
 
@@ -1317,7 +1400,8 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 			gsmModem->waitForStateChange();
 			gsmModem->setPinCode( backup->settings.gsm.pinCode );
 			gsmModem->setApn( backup->settings.gsm.apn );
-			gsmModem->startModem();
+			if( !comPortBlockFlags[MarviePlatform::gsmModemComPort] )
+				gsmModem->startModem();
 		}
 	}
 	else if( gsmModem )
@@ -1343,7 +1427,8 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 	enum class ModbusComPortType : uint8_t { None, Rtu, Ascii } modbusComPortTypes[MarviePlatform::comPortsCount];
 	for( uint i = 0; i < MarviePlatform::comPortsCount; ++i )
 	{
-		auto assignment = comPortsConf[i]->assignment();
+		auto assignment = comPortCurrentAssignments[i] = comPortsConf[i]->assignment();
+		comPortServiceRoutines[i] = nullptr;
 		modbusComPortTypes[i] = ModbusComPortType::None;
 		if( assignment == ComPortAssignment::VPort )
 		{
@@ -1361,6 +1446,8 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 	}
 	uint32_t ethernetVPortBegin = vPortsCount;
 	vPortsCount += networkConf.vPortOverIpList.size();
+
+	comPortServiceRoutines[MarviePlatform::gsmModemComPort] = gsmModem;
 
 	uint16_t modbusRtuServerPort = networkConf.modbusRtuServerPort;
 	uint16_t modbusAsciiServerPort = networkConf.modbusAsciiServerPort;
@@ -1382,9 +1469,11 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 	uint32_t n = 0;
 	for( uint i = 0; i < MarviePlatform::comPortsCount; ++i )
 	{
+		vPortToComPortMap[i] = -1;
 		if( comPortsConf[i]->assignment() == ComPortAssignment::VPort )
 		{
 			vPorts[n] = comPorts[i];
+			vPortToComPortMap[n] = i;
 			if( MarviePlatform::comPortTypes[i] == ComPortType::Rs232 )
 				vPortBindings[n++] = VPortBinding::Rs232;
 			else
@@ -1499,7 +1588,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 				{
 					SingleBRSensorReader* reader = new SingleBRSensorReader;
 					reader->setSensor( static_cast< AbstractBRSensor* >( sensor ), TIME_S2I( normapPeriod ), TIME_S2I( emergencyPeriod ) );
-					brSensorReaders[vPortId] = reader;
+					comPortServiceRoutines[vPortToComPortMap[vPortId]] = brSensorReaders[vPortId] = reader;
 				}
 				else if( vPortBindings[vPortId] == VPortBinding::Rs485 )
 				{
@@ -1508,7 +1597,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 						reader = static_cast< MultipleBRSensorsReader* >( brSensorReaders[vPortId] );
 					else
 					{
-						brSensorReaders[vPortId] = reader = new MultipleBRSensorsReader;
+						comPortServiceRoutines[vPortToComPortMap[vPortId]] = brSensorReaders[vPortId] = reader = new MultipleBRSensorsReader;
 						reader->setMinInterval( TIME_S2I( sensorReadingConf.rs485MinInterval ) );
 					}
 					auto sensorElement = reader->createSensorElement( static_cast< AbstractBRSensor* >( sensor ), TIME_S2I( normapPeriod ), TIME_S2I( emergencyPeriod ) );
@@ -1623,10 +1712,12 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 			{
 				if( modbusComPortTypes[iPort] != ModbusComPortType::None )
 				{
+					comPortServiceRoutines[iPort] = &rawModbusServers[iServer];
 					rawModbusServers[iServer].setFrameType( modbusComPortTypes[iPort] == ModbusComPortType::Rtu ? ModbusDevice::FrameType::Rtu : ModbusDevice::FrameType::Ascii );
 					rawModbusServers[iServer].setSlaveHandler( this );
 					rawModbusServers[iServer].setIODevice( comPorts[iPort] );
-					rawModbusServers[iServer++].startServer();
+					if( !comPortBlockFlags[iPort] )
+						rawModbusServers[iServer++].startServer();
 				}
 			}
 
@@ -1665,6 +1756,8 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 			if( brSensorReaders[i] )
 			{
 				brSensorReaders[i]->eventSource().registerMask( brSensorReaderListeners + i, MainThreadEvent::BrSensorReaderEvent );
+				if( i < MarviePlatform::comPortsCount && vPortToComPortMap[i] != -1 && comPortBlockFlags[vPortToComPortMap[i]] )
+					continue;
 				brSensorReaders[i]->startReading( NORMALPRIO );
 			}
 		}
@@ -1693,6 +1786,12 @@ void MarvieDevice::removeConfigRelatedObject()
 
 void MarvieDevice::removeConfigRelatedObjectM()
 {
+	for( uint i = 0; i < MarviePlatform::comPortsCount; ++i )
+	{
+		comPortCurrentAssignments[i] = MarvieXmlConfigParsers::ComPortAssignment::VPort;
+		comPortServiceRoutines[i] = nullptr;
+		vPortToComPortMap[i] = -1;
+	}
 	for( uint i = 0; i < vPortsCount; ++i )
 		delete brSensorReaders[i];
 	for( uint i = 0; i < sensorsCount; ++i )
@@ -1731,6 +1830,30 @@ void MarvieDevice::removeConfigRelatedObjectM()
 	modbusRegistersCount = 0;
 }
 
+UsartBasedDevice* MarvieDevice::startComPortSharing( uint32_t index )
+{
+	if( index >= MarviePlatform::comPortsCount )
+		return nullptr;
+	MutexLocker locker( sharingComPortMutex );
+	CriticalSectionLocker criticalSectionLocker;
+	if( sharedComPortIndex != -1 )
+		return nullptr;
+	sharedComPortIndex = index;
+	mainThread->signalEventsI( MainThreadEvent::StartComPortSharingEvent );
+	sharingComPortThreadQueue.enqueueSelf( TIME_INFINITE );
+	return comPorts[sharedComPortIndex];
+}
+
+void MarvieDevice::stopComPortSharing()
+{
+	MutexLocker locker( sharingComPortMutex );
+	CriticalSectionLocker criticalSectionLocker;
+	if( sharedComPortIndex == -1 )
+		return;
+	mainThread->signalEventsI( MainThreadEvent::StopComPortSharingEvent );
+	sharingComPortThreadQueue.enqueueSelf( TIME_INFINITE );
+	sharedComPortIndex = 1;
+}
 
 void MarvieDevice::setNetworkTestState( NetworkTestState state )
 {

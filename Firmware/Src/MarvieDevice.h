@@ -69,6 +69,9 @@ private:
 	void removeConfigRelatedObject();
 	void removeConfigRelatedObjectM();
 
+	UsartBasedDevice* startComPortSharing( uint32_t index );
+	void stopComPortSharing();
+
 	enum class NetworkTestState;
 	inline void setNetworkTestState( NetworkTestState state );
 
@@ -160,9 +163,13 @@ private:
 	// ======================================================================================
 	Mutex configMutex;
 	uint32_t configNum;
+	MarvieXmlConfigParsers::ComPortAssignment comPortCurrentAssignments[MarviePlatform::comPortsCount];
+	void* comPortServiceRoutines[MarviePlatform::comPortsCount];
+	bool comPortBlockFlags[MarviePlatform::comPortsCount];
 	uint32_t vPortsCount;
 	IODevice** vPorts;
 	enum class VPortBinding { Rs232, Rs485, NetworkSocket } *vPortBindings;
+	int vPortToComPortMap[MarviePlatform::comPortsCount];
 	uint32_t sensorsCount;
 	struct SensorInfo
 	{
@@ -192,6 +199,9 @@ private:
 	Mutex modbusRegistersMutex;
 	uint16_t* modbusRegisters;
 	uint32_t modbusRegistersCount;
+	Mutex sharingComPortMutex;
+	ThreadsQueue sharingComPortThreadQueue;
+	int sharedComPortIndex;
 	// ======================================================================================
 
 	Thread* mainThread, *miskTasksThread, *adInputsReadThread, *mLinkServerHandlerThread, *terminalOutputThread, *uiThread, *networkTestThread;
@@ -201,10 +211,11 @@ private:
 	// Main thread resources =================================================================
 	enum MainThreadEvent : eventmask_t 
 	{
-		SdCardStatusChanged = 1, NewBootloaderDatFile = 2, NewFirmwareDatFile = 4, NewXmlConfigDatFile = 8,
-		PowerDownDetected = 16, StartSensorReaders = 32, StopSensorReaders = 64, BrSensorReaderEvent = 128,
-		SrSensorsTimerEvent = 256, EjectSdCardRequest = 512, FormatSdCardRequest = 1024, CleanMonitoringLogRequestEvent = 2048,
-		CleanSystemLogRequestEvent = 4096, RestartRequestEvent = 8192, GsmModemMainEvent = 16384, RestartNetworkInterfaceEvent = 32768
+		SdCardStatusChanged = 1 << 0, NewBootloaderDatFile = 1 << 1, NewFirmwareDatFile = 1 << 2, NewXmlConfigDatFile = 1 << 3,
+		PowerDownDetected = 1 << 4, StartSensorReaders = 1 << 5, StopSensorReaders = 1 << 6, BrSensorReaderEvent = 1 << 7,
+		SrSensorsTimerEvent = 1 << 8, EjectSdCardRequest = 1 << 9, FormatSdCardRequest = 1 << 10, CleanMonitoringLogRequestEvent = 1 << 11,
+		CleanSystemLogRequestEvent = 1 << 12, RestartRequestEvent = 1 << 13, GsmModemMainEvent = 1 << 14, RestartNetworkInterfaceEvent = 1 << 15,
+		StartComPortSharingEvent = 1 << 16, StopComPortSharingEvent = 1 << 17
 	};
 	enum class DeviceState { /*Initialization,*/ Reconfiguration, Working, IncorrectConfiguration } deviceState;
 	enum class ConfigError { NoError, NoConfigFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorReadingConfigError, LogConfigError, SensorsConfigError } configError;
