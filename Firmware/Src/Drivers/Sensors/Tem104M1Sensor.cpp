@@ -144,6 +144,7 @@ void Tem104M1Sensor::parseTimerResponse()
 		} pack;
 		io->read( ( uint8_t* )&pack, sizeof( pack ), TIME_IMMEDIATE );
 		data.integrated.T_Rab = pack.T_Rab;
+		data.integrated.T_Nar = pack.T_Nar;
 		data.integrated.T_offline = pack.T_offline;
 		data.integrated.T_Fail = pack.T_tn;
 		data.integrated.T_Dt = pack.T_Dt;
