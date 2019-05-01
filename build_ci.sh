@@ -105,6 +105,12 @@ function build_software ()
   local project_dir="${repository_root_dir}/Software"
   local project_appdir="${project_dir}/appdir"
 
+  # set branch and commit info to the app title
+  local branch=$(git rev-parse --abbrev-ref HEAD)
+  local commit=$(git rev-parse --short HEAD)
+  local built_at=$(date -u)
+  sed -i -e "s/QString(\"MarvieControl\")/QString(\"MarvieControl - built: ${built_at} [${branch}: ${commit}]\")/g" "${project_dir}/main.cpp"
+
   # build
   cd "${project_dir}"
   qmake CONFIG+=release PREFIX=/usr

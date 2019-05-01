@@ -13,6 +13,7 @@ int main( int argc, char *argv[] )
 	QLocale::setDefault( QLocale( QLocale::English, QLocale::UnitedKingdom ) );
 	qsrand( time( nullptr ) );
 
+
 	/*MonitoringLog monitoringLog;
 	QList< MonitoringLog::SensorDesc > list;
 	list.append( MonitoringLog::SensorDesc{ "TestSensorB", 4 } );
@@ -25,7 +26,13 @@ int main( int argc, char *argv[] )
 	monitoringLog.nameGroup( "AI" ).dayGroup( QDate( 2018, 9, 21 ) ).nearestEntry( QTime::fromMSecsSinceStartOfDay( 46454279 + 1 ) );
 	monitoringLog.nameGroup( "DI" ).dayGroup( QDate( 2018, 9, 21 ) ).timestamps();*/
 
- 	MarvieControl w;
+	// build_ci.sh requires this line to have 'QString("MarvieControl")'
+	// if the name of the app needs to be changed
+	// please don't forget to update scripts as well
+	QCoreApplication::setApplicationName( QString("MarvieControl") );
+
+	MarvieControl w;
+	w.setWindowTitle( QCoreApplication::applicationName() );
  	w.show();
  	return a.exec();
 
