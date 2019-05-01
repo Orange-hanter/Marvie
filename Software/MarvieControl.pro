@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core xml network gui xmlpatterns widgets bluetooth serialport printsupport concurrent charts
+QT       += core xml network gui xmlpatterns widgets serialport printsupport concurrent charts
 
 TARGET = MarvieControl
 TEMPLATE = app
