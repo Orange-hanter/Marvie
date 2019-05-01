@@ -1,4 +1,5 @@
 #include "MarvieControl.h"
+#include "RemoteTerminalClient.h"
 #include <QCoreApplication>
 #include <QDesktopWidget>
 #include <QGraphicsLayout>

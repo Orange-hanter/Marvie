@@ -3,7 +3,7 @@
 #include <QGuiApplication>
 #include <QClipboard>
 #include <QMouseEvent>
-#include <QkeyEvent>
+#include <QKeyEvent>
 #include <QDebug>
 
 RemoteTerminalClient::RemoteTerminalClient( QWidget* parent /*= nullptr */ ) : QTextEdit( parent )

@@ -110,12 +110,14 @@ function build_software ()
   qmake CONFIG+=release PREFIX=/usr
   make -j$(nproc)
   make INSTALL_ROOT=appdir -j$(nproc) install; find appdir/
-  unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
+  unset QTDIR; unset QT_PLUGIN_PATH; unset LD_LIBRARY_PATH
 
   mkdir -p "${project_appdir}"/usr/share/MarvieControl/
   cp -R "${project_dir}/Sensors" "${project_appdir}"/usr/share/MarvieControl/
   cp -R "${project_dir}/Animations" "${project_appdir}"/usr/share/MarvieControl/
   cp -R "${project_dir}/Xml" "${project_appdir}"/usr/share/MarvieControl/
+  cp -R "${project_dir}/icons" "${project_appdir}"/usr/share/MarvieControl/
+  cp -R "${project_dir}/fonts" "${project_appdir}"/usr/share/MarvieControl/
   cp    "${project_dir}/MarvieControl.png" "${project_appdir}"
 
   linuxdeployqt --appimage-extract

@@ -28,6 +28,7 @@
 #include "ui_SdStatistics.h"
 
 class MLinkTerminal;
+class RemoteTerminalClient;
 
 #ifdef USE_FRAMELESS_WINDOW
 class MarvieControl : public FramelessWidget

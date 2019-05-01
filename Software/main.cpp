@@ -1,5 +1,6 @@
 #include "MarvieControl.h"
 #include <QtWidgets/QApplication>
+#include <QFontDatabase>
 #include <time.h>
 #include "MonitoringLog.h"
 

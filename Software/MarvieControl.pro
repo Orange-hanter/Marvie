@@ -23,6 +23,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++14
 
 SOURCES += \
+    RemoteTerminalClient.cpp \
     DeviceFirmwareInfoWidget.cpp \
     AccountWindow.cpp \
     ComPortsConfigWidget.cpp \
@@ -46,6 +47,7 @@ SOURCES += \
     VPortTileWidget.cpp
 
 HEADERS += \
+    RemoteTerminalClient.h \
     DeviceFirmwareInfoWidget.h \
     AccountWindow.h \
     ComPortsConfigWidget.h \
