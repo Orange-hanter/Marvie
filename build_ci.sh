@@ -118,7 +118,8 @@ function build_software ()
   cp -R "${project_dir}/Xml" "${project_appdir}"/usr/share/MarvieControl/
   cp    "${project_dir}/MarvieControl.png" "${project_appdir}"
 
-  linuxdeployqt "${project_appdir}"/usr/share/applications/*.desktop -appimage
+  linuxdeployqt --appimage-extract
+  ./squashfs-root/AppRun "${project_appdir}"/usr/share/applications/*.desktop -appimage
 }
 
 if [[ "${build_target}" == 'firmware_develop' ]]; then
