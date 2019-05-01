@@ -128,6 +128,9 @@ function build_software ()
 
   linuxdeployqt --appimage-extract
   ./squashfs-root/AppRun "${project_appdir}"/usr/share/applications/*.desktop -appimage
+
+  # ugly HACK
+  mv "MarvieControl-${commit}-x86_64.AppImage" 'MarvieControl-x86_64.AppImage'
 }
 
 if [[ "${build_target}" == 'firmware_develop' ]]; then
