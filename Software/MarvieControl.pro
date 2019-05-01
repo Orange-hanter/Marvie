@@ -23,6 +23,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++14
 
 SOURCES += \
+    DeviceFirmwareInfoWidget.cpp \
     AccountWindow.cpp \
     ComPortsConfigWidget.cpp \
     Crc32SW.cpp \
@@ -45,6 +46,7 @@ SOURCES += \
     VPortTileWidget.cpp
 
 HEADERS += \
+    DeviceFirmwareInfoWidget.h \
     AccountWindow.h \
     ComPortsConfigWidget.h \
     Crc32SW.h \
@@ -88,6 +90,7 @@ RESOURCES += \
     MarvieControl.qrc
 
 FORMS += \
+    DeviceFirmwareInfoWidget.ui \
     AccountWindow.ui \
     MarvieControl.ui \
     SdStatistics.ui
