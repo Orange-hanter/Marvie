@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 #
 # expects the following parameters to be passed in this specific order:
-#  - build type,          e.g. firmware/software
+#  - build type,          e.g. firmware/software_linux/software_windows
 #  - project root folder, e.g. BITBUCKET_CLONE_DIR
-set -e
 
 build_target="$1"
 repository_root_dir="$2"
@@ -100,7 +99,7 @@ function build_bootloader ()
   generate_build_info "${artifacts_dir}/bootloader"
 }
 
-function build_software ()
+function build_software_linux ()
 {
   local project_dir="${repository_root_dir}/Software"
   local project_appdir="${project_dir}/appdir"
@@ -133,6 +132,15 @@ function build_software ()
   mv "MarvieControl-${commit}-x86_64.AppImage" 'MarvieControl-x86_64.AppImage'
 }
 
+function build_software_windows ()
+{
+  local project_dir="${repository_root_dir}/Software"
+
+  cd "${project_dir}"
+  qmake CONFIG+=release
+  make -j$(nproc)
+}
+
 if [[ "${build_target}" == 'firmware_develop' ]]; then
   build_firmware H
   build_bootloader
@@ -141,6 +149,8 @@ elif [[ "${build_target}" == 'firmware' ]]; then
   build_firmware H
   build_bootloader
   echo $marvie_base_version > "${repository_root_dir}/version"
-elif [[ "${build_target}" == 'software' ]]; then
-  build_software
+elif [[ "${build_target}" == 'software_linux' ]]; then
+  build_software_linux
+elif [[ "${build_target}" == 'software_windows' ]]; then
+  build_software_windows
 fi

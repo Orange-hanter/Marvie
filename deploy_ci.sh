@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # expects the following parameters to be passed in this specific order:
-#  - artifact type                                e.g. firmware/software
+#  - artifact type                                e.g. firmware/software_linux/software_windows
 #  - project root folder                          e.g. BITBUCKET_CLONE_DIR
 #  - user credentials in form username:password   e.g. BB_UPLOADER_AUTH_STRING
 #  - username of the repository owner             e.g. BITBUCKET_REPO_OWNER
@@ -34,14 +34,22 @@ function deploy_firmware ()
   wait
 }
 
-function deploy_software ()
+function deploy_software_linux ()
 {
   local target_name="${repository_root_dir}"/Software/MarvieControl-x86_64.AppImage
   upload_to_bitbucket "${target_name}"
 }
 
+function deploy_software_windows ()
+{
+  local target_name="${repository_root_dir}"/Software/release/MarvieControl.exe
+  upload_to_bitbucket "${target_name}"
+}
+
 if [[ "${artifact_type}" == 'firmware' ]]; then
   deploy_firmware
-elif [[ "${artifact_type}" == 'software' ]]; then
-  deploy_software
+elif [[ "${artifact_type}" == 'software_linux' ]]; then
+  deploy_software_linux
+elif [[ "${artifact_type}" == 'software_windows' ]]; then
+  deploy_software_windows
 fi

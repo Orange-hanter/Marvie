@@ -9,8 +9,14 @@ pipelines:
                 - ./build_ci.sh firmware_develop $BITBUCKET_CLONE_DIR
 #                - ./deploy_ci.sh firmware $BITBUCKET_CLONE_DIR $BB_UPLOADER_AUTH_STRING $BITBUCKET_REPO_OWNER $BITBUCKET_REPO_SLUG
           - step:
-              name: Software
+              name: Software-linux
               image: a12e/docker-qt:5.12-gcc_64
               script:
-                - ./build_ci.sh software $BITBUCKET_CLONE_DIR
-                - ./deploy_ci.sh software $BITBUCKET_CLONE_DIR $BB_UPLOADER_AUTH_STRING $BITBUCKET_REPO_OWNER $BITBUCKET_REPO_SLUG
+                - ./build_ci.sh software_linux $BITBUCKET_CLONE_DIR
+                - ./deploy_ci.sh software_linux $BITBUCKET_CLONE_DIR $BB_UPLOADER_AUTH_STRING $BITBUCKET_REPO_OWNER $BITBUCKET_REPO_SLUG
+          - step:
+              name: Software-windows
+              image: rushmash/docker-qt:windows-latest
+              script:
+                - ./build_ci.sh software_windows $BITBUCKET_CLONE_DIR
+                - ./deploy_ci.sh software_windows $BITBUCKET_CLONE_DIR $BB_UPLOADER_AUTH_STRING $BITBUCKET_REPO_OWNER $BITBUCKET_REPO_SLUG
