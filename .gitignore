@@ -26,3 +26,5 @@ Software/Tests/RemoteTerminalTest/RemoteTerminalTest/x64/
 Software/Tests/RemoteTerminalTest/x64/
 Software/Tests/RemoteTerminalTest/.vs/
 Software/Tests/RemoteTerminalTest/RemoteTerminalTest/GeneratedFiles/
+Software/FirmwareUpdater/x64/
+Software/FirmwareUpdater/GeneratedFiles/

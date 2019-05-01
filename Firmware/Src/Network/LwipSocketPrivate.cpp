@@ -247,7 +247,7 @@ uint32_t LwipSocketPrivate::read( uint8_t* data, uint32_t size, sysinterval_t ti
 				return max;
 		}
 
-		if( timeout != TIME_INFINITE )
+		if( timeout != TIME_INFINITE && timeout != TIME_IMMEDIATE )
 		{
 			sysinterval_t nextTimeout = ( sysinterval_t )( deadline - chVTGetSystemTimeX() );
 			if( nextTimeout > timeout ) // timeout expired

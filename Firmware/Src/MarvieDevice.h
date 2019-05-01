@@ -15,6 +15,7 @@
 #include "Drivers/Interfaces/Usart.h"
 #include "Drivers/Network/Ethernet/EthernetThread.h"
 #include "Drivers/Network/SimGsm/SimGsmPppModem.h"
+#include "FirmwareTransferService.h"
 #include "Log/FileLog.h"
 #include "Log/MarvieLog.h"
 #include "MLinkServer.h"
@@ -38,7 +39,7 @@
 
 typedef unsigned int uint;
 
-class MarvieDevice : private AbstractSRSensor::SignalProvider, private MLinkServer::DataChannelCallback, private MLinkServer::AuthenticationCallback, private ModbusPotato::ISlaveHandler
+class MarvieDevice : private FirmwareTransferService::Callback, private AbstractSRSensor::SignalProvider, private MLinkServer::DataChannelCallback, private MLinkServer::AuthenticationCallback, private ModbusPotato::ISlaveHandler
 {
 	MarvieDevice();
 
@@ -71,6 +72,12 @@ private:
 
 	UsartBasedDevice* startComPortSharing( uint32_t index );
 	void stopComPortSharing();
+
+	const char* firmwareVersion() override;
+	const char* bootloaderVersion() override;
+	void firmwareDownloaded( const std::string& fileName ) override;
+	void bootloaderDownloaded( const std::string& fileName ) override;
+	void restartDevice() override;
 
 	enum class NetworkTestState;
 	inline void setNetworkTestState( NetworkTestState state );
@@ -124,6 +131,7 @@ public:
 
 private:
 	static int lgbt( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] );
+	static int qAsciiArtFunction( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] );
 
 private:
 	static MarvieDevice* _inst;
@@ -229,6 +237,7 @@ private:
 	BasicTimer< decltype( &MarvieDevice::mainTaskThreadTimersCallback ), &MarvieDevice::mainTaskThreadTimersCallback > srSensorsUpdateTimer;
 	uint32_t srSensorPeriodCounter;
 	uint64_t monitoringLogSize;
+	FirmwareTransferService firmwareTransferService;
 
 	// MLink thread resources ================================================================
 	enum MLinkThreadEvent : eventmask_t 

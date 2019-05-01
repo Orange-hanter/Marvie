@@ -21,8 +21,6 @@ RemoteTerminalServer::RemoteTerminalServer() : Thread( 1536 ), terminal( this ),
 
 	inputData = nullptr;
 	inputDataSize = 0;
-
-	Dir( REMOTE_TERMINAL_SERVER_DIR_PATH ).mkpath();
 }
 
 RemoteTerminalServer::~RemoteTerminalServer()
@@ -376,6 +374,7 @@ void RemoteTerminalServer::programFinishedHandler()
 	}
 	else
 		Dir( REMOTE_TERMINAL_SERVER_DIR_PATH ).remove( "__in" );
+	Dir( REMOTE_TERMINAL_SERVER_DIR_PATH ).mkpath();
 
 	auto command = parser.command( commandIndex );
 	if( command->stdIn() == CommandLineParser::StdIn::Pipeline )

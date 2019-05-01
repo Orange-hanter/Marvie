@@ -3,11 +3,12 @@ cmake_minimum_required(VERSION 3.11)
 enable_language(ASM)
 #set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-set(MARVIE_FIRMWARE_VERSION_BASE "0.8.2.2" CACHE STRING "Marvie base firmware version" FORCE)
-if(NOT MODEM_PWRKEY_LEVEL)
-	set(MODEM_PWRKEY_LEVEL "H")
-endif()
+set(MARVIE_FIRMWARE_VERSION_BASE "0.8.3.2" CACHE STRING "Marvie base firmware version" FORCE)
+#if(NOT MODEM_PWRKEY_LEVEL)
+#	set(MODEM_PWRKEY_LEVEL "H")
+#endif()
 set(MARVIE_FIRMWARE_VERSION "${MARVIE_FIRMWARE_VERSION_BASE}${MODEM_PWRKEY_LEVEL}")
+message("Marvie firmware version: ${MARVIE_FIRMWARE_VERSION}")
 configure_file(${CMAKE_SOURCE_DIR}/Src/MarviePlatform.h.in ${CMAKE_SOURCE_DIR}/Src/MarviePlatform.h)
 
 set(STM32_FLASH_ORIGIN "0x08008400")
@@ -183,6 +184,7 @@ set(firmware_SRCS
 	${CMAKE_SOURCE_DIR}/Src/stm32f4xx_flash.c
     ${CMAKE_SOURCE_DIR}/Src/BRSensorReader.cpp
     ${CMAKE_SOURCE_DIR}/Src/Crc32HW.cpp
+    ${CMAKE_SOURCE_DIR}/Src/FirmwareTransferService.cpp
     ${CMAKE_SOURCE_DIR}/Src/main.cpp
     ${CMAKE_SOURCE_DIR}/Src/MarvieDevice.cpp
     ${CMAKE_SOURCE_DIR}/Src/MarvieXmlConfigParsers.cpp

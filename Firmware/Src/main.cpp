@@ -23,11 +23,12 @@
 // #include "Tests/ThreadTest.hpp"
 // #include "Tests/TimerTest.hpp"
 // #include "Tests/UdpStressTestServer/UdpStressTestServer.h"
+//#include "Tests/FirmwareTransferServiceTest.hpp"
 //#include "Tests/UsbSduTest.hpp"
 
 #include <algorithm>
 
-extern char bootloaderVersion[15 + 1];
+extern char _bootloaderVersion[15 + 1];
 
 int main()
 {
@@ -45,7 +46,7 @@ int main()
 		char version[15 + 1];
 	}* metaData = reinterpret_cast< BootloaderMetaData* >( 0x10000000 + 42 * 1024 );
 	metaData->version[15] = 0;
-	strcpy( bootloaderVersion, metaData->version );
+	strcpy( _bootloaderVersion, metaData->version );
 
 	enum IWDGPrescaler
 	{
@@ -77,6 +78,9 @@ int main()
 	while( true );*/
 
 	/*ThreadTest::test();
+	while( true );*/
+
+	/*FirmwareTransferServiceTest::test();
 	while( true );*/
 
 	/*Sim800Test::test();

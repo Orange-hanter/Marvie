@@ -6,6 +6,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MarvieControl", "MarvieCont
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MLinkClientTest", "Tests\MLinkClientTest\MLinkClientTest.vcxproj", "{72C8FB8E-E86E-43A0-A527-85BDE765733A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FirmwareUpdater", "FirmwareUpdater\FirmwareUpdater.vcxproj", "{B74176EB-8BEE-4BB5-BB0F-0375CA0E06E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -28,6 +30,14 @@ Global
 		{72C8FB8E-E86E-43A0-A527-85BDE765733A}.Release|x64.ActiveCfg = Release|x64
 		{72C8FB8E-E86E-43A0-A527-85BDE765733A}.Release|x64.Deploy.0 = Release|x64
 		{72C8FB8E-E86E-43A0-A527-85BDE765733A}.Release|x86.ActiveCfg = Release|x64
+		{B74176EB-8BEE-4BB5-BB0F-0375CA0E06E8}.Debug|x64.ActiveCfg = Debug|x64
+		{B74176EB-8BEE-4BB5-BB0F-0375CA0E06E8}.Debug|x64.Build.0 = Debug|x64
+		{B74176EB-8BEE-4BB5-BB0F-0375CA0E06E8}.Debug|x64.Deploy.0 = Debug|x64
+		{B74176EB-8BEE-4BB5-BB0F-0375CA0E06E8}.Debug|x86.ActiveCfg = Debug|x64
+		{B74176EB-8BEE-4BB5-BB0F-0375CA0E06E8}.Release|x64.ActiveCfg = Release|x64
+		{B74176EB-8BEE-4BB5-BB0F-0375CA0E06E8}.Release|x64.Build.0 = Release|x64
+		{B74176EB-8BEE-4BB5-BB0F-0375CA0E06E8}.Release|x64.Deploy.0 = Release|x64
+		{B74176EB-8BEE-4BB5-BB0F-0375CA0E06E8}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

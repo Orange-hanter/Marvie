@@ -7,6 +7,7 @@
 #include "Network/PingService.h"
 #include "Network/TcpServer.h"
 #include "Network/UdpSocket.h"
+#include "Q.hpp"
 #include "RemoteTerminal/CommandLineUtility.h"
 #include "lwipthread.h"
 #include "stm32f4xx_flash.h"
@@ -16,7 +17,7 @@
 using namespace MarvieXmlConfigParsers;
 
 MarvieDevice* MarvieDevice::_inst = nullptr;
-char bootloaderVersion[15 + 1];
+char _bootloaderVersion[15 + 1];
 
 MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 {
@@ -205,6 +206,7 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	terminalServer.registerFunction( "cat", CommandLineUtility::cat );
 	terminalServer.registerFunction( "ping", CommandLineUtility::ping );
 	terminalServer.registerFunction( "lgbt", lgbt );
+	terminalServer.registerFunction( "q", qAsciiArtFunction );
 	terminalOutputTimer.setParameter( this );
 	terminalServer.startServer();
 
@@ -339,6 +341,10 @@ void MarvieDevice::mainThreadMain()
 		setNetworkTestState( NetworkTestState::On );
 	}
 	configMutex.unlock();
+
+	firmwareTransferService.setCallback( this );
+	firmwareTransferService.setPassword( backup->settings.passwords.adminPassword );
+	firmwareTransferService.startService();
 
 	while( true )
 	{
@@ -558,8 +564,11 @@ void MarvieDevice::mainThreadMain()
 			if( file )
 				updateBootloader( file.get() );
 
+			firmwareTransferService.stopService();
+			firmwareTransferService.waitForStopped();
 			mLinkServer->stopListening();
 			mLinkServer->waitForStateChanged();
+			Thread::sleep( TIME_MS2I( 1000 ) );
 			ejectSdCard();
 			backup->failureDesc.pwrDown.power = false;
 			__NVIC_SystemReset();
@@ -1163,8 +1172,11 @@ std::unique_ptr< File > MarvieDevice::findBootloaderFile()
 
 void MarvieDevice::updateBootloader( File* file )
 {
+	firmwareTransferService.stopService();
+	firmwareTransferService.waitForStopped();
 	mLinkServer->stopListening();
 	mLinkServer->waitForStateChanged();
+	Thread::sleep( TIME_MS2I( 1000 ) );
 	configShutdown();
 	EthernetThread::instance()->stopThread();
 	EthernetThread::instance()->waitForStop();
@@ -1855,6 +1867,40 @@ void MarvieDevice::stopComPortSharing()
 	sharedComPortIndex = 1;
 }
 
+
+const char* MarvieDevice::firmwareVersion()
+{
+	return MarviePlatform::coreVersion;
+}
+
+const char* MarvieDevice::bootloaderVersion()
+{
+	return _bootloaderVersion;
+}
+
+void MarvieDevice::firmwareDownloaded( const std::string& fileName )
+{
+	datFilesMutex.lock();
+	Dir dir;
+	dir.remove( "/firmware.bin" );
+	dir.rename( fileName.c_str(), "/firmware.bin" );
+	datFilesMutex.unlock();
+}
+
+void MarvieDevice::bootloaderDownloaded( const std::string& fileName )
+{
+	datFilesMutex.lock();
+	Dir dir;
+	dir.remove( "/bootloader.bin" );
+	dir.rename( fileName.c_str(), "/bootloader.bin" );
+	datFilesMutex.unlock();
+}
+
+void MarvieDevice::restartDevice()
+{
+	mainThread->signalEvents( MainThreadEvent::RestartRequestEvent );
+}
+
 void MarvieDevice::setNetworkTestState( NetworkTestState state )
 {
 	chSysLock();
@@ -2227,7 +2273,7 @@ void MarvieDevice::mLinkSync( bool coldSync )
 void MarvieDevice::sendFirmwareDesc()
 {
 	MarviePackets::FirmwareDesc desc;
-	strcpy( desc.bootloaderVersion, bootloaderVersion );
+	strcpy( desc.bootloaderVersion, _bootloaderVersion );
 	strcpy( desc.firmwareVersion, MarviePlatform::coreVersion );
 	strcpy( desc.modelName, MarviePlatform::platformType );
 	mLinkServer->sendPacket( MarviePackets::Type::FirmwareDescType, ( uint8_t* )&desc, sizeof( desc ) );
@@ -2852,6 +2898,12 @@ int MarvieDevice::lgbt( RemoteTerminalServer::Terminal* terminal, int argc, char
 	terminal->setTextColor( 117, 0, 135 );
 	terminal->stdOutWrite( ( uint8_t* )text, sizeof( text ) - 1 );
 
+	return 0;
+}
+
+int MarvieDevice::qAsciiArtFunction( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] )
+{
+	terminal->stdOutWrite( ( const uint8_t* )quentinAsciiArt, sizeof( quentinAsciiArt ) );
 	return 0;
 }
 
