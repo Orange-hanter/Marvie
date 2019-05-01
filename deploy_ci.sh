@@ -14,7 +14,6 @@ repo_owner="$4"
 repo_slug="$5"
 
 artifacts_dir="${repository_root_dir}/artifacts"
-marvie_version=$(cat "${repository_root_dir}/version")
 
 function upload_to_bitbucket ()
 {
@@ -23,6 +22,8 @@ function upload_to_bitbucket ()
 
 function deploy_firmware ()
 {
+  marvie_version=$(cat "${repository_root_dir}/version")
+
   local target_name="marvie.firmware.v${marvie_version}.zip"
   zip -j -r "${target_name}" "${artifacts_dir}/firmware"
   upload_to_bitbucket "${target_name}" &
