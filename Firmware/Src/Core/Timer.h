@@ -186,6 +186,7 @@ public:
 	template< typename Function, typename... Args, typename = std::enable_if_t< !std::is_same< std::decay_t< Function >, StaticTimer >::value > >
 	StaticTimer( Function&& function, Args&&... args )
 	{
+		static_assert( sizeof( block ) >= timerFunctionDataSize< Function, Args... >, "FunctionDataSize is too small" );
 		chVTObjectInit( &vt );
 		intv = 1;
 		single = false;

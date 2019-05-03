@@ -37,7 +37,12 @@ namespace MarviePackets
 		AnalogInputsDataType,
 		DigitInputsDataType,
 		TerminalInput,
-		TerminalOutput
+		TerminalOutput,
+		StartComPortSharingType,
+		StartComPortSharingResultType,
+		StopComPortSharingType,
+		ComPortSharingStatusType,
+		DeviceSpecsType
 	};
 	enum ComplexChannel
 	{
@@ -55,6 +60,11 @@ namespace MarviePackets
 		char firmwareVersion[15 + 1];
 		char modelName[15 + 1];
 	};
+	struct DeviceSpecs
+	{
+		uint8_t comPortsCount;
+		uint8_t reserved[3];
+	};	
 	struct CpuLoad 
 	{
 		float load;
@@ -125,11 +135,25 @@ namespace MarviePackets
 		int16_t tcpModbusRtuClientsCount;
 		int16_t tcpModbusAsciiClientsCount;
 		int16_t tcpModbusIpClientsCount;
+		int16_t sharedComPortClientsCount;
 	};
 	struct AccountNewPassword
 	{
 		char name[15 + 1];
 		char currentPassword[31 + 1];
 		char newPassword[31 + 1];
+	};
+	struct ComPortSharingSettings
+	{
+		uint8_t comPortIndex;
+		enum Mode : uint8_t { ByteStream, BlockStream } mode;
+		enum DataFormat : uint8_t { B7E, B7O, B8N, B8E, B8O } format;
+		enum StopBits : uint8_t { S1, S0P5, S2, S1P5 } stopBits;
+		uint32_t baudrate;
+	};
+	struct ComPortSharingStatus
+	{
+		int8_t sharedComPortIndex;
+		uint8_t reserved[3];
 	};
 };

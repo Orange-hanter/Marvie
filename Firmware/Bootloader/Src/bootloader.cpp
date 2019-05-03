@@ -114,6 +114,8 @@ int main()
 				goto End;
 
 			FLASH_Unlock();
+		Start:
+			f_lseek( &file, 0 );
 			FLASH_EraseSector( FLASH_Sector_2, VoltageRange_3 ); // 0x08008000-0x0800BFFF (16 кБ) 48KB
 			FLASH_EraseSector( FLASH_Sector_3, VoltageRange_3 ); // 0x0800C000-0x0800FFFF (16 кБ) 64KB
 			FLASH_EraseSector( FLASH_Sector_4, VoltageRange_3 ); // 0x08010000-0x0801FFFF (64 кБ) 128KB
@@ -138,10 +140,9 @@ int main()
 					NVIC_SystemReset();
 				for( uint32_t i = 0; i < partSize; i += 4 )
 				{
-					do
-					{
-						FLASH_ProgramWord( 0x08008400 + totalSize - size + i, *( uint32_t* )( buffer + i ) );
-					} while( *( uint32_t* )( 0x08008400 + totalSize - size + i ) != *( uint32_t* )( buffer + i ) );
+					FLASH_ProgramWord( 0x08008400 + totalSize - size + i, *( uint32_t* )( buffer + i ) );
+					if( *( uint32_t* )( 0x08008400 + totalSize - size + i ) != *( uint32_t* )( buffer + i ) )
+						goto Start;
 				}
 				size -= partSize;
 			}

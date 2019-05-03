@@ -90,8 +90,5 @@
     <ClInclude Include="HostListModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HostList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

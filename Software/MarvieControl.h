@@ -26,6 +26,7 @@
 
 #include "ui_MarvieControl.h"
 #include "ui_SdStatistics.h"
+#include "ui_ComPortSharingSettingsWindow.h"
 
 class MLinkTerminal;
 class RemoteTerminalClient;
@@ -59,6 +60,8 @@ private slots:
 	void stopVPortsButtonClicked();
 	void updateAllSensorsButtonClicked();
 	void updateSensorButtonClicked();
+	void openComPortSharingSettingsButtonClicked();
+	void startComPortSharingButtonClicked();
 	void deviceVersionMenuButtonClicked();
 	void syncDateTimeButtonClicked();
 	void sdCardMenuButtonClicked();
@@ -147,6 +150,7 @@ private:
 	void updateEthernetStatus( const MarviePackets::EthernetStatus* );
 	void updateGsmStatus( const MarviePackets::GsmStatus* );
 	void updateServiceStatistics( const MarviePackets::ServiceStatistics* );
+	void updateComPortSharingStatus( int sharedComPortIndex );
 	void resetDeviceInfo();
 
 	DateTime toDeviceDateTime( const QDateTime& );
@@ -240,12 +244,31 @@ private:
 	SynchronizationWindow* syncWindow;
 
 	DeviceFirmwareInfoWidget* deviceFirmwareInfoWidget;
+	MarviePackets::DeviceSpecs deviceSpecs;
 	QVector< QString > deviceVPorts, deviceSensors, deviceSupportedSensors;
 	enum class DeviceState { Unknown, IncorrectConfiguration, Working, Reconfiguration } deviceState;
 	enum class SdCardStatus : uint8_t { Unknown, NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } deviceSdCardStatus;
 	enum class LogState : uint8_t { Unknown, Off, Stopped, Working, Archiving, Stopping } deviceLogState;
 
 	MLinkTerminal* mlinkTerminal;
+
+	class ComPortSharingSettingsWindow : public QFrame 
+	{
+	public:
+		ComPortSharingSettingsWindow();
+
+		void setMode( MarviePackets::ComPortSharingSettings::Mode _mode );
+		MarviePackets::ComPortSharingSettings::Mode mode();
+		void setDataFormat( MarviePackets::ComPortSharingSettings::DataFormat _format );
+		MarviePackets::ComPortSharingSettings::DataFormat dataFormat();
+		void setStopBits( MarviePackets::ComPortSharingSettings::StopBits _stopBits );
+		MarviePackets::ComPortSharingSettings::StopBits stopBits();
+		void setBaudrate( uint32_t baudrate );
+		uint32_t baudrate();
+
+		void focusOutEvent( QFocusEvent *event );
+		Ui::ComPortSharingSettings ui;
+	}* comPortSharingSettingsWindow;
 
 	Ui::MarvieControlClass ui;
 };

@@ -6,7 +6,7 @@ ObjectMemoryUtilizer* ObjectMemoryUtilizer::inst = nullptr;
 ObjectMemoryUtilizer::ObjectMemoryUtilizer() : Thread( 256 )
 {
 	state = State::Stopped;
-	chMBObjectInit( &mailbox, mboxBuffer, 8 );
+	chMBObjectInit( &mailbox, mboxBuffer, sizeof( mboxBuffer ) / sizeof( msg_t ) );
 }
 
 ObjectMemoryUtilizer::~ObjectMemoryUtilizer()

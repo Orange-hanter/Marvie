@@ -250,6 +250,7 @@
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="AccountWindow.ui" />
+    <QtUic Include="ComPortSharingSettingsWindow.ui" />
     <QtUic Include="DeviceFirmwareInfoWidget.ui" />
     <QtUic Include="MarvieControl.ui" />
     <QtUic Include="SdStatistics.ui" />

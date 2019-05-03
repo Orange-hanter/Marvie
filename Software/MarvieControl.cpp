@@ -345,6 +345,8 @@ MarvieControl::MarvieControl( QWidget *parent ) : QWidget( parent ), vPortIdComb
 	ui.terminal->setFrameShape( QFrame::Shape::NoFrame );
 	mlinkTerminal = new MLinkTerminal( &mlink, ui.terminal );
 
+	comPortSharingSettingsWindow = new ComPortSharingSettingsWindow;
+
 	resetDeviceInfo();
 
 	QObject::connect( ui.controlButton, &QToolButton::released, this, &MarvieControl::mainMenuButtonClicked );
@@ -374,6 +376,8 @@ MarvieControl::MarvieControl( QWidget *parent ) : QWidget( parent ), vPortIdComb
 	QObject::connect( ui.stopVPortsButton, &QToolButton::released, this, &MarvieControl::stopVPortsButtonClicked );
 	QObject::connect( ui.updateAllSensorsButton, &QToolButton::released, this, &MarvieControl::updateAllSensorsButtonClicked );
 	QObject::connect( ui.updateSensorButton, &QToolButton::released, this, &MarvieControl::updateSensorButtonClicked );
+	QObject::connect( ui.openComPortSharingSettingsButton, &QToolButton::released, this, &MarvieControl::openComPortSharingSettingsButtonClicked );
+	QObject::connect( ui.startComPortSharingButton, &QToolButton::released, this, &MarvieControl::startComPortSharingButtonClicked );
 	QObject::connect( ui.syncDateTimeButton, &QToolButton::released, this, &MarvieControl::syncDateTimeButtonClicked );
 	QObject::connect( ui.deviceVersionMenuButton, &QToolButton::released, this, &MarvieControl::deviceVersionMenuButtonClicked );
 	QObject::connect( ui.sdCardMenuButton, &QToolButton::released, this, &MarvieControl::sdCardMenuButtonClicked );
@@ -549,6 +553,7 @@ MarvieControl::~MarvieControl()
 {
 	accountWindow->deleteLater();
 	popupSensorsListWidget->deleteLater();
+	comPortSharingSettingsWindow->deleteLater();
 
 	QSettings settings( "settings.ini", QSettings::Format::IniFormat );
 	if( ui.ipEdit->hasAcceptableInput() )
@@ -840,6 +845,39 @@ void MarvieControl::updateSensorButtonClicked()
 	{
 		uint16_t id = ( uint16_t )ui.deviceSensorsComboBox->currentIndex();
 		mlink.sendPacket( MarviePackets::Type::UpdateOneSensorType, QByteArray( ( const char* )&id, sizeof( id ) ) );
+	}
+}
+
+void MarvieControl::openComPortSharingSettingsButtonClicked()
+{
+	auto p = ui.openComPortSharingSettingsButton->mapToGlobal( ui.openComPortSharingSettingsButton->rect().topRight() );
+	p.setX( p.x() - comPortSharingSettingsWindow->width() );
+	comPortSharingSettingsWindow->setGeometry( QRect( p, comPortSharingSettingsWindow->size() ) );
+	comPortSharingSettingsWindow->show();
+}
+
+void MarvieControl::startComPortSharingButtonClicked()
+{
+	if( ui.sharingComPortComboBox->currentIndex() != -1 )
+	{
+		if( ui.startComPortSharingButton->toolTip() == "Start COM-port sharing" )
+		{
+			MarviePackets::ComPortSharingSettings comSharing;
+			comSharing.comPortIndex = ui.sharingComPortComboBox->currentIndex();
+			comSharing.mode = comPortSharingSettingsWindow->mode();
+			comSharing.format = comPortSharingSettingsWindow->dataFormat();
+			comSharing.stopBits = comPortSharingSettingsWindow->stopBits();
+			comSharing.baudrate = comPortSharingSettingsWindow->baudrate();
+			mlink.sendPacket( MarviePackets::Type::StartComPortSharingType, QByteArray( ( const char* )&comSharing, sizeof( comSharing ) ) );
+			ui.sharingComPortComboBox->setEnabled( false );
+			ui.openComPortSharingSettingsButton->setEnabled( false );
+			ui.startComPortSharingButton->setEnabled( false );
+		}
+		else
+		{
+			mlink.sendPacket( MarviePackets::Type::StopComPortSharingType, QByteArray() );
+			updateComPortSharingStatus( -1 );
+		}
 	}
 }
 
@@ -1835,6 +1873,8 @@ void MarvieControl::mlinkStateChanged( MLinkClient::State s )
 		deviceVPorts.clear();
 		deviceSensors.clear();
 		ui.deviceSensorsComboBox->clear();
+		ui.sharingComPortComboBox->clear();
+		updateComPortSharingStatus( -1 );
 		deviceSupportedSensors.clear();
 		deviceFirmwareInfoWidget->clear();
 		resetDeviceInfo();
@@ -2010,6 +2050,8 @@ void MarvieControl::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
 		deviceVPorts.clear();
 		deviceSensors.clear();
 		ui.deviceSensorsComboBox->clear();
+		ui.openComPortSharingSettingsButton->setEnabled( false );
+		ui.startComPortSharingButton->setEnabled( false );
 		syncWindow->show();
 		break;
 	}
@@ -2026,9 +2068,36 @@ void MarvieControl::mlinkNewPacketAvailable( uint8_t type, QByteArray data )
 			ui.targetDeviceComboBox->setCurrentIndex( -1 );
 		break;
 	}
+	case MarviePackets::Type::DeviceSpecsType:
+	{
+		deviceSpecs = *reinterpret_cast< const MarviePackets::DeviceSpecs* >( data.constData() );
+		QStringList list;
+		for( int i = 0; i < deviceSpecs.comPortsCount; ++i )
+			list.append( QString( "COM%1" ).arg( i ) );
+		ui.sharingComPortComboBox->addItems( list );
+		ui.sharingComPortComboBox->setCurrentIndex( -1 );
+		break;
+	}
+	case MarviePackets::Type::ComPortSharingStatusType:
+	{
+		MarviePackets::ComPortSharingStatus status = *reinterpret_cast< const MarviePackets::ComPortSharingStatus* >( data.constData() );
+		updateComPortSharingStatus( status.sharedComPortIndex );
+		break;
+	}
 	case MarviePackets::Type::SyncEndType:
 	{
 		syncWindow->hide();
+		break;
+	}
+	case MarviePackets::Type::StartComPortSharingResultType:
+	{
+		uint8_t err = *reinterpret_cast< const uint8_t* >( data.constData() );
+		if( err == 0 )
+			updateComPortSharingStatus( ui.sharingComPortComboBox->currentIndex() );
+		else
+			QMessageBox::warning( nullptr, "",
+								  "COM-port sharing error",
+								  QMessageBox::Ok );
 		break;
 	}
 	case MarviePackets::Type::ConfigResetType:
@@ -4002,6 +4071,31 @@ void MarvieControl::updateServiceStatistics( const MarviePackets::ServiceStatist
 		ui.modbusTcpStatusLabel->setText( "ModbusTcp: off" );
 	else
 		ui.modbusTcpStatusLabel->setText( QString( "ModbusTcp: %1" ).arg( stat->tcpModbusIpClientsCount ) );
+	if( stat->sharedComPortClientsCount == -1 )
+		ui.sharedComPortStatusLabel->setText( "SharedCOM: off" );
+	else
+		ui.sharedComPortStatusLabel->setText( QString( "SharedCOM: %1" ).arg( stat->sharedComPortClientsCount ) );
+}
+
+void MarvieControl::updateComPortSharingStatus( int sharedComPortIndex )
+{
+	if( sharedComPortIndex == -1 )
+	{
+		ui.sharingComPortComboBox->setEnabled( true );
+		ui.openComPortSharingSettingsButton->setEnabled( true );
+		ui.startComPortSharingButton->setEnabled( true );
+		ui.startComPortSharingButton->setIcon( QIcon( ":/MarvieControl/icons/icons8-connect-filled-100.png" ) );
+		ui.startComPortSharingButton->setToolTip( "Start COM-port sharing" );
+	}
+	else
+	{
+		ui.sharingComPortComboBox->setEnabled( false );
+		ui.openComPortSharingSettingsButton->setEnabled( false );
+		ui.startComPortSharingButton->setEnabled( true );
+		ui.sharingComPortComboBox->setCurrentIndex( sharedComPortIndex );
+		ui.startComPortSharingButton->setIcon( QIcon( ":/MarvieControl/icons/icons8-stop-48.png" ) );
+		ui.startComPortSharingButton->setToolTip( "Stop COM-port sharing" );
+	}
 }
 
 void MarvieControl::resetDeviceInfo()
@@ -4544,4 +4638,118 @@ void MLinkTerminal::timeout()
 		size -= partSize;
 		data += partSize;
 	}
+}
+
+MarvieControl::ComPortSharingSettingsWindow::ComPortSharingSettingsWindow()
+{
+	setWindowFlag( Qt::WindowFlags::enum_type::Popup );
+	setFrameShape( QFrame::Shape::StyledPanel );
+	setFrameShadow( QFrame::Shadow::Raised );
+	ui.setupUi( this );
+}
+
+void MarvieControl::ComPortSharingSettingsWindow::setMode( MarviePackets::ComPortSharingSettings::Mode _mode )
+{
+	switch( _mode )
+	{
+	case MarviePackets::ComPortSharingSettings::ByteStream:
+		ui.modeComboBox->setCurrentText( "ByteStream" );
+		break;
+	case MarviePackets::ComPortSharingSettings::BlockStream:
+		ui.modeComboBox->setCurrentText( "BlockStream" );
+		break;
+	default:
+		break;
+	}
+}
+
+MarviePackets::ComPortSharingSettings::Mode MarvieControl::ComPortSharingSettingsWindow::mode()
+{
+	return ui.modeComboBox->currentText() == "ByteStream" ? MarviePackets::ComPortSharingSettings::ByteStream : MarviePackets::ComPortSharingSettings::BlockStream;
+}
+
+void MarvieControl::ComPortSharingSettingsWindow::setDataFormat( MarviePackets::ComPortSharingSettings::DataFormat _format )
+{
+	switch( _format )
+	{
+	case MarviePackets::ComPortSharingSettings::B7E:
+		ui.dataFormatComboBox->setCurrentText( "B7E" );
+		break;
+	case MarviePackets::ComPortSharingSettings::B7O:
+		ui.dataFormatComboBox->setCurrentText( "B7O" );
+		break;
+	case MarviePackets::ComPortSharingSettings::B8N:
+		ui.dataFormatComboBox->setCurrentText( "B8N" );
+		break;
+	case MarviePackets::ComPortSharingSettings::B8E:
+		ui.dataFormatComboBox->setCurrentText( "B8E" );
+		break;
+	case MarviePackets::ComPortSharingSettings::B8O:
+		ui.dataFormatComboBox->setCurrentText( "B8O" );
+		break;
+	default:
+		break;
+	}
+}
+
+MarviePackets::ComPortSharingSettings::DataFormat MarvieControl::ComPortSharingSettingsWindow::dataFormat()
+{
+	if( ui.dataFormatComboBox->currentText() == "B7E" )
+		return MarviePackets::ComPortSharingSettings::B7E;
+	if( ui.dataFormatComboBox->currentText() == "B7O" )
+		return MarviePackets::ComPortSharingSettings::B7O;
+	if( ui.dataFormatComboBox->currentText() == "B8N" )
+		return MarviePackets::ComPortSharingSettings::B8N;
+	if( ui.dataFormatComboBox->currentText() == "B8E" )
+		return MarviePackets::ComPortSharingSettings::B8E;
+	//if( ui.dataFormatComboBox->currentText() == "B8O" )
+		return MarviePackets::ComPortSharingSettings::B8O;
+}
+
+void MarvieControl::ComPortSharingSettingsWindow::setStopBits( MarviePackets::ComPortSharingSettings::StopBits _stopBits )
+{
+	switch( _stopBits )
+	{
+	case MarviePackets::ComPortSharingSettings::S1:
+		ui.stopBitsComboBox->setCurrentText( "1" );
+		break;
+	case MarviePackets::ComPortSharingSettings::S0P5:
+		ui.stopBitsComboBox->setCurrentText( "0.5" );
+		break;
+	case MarviePackets::ComPortSharingSettings::S2:
+		ui.stopBitsComboBox->setCurrentText( "2" );
+		break;
+	case MarviePackets::ComPortSharingSettings::S1P5:
+		ui.stopBitsComboBox->setCurrentText( "1.5" );
+		break;
+	default:
+		break;
+	}
+}
+
+MarviePackets::ComPortSharingSettings::StopBits MarvieControl::ComPortSharingSettingsWindow::stopBits()
+{
+	if( ui.stopBitsComboBox->currentText() == "1" )
+		return MarviePackets::ComPortSharingSettings::StopBits::S1;
+	if( ui.stopBitsComboBox->currentText() == "0.5" )
+		return MarviePackets::ComPortSharingSettings::StopBits::S1P5;
+	if( ui.stopBitsComboBox->currentText() == "2" )
+		return MarviePackets::ComPortSharingSettings::StopBits::S2;
+	//if( ui.stopBitsComboBox->currentText() == "1.5" )
+		return MarviePackets::ComPortSharingSettings::StopBits::S1P5;
+}
+
+void MarvieControl::ComPortSharingSettingsWindow::setBaudrate( uint32_t baudrate )
+{
+	ui.baudrateComboBox->setCurrentText( QString( "%1" ).arg( baudrate ) );
+}
+
+uint32_t MarvieControl::ComPortSharingSettingsWindow::baudrate()
+{
+	return ( uint32_t )ui.baudrateComboBox->currentText().toUInt();
+}
+
+void MarvieControl::ComPortSharingSettingsWindow::focusOutEvent( QFocusEvent *event )
+{
+	hide();
 }

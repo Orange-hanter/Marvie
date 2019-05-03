@@ -58,6 +58,7 @@ private:
 	void networkTestThreadMain();
 
 	void createGsmModemObjectM();
+	void configGsmModemUsart();
 	void logFailure();
 	void ejectSdCard();
 	void formatSdCard();
@@ -72,6 +73,8 @@ private:
 
 	UsartBasedDevice* startComPortSharing( uint32_t index );
 	void stopComPortSharing();
+
+	void networkSharedComPortThreadMain( UsartBasedDevice* ioDevice, MarviePackets::ComPortSharingSettings::Mode mode );
 
 	const char* firmwareVersion() override;
 	const char* bootloaderVersion() override;
@@ -100,12 +103,14 @@ private:
 	void mLinkSync( bool coldSync );
 	void sendFirmwareDesc();
 	void sendSupportedSensorsList();
+	void sendDeviceSpec();
 	void sendVPortStatusM( uint32_t vPortId );
 	void sendSensorDataM( uint32_t sensorId, MLinkServer::DataChannel* channel );
 	void sendDeviceStatus();
 	void sendEthernetStatus();
 	void sendGsmModemStatusM();
 	void sendServiceStatisticsM();
+	void sendComPortSharingStatus();
 	void sendAnalogInputsData();
 	void sendDigitInputsData();
 
@@ -244,7 +249,7 @@ private:
 	{
 		MLinkEvent = 1, CpuUsageMonitorEvent = 2, MemoryLoadEvent = 4, EthernetEvent = 8,
 		/*MLinkTcpServerEvent = 16, MLinkTcpSocketEvent = 32,*/ GsmModemEvent = 64, ConfigChangedEvent = 128,
-		ConfigResetEvent = 256, SensorUpdateEvent = 512, StatusUpdateEvent = 1024
+		ConfigResetEvent = 256, SensorUpdateEvent = 512, StatusUpdateEvent = 1024, NetworkSharedComPortThreadFinishedEvent = 2048
 	};
 	MLinkServer* mLinkServer;
 	uint8_t mLinkBuffer[255];
@@ -252,6 +257,9 @@ private:
 	FIL* datFiles[3]; // shared resource
 	uint32_t syncConfigNum;
 	BinarySemaphore configXmlDataSendingSemaphore;
+	Thread* networkSharedComPortThread;
+	enum NetworkSharedComPortThread : eventmask_t { StopNetworkSharedComPortThreadRequestEvent = 1 };
+	int16_t sharedComPortNetworkClientsCount;
 
 	// TerminalOutput thread resources ================================================================
 	enum TerminalOutputThreadEvent : eventmask_t { TerminalOutputEvent = 1 };

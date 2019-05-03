@@ -149,8 +149,31 @@ void RemoteTerminalServer::main()
 			break;
 		if( em & ResetRequestEvent )
 		{
-			if( terminalState == TerminalState::WaitCommand || terminalState == TerminalState::Exec || terminalState == TerminalState::WaitAck )
-				setState( TerminalState::WaitSync );
+			if( terminalState == TerminalState::WaitCommand || terminalState == TerminalState::WaitAck )
+			{
+				CriticalSectionLocker locker;
+				if( terminalState != TerminalState::Stopping )
+				{
+					terminalState = TerminalState::WaitSync;
+					evtSource.broadcastFlags( ( eventflags_t )Event::StateChanged );
+				}
+			}
+			else if( terminalState == TerminalState::Exec )
+			{
+				terminationReqReceived = true;
+				in.clear();
+				future.wait();
+				future = Future< int >();
+				removeFiles();
+				em &= ~ProgramFinishedEvent;
+				getAndClearEvents( ProgramFinishedEvent );
+				CriticalSectionLocker locker;
+				if( terminalState != TerminalState::Stopping )
+				{
+					terminalState = TerminalState::WaitSync;
+					evtSource.broadcastFlags( ( eventflags_t )Event::StateChanged );
+				}
+			}
 		}
 		if( em & InputEvent )
 		{
@@ -164,6 +187,8 @@ void RemoteTerminalServer::main()
 	terminationReqReceived = true;
 	in.clear();
 	future.wait();
+	future = Future< int >();
+	removeFiles();
 	chSysLock();
 	terminalState = TerminalState::Stopped;
 	evtSource.broadcastFlags( ( eventflags_t )Event::StateChanged );

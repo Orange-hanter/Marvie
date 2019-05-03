@@ -1138,7 +1138,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
       <enum>QFrame::Raised</enum>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="controlPage">
       <layout class="QHBoxLayout" name="horizontalLayout_26">
@@ -1850,7 +1850,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
               <height>400</height>
              </size>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_35" stretch="0,0,1">
+            <layout class="QVBoxLayout" name="verticalLayout_35" stretch="0,0,0,1">
              <property name="leftMargin">
               <number>0</number>
              </property>
@@ -2856,6 +2856,30 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                           </item>
                          </layout>
                         </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_62">
+                          <item>
+                           <widget class="QLabel" name="sharedComPortStatusLabel">
+                            <property name="text">
+                             <string>SharedCOM: unknown</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_48">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
                        </layout>
                       </item>
                      </layout>
@@ -2955,6 +2979,125 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                </item>
                <item>
                 <spacer name="horizontalSpacer_7">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_33">
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string>COM-port sharing</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="sharingComPortComboBox">
+                 <property name="minimumSize">
+                  <size>
+                   <width>70</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>70</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="openComPortSharingSettingsButton">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>25</width>
+                   <height>25</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>25</width>
+                   <height>25</height>
+                  </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>COM-port settings</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="MarvieControl.qrc">
+                   <normaloff>:/MarvieControl/icons/icons8-settings-filled-100.png</normaloff>:/MarvieControl/icons/icons8-settings-filled-100.png</iconset>
+                 </property>
+                 <property name="iconSize">
+                  <size>
+                   <width>25</width>
+                   <height>25</height>
+                  </size>
+                 </property>
+                 <property name="autoRaise">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="startComPortSharingButton">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>25</width>
+                   <height>25</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>25</width>
+                   <height>25</height>
+                  </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>Start COM-port sharing</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="MarvieControl.qrc">
+                   <normaloff>:/MarvieControl/icons/icons8-connect-filled-100.png</normaloff>:/MarvieControl/icons/icons8-connect-filled-100.png</iconset>
+                 </property>
+                 <property name="iconSize">
+                  <size>
+                   <width>25</width>
+                   <height>25</height>
+                  </size>
+                 </property>
+                 <property name="autoRaise">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_51">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>

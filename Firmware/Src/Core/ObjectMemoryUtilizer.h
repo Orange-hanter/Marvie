@@ -2,6 +2,8 @@
 
 #include "Thread.h"
 
+#define OBJECT_MEMORY_UTILIZER_MAILBOX_SIZE 16
+
 class ObjectMemoryUtilizer : private Thread
 {
 	ObjectMemoryUtilizer();	
@@ -21,6 +23,6 @@ private:
 private:
 	static ObjectMemoryUtilizer* inst;
 	enum class State { Stopped, Running } state;
-	msg_t mboxBuffer[8];
+	msg_t mboxBuffer[OBJECT_MEMORY_UTILIZER_MAILBOX_SIZE];
 	mailbox_t mailbox;
 };
