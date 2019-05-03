@@ -301,8 +301,8 @@ void Tem104M2Sensor::parseTimerResponsePart22()
 		for( auto i = 0; i < 4; ++i )
 			for( auto j = 0; j < 3; ++j )
 			{
-				data.integrated.ch[i].tmp[i] = pack.tmp[i][j];
-				data.integrated.ch[i].prs[i] = pack.prs[i][j];
+				data.integrated.ch[i].tmp[j] = pack.tmp[i][j];
+				data.integrated.ch[i].prs[j] = pack.prs[i][j];
 			}
 	}
 
