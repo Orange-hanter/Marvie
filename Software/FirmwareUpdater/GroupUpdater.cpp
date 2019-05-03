@@ -148,11 +148,14 @@ void GroupUpdater::stateChanged( FirmwareTransferClient::State state )
 			reassign( client );
 			return;
 		case FirmwareTransferClient::Error::SocketError:
-			++nCompleted;
-			hostStates[index] = State::Completed;
-			hostStateChanged( index, HostState::NetworkError );
-			reassign( client );
-			return;
+			if( client->socketError() != QAbstractSocket::SocketError::RemoteHostClosedError )
+			{
+				++nCompleted;
+				hostStates[index] = State::Completed;
+				hostStateChanged( index, HostState::NetworkError );
+				reassign( client );
+				return;
+			}
 		case FirmwareTransferClient::Error::TimeoutError:
 			if( hostStates[index] == State::Checking )
 			{
@@ -356,10 +359,18 @@ void GroupUpdater::reassign( FirmwareTransferClient* client )
 	}
 	if( last == hostStates.size() )
 		last = 0;
+	auto begin = last;
 	for( ; hostStates[last] != State::InQueue && hostStates[last] != State::InCheckingQueue; )
 	{
 		if( ++last == hostStates.size() )
 			last = 0;
+		if( last == begin )
+		{
+			activeClientSet.remove( client );
+			client->blockSignals( true );
+			client->deleteLater();
+			return;
+		}
 	}
 	client->blockSignals( true );
 	client->disconnectFromHost();

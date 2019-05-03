@@ -198,6 +198,7 @@ void FirmwareUpdater::startButtonClicked()
 		return;
 	}
 
+	hostListModel.resetHostsStatus();
 	auto& list = hostListModel.hostGroupList();
 	int n = 0, m = 0, h = 0;
 	for( auto i = list.begin(); i != list.end(); ++i )

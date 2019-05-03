@@ -81,6 +81,25 @@ void HostListModel::setHostState( int groupIndex, int hostIndex, QString state )
 	dataChanged( id, id );
 }
 
+
+void HostListModel::resetHostsStatus()
+{
+	if( !editMode )
+		beginResetModel();
+	for( auto& e : list )
+	{
+		for( auto& host : e.hostList )
+		{
+			host.firmwareVersion.clear();
+			host.bootloaderVersion.clear();
+			host.progress = 0;
+			host.state.clear();
+		}
+	}
+	if( !editMode )
+		endResetModel();
+}
+
 void HostListModel::clear()
 {
 	beginResetModel();

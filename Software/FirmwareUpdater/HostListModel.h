@@ -33,6 +33,7 @@ public:
 	void setHostVersions( int groupIndex, int hostIndex, QString firmwareVersion, QString bootloaderVersion );
 	void setHostProgress( int groupIndex, int hostIndex, int progress );
 	void setHostState( int groupIndex, int hostIndex, QString state );
+	void resetHostsStatus();
 	void clear();
 
 	QVariant data( const QModelIndex &index, int role ) const override;
