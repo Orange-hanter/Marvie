@@ -256,6 +256,11 @@ void MarvieDevice::exec()
 
 	Concurrent::run( ThreadProperties( 2048, NORMALPRIO, "" ), [this]()
 	{
+		StaticTimer<> timer( []() {
+			__NVIC_SystemReset();
+		} );
+		timer.setInterval( TIME_MS2I( 16000 ) );
+
 		UdpSocket* socket = new UdpSocket;
 		uint8_t buf[32];
 		socket->bind( 42666 );
@@ -274,6 +279,7 @@ void MarvieDevice::exec()
 					chThdSleepMilliseconds( 200 );
 				}
 				mainThread->signalEvents( MainThreadEvent::RestartRequestEvent );
+				timer.start();
 			}
 			else if( strcmp( ( const char* )buf, "@ZX#42%0?gmt@DeMv@zY_" ) == 0 )
 			{
