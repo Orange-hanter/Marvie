@@ -96,8 +96,8 @@ USART_TypeDef * Rs485::base()
 uint32_t Rs485::write( const uint8_t* data, uint32_t size, sysinterval_t timeout )
 {
 	uint32_t s;
-	EvtListener listener;
-	usart->eventSource()->registerMaskWithFlags( &listener, DataServiceEvent, CHN_TRANSMISSION_END );
+	EventListener listener;
+	usart->eventSource().registerMaskWithFlags( &listener, DataServiceEvent, CHN_TRANSMISSION_END );
 	chEvtGetAndClearEvents( DataServiceEvent );
 
 	transmitMode();
@@ -106,8 +106,6 @@ uint32_t Rs485::write( const uint8_t* data, uint32_t size, sysinterval_t timeout
 	chEvtWaitAny( DataServiceEvent );
 	receiveMode();
 	chThdSetPriority( prio );
-
-	usart->eventSource()->unregister( &listener );
 
 	return s;
 }
@@ -157,7 +155,7 @@ void Rs485::resetInputBufferOverflowFlag()
 	usart->resetInputBufferOverflowFlag();
 }
 
-EvtSource* Rs485::eventSource()
+EventSourceRef Rs485::eventSource()
 {
 	return usart->eventSource();
 }

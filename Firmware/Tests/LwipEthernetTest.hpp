@@ -43,7 +43,7 @@ namespace LwipEthernetTest
 			if( server->waitForNewConnection( TIME_MS2I( 100 ) ) )
 			{
 				TcpSocket* socket = server->nextPendingConnection();
-				Concurrent::run( [socket]()
+				Concurrent::run( ThreadProperties( 2048, NORMALPRIO ), [socket]()
 				{
 					uint8_t* data = new uint8_t[2048];
 					while( true )
@@ -63,7 +63,7 @@ namespace LwipEthernetTest
 End:
 					delete data;
 					delete socket;
-				}, 2048, NORMALPRIO );
+				} );
 			}
 		}
 

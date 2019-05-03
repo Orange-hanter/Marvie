@@ -1,13 +1,14 @@
-project(marvie)
+project(marvie_firmware)
 cmake_minimum_required(VERSION 3.11)
 enable_language(ASM)
 #set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-set(MARVIE_FIRMWARE_VERSION_BASE "0.8.0.10" CACHE STRING "Marvie base firmware version" FORCE)
-if(NOT MODEM_PWRKEY_LEVEL)
-	set(MODEM_PWRKEY_LEVEL "H")
-endif()
+set(MARVIE_FIRMWARE_VERSION_BASE "0.8.4.0" CACHE STRING "Marvie base firmware version" FORCE)
+#if(NOT MODEM_PWRKEY_LEVEL)
+#	set(MODEM_PWRKEY_LEVEL "H")
+#endif()
 set(MARVIE_FIRMWARE_VERSION "${MARVIE_FIRMWARE_VERSION_BASE}${MODEM_PWRKEY_LEVEL}")
+message("Marvie firmware version: ${MARVIE_FIRMWARE_VERSION}")
 configure_file(${CMAKE_SOURCE_DIR}/Src/MarviePlatform.h.in ${CMAKE_SOURCE_DIR}/Src/MarviePlatform.h)
 message(${MODEM_PWRKEY_LEVEL})
 set(STM32_FLASH_ORIGIN "0x08008400")
@@ -15,7 +16,6 @@ set(STM32_FLASH_SIZE "479K")
 set(STM32_RAM_SIZE "128K")
 set(STM32_CCRAM_SIZE "64K")
 
-#set(WIN32 1)
 #set(USE_PRINTF_FLOAT 1)
 set(USE_SCANF_FLOAT 1)
 include(gcc_stm32)
@@ -26,6 +26,7 @@ find_package(ChibiOS 18 COMPONENTS rt hal REQUIRED)
 
 include_directories(
 	${ChibiOS_INCLUDE_DIRS}
+	${CMAKE_SOURCE_DIR}/GCC/
 	${CMAKE_SOURCE_DIR}/ChibiOS/os/various
 	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/lwip_bindings/
     ${CMAKE_SOURCE_DIR}/Config/
@@ -53,14 +54,17 @@ set(apps_SRCS
 )
 
 set(core_SRCS
-	${CMAKE_SOURCE_DIR}/Src/Core/BaseDynamicThread.cpp
-    ${CMAKE_SOURCE_DIR}/Src/Core/ByteRingBuffer.cpp
 	${CMAKE_SOURCE_DIR}/Src/Core/CCMemoryAllocator.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/Thread.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/Timer.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Core/ByteRingBuffer.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/CCMemoryHeap.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/CpuUsageMonitor.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/DateTime.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/DateTimeService.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Core/Event.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/IODevice.cpp
+    ${CMAKE_SOURCE_DIR}/Src/Core/MemoryStatus.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/NewDelete.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/Object.cpp
     ${CMAKE_SOURCE_DIR}/Src/Core/ObjectMemoryUtilizer.cpp
@@ -96,6 +100,7 @@ set(fileSystem_SRCS
 	${CMAKE_SOURCE_DIR}/Src/FileSystem/Dir.cpp
 	${CMAKE_SOURCE_DIR}/Src/FileSystem/File.cpp
 	${CMAKE_SOURCE_DIR}/Src/FileSystem/FileInfo.cpp
+	${CMAKE_SOURCE_DIR}/Src/FileSystem/FileInfoReader.cpp
 	${CMAKE_SOURCE_DIR}/Src/FileSystem/FileSystem.cpp
 )
 
@@ -124,6 +129,12 @@ set(network_SRCS
 	${CMAKE_SOURCE_DIR}/Src/Network/UdpSocket.cpp
 )
 
+set(remoteTerminal_SRCS
+	${CMAKE_SOURCE_DIR}/Src/RemoteTerminal/CommandLineParser.cpp
+	${CMAKE_SOURCE_DIR}/Src/RemoteTerminal/CommandLineUtility.cpp
+	${CMAKE_SOURCE_DIR}/Src/RemoteTerminal/RemoteTerminalServer.cpp
+)
+
 set(sensorService_SRCS
 	${CMAKE_SOURCE_DIR}/Src/SensorService/AnalogSensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Art01SensorType.cpp
@@ -149,7 +160,6 @@ set(support_SRCS
 
 set(chibios_various_SRCS
 	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/lwip_bindings/arch/sys_arch.c
-	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/cpp_wrappers/ch.cpp
 	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/fatfs_bindings/fatfs_diskio.c
 	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/fatfs_bindings/fatfs_syscall.c
 	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/evtimer.c
@@ -170,22 +180,23 @@ set(STM32_LINKER_SCRIPT ${ChibiOS_LINKER_SCRIPT})
 
 set(firmware_SRCS
 	${CMAKE_SOURCE_DIR}/Config/board.c
+	${CMAKE_SOURCE_DIR}/Src/MarvieBackup.cpp
+	${CMAKE_SOURCE_DIR}/Src/MarviePlatform.cpp
+	${CMAKE_SOURCE_DIR}/Src/SingleBRSensorReader.cpp
+	${CMAKE_SOURCE_DIR}/Src/stm32f4xx_flash.c
     ${CMAKE_SOURCE_DIR}/Src/BRSensorReader.cpp
     ${CMAKE_SOURCE_DIR}/Src/Crc32HW.cpp
+    ${CMAKE_SOURCE_DIR}/Src/FirmwareTransferService.cpp
     ${CMAKE_SOURCE_DIR}/Src/main.cpp
     ${CMAKE_SOURCE_DIR}/Src/MarvieDevice.cpp
-	${CMAKE_SOURCE_DIR}/Src/MarviePlatform.cpp
-	${CMAKE_SOURCE_DIR}/Src/MarvieBackup.cpp
     ${CMAKE_SOURCE_DIR}/Src/MarvieXmlConfigParsers.cpp
     ${CMAKE_SOURCE_DIR}/Src/MLinkServer.cpp
     ${CMAKE_SOURCE_DIR}/Src/MultipleBRSensorsReader.cpp
     ${CMAKE_SOURCE_DIR}/Src/NetworkSensorReader.cpp
-    ${CMAKE_SOURCE_DIR}/Src/SingleBRSensorReader.cpp
-	${CMAKE_SOURCE_DIR}/Src/stm32f4xx_flash.c
 	#${CMAKE_SOURCE_DIR}/Src/usbcfg.c
 )
 
-add_executable(${CMAKE_PROJECT_NAME}_firmware.elf
+add_executable(${CMAKE_PROJECT_NAME}.elf
 	${firmware_SRCS}
 	${apps_SRCS}
 	${core_SRCS}
@@ -194,13 +205,14 @@ add_executable(${CMAKE_PROJECT_NAME}_firmware.elf
 	${filters_SRCS}
 	${log_SRCS}
 	${network_SRCS}
+	${remoteTerminal_SRCS}
 	${sensorService_SRCS}
 	${support_SRCS}
 	${ChibiOS_SOURCES}
 	${chibios_various_SRCS}
 	${test_SRCS}
 )
-target_link_libraries(${CMAKE_PROJECT_NAME}_firmware.elf
+target_link_libraries(${CMAKE_PROJECT_NAME}.elf
     lwipcore
 	fatfs
 	modbus
@@ -208,6 +220,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}_firmware.elf
 	_sha1
 )
 
-STM32_SET_TARGET_PROPERTIES(${CMAKE_PROJECT_NAME}_firmware.elf)
-STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}_firmware.elf)
-STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}_firmware.elf)
+STM32_SET_TARGET_PROPERTIES(${CMAKE_PROJECT_NAME}.elf)
+STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}.elf)
+STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}.elf)
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME}.elf.bin POST_BUILD COMMAND ${CMAKE_COMMAND} -E echo_append __${MARVIE_FIRMWARE_VERSION}__MARVIE_FIRMWARE__ >> ${CMAKE_PROJECT_NAME}.elf.bin)

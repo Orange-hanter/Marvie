@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core xml network gui xmlpatterns widgets bluetooth serialport printsupport concurrent charts
+QT       += core xml network gui xmlpatterns widgets serialport printsupport concurrent charts
 
 TARGET = MarvieControl
 TEMPLATE = app
@@ -23,6 +23,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++14
 
 SOURCES += \
+    RemoteTerminalClient.cpp \
+    DeviceFirmwareInfoWidget.cpp \
     AccountWindow.cpp \
     ComPortsConfigWidget.cpp \
     Crc32SW.cpp \
@@ -45,6 +47,8 @@ SOURCES += \
     VPortTileWidget.cpp
 
 HEADERS += \
+    RemoteTerminalClient.h \
+    DeviceFirmwareInfoWidget.h \
     AccountWindow.h \
     ComPortsConfigWidget.h \
     Crc32SW.h \
@@ -88,6 +92,7 @@ RESOURCES += \
     MarvieControl.qrc
 
 FORMS += \
+    DeviceFirmwareInfoWidget.ui \
     AccountWindow.ui \
     MarvieControl.ui \
     SdStatistics.ui

@@ -1,12 +1,10 @@
 #pragma once
 
-#include "Core/BaseDynamicThread.h"
+#include "Core/Thread.h"
 #include "Drivers/Sensors/AbstractSensor.h"
-#include "cpp_wrappers/ch.hpp"
+#include "Core/ThreadsQueue.h"
 
-using namespace chibios_rt;
-
-class BRSensorReader : protected BaseDynamicThread
+class BRSensorReader : protected Thread
 {
 public:
 	enum EventFlag : eventflags_t { StateChanged = 1, SensorDataUpdated = 2 };
@@ -26,7 +24,7 @@ public:
 	virtual AbstractBRSensor* nextSensor() = 0;
 	virtual sysinterval_t timeToNextReading() = 0;
 
-	EvtSource* eventSource();
+	EventSourceRef eventSource();
 
 protected:
 	bool waitAndCheck( sysinterval_t interval, sysinterval_t step = TIME_MS2I( 100 ) );
@@ -37,6 +35,6 @@ protected:
 
 	State tState;
 	WorkingState wState;
-	EvtSource extEventSource;
-	threads_queue_t waitingQueue;
+	EventSource extEventSource;
+	ThreadsQueue waitingQueue;
 };

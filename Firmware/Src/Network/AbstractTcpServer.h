@@ -18,5 +18,5 @@ public:
 	virtual bool waitForNewConnection( sysinterval_t timeout = TIME_INFINITE ) = 0;
 	virtual void setNewConnectionsBufferSize( uint32_t inputBufferSize, uint32_t outputBufferSize ) = 0;
 
-	virtual EvtSource* eventSource() = 0;
+	virtual EventSourceRef eventSource() = 0;
 };

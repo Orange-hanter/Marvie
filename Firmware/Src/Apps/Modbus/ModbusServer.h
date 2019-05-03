@@ -1,9 +1,11 @@
 #pragma once
 
-#include "Core/BaseDynamicThread.h"
+#include "Core/Event.h"
+#include "Core/Thread.h"
+#include "Core/ThreadsQueue.h"
 #include "ModbusDevice.h"
 
-class AbstractModbusServer : public BaseDynamicThread, public ModbusDevice
+class AbstractModbusServer : public Thread, public ModbusDevice
 {
 public:
 	enum EventFlag : eventflags_t { StateChanged = 1, ClientsCountChanged = 2 };
@@ -21,7 +23,7 @@ public:
 	State state();
 	bool waitForStateChange( sysinterval_t timeout = TIME_INFINITE );
 
-	EvtSource* eventSource();
+	EventSourceRef eventSource();
 
 protected:
 	enum InnerEventFlag : eventflags_t { StopRequestFlag = 1UL << 31, ServerSocketFlag = 1UL << 30, ClientFlag = 1UL };
@@ -29,8 +31,8 @@ protected:
 	FrameType frameType;
 	ModbusPotato::ISlaveHandler* slaveHandler;
 	ModbusPotato::CModbusSlave slave;
-	EvtSource eSource;
-	threads_queue_t waitingQueue;
+	EventSource eSource;
+	ThreadsQueue waitingQueue;
 };
 
 class AbstractModbusNetworkServer : public AbstractModbusServer

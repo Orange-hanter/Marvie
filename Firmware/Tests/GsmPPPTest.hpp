@@ -93,73 +93,76 @@ static uint8_t ib[1024] = {};
 #include "Tests/UdpStressTestServer/UdpStressTestServer.h"
 #include "Core/Concurrent.h"
 
-int gsmPPPTest()
+namespace GsmPPPTest
 {
-	palSetPadMode( GPIOD, 5, PAL_MODE_ALTERNATE( GPIO_AF_USART2 ) );
-	palSetPadMode( GPIOD, 6, PAL_MODE_ALTERNATE( GPIO_AF_USART2 ) );
-	Usart* gsmUsart = Usart::instance( &SD2 );
-	gsmUsart->setInputBuffer( ib, sizeof( ib ) );
-	gsmUsart->setOutputBuffer( ob, sizeof( ob ) );
-	gsmUsart->open( 230400 );
-
-	LogicOutput pwrKey;
-	pwrKey.attach( IOPD1 );
-	pwrKey.on();
-
-	SimGsmPppModem* modem = new SimGsmPppModem( IOPD0, false, 0 );
-	modem->setUsart( gsmUsart );
-	modem->setApn( "m2m30.velcom.by" );
-	modem->startModem();
-	modem->waitForStateChange();
-	modem->setAsDefault();
-
-	Concurrent::run( []()
+	int test()
 	{
-		UdpStressTestServer* server = new UdpStressTestServer( 1114 );
-		server->exec();
-	} );
+		palSetPadMode( GPIOD, 5, PAL_MODE_ALTERNATE( GPIO_AF_USART2 ) );
+		palSetPadMode( GPIOD, 6, PAL_MODE_ALTERNATE( GPIO_AF_USART2 ) );
+		Usart* gsmUsart = Usart::instance( &SD2 );
+		gsmUsart->setInputBuffer( ib, sizeof( ib ) );
+		gsmUsart->setOutputBuffer( ob, sizeof( ob ) );
+		gsmUsart->open( 230400 );
 
-	/*TcpServer* server = new TcpServer;
-	server->listen( 42420 );
-	while( server->isListening() )
-	{
-		if( server->waitForNewConnection( TIME_MS2I( 100 ) ) )
+		LogicOutput pwrKey;
+		pwrKey.attach( IOPD1 );
+		pwrKey.on();
+
+		SimGsmPppModem* modem = new SimGsmPppModem( IOPD0, false, 0 );
+		modem->setUsart( gsmUsart );
+		modem->setApn( "m2m30.velcom.by" );
+		modem->startModem();
+		modem->waitForStateChange();
+		modem->setAsDefault();
+
+		Concurrent::run( []()
 		{
-			TcpSocket* socket = server->nextPendingConnection();
-			Concurrent::run( [socket]()
+			UdpStressTestServer* server = new UdpStressTestServer( 1114 );
+			server->exec();
+		} );
+
+		/*TcpServer* server = new TcpServer;
+		server->listen( 42420 );
+		while( server->isListening() )
+		{
+			if( server->waitForNewConnection( TIME_MS2I( 100 ) ) )
 			{
-				uint8_t* data = new uint8_t[2048];
-				while( true )
+				TcpSocket* socket = server->nextPendingConnection();
+				Concurrent::run( [socket]()
 				{
-					//chThdSleepMilliseconds( 3000 );
-					if( socket->waitForReadAvailable( 1, TIME_MS2I( 100 ) ) )
+					uint8_t* data = new uint8_t[2048];
+					while( true )
 					{
-						while( socket->readAvailable() )
+						//chThdSleepMilliseconds( 3000 );
+						if( socket->waitForReadAvailable( 1, TIME_MS2I( 100 ) ) )
 						{
-							uint32_t len = socket->read( data, 2048, TIME_IMMEDIATE );
-							if( socket->write( data, len ) == 0 )
-								goto End;
+							while( socket->readAvailable() )
+							{
+								uint32_t len = socket->read( data, 2048, TIME_IMMEDIATE );
+								if( socket->write( data, len ) == 0 )
+									goto End;
+							}
 						}
+						if( !socket->isOpen() )
+							break;
 					}
-					if( !socket->isOpen() )
-						break;
-				}
-End:
-				delete data;
-				delete socket;
-			}, 2048, NORMALPRIO );
-		}
-	}*/
+	End:
+					delete data;
+					delete socket;
+				}, 2048, NORMALPRIO );
+			}
+		}*/
 
-	/*chThdSleepMilliseconds( 5000 );
-	modem->stopModem();
-	modem->waitForStatusChange();*/
+		/*chThdSleepMilliseconds( 5000 );
+		modem->stopModem();
+		modem->waitForStatusChange();*/
 
-	thread_reference_t ref = nullptr;
-	chSysLock();
-	chThdSuspendS( &ref );
+		thread_reference_t ref = nullptr;
+		chSysLock();
+		chThdSuspendS( &ref );
 
-	return 0;
+		return 0;
+	}
 }
 
 /*

@@ -5,53 +5,48 @@
 #include "Core/DateTimeService.h"
 #include "Drivers/Network/Ethernet/EthernetThread.h"
 
-#include "Tests/FileSystemTest.hpp"
-#include "Tests/GsmPPPTest.hpp"
-#include "Tests/LwipEthernetTest.hpp"
-#include "Tests/MLinkTest.hpp"
-#include "Tests/MarvieLogSystemTest.hpp"
-#include "Tests/ModbusServerTest.hpp"
-#include "Tests/ModbusTest.hpp"
-#include "Tests/PowerDownTest.hpp"
-#include "Tests/SdDataUploader.hpp"
-#include "Tests/Sim800AtTest.hpp"
-#include "Tests/UdpStressTestServer/UdpStressTestServer.h"
+//#include "Tests/EventTest.hpp"
+//#include "Tests/FileSystemTest.hpp"
+//#include "Tests/GsmPPPTest.hpp"
+//#include "Tests/LwipEthernetTest.hpp"
+//#include "Tests/MLinkTest.hpp"
+//#include "Tests/MarvieLogSystemTest.hpp"
+//#include "Tests/ModbusServerTest.hpp"
+//#include "Tests/ModbusTest.hpp"
+//#include "Tests/MultipleBRSensorsReaderTest.hpp"
+//#include "Tests/PingTest.hpp"
+//#include "Tests/PowerDownTest.hpp"
+//#include "Tests/RemoteTerminalTest.hpp"
+//#include "Tests/SdDataUploader.hpp"
+//#include "Tests/Sim800AtTest.hpp"
+//#include "Tests/SingleBRSensorReaderTest.hpp"
+//#include "Tests/ThreadTest.hpp"
+//#include "Tests/TimerTest.hpp"
+//#include "Tests/UdpStressTestServer/UdpStressTestServer.h"
+//#include "Tests/FirmwareTransferServiceTest.hpp"
 //#include "Tests/UsbSduTest.hpp"
-#include "Tests/PingTest.hpp"
 
 #include <algorithm>
 
+extern char _bootloaderVersion[15 + 1];
+
 int main()
 {
+	static_assert( __gthread_active_p() == 1, "__gthread_active_p() != 1" );
+	static_assert( std::__default_lock_policy == std::_S_atomic, "__default_lock_policy != _S_atomic" );
+
 	/*for( int i = 0x10000000; i < 0x10000000 + 64 * 1024; i += 4 )
 		*( uint32_t* )i = 0;*/
+	rccEnableAHB1( RCC_AHB1ENR_BKPSRAMEN, true );
 	halInit();
 	chSysInit();
-	rccEnableAHB1( RCC_AHB1ENR_BKPSRAMEN, true );
 
-	/*Sim800Test::test();
-	while(true);*/
-
-	/*UsbSduTest::test();
-	while( true );*/
-
-	/*tcpip_init( nullptr, nullptr );
-
-	ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );
-
-	PPPServerTest::test();*/
-
-	/*SdDataUploader::main();
-	while( true );*/
-
-	/*PowerDownTest::test();
-	while( true );*/
-
-	/*MarvieLogSystemTest::test();
-	while( true );*/
-
-	/*FileSystemTest::test();
-	while( true );*/
+	struct BootloaderMetaData
+	{
+		char version[15 + 1];
+	}* metaData = reinterpret_cast< BootloaderMetaData* >( 0x10000000 + 42 * 1024 );
+	metaData->version[15] = 0;
+	strcpy( _bootloaderVersion, metaData->version );
 
 	enum IWDGPrescaler
 	{
@@ -68,6 +63,45 @@ int main()
 	wdgConfig.rlr = 0x0FFF;
 	wdgStart( &WDGD1, &wdgConfig );
 	wdgReset( &WDGD1 );
+
+	ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );
+	tcpip_init( nullptr, nullptr );
+
+	/*SingleBRSensorReaderTest::test();
+	MultipleBRSensorsReaderTest::test();
+	while( true );*/
+
+	/*TimerTest::test();
+	while( true );*/
+
+	/*EventTest::test();
+	while( true );*/
+
+	/*ThreadTest::test();
+	while( true );*/
+
+	/*FirmwareTransferServiceTest::test();
+	while( true );*/
+
+	/*Sim800Test::test();
+	while(true);*/
+
+	/*UsbSduTest::test();
+	while( true );*/
+
+	/*PPPServerTest::test();*/
+
+	/*SdDataUploader::main();
+	while( true );*/
+
+	/*PowerDownTest::test();
+	while( true );*/
+
+	/*MarvieLogSystemTest::test();
+	while( true );*/
+
+	/*FileSystemTest::test();
+	while( true );*/
 
 	//  {
 	//  	ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );
@@ -95,24 +129,36 @@ int main()
 	//  	//	while( true );
 	//  }
 
-	tcpip_init( nullptr, nullptr );
-
 	/*LwipEthernetTest::test();
 	while( true );*/
 
-	ObjectMemoryUtilizer::instance()->runUtilizer( LOWPRIO );
+	/*GsmPPPTest::test();
+	while( true );*/
+
+	{
+		/*auto conf = EthernetThread::instance()->currentConfig();
+		conf.addressMode = EthernetThread::AddressMode::Static;
+		conf.ipAddress = IpAddress( 192, 168, 10, 10 );
+		conf.netmask = 0xFFFFFF00;
+		conf.gateway = IpAddress( 192, 168, 10, 1 );
+		EthernetThread::instance()->setConfig( conf );
+		EthernetThread::instance()->startThread();
+		RemoteTerminalTest::test();
+		while( true )
+			;*/
+	}
 
 	MarvieDevice::instance()->exec();
 	while( true )
 		;
 
-	auto conf = EthernetThread::instance()->currentConfig();
+	/*auto conf = EthernetThread::instance()->currentConfig();
 	conf.addressMode = EthernetThread::AddressMode::Static;
 	conf.ipAddress = IpAddress( 192, 168, 10, 10 );
 	conf.netmask = 0xFFFFFF00;
 	conf.gateway = IpAddress( 192, 168, 10, 1 );
 	EthernetThread::instance()->setConfig( conf );
-	EthernetThread::instance()->startThread();
+	EthernetThread::instance()->startThread();*/
 
 	/*palSetPadMode( GPIOA, 9, PAL_MODE_ALTERNATE( GPIO_AF_USART1 ) );
 	palSetPadMode( GPIOA, 10, PAL_MODE_ALTERNATE( GPIO_AF_USART1 ) );
@@ -120,10 +166,10 @@ int main()
 	terminal->open( 115200 );
 	terminal->write( ( uint8_t* )"Start ethernet...\r", 18, TIME_INFINITE );*/
 
-	Concurrent::run( []() {
+	/*Concurrent::run( []() {
 		UdpStressTestServer* server = new UdpStressTestServer( 1112 );
 		server->exec();
-	} );
+	} );*/
 
 	/*EvtListener listener;
  	EthernetThread::instance()->eventSource()->registerMask( &listener, EVENT_MASK( 0 ) );
@@ -147,7 +193,7 @@ int main()
  		}
  	}*/
 
-	Concurrent::run( []() {
+	/*Concurrent::run( []() {
 		TcpServer* server = new TcpServer;
 		server->listen( 42420 );
 		while( server->isListening() )
@@ -155,7 +201,7 @@ int main()
 			if( server->waitForNewConnection( TIME_MS2I( 100 ) ) )
 			{
 				TcpSocket* socket = server->nextPendingConnection();
-				Concurrent::run( [socket]() {
+				Concurrent::run( ThreadProperties( 2048, NORMALPRIO ), [socket]() {
 					uint8_t* data = new uint8_t[2048];
 					while( true )
 					{
@@ -175,11 +221,10 @@ int main()
 				End:
 					delete data;
 					delete socket;
-				},
-						 2048, NORMALPRIO );
+				} );
 			}
 		}
-	} );
+	} );*/
 
 	/*guardArray = new uint8_t[1024 * 10];
 	for( int i = 0; i < 1024 * 10; ++i )

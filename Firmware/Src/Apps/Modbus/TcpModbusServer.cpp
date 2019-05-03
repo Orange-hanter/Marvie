@@ -18,7 +18,7 @@ void TcpModbusServer::main()
 		goto End;
 	for( int i = 0; i < maxClientsCount; ++i )
 		clients[i] = nullptr;
-	tcpServer.eventSource()->registerMask( &listener, InnerEventFlag::ServerSocketFlag );
+	tcpServer.eventSource().registerMask( &listener, InnerEventFlag::ServerSocketFlag );
 	chEvtAddEvents( InnerEventFlag::ServerSocketFlag );
 
 	while( true )
@@ -77,9 +77,8 @@ End:
 
 	chSysLock();
 	sState = State::Stopped;
-	eSource.broadcastFlagsI( ( eventflags_t )EventFlag::StateChanged );
-	chThdDequeueNextI( &waitingQueue, MSG_OK );
-	exitS( MSG_OK );
+	eSource.broadcastFlags( ( eventflags_t )EventFlag::StateChanged );
+	waitingQueue.dequeueNext( MSG_OK );
 }
 
 void TcpModbusServer::addNewClient( TcpSocket* socket )
@@ -127,7 +126,7 @@ void TcpModbusServer::addNewClient( TcpSocket* socket )
 			return;
 		}
 		clients[i]->framer->set_handler( &slave );
-		socket->eventSource()->registerMask( &clients[i]->listener, EVENT_MASK( i ) );
+		socket->eventSource().registerMask( &clients[i]->listener, EVENT_MASK( i ) );
 		chEvtAddEvents( EVENT_MASK( i ) );
 		++clientsCount;
 		eSource.broadcastFlags( EventFlag::ClientsCountChanged );
@@ -139,7 +138,7 @@ void TcpModbusServer::timerCallback( void* p )
 {
 	Client* client = ( Client* )p;
 	chSysLockFromISR();
-	chEvtSignalI( client->listener.ev_listener.listener, client->listener.ev_listener.events );
+	client->listener.thread().signalEventsI( client->listener.eventMask() );
 	chSysUnlockFromISR();
 }
 

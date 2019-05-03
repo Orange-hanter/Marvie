@@ -1,5 +1,6 @@
 #include "SingleBRSensorReader.h"
 #include "Core/Assert.h"
+#include "Core/CriticalSectionLocker.h"
 
 SingleBRSensorReader::SingleBRSensorReader() : BRSensorReader( SINGLE_BR_SENSOR_READER_STACK_SIZE )
 {
@@ -26,41 +27,40 @@ bool SingleBRSensorReader::startReading( tprio_t prio )
 		return false;
 
 	tState = State::Working;
+	setPriority( prio );
+	if( !start() )
+	{
+		tState = State::Stopped;
+		return false;
+	}
 	extEventSource.broadcastFlags( ( eventflags_t )EventFlag::StateChanged );
-	start( prio );
 
 	return true;
 }
 
 void SingleBRSensorReader::stopReading()
 {
-	syssts_t sysStatus = chSysGetStatusAndLockX();
+	CriticalSectionLocker locker;
 	if( tState == State::Stopped || tState == State::Stopping )
-	{
-		chSysRestoreStatusX( sysStatus );
 		return;
-	}
 	tState = State::Stopping;
-	thread_ref->flags |= CH_FLAG_TERMINATE;
-	extEventSource.broadcastFlagsI( ( eventflags_t )EventFlag::StateChanged );
+	requestInterruption();
+	extEventSource.broadcastFlags( ( eventflags_t )EventFlag::StateChanged );
 	signalEventsI( InnerEventFlag::StopRequestFlag );
-	chSysRestoreStatusX( sysStatus );
 }
 
 void SingleBRSensorReader::forceOne( AbstractBRSensor* forcedSensor )
 {
-	syssts_t sysStatus = chSysGetStatusAndLockX();
+	CriticalSectionLocker locker;
 	if( tState == State::Working && forcedSensor == sensor )
 		signalEventsI( InnerEventFlag::ForceOneRequestFlag );
-	chSysRestoreStatusX( sysStatus );
 }
 
 void SingleBRSensorReader::forceAll()
 {
-	syssts_t sysStatus = chSysGetStatusAndLockX();
+	CriticalSectionLocker locker;
 	if( tState == State::Working )
 		signalEventsI( InnerEventFlag::ForceOneRequestFlag );
-	chSysRestoreStatusX( sysStatus );
 }
 
 AbstractBRSensor* SingleBRSensorReader::nextSensor()
@@ -144,9 +144,8 @@ void SingleBRSensorReader::main()
 	tState = State::Stopped;
 	wState = WorkingState::Connecting;
 	nextInterval = 0;
-	extEventSource.broadcastFlagsI( ( eventflags_t )EventFlag::StateChanged );
-	chThdDequeueNextI( &waitingQueue, MSG_OK );
-	exitS( MSG_OK );
+	extEventSource.broadcastFlags( ( eventflags_t )EventFlag::StateChanged );
+	waitingQueue.dequeueNext( MSG_OK );
 }
 
 void SingleBRSensorReader::timerCallback( void* p )

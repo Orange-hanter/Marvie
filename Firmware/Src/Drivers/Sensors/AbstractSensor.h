@@ -2,6 +2,7 @@
 
 #include "Core/DateTime.h"
 #include "Core/IODevice.h"
+#include "Core/Mutex.h"
 
 enum class SensorEventFlag { DataUpdated = 1 };
 
@@ -10,15 +11,15 @@ class SensorData
 public:
 	enum class Error : uint8_t { NoError, NoResponseError, CrcError/*, PackageError*/ };
 
-	SensorData() { errType = Error::NoError; errCode = 0; chMtxObjectInit( &mutex ); }
+	SensorData() { errType = Error::NoError; errCode = 0; }
 
 	inline DateTime time() { return t; }
 	inline bool isValid() { return errType == Error::NoError; }
 	inline Error error() { return errType; }
 	inline uint8_t errorCode() { return errCode; }
-	inline bool tryLock() { return chMtxTryLock( &mutex ); }
-	inline void lock() { chMtxLock( &mutex ); }
-	inline void unlock() { chMtxUnlock( &mutex ); }
+	inline bool tryLock() { return mutex.tryLock(); }
+	inline void lock() { mutex.lock(); }
+	inline void unlock() { mutex.unlock(); }
 
 protected:
 	DateTime t;
@@ -26,7 +27,7 @@ protected:
 	uint8_t errCode;
 
 private:
-	mutex_t mutex;
+	Mutex mutex;
 };
 
 class AbstractSensor

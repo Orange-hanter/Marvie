@@ -1,11 +1,15 @@
 #include "MarvieDevice.h"
 #include "Core/CCMemoryAllocator.h"
-#include "Core/DateTimeService.h"
 #include "Core/CCMemoryHeap.h"
+#include "Core/DateTimeService.h"
+#include "Core/MutexLocker.h"
+#include "FileSystem/FileInfoReader.h"
 #include "Network/PingService.h"
-#include "lwipthread.h"
-#include "Network/UdpSocket.h"
 #include "Network/TcpServer.h"
+#include "Network/UdpSocket.h"
+#include "Q.hpp"
+#include "RemoteTerminal/CommandLineUtility.h"
+#include "lwipthread.h"
 #include "stm32f4xx_flash.h"
 
 #include "Tests/UdpStressTestServer/UdpStressTestServer.h"
@@ -13,6 +17,7 @@
 using namespace MarvieXmlConfigParsers;
 
 MarvieDevice* MarvieDevice::_inst = nullptr;
+char _bootloaderVersion[15 + 1];
 
 MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 {
@@ -140,6 +145,13 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	monitoringLogSize = 0;
 
 	configNum = 0;
+	for( uint i = 0; i < MarviePlatform::comPortsCount; ++i )
+	{
+		comPortCurrentAssignments[i] = MarvieXmlConfigParsers::ComPortAssignment::VPort;
+		comPortServiceRoutines[i] = nullptr;
+		comPortBlockFlags[i] = false;
+		vPortToComPortMap[i] = -1;
+	}
 	vPorts = nullptr;
 	vPortBindings = nullptr;
 	vPortsCount = 0;
@@ -157,9 +169,12 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	tcpModbusIpServer = nullptr;
 	modbusRegisters = nullptr;
 	modbusRegistersCount = 0;
+	sharedComPortIndex = -1;
 
 	syncConfigNum = ( uint32_t )-1;
 	datFiles[0] = datFiles[1] = datFiles[2] = nullptr;
+	networkSharedComPortThread = nullptr;
+	sharedComPortNetworkClientsCount = -1;
 
 	memoryLoad.totalGRam = 128 * 1024;
 	memoryLoad.totalCcRam = 64 * 1024;
@@ -185,6 +200,17 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	mLinkServer = new MLinkServer;
 	mLinkServer->setAuthenticationCallback( this );
 	mLinkServer->setDataChannelCallback( this );
+	terminalServer.setOutputCallback( terminalOutput, this );
+	terminalServer.registerFunction( "ls", CommandLineUtility::ls );
+	terminalServer.registerFunction( "mkdir", CommandLineUtility::mkdir );
+	terminalServer.registerFunction( "rm", CommandLineUtility::rm );
+	terminalServer.registerFunction( "mv", CommandLineUtility::mv );
+	terminalServer.registerFunction( "cat", CommandLineUtility::cat );
+	terminalServer.registerFunction( "ping", CommandLineUtility::ping );
+	terminalServer.registerFunction( "lgbt", lgbt );
+	terminalServer.registerFunction( "Q", qAsciiArtFunction );
+	terminalOutputTimer.setParameter( this );
+	terminalServer.startServer();
 
 	PingService::instance()->startService();
 	networkTestState = NetworkTestState::Off;
@@ -194,7 +220,9 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	miskTasksThread = nullptr;
 	adInputsReadThread = nullptr;
 	mLinkServerHandlerThread = nullptr;
+	terminalOutputThread = nullptr;
 	uiThread = nullptr;
+	networkTestThread = nullptr;
 }
 
 MarvieDevice* MarvieDevice::instance()
@@ -207,28 +235,26 @@ MarvieDevice* MarvieDevice::instance()
 
 void MarvieDevice::exec()
 {
-	mainThread               = Concurrent::run( [this]() { mainThreadMain(); },               2560, NORMALPRIO );
-	miskTasksThread          = Concurrent::run( [this]() { miskTasksThreadMain(); },          2048, NORMALPRIO );
-	adInputsReadThread       = Concurrent::run( [this]() { adInputsReadThreadMain(); },       512,  NORMALPRIO + 2 );
-	mLinkServerHandlerThread = Concurrent::run( [this]() { mLinkServerHandlerThreadMain(); }, 2048, NORMALPRIO );
-	uiThread                 = Concurrent::run( [this]() { uiThreadMain(); },                 1024, NORMALPRIO );
-	networkTestThread        = Concurrent::run( [this]() { networkTestThreadMain(); },        1024, NORMALPRIO );
+	mainThread               = Thread::createAndStart( ThreadProperties( 2560, NORMALPRIO ), [this]() { mainThreadMain(); } );
+	miskTasksThread          = Thread::createAndStart( ThreadProperties( 2048, NORMALPRIO ), [this]() { miskTasksThreadMain(); } );
+	adInputsReadThread       = Thread::createAndStart( ThreadProperties( 512,  NORMALPRIO + 2 ), [this]() { adInputsReadThreadMain(); } );
+	mLinkServerHandlerThread = Thread::createAndStart( ThreadProperties( 2048, NORMALPRIO ), [this]() { mLinkServerHandlerThreadMain(); } );
+	terminalOutputThread     = Thread::createAndStart( ThreadProperties( 1024 ), [this]() { terminalOutputThreadMain(); } );
+	uiThread                 = Thread::createAndStart( ThreadProperties( 1024, NORMALPRIO ), [this]() { uiThreadMain(); } );
+	networkTestThread        = Thread::createAndStart( ThreadProperties( 1024, NORMALPRIO ), [this]() { networkTestThreadMain(); } );
 
-	//mLinkServer->startListening( NORMALPRIO );
-
-	Concurrent::run( []()
+	Concurrent::run( ThreadProperties( 2048, NORMALPRIO, "UdpStressTestServerThread" ), []()
 	{
 		UdpStressTestServer* server = new UdpStressTestServer( 1112 );
 		server->exec();
-	}, 2048, NORMALPRIO );
-
-	/*Concurrent::run( []()
+	} );
+	/*Concurrent::run( ThreadProperties( 2048, NORMALPRIO, "UdpStressTestServerThread2" ), []()
 	{
 		UdpStressTestServer* server = new UdpStressTestServer( 1114 );
 		server->exec();
-	}, 2048, NORMALPRIO );*/
+	} );*/
 
-	Concurrent::run( [this]()
+	Concurrent::run( ThreadProperties( 2048, NORMALPRIO, "" ), [this]()
 	{
 		UdpSocket* socket = new UdpSocket;
 		uint8_t buf[32];
@@ -260,7 +286,7 @@ void MarvieDevice::exec()
 				FLASH_EraseAllBank1Sectors( VoltageRange_3 );
 			}
 		}
-	}, 2048, NORMALPRIO );
+	} );
 
 	/*TcpServer* server = new TcpServer;
 	server->listen( 42420 );
@@ -310,10 +336,17 @@ void MarvieDevice::mainThreadMain()
 		gsmModem->setPinCode( backup->settings.gsm.pinCode );
 		gsmModem->setApn( backup->settings.gsm.apn );
 		gsmModem->startModem();
+
+		comPortCurrentAssignments[MarviePlatform::gsmModemComPort] = MarvieXmlConfigParsers::ComPortAssignment::GsmModem;
+		comPortServiceRoutines[MarviePlatform::gsmModemComPort] = gsmModem;
 		
 		setNetworkTestState( NetworkTestState::On );
 	}
 	configMutex.unlock();
+
+	firmwareTransferService.setCallback( this );
+	firmwareTransferService.setPassword( backup->settings.passwords.adminPassword );
+	firmwareTransferService.startService();
 
 	while( true )
 	{
@@ -356,6 +389,9 @@ void MarvieDevice::mainThreadMain()
 								fileLog.addRecorg( ( char* )buffer );
 							}
 							logFailure();
+							auto file = findBootloaderFile();
+							if( file )
+								updateBootloader( file.get() );
 							monitoringLogSize = Dir( "/Log/Monitoring" ).contentSize();
 							if( marvieLog )
 								marvieLog->startLogging( LOWPRIO );
@@ -400,6 +436,8 @@ void MarvieDevice::mainThreadMain()
 		{
 			for( uint i = 0; i < vPortsCount; ++i )
 			{
+				if( i < MarviePlatform::comPortsCount && vPortToComPortMap[i] != -1 && comPortBlockFlags[vPortToComPortMap[i]] )
+					continue;
 				if( brSensorReaders[i] )
 					brSensorReaders[i]->startReading( NORMALPRIO );
 			}
@@ -408,6 +446,8 @@ void MarvieDevice::mainThreadMain()
 		{
 			for( uint i = 0; i < vPortsCount; ++i )
 			{
+				if( i < MarviePlatform::comPortsCount && vPortToComPortMap[i] != -1 && comPortBlockFlags[vPortToComPortMap[i]] )
+					continue;
 				if( brSensorReaders[i] )
 					brSensorReaders[i]->stopReading();
 			}
@@ -458,7 +498,8 @@ void MarvieDevice::mainThreadMain()
 		if( em & MainThreadEvent::SrSensorsTimerEvent )
 		{
 			volatile bool mLinkSensorUpdated = false;
-			srSensorsUpdateTimer.set( TIME_MS2I( SrSensorInterval ), mainTaskThreadTimersCallback, ( void* )MainThreadEvent::SrSensorsTimerEvent );
+			srSensorsUpdateTimer.setParameter( MainThreadEvent::SrSensorsTimerEvent );
+			srSensorsUpdateTimer.start( TIME_MS2I( SrSensorInterval ) );
 			--srSensorPeriodCounter;
 			for( uint i = 0; i < sensorsCount; ++i )
 			{
@@ -521,6 +562,15 @@ void MarvieDevice::mainThreadMain()
 		}
 		if( em & MainThreadEvent::RestartRequestEvent )
 		{
+			auto file = findBootloaderFile();
+			if( file )
+				updateBootloader( file.get() );
+
+			firmwareTransferService.stopService();
+			firmwareTransferService.waitForStopped();
+			mLinkServer->stopListening();
+			mLinkServer->waitForStateChanged();
+			Thread::sleep( TIME_MS2I( 1000 ) );
 			ejectSdCard();
 			backup->failureDesc.pwrDown.power = false;
 			__NVIC_SystemReset();
@@ -546,9 +596,28 @@ void MarvieDevice::mainThreadMain()
 			}
 			datFilesMutex.unlock();
 		}
+		if( em & MainThreadEvent::NewBootloaderDatFile )
+		{
+			datFilesMutex.lock();
+			auto& file = datFiles[MarviePackets::ComplexChannel::BootloaderChannel];
+			if( file )
+			{
+				char path[] = "/Temp/0.dat";
+				path[6] = '0' + MarviePackets::ComplexChannel::BootloaderChannel;
+
+				f_unlink( "/bootloader.bin" );
+				f_close( file );
+				f_rename( path, "/bootloader.bin" );
+				fileLog.addRecorg( "New bootloader is downloaded" );
+
+				delete file;
+				file = nullptr;
+			}
+			datFilesMutex.unlock();
+		}
 		if( em & MainThreadEvent::RestartNetworkInterfaceEvent )
 		{
-			if( gsmModem )
+			if( gsmModem && !comPortBlockFlags[MarviePlatform::gsmModemComPort] )
 			{
 				fileLog.addRecorg( "Google no response" );
 				gsmModem->stopModem();
@@ -570,16 +639,83 @@ void MarvieDevice::mainThreadMain()
 			fileLog.clean();
 		if( em & MainThreadEvent::FormatSdCardRequest )
 			formatSdCard();
+		if( em & MainThreadEvent::StartComPortSharingEvent )
+		{
+			auto usartIndex = MarviePlatform::comPortIoLines[sharedComPortIndex].comUsartIndex;
+			for( uint i = 0; i < MarviePlatform::comPortsCount; ++i )
+			{
+				if( MarviePlatform::comPortIoLines[i].comUsartIndex == usartIndex )
+				{
+					if( comPortServiceRoutines[i] )
+					{
+						switch( comPortCurrentAssignments[i] )
+						{
+						case MarvieXmlConfigParsers::ComPortAssignment::VPort:
+							reinterpret_cast< BRSensorReader* >( comPortServiceRoutines[i] )->stopReading();
+							reinterpret_cast< BRSensorReader* >( comPortServiceRoutines[i] )->waitForStateChange();
+							break;
+						case MarvieXmlConfigParsers::ComPortAssignment::GsmModem:
+							reinterpret_cast< AbstractPppModem* >( comPortServiceRoutines[i] )->stopModem();
+							reinterpret_cast< AbstractPppModem* >( comPortServiceRoutines[i] )->waitForStateChange();
+							break;
+						case MarvieXmlConfigParsers::ComPortAssignment::ModbusRtuSlave:
+						case MarvieXmlConfigParsers::ComPortAssignment::ModbusAsciiSlave:
+							reinterpret_cast< RawModbusServer* >( comPortServiceRoutines[i] )->stopServer();
+							reinterpret_cast< RawModbusServer* >( comPortServiceRoutines[i] )->waitForStateChange();
+							break;
+						case MarvieXmlConfigParsers::ComPortAssignment::Multiplexer:
+							break;
+						default:
+							break;
+						}
+					}
+					comPortBlockFlags[i] = true;
+				}
+			}
+			sharingComPortThreadQueue.dequeueNext( MSG_OK );
+		}
+		if( em & MainThreadEvent::StopComPortSharingEvent )
+		{
+			auto usartIndex = MarviePlatform::comPortIoLines[sharedComPortIndex].comUsartIndex;
+			for( uint i = 0; i < MarviePlatform::comPortsCount; ++i )
+			{
+				if( MarviePlatform::comPortIoLines[i].comUsartIndex == usartIndex )
+				{
+					if( comPortServiceRoutines[i] )
+					{
+						switch( comPortCurrentAssignments[i] )
+						{
+						case MarvieXmlConfigParsers::ComPortAssignment::VPort:
+							reinterpret_cast< BRSensorReader* >( comPortServiceRoutines[i] )->startReading( NORMALPRIO );
+							break;
+						case MarvieXmlConfigParsers::ComPortAssignment::GsmModem:
+							configGsmModemUsart();
+							reinterpret_cast< AbstractPppModem* >( comPortServiceRoutines[i] )->startModem();
+							break;
+						case MarvieXmlConfigParsers::ComPortAssignment::ModbusRtuSlave:
+						case MarvieXmlConfigParsers::ComPortAssignment::ModbusAsciiSlave:
+							reinterpret_cast< RawModbusServer* >( comPortServiceRoutines[i] )->startServer();
+							break;
+						case MarvieXmlConfigParsers::ComPortAssignment::Multiplexer:
+							break;
+						default:
+							break;
+						}
+					}
+					comPortBlockFlags[i] = false;
+				}
+			}
+			sharingComPortThreadQueue.dequeueNext( MSG_OK );
+		}
 	}
 }
 
 void MarvieDevice::miskTasksThreadMain()
 {
-	virtual_timer_t sdTestTimer, memoryTestTimer;
-	chVTObjectInit( &sdTestTimer );
-	chVTObjectInit( &memoryTestTimer );
-	chVTSet( &sdTestTimer, TIME_MS2I( SdTestInterval ), miskTaskThreadTimersCallback, ( void* )MiskTaskThreadEvent::SdCardTestEvent );
-	chVTSet( &memoryTestTimer, TIME_MS2I( MemoryTestInterval ), miskTaskThreadTimersCallback, ( void* )MiskTaskThreadEvent::MemoryTestEvent );
+	BasicTimer< void(*)( eventmask_t ), &MarvieDevice::miskTaskThreadTimersCallback > sdTestTimer( MiskTaskThreadEvent::SdCardTestEvent );
+	BasicTimer< void(*)( eventmask_t ), &MarvieDevice::miskTaskThreadTimersCallback > memoryTestTimer( MiskTaskThreadEvent::MemoryTestEvent );
+	sdTestTimer.start( TIME_MS2I( SdTestInterval ) );
+	memoryTestTimer.start( TIME_MS2I( MemoryTestInterval ) );
 	uint32_t counter = 0;
 
 	while( true )
@@ -608,7 +744,7 @@ void MarvieDevice::miskTasksThreadMain()
 					mainThread->signalEvents( MainThreadEvent::SdCardStatusChanged );
 				}
 			}
-			chVTSet( &sdTestTimer, TIME_MS2I( SdTestInterval ), miskTaskThreadTimersCallback, ( void* )MiskTaskThreadEvent::SdCardTestEvent );
+			sdTestTimer.start( TIME_MS2I( SdTestInterval ) );
 		}
 		if( em & MiskTaskThreadEvent::MemoryTestEvent )
 		{
@@ -635,7 +771,7 @@ void MarvieDevice::miskTasksThreadMain()
 			}
 
 			mLinkServerHandlerThread->signalEvents( MLinkThreadEvent::MemoryLoadEvent );
-			chVTSet( &memoryTestTimer, TIME_MS2I( MemoryTestInterval ), miskTaskThreadTimersCallback, ( void* )MiskTaskThreadEvent::MemoryTestEvent );
+			memoryTestTimer.start( TIME_MS2I( MemoryTestInterval ) );
 		}
 	}
 }
@@ -701,13 +837,12 @@ void MarvieDevice::adInputsReadThreadMain()
 
 void MarvieDevice::mLinkServerHandlerThreadMain()
 {
-	EvtListener mLinkListener, ethThreadListener, cpuUsageMonitorListener;
-	mLinkServer->eventSource()->registerMask( &mLinkListener, MLinkThreadEvent::MLinkEvent );
-	EthernetThread::instance()->eventSource()->registerMask( &ethThreadListener, MLinkThreadEvent::EthernetEvent );
-	CpuUsageMonitor::instance()->eventSource()->registerMask( &cpuUsageMonitorListener, MLinkThreadEvent::CpuUsageMonitorEvent );
+	EventListener mLinkListener, ethThreadListener, cpuUsageMonitorListener;
+	mLinkServer->eventSource().registerMask( &mLinkListener, MLinkThreadEvent::MLinkEvent );
+	EthernetThread::instance()->eventSource().registerMask( &ethThreadListener, MLinkThreadEvent::EthernetEvent );
+	CpuUsageMonitor::instance()->eventSource().registerMask( &cpuUsageMonitorListener, MLinkThreadEvent::CpuUsageMonitorEvent );
 
-	virtual_timer_t timer;
-	chVTObjectInit( &timer );
+	BasicTimer< void(*)( eventmask_t ), &MarvieDevice::mLinkServerHandlerThreadTimersCallback > timer( MLinkThreadEvent::StatusUpdateEvent );
 
 	syncConfigNum = ( uint32_t )-1;
 	auto sensorDataChannel = mLinkServer->createDataChannel();
@@ -726,10 +861,10 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 					removeOpenDatFiles();
 					mLinkServer->confirmSession();
 					mLinkSync( true );
-					chVTSet( &timer, TIME_MS2I( StatusInterval ), mLinkServerHandlerThreadTimersCallback, ( void* )MLinkThreadEvent::StatusUpdateEvent );
+					timer.start( TIME_MS2I( StatusInterval ) );
 				}
 				else
-					chVTReset( &timer );
+					timer.stop(), terminalServer.reset();
 			}
 			if( flags & ( eventflags_t )MLinkServer::Event::NewPacketAvailable )
 			{
@@ -745,38 +880,44 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 		}
 		if( mLinkServer->state() != MLinkServer::State::Connected )
 			continue;
-		if( em & MLinkThreadEvent::ConfigResetEvent )
+		if( mLinkServer->accountIndex() != 0 )
 		{
-			mLinkServer->sendPacket( MarviePackets::Type::ConfigResetType, nullptr, 0 );
-			syncConfigNum = ( uint32_t )-1;
-		}
-		if( em & MLinkThreadEvent::ConfigChangedEvent )
-			mLinkSync( false );
-		if( em & MLinkThreadEvent::SensorUpdateEvent )
-		{
-			configMutex.lock();
-			if( syncConfigNum == configNum )
+			if( em & MLinkThreadEvent::ConfigResetEvent )
 			{
-				for( uint i = 0; i < sensorsCount; ++i )
-				{
-					if( !sensors[i].updatedForMLink )
-						continue;
-					sensors[i].updatedForMLink = false;
-					sendSensorDataM( i, sensorDataChannel );
-				}
+				mLinkServer->sendPacket( MarviePackets::Type::ConfigResetType, nullptr, 0 );
+				syncConfigNum = ( uint32_t )-1;
 			}
-			configMutex.unlock();
+			if( em & MLinkThreadEvent::ConfigChangedEvent )
+				mLinkSync( false );
+			if( em & MLinkThreadEvent::SensorUpdateEvent )
+			{
+				configMutex.lock();
+				if( syncConfigNum == configNum )
+				{
+					for( uint i = 0; i < sensorsCount; ++i )
+					{
+						if( !sensors[i].updatedForMLink )
+							continue;
+						sensors[i].updatedForMLink = false;
+						sendSensorDataM( i, sensorDataChannel );
+					}
+				}
+				configMutex.unlock();
+			}
 		}
 		if( em & MLinkThreadEvent::StatusUpdateEvent )
 		{
-			chVTSet( &timer, TIME_MS2I( StatusInterval ), mLinkServerHandlerThreadTimersCallback, ( void* )MLinkThreadEvent::StatusUpdateEvent );
+			timer.start( TIME_MS2I( StatusInterval ) );
 			sendDeviceStatus();
-			sendAnalogInputsData();
-			sendDigitInputsData();
+			if( mLinkServer->accountIndex() != 0 )
+			{
+				sendAnalogInputsData();
+				sendDigitInputsData();
+			}
 
 			configMutex.lock();
 			sendServiceStatisticsM();
-			if( syncConfigNum == configNum )
+			if( mLinkServer->accountIndex() != 0 && syncConfigNum == configNum )
 			{
 				for( uint i = 0; i < vPortsCount; ++i )
 					sendVPortStatusM( i );
@@ -804,6 +945,12 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 			sendGsmModemStatusM();
 			configMutex.unlock();
 		}
+		if( em & MLinkThreadEvent::NetworkSharedComPortThreadFinishedEvent && networkSharedComPortThread )
+		{
+			delete networkSharedComPortThread;
+			networkSharedComPortThread = nullptr;
+			sendComPortSharingStatus();
+		}
 	}
 
 	delete sensorDataChannel;
@@ -823,6 +970,43 @@ void MarvieDevice::uiThreadMain()
 	thread_reference_t ref = nullptr;
 	chSysLock();
 	chThdSuspendS( &ref );
+}
+
+void MarvieDevice::terminalOutputThreadMain()
+{
+	while( true )
+	{
+		auto em = Thread::waitAnyEvent( ALL_EVENTS );
+		if( em & TerminalOutputThreadEvent::TerminalOutputEvent )
+		{
+			uint32_t totalSize = terminalOutputBuffer.readAvailable();
+			if( totalSize )
+			{
+				uint8_t* data[2];
+				uint32_t dataSize[2];
+				ringToLinearArrays( terminalOutputBuffer.begin(), totalSize, data, dataSize, data + 1, dataSize + 1 );
+				while( dataSize[0] )
+				{
+					uint32_t partSize = dataSize[0];
+					if( partSize > 255 )
+						partSize = 255;
+					mLinkServer->sendPacket( MarviePackets::Type::TerminalOutput, data[0], partSize );
+					data[0] += partSize;
+					dataSize[0] -= partSize;
+				}
+				while( dataSize[1] )
+				{
+					uint32_t partSize = dataSize[1];
+					if( partSize > 255 )
+						partSize = 255;
+					mLinkServer->sendPacket( MarviePackets::Type::TerminalOutput, data[1], partSize );
+					data[1] += partSize;
+					dataSize[1] -= partSize;
+				}
+				terminalOutputBuffer.read( nullptr, totalSize );
+			}
+		}
+	}
 }
 
 void MarvieDevice::networkTestThreadMain()
@@ -863,17 +1047,21 @@ void MarvieDevice::createGsmModemObjectM()
 	gsmModem = new SimGsmPppModem( MarviePlatform::gsmModemEnableIoPort, false, MarviePlatform::gsmModemEnableLevel );
 	gsmModem->setAsDefault();
 	auto gsmUsart = comUsarts[MarviePlatform::comPortIoLines[MarviePlatform::gsmModemComPort].comUsartIndex].usart;
+	configGsmModemUsart();
+	gsmModem->setUsart( gsmUsart );
+	gsmModem->eventSource().registerMask( &gsmModemMainThreadListener, MainThreadEvent::GsmModemMainEvent );
+	gsmModem->eventSource().registerMask( &gsmModemMLinkThreadListener, MLinkThreadEvent::GsmModemEvent );
+	gsmModemMLinkThreadListener.setThread( mLinkServerHandlerThread->threadReference() );
+}
+
+void MarvieDevice::configGsmModemUsart()
+{
+	auto gsmUsart = comUsarts[MarviePlatform::comPortIoLines[MarviePlatform::gsmModemComPort].comUsartIndex].usart;
 	if( MarviePlatform::comPortTypes[MarviePlatform::gsmModemComPort] == ComPortType::Rs485 )
 		static_cast< AbstractRs485* >( comPorts[MarviePlatform::gsmModemComPort] )->disable();
 	gsmUsart->setBaudRate( 230400 );
 	gsmUsart->setDataFormat( UsartBasedDevice::B8N );
 	gsmUsart->setStopBits( UsartBasedDevice::S1 );
-	gsmModem->setUsart( gsmUsart );
-	gsmModem->eventSource()->registerMask( &gsmModemMainThreadListener, MainThreadEvent::GsmModemMainEvent );
-	gsmModem->eventSource()->registerMask( &gsmModemMLinkThreadListener, MLinkThreadEvent::GsmModemEvent );
-	/* Hack! */
-	gsmModemMLinkThreadListener.ev_listener.listener = mLinkServerHandlerThread->thread_ref;
-	/* You didn't see anything */
 }
 
 void MarvieDevice::logFailure()
@@ -960,6 +1148,92 @@ void MarvieDevice::formatSdCard()
 	}
 }
 
+std::unique_ptr< File > MarvieDevice::findBootloaderFile()
+{
+	std::unique_ptr< File > file;
+	FileInfoReader reader;
+	uint8_t data[sizeof( "__MARVIE_BOOTLOADER__" ) - 1];
+	while( reader.next() )
+	{
+		auto& info = reader.info();
+		if( !info.attributes().testFlag( FileSystem::FileAttribute::ArchiveAttr ) ||
+		    info.fileName().size() < sizeof( "bootloader.bin" ) - 1 ||
+		    info.fileName().find( "bootloader" ) != 0 ||
+		    info.fileName().find_last_of( ".bin" ) != info.fileName().size() - 1 ||
+		    info.fileSize() >= 32 * 1024 || info.fileSize() < sizeof( "__MARVIE_BOOTLOADER__" ) - 1 )
+			continue;
+
+		if( !file )
+			file.reset( new File( info.fileName() ) );
+		if( !file )
+			return std::unique_ptr< File >();
+		if( !file->open( FileSystem::OpenExisting | FileSystem::Read ) ||
+		    !file->seek( file->size() - sizeof( data ) ) ||
+		    file->read( data, sizeof( data ) ) != sizeof( data ) )
+			return std::unique_ptr< File >();
+		if( strncmp( ( const char* )data, "__MARVIE_BOOTLOADER__", sizeof( data ) ) != 0 )
+		{
+			file->close();
+			continue;
+		}
+		if( !file->seek( 0 ) )
+			return std::unique_ptr< File >();
+
+		return file;
+	}
+
+	return std::unique_ptr< File >();
+}
+
+void MarvieDevice::updateBootloader( File* file )
+{
+	firmwareTransferService.stopService();
+	firmwareTransferService.waitForStopped();
+	mLinkServer->stopListening();
+	mLinkServer->waitForStateChanged();
+	Thread::sleep( TIME_MS2I( 1000 ) );
+	configShutdown();
+	EthernetThread::instance()->stopThread();
+	EthernetThread::instance()->waitForStop();
+
+	FLASH_Unlock();
+	uint32_t totalSize = ( uint32_t )file->size();
+Start:
+	file->seek( 0 );
+	FLASH_EraseSector( FLASH_Sector_0, VoltageRange_3 ); // 0x08000000-0x08004000 (16 кБ) 16KB
+	FLASH_EraseSector( FLASH_Sector_1, VoltageRange_3 ); // 0x08004000-0x08008000 (16 кБ) 32KB
+
+	uint32_t size = totalSize;
+	while( size )
+	{
+		uint32_t partSize = size;
+		if( partSize > 1024 )
+			partSize = 1024;
+		else
+		{
+			for( uint32_t i = partSize; i < ( partSize + 3 ) && i < 1024; ++i )
+				buffer[i] = 0xFF;
+		}
+
+		file->read( buffer, partSize );
+		for( uint32_t i = 0; i < partSize; i += 4 )
+		{
+			FLASH_ProgramWord( 0x08000000 + totalSize - size + i, *( uint32_t* )( buffer + i ) );
+			if( *( uint32_t* )( 0x08000000 + totalSize - size + i ) != *( uint32_t* )( buffer + i ) )
+				goto Start;
+		}
+		size -= partSize;
+	}
+	FLASH_Lock();
+
+	file->close();
+	Dir().remove( file->fileName().c_str() );
+
+	ejectSdCard();
+	MarvieBackup::instance()->failureDesc.pwrDown.power = false;
+	__NVIC_SystemReset();
+}
+
 void MarvieDevice::reconfig()
 {
 	auto hash = calcConfigXmlHash();
@@ -1038,7 +1312,7 @@ void MarvieDevice::configShutdown()
 		tcpModbusIpServer->waitForStateChange();
 
 	removeConfigRelatedObject();
-	srSensorsUpdateTimer.reset();
+	srSensorsUpdateTimer.stop();
 	mainThread->getAndClearEvents( MainThreadEvent::BrSensorReaderEvent | MainThreadEvent::SrSensorsTimerEvent );
 }
 
@@ -1154,7 +1428,8 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 			gsmModem->waitForStateChange();
 			gsmModem->setPinCode( backup->settings.gsm.pinCode );
 			gsmModem->setApn( backup->settings.gsm.apn );
-			gsmModem->startModem();
+			if( !comPortBlockFlags[MarviePlatform::gsmModemComPort] )
+				gsmModem->startModem();
 		}
 	}
 	else if( gsmModem )
@@ -1167,8 +1442,8 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 
 		gsmModem->stopModem();
 		gsmModem->waitForStateChange();
-		gsmModem->eventSource()->unregister( &gsmModemMLinkThreadListener );
-		gsmModem->eventSource()->unregister( &gsmModemMainThreadListener );
+		gsmModemMLinkThreadListener.unregister();
+		gsmModemMainThreadListener.unregister();
 		delete gsmModem;
 		gsmModem = nullptr;
 
@@ -1180,7 +1455,8 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 	enum class ModbusComPortType : uint8_t { None, Rtu, Ascii } modbusComPortTypes[MarviePlatform::comPortsCount];
 	for( uint i = 0; i < MarviePlatform::comPortsCount; ++i )
 	{
-		auto assignment = comPortsConf[i]->assignment();
+		auto assignment = comPortCurrentAssignments[i] = comPortsConf[i]->assignment();
+		comPortServiceRoutines[i] = nullptr;
 		modbusComPortTypes[i] = ModbusComPortType::None;
 		if( assignment == ComPortAssignment::VPort )
 		{
@@ -1199,6 +1475,8 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 	uint32_t ethernetVPortBegin = vPortsCount;
 	vPortsCount += networkConf.vPortOverIpList.size();
 
+	comPortServiceRoutines[MarviePlatform::gsmModemComPort] = gsmModem;
+
 	uint16_t modbusRtuServerPort = networkConf.modbusRtuServerPort;
 	uint16_t modbusAsciiServerPort = networkConf.modbusAsciiServerPort;
 	uint16_t modbusIpServerPort = networkConf.modbusTcpServerPort;
@@ -1209,7 +1487,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 	vPorts = new IODevice*[vPortsCount];
 	vPortBindings = new VPortBinding[vPortsCount];
 	brSensorReaders = new BRSensorReader*[vPortsCount];
-	brSensorReaderListeners = new EvtListener[vPortsCount];
+	brSensorReaderListeners = new EventListener[vPortsCount];
 	for( uint i = 0; i < vPortsCount; ++i )
 	{
 		vPorts[i] = nullptr;
@@ -1219,9 +1497,11 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 	uint32_t n = 0;
 	for( uint i = 0; i < MarviePlatform::comPortsCount; ++i )
 	{
+		vPortToComPortMap[i] = -1;
 		if( comPortsConf[i]->assignment() == ComPortAssignment::VPort )
 		{
 			vPorts[n] = comPorts[i];
+			vPortToComPortMap[n] = i;
 			if( MarviePlatform::comPortTypes[i] == ComPortType::Rs232 )
 				vPortBindings[n++] = VPortBinding::Rs232;
 			else
@@ -1336,7 +1616,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 				{
 					SingleBRSensorReader* reader = new SingleBRSensorReader;
 					reader->setSensor( static_cast< AbstractBRSensor* >( sensor ), TIME_S2I( normapPeriod ), TIME_S2I( emergencyPeriod ) );
-					brSensorReaders[vPortId] = reader;
+					comPortServiceRoutines[vPortToComPortMap[vPortId]] = brSensorReaders[vPortId] = reader;
 				}
 				else if( vPortBindings[vPortId] == VPortBinding::Rs485 )
 				{
@@ -1345,7 +1625,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 						reader = static_cast< MultipleBRSensorsReader* >( brSensorReaders[vPortId] );
 					else
 					{
-						brSensorReaders[vPortId] = reader = new MultipleBRSensorsReader;
+						comPortServiceRoutines[vPortToComPortMap[vPortId]] = brSensorReaders[vPortId] = reader = new MultipleBRSensorsReader;
 						reader->setMinInterval( TIME_S2I( sensorReadingConf.rs485MinInterval ) );
 					}
 					auto sensorElement = reader->createSensorElement( static_cast< AbstractBRSensor* >( sensor ), TIME_S2I( normapPeriod ), TIME_S2I( emergencyPeriod ) );
@@ -1460,10 +1740,12 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 			{
 				if( modbusComPortTypes[iPort] != ModbusComPortType::None )
 				{
+					comPortServiceRoutines[iPort] = &rawModbusServers[iServer];
 					rawModbusServers[iServer].setFrameType( modbusComPortTypes[iPort] == ModbusComPortType::Rtu ? ModbusDevice::FrameType::Rtu : ModbusDevice::FrameType::Ascii );
 					rawModbusServers[iServer].setSlaveHandler( this );
 					rawModbusServers[iServer].setIODevice( comPorts[iPort] );
-					rawModbusServers[iServer++].startServer();
+					if( !comPortBlockFlags[iPort] )
+						rawModbusServers[iServer++].startServer();
 				}
 			}
 
@@ -1501,13 +1783,18 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 			brSensorReaderListeners[i].getAndClearFlags();
 			if( brSensorReaders[i] )
 			{
-				brSensorReaders[i]->eventSource()->registerMask( brSensorReaderListeners + i, MainThreadEvent::BrSensorReaderEvent );
+				brSensorReaders[i]->eventSource().registerMask( brSensorReaderListeners + i, MainThreadEvent::BrSensorReaderEvent );
+				if( i < MarviePlatform::comPortsCount && vPortToComPortMap[i] != -1 && comPortBlockFlags[vPortToComPortMap[i]] )
+					continue;
 				brSensorReaders[i]->startReading( NORMALPRIO );
 			}
 		}
 
 		if( srSensorsEnabled )
-			srSensorsUpdateTimer.set( TIME_MS2I( SrSensorInterval ), mainTaskThreadTimersCallback, ( void* )MainThreadEvent::SrSensorsTimerEvent );
+		{
+			srSensorsUpdateTimer.setParameter( MainThreadEvent::SrSensorsTimerEvent );
+			srSensorsUpdateTimer.start( TIME_MS2I( SrSensorInterval ) );
+		}
 
 		deviceState = DeviceState::Working;
 	}
@@ -1527,6 +1814,12 @@ void MarvieDevice::removeConfigRelatedObject()
 
 void MarvieDevice::removeConfigRelatedObjectM()
 {
+	for( uint i = 0; i < MarviePlatform::comPortsCount; ++i )
+	{
+		comPortCurrentAssignments[i] = MarvieXmlConfigParsers::ComPortAssignment::VPort;
+		comPortServiceRoutines[i] = nullptr;
+		vPortToComPortMap[i] = -1;
+	}
 	for( uint i = 0; i < vPortsCount; ++i )
 		delete brSensorReaders[i];
 	for( uint i = 0; i < sensorsCount; ++i )
@@ -1536,7 +1829,7 @@ void MarvieDevice::removeConfigRelatedObjectM()
 	delete vPortBindings;
 	delete[] sensors;
 	delete brSensorReaders;
-	delete brSensorReaderListeners;
+	delete[] brSensorReaderListeners;
 
 	delete marvieLog;
 
@@ -1565,6 +1858,219 @@ void MarvieDevice::removeConfigRelatedObjectM()
 	modbusRegistersCount = 0;
 }
 
+UsartBasedDevice* MarvieDevice::startComPortSharing( uint32_t index )
+{
+	if( index >= MarviePlatform::comPortsCount )
+		return nullptr;
+	MutexLocker locker( sharingComPortMutex );
+	CriticalSectionLocker criticalSectionLocker;
+	if( sharedComPortIndex != -1 )
+		return nullptr;
+	sharedComPortIndex = index;
+	mainThread->signalEventsI( MainThreadEvent::StartComPortSharingEvent );
+	sharingComPortThreadQueue.enqueueSelf( TIME_INFINITE );
+	return comPorts[sharedComPortIndex];
+}
+
+void MarvieDevice::stopComPortSharing()
+{
+	MutexLocker locker( sharingComPortMutex );
+	CriticalSectionLocker criticalSectionLocker;
+	if( sharedComPortIndex == -1 )
+		return;
+	mainThread->signalEventsI( MainThreadEvent::StopComPortSharingEvent );
+	sharingComPortThreadQueue.enqueueSelf( TIME_INFINITE );
+	sharedComPortIndex = -1;
+}
+
+void MarvieDevice::networkSharedComPortThreadMain( UsartBasedDevice* ioDevice, MarviePackets::ComPortSharingSettings::Mode mode )
+{
+	enum Event : eventmask_t
+	{
+		IODeviceEvent = 2,
+		ServerEvent = 4,
+		SocketEvent = 8,
+		TimeoutEvent = 16
+	};
+	enum class State
+	{
+		WaitHeader,
+		WaitPayload
+	} state = State::WaitHeader;
+	uint32_t blockSize = 0;
+	uint8_t buffer[128];
+	EventListener ioDeviceListener, serverListener, socketListener;
+	TcpServer server;
+	TcpSocket* socket = nullptr;
+	volatile bool needSignal = true;
+	StaticTimer<> timer( []( ThreadRef ref ) {
+		chSysLockFromISR();
+		ref.signalEventsI( Event::TimeoutEvent );
+		chSysUnlockFromISR();
+	}, ThreadRef::currentThread() );
+	timer.setInterval( TIME_S2I( 60 * 60 ) );
+	timer.setSingleShot( true );
+
+	ioDevice->eventSource().registerMaskWithFlags( &ioDeviceListener, IODeviceEvent, CHN_INPUT_AVAILABLE );
+	server.eventSource().registerMask( &serverListener, ServerEvent );
+	if( !server.listen( 14789 ) )
+		goto End;
+	ioDevice->read( nullptr, ioDevice->readAvailable() );
+
+	chSysLock();
+	sharedComPortNetworkClientsCount = 0;
+	chSysUnlock();
+	timer.start();
+	while( true )
+	{
+		eventmask_t em = Thread::waitAnyEvent( ALL_EVENTS );
+		if( em & StopNetworkSharedComPortThreadRequestEvent )
+		{
+			needSignal = false;
+			break;
+		}
+		if( em & TimeoutEvent )
+			break;
+		if( em & IODeviceEvent )
+		{
+			if( socket )
+			{
+				uint32_t size = ioDevice->readAvailable();
+				while( size )
+				{
+					uint32_t partSize = size;
+					if( partSize > sizeof( buffer ) )
+						partSize = sizeof( buffer );
+					ioDevice->read( buffer, partSize );
+					socket->write( buffer, partSize );
+					size -= partSize;
+				}
+			}
+			else
+				ioDevice->read( nullptr, ioDevice->readAvailable() );
+		}
+		if( em & ServerEvent )
+		{
+			if( !server.isListening() )
+				break;
+			TcpSocket* newSocket;
+			while( ( newSocket = server.nextPendingConnection() ) )
+			{
+				if( socket )
+				{
+					newSocket->disconnect();
+					delete newSocket;
+				}
+				else
+				{
+					socket = newSocket;
+					socket->eventSource().registerMask( &socketListener, SocketEvent );
+					em |= SocketEvent;
+					chSysLock();
+					sharedComPortNetworkClientsCount = 1;
+					chSysUnlock();
+				}
+			}
+		}
+		if( em & SocketEvent && socket )
+		{
+			if( !socket->isOpen() )
+			{
+				delete socket;
+				socket = nullptr;
+				chSysLock();
+				sharedComPortNetworkClientsCount = 0;
+				chSysUnlock();
+			}
+			else
+			{
+				timer.start();
+				while( socket->readAvailable() )
+				{
+					if( mode == MarviePackets::ComPortSharingSettings::Mode::BlockStream )
+					{
+						if( state == State::WaitHeader )
+						{
+							uint16_t size;
+							socket->read( ( uint8_t* )&size, sizeof( size ) );
+							blockSize = size;
+							state = State::WaitPayload;
+						}
+
+						if( socket->readAvailable() < blockSize )
+							break;
+
+						while( blockSize )
+						{
+							uint32_t partSize = blockSize;
+							if( partSize > sizeof( buffer ) )
+								partSize = sizeof( buffer );
+							socket->read( buffer, partSize );
+							ioDevice->write( buffer, partSize );
+							blockSize -= partSize;
+						}
+						state = State::WaitHeader;
+					}
+					else
+					{
+						blockSize = socket->readAvailable();
+						while( blockSize )
+						{
+							uint32_t partSize = blockSize;
+							if( partSize > sizeof( buffer ) )
+								partSize = sizeof( buffer );
+							socket->read( buffer, partSize );
+							ioDevice->write( buffer, partSize );
+							blockSize -= partSize;
+						}
+					}
+				}
+			}
+		}
+	}
+	server.close();
+	if( socket )
+		delete socket;
+End:
+	chSysLock();
+	stopComPortSharing();
+	sharedComPortNetworkClientsCount = -1;
+	if( needSignal )
+		mLinkServerHandlerThread->signalEventsI( MLinkThreadEvent::NetworkSharedComPortThreadFinishedEvent );
+}
+
+const char* MarvieDevice::firmwareVersion()
+{
+	return MarviePlatform::coreVersion;
+}
+
+const char* MarvieDevice::bootloaderVersion()
+{
+	return _bootloaderVersion;
+}
+
+void MarvieDevice::firmwareDownloaded( const std::string& fileName )
+{
+	datFilesMutex.lock();
+	Dir dir;
+	dir.remove( "/firmware.bin" );
+	dir.rename( fileName.c_str(), "/firmware.bin" );
+	datFilesMutex.unlock();
+}
+
+void MarvieDevice::bootloaderDownloaded( const std::string& fileName )
+{
+	datFilesMutex.lock();
+	Dir dir;
+	dir.remove( "/bootloader.bin" );
+	dir.rename( fileName.c_str(), "/bootloader.bin" );
+	datFilesMutex.unlock();
+}
+
+void MarvieDevice::restartDevice()
+{
+	mainThread->signalEvents( MainThreadEvent::RestartRequestEvent );
+}
 
 void MarvieDevice::setNetworkTestState( NetworkTestState state )
 {
@@ -1629,15 +2135,20 @@ uint32_t MarvieDevice::digitSignals( uint32_t block )
 int MarvieDevice::authenticate( char* accountName, char* password )
 {
 	MarvieBackup* backup = MarvieBackup::instance();
-	if( strcmp( accountName, "admin" ) == 0 )
+	if( strcmp( accountName, "__system" ) == 0 )
 	{
 		if( strcmp( password, backup->settings.passwords.adminPassword ) == 0 )
 			return 0;
 	}
+	if( strcmp( accountName, "admin" ) == 0 )
+	{
+		if( strcmp( password, backup->settings.passwords.adminPassword ) == 0 )
+			return 1;
+	}
 	else if( strcmp( accountName, "observer" ) == 0 )
 	{
 		if( strcmp( password, backup->settings.passwords.observerPassword ) == 0 )
-			return 1;
+			return 2;
 	}
 
 	return -1;
@@ -1646,10 +2157,10 @@ int MarvieDevice::authenticate( char* accountName, char* password )
 bool MarvieDevice::onOpennig( uint8_t ch, const char* name, uint32_t size )
 {
 	datFilesMutex.lock();
-	if( sdCardStatus != SdCardStatus::Working || ch >= 3 || datFiles[ch] || mLinkServer->accountIndex() != 0 )
+	if( sdCardStatus != SdCardStatus::Working || ch >= 3 || datFiles[ch] || mLinkServer->accountIndex() > 1 )
 	{
 		datFilesMutex.unlock();
-		if( mLinkServer->accountIndex() != 0 )
+		if( mLinkServer->accountIndex() > 1 )
 			mLinkServer->sendPacket( MarviePackets::Type::IllegalAccessType, nullptr, 0 );
 		return false;
 	}
@@ -1727,11 +2238,36 @@ void MarvieDevice::onClosing( uint8_t ch, bool canceled )
 	datFilesMutex.unlock();
 }
 
+
+void MarvieDevice::terminalOutput( const uint8_t* data, uint32_t size, void* p )
+{
+	MarvieDevice* marvieDevice = reinterpret_cast< MarvieDevice* >( p );
+	CriticalSectionLocker locker;
+	while( size )
+	{
+		if( marvieDevice->mLinkServer->state() != MLinkServer::State::Connected )
+			return;
+		uint32_t partSize = size;
+		if( partSize > marvieDevice->terminalOutputBuffer.capacity() )
+			partSize = marvieDevice->terminalOutputBuffer.capacity();
+		if( marvieDevice->terminalOutputBuffer.writeAvailable() <= partSize )
+		{
+			marvieDevice->terminalOutputThread->signalEventsI( TerminalOutputThreadEvent::TerminalOutputEvent );
+			marvieDevice->terminalOutputTimer.stop();
+		}
+		else
+			marvieDevice->terminalOutputTimer.start( TIME_MS2I( 1 ) );
+		marvieDevice->terminalOutputBuffer.write( data, partSize, TIME_INFINITE );
+		data += partSize;
+		size -= partSize;
+	}
+}
+
 void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t size )
 {
 	if( type == MarviePackets::Type::GetConfigXmlType )
 	{
-		if( configXmlDataSendingSemaphore.wait( TIME_IMMEDIATE ) == MSG_TIMEOUT )
+		if( !configXmlDataSendingSemaphore.acquire( TIME_IMMEDIATE ) )
 			return;
 
 		char* xmlData = nullptr;
@@ -1741,31 +2277,36 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 			auto channel = mLinkServer->createDataChannel();
 			if( channel->open( MarviePackets::ComplexChannel::XmlConfigChannel, "", xmlDataSize ) )
 			{
-				Concurrent::run( [this, channel, xmlData, xmlDataSize]()
+				Concurrent::run( ThreadProperties( 1024, NORMALPRIO ), [this, channel, xmlData, xmlDataSize]()
 				{
 					channel->sendData( ( uint8_t* )xmlData, xmlDataSize );
 					channel->close();
 					delete xmlData;
 					delete channel;
-					configXmlDataSendingSemaphore.signal();
-				}, 1024, NORMALPRIO );
+					configXmlDataSendingSemaphore.release();
+				} );
 			}
 		}
 		else
 		{
-			configXmlDataSendingSemaphore.signal();
+			configXmlDataSendingSemaphore.release();
 			mLinkServer->sendPacket( MarviePackets::Type::ConfigXmlMissingType, nullptr, 0 );
 		}
 	}
 	else
 	{
-		if( mLinkServer->accountIndex() != 0 )
+		if( mLinkServer->accountIndex() > 1 )
 		{
-			mLinkServer->sendPacket( MarviePackets::Type::IllegalAccessType, nullptr, 0 );
+			if( type != MarviePackets::Type::TerminalInput )
+				mLinkServer->sendPacket( MarviePackets::Type::IllegalAccessType, nullptr, 0 );
 			return;
 		}
 
-		if( type == MarviePackets::Type::ChangeAccountPasswordType )
+		if( type == MarviePackets::Type::TerminalInput )
+		{
+			terminalServer.input( data, size );
+		}
+		else if( type == MarviePackets::Type::ChangeAccountPasswordType )
 		{
 			auto newPassword = reinterpret_cast< MarviePackets::AccountNewPassword* >( data );
 			int index = authenticate( newPassword->name, newPassword->currentPassword );
@@ -1778,7 +2319,7 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 			{
 				MarvieBackup* backup = MarvieBackup::instance();
 				backup->acquire();
-				if( index == 0 )
+				if( index == 0 || index == 1 )
 					strcpy( backup->settings.passwords.adminPassword, newPassword->newPassword );
 				else
 					strcpy( backup->settings.passwords.observerPassword, newPassword->newPassword );
@@ -1840,43 +2381,74 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 			if( sdCardStatus != SdCardStatus::Formatting )
 				mainThread->signalEvents( MainThreadEvent::FormatSdCardRequest );
 		}
+		else if( type == MarviePackets::Type::StartComPortSharingType )
+		{
+			if( networkSharedComPortThread )
+			{
+				uint8_t result = 1;
+				mLinkServer->sendPacket( MarviePackets::Type::StartComPortSharingResultType, &result, sizeof( result ) );
+				return;
+			}
+			MarviePackets::ComPortSharingSettings* packet = reinterpret_cast< MarviePackets::ComPortSharingSettings* >( data );
+			auto io = startComPortSharing( packet->comPortIndex );
+			if( io == nullptr )
+			{
+				uint8_t result = 1;
+				mLinkServer->sendPacket( MarviePackets::Type::StartComPortSharingResultType, &result, sizeof( result ) );
+				return;
+			}
+			io->setDataFormat( UsartBasedDevice::DataFormat( packet->format ) );
+			io->setStopBits( UsartBasedDevice::StopBits( packet->stopBits ) );
+			io->setBaudRate( packet->baudrate );
+			networkSharedComPortThread = Thread::createAndStart( ThreadProperties( 1536 + 128, NORMALPRIO ), [this]( UsartBasedDevice* ioDevice, MarviePackets::ComPortSharingSettings::Mode mode ) {
+				return networkSharedComPortThreadMain( ioDevice, mode );
+			}, std::move( io ), std::move( packet->mode ) );
+			if( !networkSharedComPortThread )
+			{
+				uint8_t result = 1;
+				mLinkServer->sendPacket( MarviePackets::Type::StartComPortSharingResultType, &result, sizeof( result ) );
+				return;
+			}
+			uint8_t result = 0;
+			mLinkServer->sendPacket( MarviePackets::Type::StartComPortSharingResultType, &result, sizeof( result ) );
+		}
+		else if( type == MarviePackets::Type::StopComPortSharingType )
+		{
+			if( !networkSharedComPortThread )
+				return;
+
+			networkSharedComPortThread->signalEvents( StopNetworkSharedComPortThreadRequestEvent );
+			networkSharedComPortThread->wait();
+			delete networkSharedComPortThread;
+			networkSharedComPortThread = nullptr;
+		}
 	}
 }
 
 void MarvieDevice::mLinkSync( bool coldSync )
 {
 	mLinkServer->sendPacket( MarviePackets::Type::SyncStartType, nullptr, 0 );
-	auto channel = mLinkServer->createDataChannel();
 	if( coldSync )
 	{
-		auto channel = mLinkServer->createDataChannel();
-		if( channel->open( MarviePackets::ComplexChannel::SupportedSensorsListChannel, "", 0 ) )
-		{
-			char* data = new char[1024];
-			uint32_t n = 0;
-			for( auto i = SensorService::beginSensorsList(); i != SensorService::endSensorsList(); ++i )
-			{
-				uint32_t len = strlen( ( *i ).name );
-				if( 1024 - n < len )
-					channel->sendData( ( uint8_t* )data, n ), n = 0;
-				memcpy( data + n, ( *i ).name, len );
-				n += len;
-				if( i + 1 != SensorService::endSensorsList() )
-				{
-					if( n == 1024 )
-						channel->sendData( ( uint8_t* )data, n ), n = 0;
-					data[n++] = ',';
-				}
-			}
-			channel->sendData( ( uint8_t* )data, n );
-			channel->close();
-			delete data;
-		}
-		delete channel;
-
 		sendFirmwareDesc();
+		sendSupportedSensorsList();
+		sendDeviceSpec();
 	}
 
+	sendDeviceStatus();
+	sendEthernetStatus();
+	sendComPortSharingStatus();
+	configMutex.lock();
+	sendGsmModemStatusM();
+	sendServiceStatisticsM();
+	configMutex.unlock();
+	if( mLinkServer->accountIndex() == 0 )
+	{
+		mLinkServer->sendPacket( MarviePackets::Type::SyncEndType, nullptr, 0 );
+		return;
+	}
+
+	auto channel = mLinkServer->createDataChannel();
 	syncConfigNum = configNum;
 
 	// sending config.xml
@@ -1884,26 +2456,20 @@ void MarvieDevice::mLinkSync( bool coldSync )
 	uint32_t xmlDataSize = readConfigXmlFile( &xmlData );
 	if( xmlDataSize )
 	{
-		configXmlDataSendingSemaphore.wait( TIME_INFINITE );
-		auto channel = mLinkServer->createDataChannel();
+		configXmlDataSendingSemaphore.acquire( TIME_INFINITE );
 		if( channel->open( MarviePackets::ComplexChannel::XmlConfigSyncChannel, "", xmlDataSize ) )
 		{
 			channel->sendData( ( uint8_t* )xmlData, xmlDataSize );
 			channel->close();
 		}
-		delete channel;
 		delete xmlData;
-		configXmlDataSendingSemaphore.signal();
+		configXmlDataSendingSemaphore.release();
 	}
 
-	sendDeviceStatus();
-	sendEthernetStatus();
 	sendAnalogInputsData();
 	sendDigitInputsData();
 
 	configMutex.lock();
-	sendGsmModemStatusM();
-	sendServiceStatisticsM();
 	if( syncConfigNum == configNum )
 	{
 		mLinkServer->sendPacket( MarviePackets::Type::VPortCountType, ( uint8_t* )&vPortsCount, sizeof( vPortsCount ) );
@@ -1921,9 +2487,45 @@ void MarvieDevice::mLinkSync( bool coldSync )
 void MarvieDevice::sendFirmwareDesc()
 {
 	MarviePackets::FirmwareDesc desc;
-	strcpy( desc.coreVersion, MarviePlatform::coreVersion );
-	strcpy( desc.targetName, MarviePlatform::platformType );
+	strcpy( desc.bootloaderVersion, _bootloaderVersion );
+	strcpy( desc.firmwareVersion, MarviePlatform::coreVersion );
+	strcpy( desc.modelName, MarviePlatform::platformType );
 	mLinkServer->sendPacket( MarviePackets::Type::FirmwareDescType, ( uint8_t* )&desc, sizeof( desc ) );
+}
+
+void MarvieDevice::sendSupportedSensorsList()
+{
+	auto channel = mLinkServer->createDataChannel();
+	if( channel->open( MarviePackets::ComplexChannel::SupportedSensorsListChannel, "", 0 ) )
+	{
+		char* data = new char[1024];
+		uint32_t n = 0;
+		for( auto i = SensorService::beginSensorsList(); i != SensorService::endSensorsList(); ++i )
+		{
+			uint32_t len = strlen( ( *i ).name );
+			if( 1024 - n < len )
+				channel->sendData( ( uint8_t* )data, n ), n = 0;
+			memcpy( data + n, ( *i ).name, len );
+			n += len;
+			if( i + 1 != SensorService::endSensorsList() )
+			{
+				if( n == 1024 )
+					channel->sendData( ( uint8_t* )data, n ), n = 0;
+				data[n++] = ',';
+			}
+		}
+		channel->sendData( ( uint8_t* )data, n );
+		channel->close();
+		delete data;
+	}
+	delete channel;
+}
+
+void MarvieDevice::sendDeviceSpec()
+{
+	MarviePackets::DeviceSpecs specs;
+	specs.comPortsCount = MarviePlatform::comPortsCount;
+	mLinkServer->sendPacket( MarviePackets::Type::DeviceSpecsType, ( uint8_t* )&specs, sizeof( specs ) );
 }
 
 void MarvieDevice::sendVPortStatusM( uint32_t vPortId )
@@ -2173,7 +2775,19 @@ void MarvieDevice::sendServiceStatisticsM()
 		status.tcpModbusIpClientsCount = ( int16_t )tcpModbusIpServer->currentClientsCount();
 	else
 		status.tcpModbusIpClientsCount = -1;
+	status.sharedComPortClientsCount = sharedComPortNetworkClientsCount;
 	mLinkServer->sendPacket( MarviePackets::Type::ServiceStatisticsType, ( uint8_t* )&status, sizeof( status ) );
+}
+
+void MarvieDevice::sendComPortSharingStatus()
+{
+	MarviePackets::ComPortSharingStatus status;
+	status.sharedComPortIndex = -1;
+	chSysLock();
+	if( sharedComPortNetworkClientsCount != -1 )
+		status.sharedComPortIndex = sharedComPortIndex;
+	chSysUnlock();
+	mLinkServer->sendPacket( MarviePackets::Type::ComPortSharingStatusType, ( uint8_t* )&status, sizeof( status ) );
 }
 
 void MarvieDevice::sendAnalogInputsData()
@@ -2394,31 +3008,39 @@ ModbusPotato::modbus_exception_code::modbus_exception_code MarvieDevice::read_in
 	return ModbusPotato::modbus_exception_code::ok;
 }
 
-void MarvieDevice::mainTaskThreadTimersCallback( void* p )
+void MarvieDevice::mainTaskThreadTimersCallback( eventmask_t emask )
 {
 	chSysLockFromISR();
-	instance()->mainThread->signalEventsI( ( eventmask_t )p );
+	instance()->mainThread->signalEventsI( emask );
 	chSysUnlockFromISR();
 }
 
-void MarvieDevice::miskTaskThreadTimersCallback( void* p )
+void MarvieDevice::miskTaskThreadTimersCallback( eventmask_t emask )
 {
 	chSysLockFromISR();
-	instance()->miskTasksThread->signalEventsI( ( eventmask_t )p );
+	instance()->miskTasksThread->signalEventsI( emask );
 	chSysUnlockFromISR();
 }
 
-void MarvieDevice::mLinkServerHandlerThreadTimersCallback( void* p )
+void MarvieDevice::mLinkServerHandlerThreadTimersCallback( eventmask_t emask )
 {
 	chSysLockFromISR();
-	instance()->mLinkServerHandlerThread->signalEventsI( ( eventmask_t )p );
+	instance()->mLinkServerHandlerThread->signalEventsI( emask );
 	chSysUnlockFromISR();
 }
 
-void MarvieDevice::adInputsReadThreadTimersCallback( void* p )
+
+void MarvieDevice::terminalOutputTimerCallback()
 {
 	chSysLockFromISR();
-	instance()->adInputsReadThread->signalEventsI( ( eventmask_t )p );
+	terminalOutputThread->signalEventsI( TerminalOutputThreadEvent::TerminalOutputEvent );
+	chSysUnlockFromISR();
+}
+
+void MarvieDevice::adInputsReadThreadTimersCallback( eventmask_t emask )
+{
+	chSysLockFromISR();
+	instance()->adInputsReadThread->signalEventsI( emask );
 	chSysUnlockFromISR();
 }
 
@@ -2443,7 +3065,7 @@ void MarvieDevice::powerDownExtiCallback( void* arg )
 	chSysLockFromISR();
 	failureDesc.pwrDown.dateTime = DateTimeService::currentDateTime();
 	failureDesc.pwrDown.detected = true;
-	chEvtSignalI( MarvieDevice::instance()->mainThread->thread_ref, MarvieDevice::MainThreadEvent::PowerDownDetected );
+	MarvieDevice::instance()->mainThread->signalEventsI( MarvieDevice::MainThreadEvent::PowerDownDetected );
 	chSysUnlockFromISR();
 }
 
@@ -2480,6 +3102,42 @@ void MarvieDevice::systemHaltHook( const char* reason )
 	strncpy( failureDesc.threadName, "none", 5 ); // fix this!
 	assert( false );
 	NVIC_SystemReset();
+}
+
+int MarvieDevice::lgbt( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] )
+{
+	const char text[] = "LGBT LGBT LGBT LGBT LGBT LGBT LGBT LGBT\n";
+	terminal->setBackgroundColor( 225, 23, 23 );
+	terminal->setTextColor( 225, 23, 23 );
+	terminal->stdOutWrite( ( uint8_t* )text, sizeof( text ) - 1 );
+
+	terminal->setBackgroundColor( 252, 144, 25 );
+	terminal->setTextColor( 252, 144, 25 );
+	terminal->stdOutWrite( ( uint8_t* )text, sizeof( text ) - 1 );
+
+	terminal->setBackgroundColor( 252, 242, 25 );
+	terminal->setTextColor( 252, 242, 25 );
+	terminal->stdOutWrite( ( uint8_t* )text, sizeof( text ) - 1 );
+
+	terminal->setBackgroundColor( 7, 130, 38 );
+	terminal->setTextColor( 7, 130, 38 );
+	terminal->stdOutWrite( ( uint8_t* )text, sizeof( text ) - 1 );
+
+	terminal->setBackgroundColor( 48, 50, 254 );
+	terminal->setTextColor( 48, 50, 254 );
+	terminal->stdOutWrite( ( uint8_t* )text, sizeof( text ) - 1 );
+
+	terminal->setBackgroundColor( 117, 0, 135 );
+	terminal->setTextColor( 117, 0, 135 );
+	terminal->stdOutWrite( ( uint8_t* )text, sizeof( text ) - 1 );
+
+	return 0;
+}
+
+int MarvieDevice::qAsciiArtFunction( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] )
+{
+	terminal->stdOutWrite( ( const uint8_t* )quentinAsciiArt, sizeof( quentinAsciiArt ) );
+	return 0;
 }
 
 extern "C"

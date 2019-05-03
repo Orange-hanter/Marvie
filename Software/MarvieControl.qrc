@@ -64,5 +64,11 @@
         <file>icons/icons8-chevron-left-filled-50.png</file>
         <file>icons/icons8-export-csv-filled-50.png</file>
         <file>icons/icons8-uninstalling-updates-96.png</file>
+        <file>icons/icons8-console-filled-100.png</file>
+        <file>fonts/Droid Sans Mono.ttf</file>
+        <file>fonts/Tahoma.ttf</file>
+        <file>icons/icons8-info-96.png</file>
+        <file>icons/icons8-connect-filled-100.png</file>
+        <file>icons/icons8-settings-filled-100.png</file>
     </qresource>
 </RCC>

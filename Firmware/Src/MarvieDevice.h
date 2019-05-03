@@ -5,12 +5,17 @@
 #include "Core/Assert.h"
 #include "Core/Concurrent.h"
 #include "Core/CpuUsageMonitor.h"
+#include "Core/Mutex.h"
 #include "Core/ObjectMemoryUtilizer.h"
+#include "Core/Semaphore.h"
+#include "Core/Thread.h"
+#include "Core/Timer.h"
 #include "Drivers/Interfaces/Rs485.h"
 #include "Drivers/Interfaces/SharedRs485.h"
 #include "Drivers/Interfaces/Usart.h"
 #include "Drivers/Network/Ethernet/EthernetThread.h"
 #include "Drivers/Network/SimGsm/SimGsmPppModem.h"
+#include "FirmwareTransferService.h"
 #include "Log/FileLog.h"
 #include "Log/MarvieLog.h"
 #include "MLinkServer.h"
@@ -20,6 +25,7 @@
 #include "MarvieXmlConfigParsers.h"
 #include "MultipleBRSensorsReader.h"
 #include "NetworkSensorReader.h"
+#include "RemoteTerminal/RemoteTerminalServer.h"
 #include "SensorService/SensorService.h"
 #include "SingleBRSensorReader.h"
 #include "_Sha1.h"
@@ -33,7 +39,7 @@
 
 typedef unsigned int uint;
 
-class MarvieDevice : private AbstractSRSensor::SignalProvider, private MLinkServer::DataChannelCallback, private MLinkServer::AuthenticationCallback, private ModbusPotato::ISlaveHandler
+class MarvieDevice : private FirmwareTransferService::Callback, private AbstractSRSensor::SignalProvider, private MLinkServer::DataChannelCallback, private MLinkServer::AuthenticationCallback, private ModbusPotato::ISlaveHandler
 {
 	MarvieDevice();
 
@@ -47,19 +53,34 @@ private:
 	void miskTasksThreadMain();
 	void adInputsReadThreadMain();
 	void mLinkServerHandlerThreadMain();
+	void terminalOutputThreadMain();
 	void uiThreadMain();
 	void networkTestThreadMain();
 
 	void createGsmModemObjectM();
+	void configGsmModemUsart();
 	void logFailure();
 	void ejectSdCard();
-	inline void formatSdCard();
+	void formatSdCard();
+	std::unique_ptr< File > findBootloaderFile();
+	void updateBootloader( File* file );
 
 	void reconfig();
 	void configShutdown();
 	void applyConfigM( char* xmlData, uint32_t len );
 	void removeConfigRelatedObject();
 	void removeConfigRelatedObjectM();
+
+	UsartBasedDevice* startComPortSharing( uint32_t index );
+	void stopComPortSharing();
+
+	void networkSharedComPortThreadMain( UsartBasedDevice* ioDevice, MarviePackets::ComPortSharingSettings::Mode mode );
+
+	const char* firmwareVersion() override;
+	const char* bootloaderVersion() override;
+	void firmwareDownloaded( const std::string& fileName ) override;
+	void bootloaderDownloaded( const std::string& fileName ) override;
+	void restartDevice() override;
 
 	enum class NetworkTestState;
 	inline void setNetworkTestState( NetworkTestState state );
@@ -76,15 +97,20 @@ private:
 	bool newDataReceived( uint8_t channel, const uint8_t* data, uint32_t size ) final override;
 	void onClosing( uint8_t channel, bool canceled ) final override;
 
+	static void terminalOutput( const uint8_t* data, uint32_t size, void* p );
+
 	void mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t size );
 	void mLinkSync( bool coldSync );
 	void sendFirmwareDesc();
+	void sendSupportedSensorsList();
+	void sendDeviceSpec();
 	void sendVPortStatusM( uint32_t vPortId );
 	void sendSensorDataM( uint32_t sensorId, MLinkServer::DataChannel* channel );
 	void sendDeviceStatus();
 	void sendEthernetStatus();
 	void sendGsmModemStatusM();
 	void sendServiceStatisticsM();
+	void sendComPortSharingStatus();
 	void sendAnalogInputsData();
 	void sendDigitInputsData();
 
@@ -95,10 +121,11 @@ private:
 
 	ModbusPotato::modbus_exception_code::modbus_exception_code read_input_registers( uint16_t, uint16_t, uint16_t* ) override;
 
-	static void mainTaskThreadTimersCallback( void* p );
-	static void miskTaskThreadTimersCallback( void* p );
-	static void mLinkServerHandlerThreadTimersCallback( void* p );
-	static void adInputsReadThreadTimersCallback( void* p );
+	static void mainTaskThreadTimersCallback( eventmask_t emask );
+	static void miskTaskThreadTimersCallback( eventmask_t emask );
+	static void mLinkServerHandlerThreadTimersCallback( eventmask_t emask );
+	void terminalOutputTimerCallback();
+	static void adInputsReadThreadTimersCallback( eventmask_t emask );
 	static void adcCallback( ADCDriver *adcp, adcsample_t *buffer, size_t n );
 	static void adcErrorCallback( ADCDriver *adcp, adcerror_t err );
 
@@ -106,6 +133,10 @@ public:
 	static void powerDownExtiCallback( void* );
 	static void faultHandler();
 	static void systemHaltHook( const char* reason );
+
+private:
+	static int lgbt( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] );
+	static int qAsciiArtFunction( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] );
 
 private:
 	static MarvieDevice* _inst;
@@ -138,16 +169,20 @@ private:
 	UsartBasedDevice* comPorts[MarviePlatform::comPortsCount];
 	uint8_t* comUsartInputBuffers[MarviePlatform::comUsartsCount];
 	uint8_t* comUsartOutputBuffers[MarviePlatform::comUsartsCount];
-	uint32_t buffer[1024];
+	uint8_t buffer[1024];
 	SHA1 sha;
 	FileLog fileLog;
 
 	// ======================================================================================
 	Mutex configMutex;
 	uint32_t configNum;
+	MarvieXmlConfigParsers::ComPortAssignment comPortCurrentAssignments[MarviePlatform::comPortsCount];
+	void* comPortServiceRoutines[MarviePlatform::comPortsCount];
+	bool comPortBlockFlags[MarviePlatform::comPortsCount];
 	uint32_t vPortsCount;
 	IODevice** vPorts;
 	enum class VPortBinding { Rs232, Rs485, NetworkSocket } *vPortBindings;
+	int vPortToComPortMap[MarviePlatform::comPortsCount];
 	uint32_t sensorsCount;
 	struct SensorInfo
 	{
@@ -163,12 +198,12 @@ private:
 		volatile bool readyForLog;
 	} *sensors;
 	BRSensorReader** brSensorReaders;
-	EvtListener* brSensorReaderListeners;
+	EventListener* brSensorReaderListeners;
 	MarvieLog* marvieLog;
 	volatile bool sensorLogEnabled;
 	AbstractPppModem* gsmModem;
-	EvtListener gsmModemMainThreadListener;
-	EvtListener gsmModemMLinkThreadListener;
+	EventListener gsmModemMainThreadListener;
+	EventListener gsmModemMLinkThreadListener;
 	RawModbusServer* rawModbusServers;
 	uint32_t rawModbusServersCount;
 	TcpModbusServer* tcpModbusRtuServer;
@@ -177,19 +212,23 @@ private:
 	Mutex modbusRegistersMutex;
 	uint16_t* modbusRegisters;
 	uint32_t modbusRegistersCount;
+	Mutex sharingComPortMutex;
+	ThreadsQueue sharingComPortThreadQueue;
+	int sharedComPortIndex;
 	// ======================================================================================
 
-	BaseDynamicThread* mainThread, *miskTasksThread, *adInputsReadThread, *mLinkServerHandlerThread, *uiThread, *networkTestThread;
+	Thread* mainThread, *miskTasksThread, *adInputsReadThread, *mLinkServerHandlerThread, *terminalOutputThread, *uiThread, *networkTestThread;
 	volatile bool mLinkComPortEnable = true;  // shared resource
 	Mutex configXmlFileMutex;
 
 	// Main thread resources =================================================================
 	enum MainThreadEvent : eventmask_t 
 	{
-		SdCardStatusChanged = 1, NewBootloaderDatFile = 2, NewFirmwareDatFile = 4, NewXmlConfigDatFile = 8,
-		PowerDownDetected = 16, StartSensorReaders = 32, StopSensorReaders = 64, BrSensorReaderEvent = 128,
-		SrSensorsTimerEvent = 256, EjectSdCardRequest = 512, FormatSdCardRequest = 1024, CleanMonitoringLogRequestEvent = 2048,
-		CleanSystemLogRequestEvent = 4096, RestartRequestEvent = 8192, GsmModemMainEvent = 16384, RestartNetworkInterfaceEvent = 32768
+		SdCardStatusChanged = 1 << 0, NewBootloaderDatFile = 1 << 1, NewFirmwareDatFile = 1 << 2, NewXmlConfigDatFile = 1 << 3,
+		PowerDownDetected = 1 << 4, StartSensorReaders = 1 << 5, StopSensorReaders = 1 << 6, BrSensorReaderEvent = 1 << 7,
+		SrSensorsTimerEvent = 1 << 8, EjectSdCardRequest = 1 << 9, FormatSdCardRequest = 1 << 10, CleanMonitoringLogRequestEvent = 1 << 11,
+		CleanSystemLogRequestEvent = 1 << 12, RestartRequestEvent = 1 << 13, GsmModemMainEvent = 1 << 14, RestartNetworkInterfaceEvent = 1 << 15,
+		StartComPortSharingEvent = 1 << 16, StopComPortSharingEvent = 1 << 17
 	};
 	enum class DeviceState { /*Initialization,*/ Reconfiguration, Working, IncorrectConfiguration } deviceState;
 	enum class ConfigError { NoError, NoConfigFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorReadingConfigError, LogConfigError, SensorsConfigError } configError;
@@ -200,16 +239,17 @@ private:
 	FATFS fatFs;
 	FRESULT fsError;
 	SHA1::Digest configXmlHash;
-	Timer srSensorsUpdateTimer;
+	BasicTimer< decltype( &MarvieDevice::mainTaskThreadTimersCallback ), &MarvieDevice::mainTaskThreadTimersCallback > srSensorsUpdateTimer;
 	uint32_t srSensorPeriodCounter;
 	uint64_t monitoringLogSize;
+	FirmwareTransferService firmwareTransferService;
 
 	// MLink thread resources ================================================================
 	enum MLinkThreadEvent : eventmask_t 
 	{
 		MLinkEvent = 1, CpuUsageMonitorEvent = 2, MemoryLoadEvent = 4, EthernetEvent = 8,
 		/*MLinkTcpServerEvent = 16, MLinkTcpSocketEvent = 32,*/ GsmModemEvent = 64, ConfigChangedEvent = 128,
-		ConfigResetEvent = 256, SensorUpdateEvent = 512, StatusUpdateEvent = 1024
+		ConfigResetEvent = 256, SensorUpdateEvent = 512, StatusUpdateEvent = 1024, NetworkSharedComPortThreadFinishedEvent = 2048
 	};
 	MLinkServer* mLinkServer;
 	uint8_t mLinkBuffer[255];
@@ -217,6 +257,15 @@ private:
 	FIL* datFiles[3]; // shared resource
 	uint32_t syncConfigNum;
 	BinarySemaphore configXmlDataSendingSemaphore;
+	Thread* networkSharedComPortThread;
+	enum NetworkSharedComPortThread : eventmask_t { StopNetworkSharedComPortThreadRequestEvent = 1 };
+	int16_t sharedComPortNetworkClientsCount;
+
+	// TerminalOutput thread resources ================================================================
+	enum TerminalOutputThreadEvent : eventmask_t { TerminalOutputEvent = 1 };
+	RemoteTerminalServer terminalServer;
+	BasicTimer< decltype( &MarvieDevice::terminalOutputTimerCallback ), &MarvieDevice::terminalOutputTimerCallback > terminalOutputTimer;
+	StaticRingBuffer< uint8_t, 1024 > terminalOutputBuffer;
 
 	// Misk tasks thread resources ===========================================================
 	enum MiskTaskThreadEvent : eventmask_t { SdCardTestEvent = 1, MemoryTestEvent = 2 };

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/RemoteTerminalTest">
+        <file>Droid Sans Mono.ttf</file>
+    </qresource>
+</RCC>

@@ -32,7 +32,7 @@ class SHA1
 			bool operator == ( const Digest& d );
 			bool operator != ( const Digest& d );
 
-			Uint32 h0, h1, h2, h3, h4;
+			unsigned char data[20];
 		};
 		Digest result();
 		void reset();

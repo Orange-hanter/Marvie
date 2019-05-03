@@ -1,7 +1,10 @@
-project(bootloader)
+project(marvie_bootloader)
 cmake_minimum_required(VERSION 3.11)
 enable_language(ASM)
 #set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+
+set(MARVIE_BOOTLOADER_VERSION "1.1.0.0" CACHE STRING "Marvie base bootloader version" FORCE)
+configure_file(${CMAKE_SOURCE_DIR}/Src/version.h.in ${CMAKE_SOURCE_DIR}/Src/version.h)
 
 set(STM32_FLASH_ORIGIN "0x08000000")
 set(STM32_FLASH_SIZE "32K")
@@ -42,7 +45,6 @@ set(bootloader_SRCS
 	${CMAKE_SOURCE_DIR}/Src/bootloader.cpp
 	${CMAKE_SOURCE_DIR}/Src/stm32f4xx_flash.c
 
-	${marvie_dir}/ChibiOS/os/various/cpp_wrappers/ch.cpp
 	${marvie_dir}/ChibiOS/os/various/fatfs_bindings/fatfs_diskio.c
 	${marvie_dir}/ChibiOS/os/various/fatfs_bindings/fatfs_syscall.c
 	${marvie_dir}/ChibiOS/os/various/evtimer.c
@@ -65,3 +67,4 @@ target_link_libraries(${CMAKE_PROJECT_NAME}.elf
 STM32_SET_TARGET_PROPERTIES(${CMAKE_PROJECT_NAME}.elf)
 STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}.elf)
 STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}.elf)
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME}.elf.bin POST_BUILD COMMAND ${CMAKE_COMMAND} -E echo_append __${MARVIE_BOOTLOADER_VERSION}__MARVIE_BOOTLOADER__ >> ${CMAKE_PROJECT_NAME}.elf.bin)

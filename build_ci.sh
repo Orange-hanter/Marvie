@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 #
 # expects the following parameters to be passed in this specific order:
-#  - build type,          e.g. firmware/software
+#  - build type,          e.g. firmware/software_linux/software_windows
 #  - project root folder, e.g. BITBUCKET_CLONE_DIR
-set -e
 
 build_target="$1"
 repository_root_dir="$2"
@@ -81,15 +80,15 @@ function build_bootloader ()
 
   # build
   configure_cmake "${project_dir}"
-  cmake --build "${project_build_dir}" --config "${firmware_build_type}" --target bootloader.elf.bin
+  cmake --build "${project_build_dir}" --config "${firmware_build_type}" --target marvie_bootloader.elf.bin
 
   # set proper name of *.bin binary and get its sha256
   local new_filename_mask="${project_build_dir}/marvie.bootloader"
-  mv "${project_build_dir}/bootloader.elf.bin" "${new_filename_mask}.bin"
+  mv "${project_build_dir}/marvie_bootloader.elf.bin" "${new_filename_mask}.bin"
   calc_sha256 "${new_filename_mask}.bin"
 
   # set proper name of *.bin binary and get its sha256
-  mv "${project_build_dir}/bootloader.elf" "${new_filename_mask}.elf"
+  mv "${project_build_dir}/marvie_bootloader.elf" "${new_filename_mask}.elf"
   calc_sha256 "${new_filename_mask}.elf"
 
   mkdir -p "${artifacts_dir}/bootloader/"
@@ -100,32 +99,58 @@ function build_bootloader ()
   generate_build_info "${artifacts_dir}/bootloader"
 }
 
-function build_software ()
+function build_software_linux ()
 {
   local project_dir="${repository_root_dir}/Software"
   local project_appdir="${project_dir}/appdir"
+
+  # set branch and commit info to the app title
+  local branch=$(git rev-parse --abbrev-ref HEAD)
+  local commit=$(git rev-parse --short HEAD)
+  local built_at=$(date -u)
+  sed -i -e "s/QString(\"MarvieControl\")/QString(\"MarvieControl - built: ${built_at} [${branch}: ${commit}]\")/g" "${project_dir}/main.cpp"
 
   # build
   cd "${project_dir}"
   qmake CONFIG+=release PREFIX=/usr
   make -j$(nproc)
   make INSTALL_ROOT=appdir -j$(nproc) install; find appdir/
-  unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
+  unset QTDIR; unset QT_PLUGIN_PATH; unset LD_LIBRARY_PATH
 
   mkdir -p "${project_appdir}"/usr/share/MarvieControl/
   cp -R "${project_dir}/Sensors" "${project_appdir}"/usr/share/MarvieControl/
   cp -R "${project_dir}/Animations" "${project_appdir}"/usr/share/MarvieControl/
   cp -R "${project_dir}/Xml" "${project_appdir}"/usr/share/MarvieControl/
+  cp -R "${project_dir}/icons" "${project_appdir}"/usr/share/MarvieControl/
+  cp -R "${project_dir}/fonts" "${project_appdir}"/usr/share/MarvieControl/
   cp    "${project_dir}/MarvieControl.png" "${project_appdir}"
 
-  linuxdeployqt "${project_appdir}"/usr/share/applications/*.desktop -appimage
+  linuxdeployqt --appimage-extract
+  ./squashfs-root/AppRun "${project_appdir}"/usr/share/applications/*.desktop -appimage
+
+  # ugly HACK
+  mv "MarvieControl-${commit}-x86_64.AppImage" 'MarvieControl-x86_64.AppImage'
 }
 
-if [[ "${build_target}" == 'firmware' ]]; then
+function build_software_windows ()
+{
+  local project_dir="${repository_root_dir}/Software"
+
+  cd "${project_dir}"
+  qmake CONFIG+=release
+  make -j$(nproc)
+}
+
+if [[ "${build_target}" == 'firmware_develop' ]]; then
+  build_firmware H
+  build_bootloader
+elif [[ "${build_target}" == 'firmware' ]]; then
   build_firmware L
   build_firmware H
   build_bootloader
   echo $marvie_base_version > "${repository_root_dir}/version"
-elif [[ "${build_target}" == 'software' ]]; then
-  build_software
+elif [[ "${build_target}" == 'software_linux' ]]; then
+  build_software_linux
+elif [[ "${build_target}" == 'software_windows' ]]; then
+  build_software_windows
 fi

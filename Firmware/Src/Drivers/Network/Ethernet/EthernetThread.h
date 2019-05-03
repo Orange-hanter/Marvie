@@ -1,11 +1,12 @@
 #pragma once
 
-#include "Core/BaseDynamicThread.h"
+#include "Core/Event.h"
+#include "Core/Thread.h"
 #include "Network/IpAddress.h"
-#include <lwip/netifapi.h>
 #include "hal.h"
+#include <lwip/netifapi.h>
 
-class EthernetThread : private BaseDynamicThread
+class EthernetThread : private Thread
 {
 	EthernetThread();
 	~EthernetThread();
@@ -39,7 +40,7 @@ public:
 	IpAddress networkGateway();
 	void setAsDefault();
 
-	EvtSource* eventSource();
+	EventSourceRef eventSource();
 
 private:
 	void main() override;
@@ -74,5 +75,5 @@ private:
 	volatile bool started;
 	MACConfig macConfig;
 	netif thisif;
-	EvtSource eSource;
+	EventSource eSource;
 };

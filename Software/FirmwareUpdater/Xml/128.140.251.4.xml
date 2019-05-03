@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<hostList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="file:// schemas/HostList.xsd">
+  <group title="test">
+    <host ipAddress="128.140.251.4" password="admin" info="Debugging device"/>
+  </group>
+</hostList>

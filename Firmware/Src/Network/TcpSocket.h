@@ -39,5 +39,5 @@ public:
 	AbstractReadable* inputBuffer() override;
 	AbstractWritable* outputBuffer() override;
 
-	EvtSource* eventSource() override;
+	EventSourceRef eventSource() override;
 };

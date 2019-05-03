@@ -224,7 +224,7 @@ AbstractWritable* UdpSocket::outputBuffer()
 	return nullptr;
 }
 
-EvtSource* UdpSocket::eventSource()
+EventSourceRef UdpSocket::eventSource()
 {
 	return &evtSource;
 }

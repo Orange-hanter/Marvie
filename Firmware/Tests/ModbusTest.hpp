@@ -138,10 +138,10 @@ namespace ModbusTest
 		modbus->set_handler( modbusSlave );
 		modbus->set_station_address( 1 );
 
-		EvtListener listener;
+		EventListener listener;
 		virtual_timer_t time;
 		chVTObjectInit( &time );
-		usart->eventSource()->registerOne( &listener, 0 );
+		usart->eventSource().registerOne( &listener, 0 );
 
 		while( true )
 		{

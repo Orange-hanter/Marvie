@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cpp_wrappers/ch.hpp"
+#include "Core/Mutex.h"
 #include "FileSystem/File.h"
 #include <string.h>
 
@@ -19,5 +19,5 @@ public:
 
 private:
 	File file;
-	chibios_rt::Mutex mutex;
+	Mutex mutex;
 };

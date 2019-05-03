@@ -124,7 +124,7 @@ void TcpServer::setNewConnectionsBufferSize( uint32_t inputBufferSize, uint32_t 
 
 }
 
-EvtSource* TcpServer::eventSource()
+EventSourceRef TcpServer::eventSource()
 {
 	return &evtSource;
 }
@@ -203,7 +203,7 @@ void TcpServer::updateStateS()
 	auto current = isListening();
 	if( prevState != current )
 	{
-		evtSource.broadcastFlagsI( ( eventflags_t )SocketEventFlag::StateChanged );
+		evtSource.broadcastFlags( ( eventflags_t )SocketEventFlag::StateChanged );
 		prevState = current;
 	}
 }
@@ -226,7 +226,7 @@ void TcpServer::netconnCallback( netconn* con, netconn_evt evt, u16_t len )
 	{
 		chSysLock();
 		++server->recvCounter;
-		server->evtSource.broadcastFlagsI( ( eventflags_t )TcpServerEventFlag::NewConnection );
+		server->evtSource.broadcastFlags( ( eventflags_t )TcpServerEventFlag::NewConnection );
 		chSchRescheduleS();
 		chSysUnlock();
 	}

@@ -1,5 +1,5 @@
 #include "Core/ObjectMemoryUtilizer.h"
-#include "Core/BaseDynamicThread.h"
+#include "Core/Thread.h"
 #include "Core/CpuUsageMonitor.h"
 #include "Core/Assert.h"
 #include "Drivers/Interfaces/Usart.h"
@@ -80,13 +80,14 @@ namespace MLinkTest
 		FRESULT err;
 	} mlinkCallbacks;
 
-	class FileTransmitterThread : private BaseDynamicThread
+	class FileTransmitterThread : private Thread
 	{
 	public:
 		FileTransmitterThread( MLinkServer::DataChannel* channel, FIL* file, tprio_t prio = NORMALPRIO ) :
-			BaseDynamicThread( 1024 ), channel( channel ), file( file )
+			Thread( 1024 ), channel( channel ), file( file )
 		{
-			start( prio );
+			setPriority( prio );
+			start();
 		}
 
 	private:
@@ -118,13 +119,14 @@ namespace MLinkTest
 		uint8_t buffer[420];
 	};
 
-	class DataXTransmitterThread : private BaseDynamicThread
+	class DataXTransmitterThread : private Thread
 	{
 	public:
 		DataXTransmitterThread( MLinkServer::DataChannel* channel, uint32_t size, tprio_t prio = NORMALPRIO ) :
-			BaseDynamicThread( 1024 ), channel( channel ), totalSize( size )
+			Thread( 1024 ), channel( channel ), totalSize( size )
 		{
-			start( prio );
+			setPriority( prio );
+			start();
 		}
 
 	private:
@@ -154,20 +156,21 @@ namespace MLinkTest
 		uint8_t buffer[420];
 	};
 
-	class DebugInfoPrinter : private BaseDynamicThread
+	class DebugInfoPrinter : private Thread
 	{
 	public:
-		DebugInfoPrinter( Usart* usart, tprio_t prio = NORMALPRIO ) : BaseDynamicThread( 512 ), usart( usart )
+		DebugInfoPrinter( Usart* usart, tprio_t prio = NORMALPRIO ) : Thread( 512 ), usart( usart )
 		{
-			start( prio );
+			setPriority( prio );
+			start();
 		}
 
 	private:
 		void main()
 		{
-			EvtListener listener;
-			CpuUsageMonitor::tryInstance()->eventSource()->registerMask( &listener, 1 );
-			chEvtSignal( thread_ref, 1 );
+			EventListener listener;
+			CpuUsageMonitor::tryInstance()->eventSource().registerMask( &listener, 1 );
+			signalEvents( 1 );
 			while( true )
 			{
 				chEvtWaitAny( ALL_EVENTS );

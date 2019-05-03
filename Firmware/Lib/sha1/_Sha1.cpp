@@ -161,11 +161,8 @@ SHA1::Digest SHA1::result()
 	addBytes( (char*)footer, neededZeros + 8 );
 	Digest digest;
 	// copy the digest bytes
-	digest.h0 = toBigEndian( H0 );
-	digest.h1 = toBigEndian( H1 );
-	digest.h2 = toBigEndian( H2 );
-	digest.h3 = toBigEndian( H3 );
-	digest.h4 = toBigEndian( H4 );
+	Uint32 h[5] = { toBigEndian( H0 ), toBigEndian( H1 ), toBigEndian( H2 ), toBigEndian( H3 ), toBigEndian( H4 ) };
+	memcpy( digest.data, ( const void* )&h[0], 20 );
 	
 	// return the digest
 	return digest;
@@ -184,15 +181,15 @@ void SHA1::reset()
 
 SHA1::Digest::Digest()
 {
-	h0 = h1 = h2 = h3 = h4 = 0;
+	memset( data, 0, sizeof( data ) );
 }
 
 bool SHA1::Digest::operator==( const Digest& d )
 {
-	return h0 == d.h0 && h1 == d.h1 && h2 == d.h2 && h3 == d.h3 && h4 == d.h4;
+	return strncmp( ( const char* )data, ( const char* )d.data, sizeof( data ) ) == 0;
 }
 
 bool SHA1::Digest::operator!=( const Digest& d )
 {
-	return h0 != d.h0 || h1 != d.h1 || h2 != d.h2 || h3 != d.h3 || h4 != d.h4;
+	return strncmp( ( const char* )data, ( const char* )d.data, sizeof( data ) ) != 0;
 }

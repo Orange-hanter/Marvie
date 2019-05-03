@@ -21,9 +21,9 @@ SharedRs485::~SharedRs485()
 
 bool SharedRs485::open()
 {
-	control->sem.wait();
+	control->sem.acquire();
 	volatile bool res = control->usart->open();
-	control->sem.signal();
+	control->sem.release();
 
 	return res;
 }
@@ -34,9 +34,9 @@ bool SharedRs485::open( uint32_t baudRate, DataFormat dataFormat /*= B8N*/, Stop
 	_dataFormat = dataFormat;
 	_stopBits = stopBits;
 
-	control->sem.wait();
+	control->sem.acquire();
 	volatile bool res = control->usart->open( baudRate, dataFormat, stopBits, mode, hardwareFlowControl );
-	control->sem.signal();
+	control->sem.release();
 
 	return res;
 }
@@ -44,12 +44,12 @@ bool SharedRs485::open( uint32_t baudRate, DataFormat dataFormat /*= B8N*/, Stop
 void SharedRs485::enable()
 {
 	chSysLock();
-	control->sem.waitS();
+	control->sem.acquire();
 	if( control->current )
 		control->current->disableMode();
 	setActive();
 	receiveMode();
-	control->sem.signalI();
+	control->sem.release();
 	chSchRescheduleS();
 	chSysUnlock();
 }
@@ -57,13 +57,13 @@ void SharedRs485::enable()
 void SharedRs485::disable()
 {
 	chSysLock();
-	control->sem.waitS();
+	control->sem.acquire();
 	if( control->current == this )
 	{
 		disableMode();
 		control->current = nullptr;
 	}
-	control->sem.signalI();
+	control->sem.release();
 	chSchRescheduleS();
 	chSysUnlock();
 }
@@ -72,27 +72,27 @@ void SharedRs485::setBaudRate( uint32_t baudRate )
 {
 	_baudRate = baudRate;
 
-	control->sem.wait();
+	control->sem.acquire();
 	control->usart->setBaudRate( baudRate );
-	control->sem.signal();
+	control->sem.release();
 }
 
 void SharedRs485::setDataFormat( DataFormat dataFormat )
 {
 	_dataFormat = dataFormat;
 
-	control->sem.wait();
+	control->sem.acquire();
 	control->usart->setDataFormat( dataFormat );
-	control->sem.signal();
+	control->sem.release();
 }
 
 void SharedRs485::setStopBits( StopBits stopBits )
 {
 	_stopBits = stopBits;
 
-	control->sem.wait();
+	control->sem.acquire();
 	control->usart->setStopBits( stopBits );
-	control->sem.signal();
+	control->sem.release();
 }
 
 uint32_t SharedRs485::baudRate()
@@ -133,10 +133,10 @@ USART_TypeDef* SharedRs485::base()
 uint32_t SharedRs485::write( const uint8_t* data, uint32_t size, sysinterval_t timeout /*= TIME_INFINITE */ )
 {
 	uint32_t s;
-	EvtListener listener;
+	EventListener listener;
 
-	control->sem.wait();
-	control->usart->eventSource()->registerMaskWithFlags( &listener, DataServiceEvent, CHN_TRANSMISSION_END );
+	control->sem.acquire();
+	control->usart->eventSource().registerMaskWithFlags( &listener, DataServiceEvent, CHN_TRANSMISSION_END );
 	chEvtGetAndClearEvents( DataServiceEvent );
 
 	if( control->current )
@@ -149,17 +149,17 @@ uint32_t SharedRs485::write( const uint8_t* data, uint32_t size, sysinterval_t t
 	receiveMode();
 	chThdSetPriority( prio );
 
-	control->usart->eventSource()->unregister( &listener );
-	control->sem.signal();
+	listener.unregister();
+	control->sem.release();
 
 	return s;
 }
 
 uint32_t SharedRs485::read( uint8_t* data, uint32_t size, sysinterval_t timeout /*= TIME_INFINITE */ )
 {
-	control->sem.wait();
+	control->sem.acquire();
 	uint32_t n = control->usart->read( data, size, timeout );
-	control->sem.signal();
+	control->sem.release();
 
 	return n;
 }
@@ -204,7 +204,7 @@ void SharedRs485::resetInputBufferOverflowFlag()
 	control->usart->resetInputBufferOverflowFlag();
 }
 
-EvtSource* SharedRs485::eventSource()
+EventSourceRef SharedRs485::eventSource()
 {
 	return control->usart->eventSource();
 }

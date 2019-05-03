@@ -46,6 +46,9 @@ public:
 	bool removeRecursively();
 	uint64_t contentSize();
 
+	Error lastError();
+	const char* lastErrorString();
+
 	void swap( Dir& other );
 	Dir& operator=( Dir& other );
 	Dir& operator=( Dir&& other );

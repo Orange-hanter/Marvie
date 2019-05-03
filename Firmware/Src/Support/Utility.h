@@ -2,12 +2,40 @@
 
 #include <stdint.h>
 #include "Core/RingIterator.h"
+#include <type_traits>
 
 namespace Utility
 {
 	float invSqrtf( float x );
 	char* printInt( char* str, int v );
 	char* printIntRightAlign( char* str, int value, int width = 1, char fillChar = '0' );
+
+	template< typename Type >
+	char* printIntegral( char* str, Type v )
+	{
+		static_assert( std::is_integral< Type >::value, "type is not integral" );
+		if( v < ( Type )0 )
+			*str++ = '-', v = -v;
+		char* p = str;
+		while( v >= ( Type )10 )
+		{
+			Type nv = v / ( Type )10;
+			*p++ = '0' + ( v - nv * ( Type )10 );
+			v = nv;
+		}
+		*p++ = '0' + v;
+		
+		;
+		char* r = p - 1;
+		for( unsigned int n = ( unsigned int )( p - str ) >> 1; n; --n )
+		{
+			char t = *r;
+			*r-- = *str;
+			*str++ = t;
+		}
+
+		return p;
+	}
 
 	template< typename R, typename T >
 	R parseDouble( T p )

@@ -1,16 +1,17 @@
 #pragma once
 
-#include "Core/BaseDynamicThread.h"
-#include "Drivers/Interfaces/Usart.h"
 #include "AbstractTcpServer.h"
 #include "AbstractUdpSocket.h"
+#include "Core/Thread.h"
+#include "Core/ThreadsQueue.h"
+#include "Drivers/Interfaces/Usart.h"
 #include "IpAddress.h"
 
 enum class ModemState { Stopped, Initializing, Working, Stopping };
 enum class ModemError { NoError, AuthenticationError, TimeoutError, UnknownError };
 enum class ModemEvent { Error = 1, StateChanged = 2, NetworkAddressChanged = 4 };
 
-class Modem : protected BaseDynamicThread
+class Modem : protected Thread
 {
 public:
 	Modem( uint32_t stackSize );
@@ -37,7 +38,7 @@ public:
 	virtual AbstractTcpSocket* createTcpSocket();
 	virtual AbstractTcpSocket* createTcpSocket( uint32_t inputBufferSize, uint32_t outputBufferSize );
 	
-	EvtSource* eventSource();
+	EventSourceRef eventSource();
 
 protected:
 	void setModemStateS( ModemState s );
@@ -70,8 +71,8 @@ protected:
 	ModemState mState;
 	ModemError mError;
 	IpAddress netAddress;
-	EvtSource extEventSource;
-	threads_queue_t waitingQueue;
+	EventSource extEventSource;
+	ThreadsQueue waitingQueue;
 	Usart* usart;
 
 	uint32_t mPinCode;

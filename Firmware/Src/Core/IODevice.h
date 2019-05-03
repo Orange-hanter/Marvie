@@ -1,10 +1,8 @@
 #pragma once
 
-#include "cpp_wrappers/ch.hpp"
+#include "Event.h"
 #include "AbstractReadable.h"
 #include "AbstractWritable.h"
-
-using namespace chibios_rt;
 
 class IODevice
 {
@@ -31,5 +29,5 @@ public:
 
 	virtual void acquireDevice() {}
 	virtual void releaseDevice() {}
-	virtual EvtSource* eventSource() = 0;
+	virtual EventSourceRef eventSource() = 0;
 };

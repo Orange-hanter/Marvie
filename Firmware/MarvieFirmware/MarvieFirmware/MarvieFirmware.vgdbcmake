@@ -13,7 +13,7 @@
   </Project>
   <Build xsi:type="com.visualgdb.build.cmake">
     <ToolchainID>
-      <ID>9f393fcb-c9db-4d38-8978-71f33cacf304</ID>
+      <ID>66e24c0f-9b63-4abb-96f6-d113a3e5ed64</ID>
       <Version>
         <GCC>8.2.1</GCC>
         <GDB>(GNU</GDB>
@@ -158,24 +158,69 @@
     </AdditionalGDBSettings>
     <DebugMethod>
       <ID>jlink-jtag</ID>
-      <Configuration xsi:type="com.visualgdb.edp.segger.settings">
-        <CommandLine>-select USB -device $$SYS:MCU_ID$$ -speed auto -if SWD</CommandLine>
-        <ProgramMode>Enabled</ProgramMode>
-        <StartupCommands>
-          <string>target remote :$$SYS:GDB_PORT$$</string>
-          <string>mon reset</string>
-          <string>load</string>
-        </StartupCommands>
-        <UseUnreliableLiveMemoryEngine>false</UseUnreliableLiveMemoryEngine>
-        <ProgramFLASHUsingExternalTool>false</ProgramFLASHUsingExternalTool>
+      <Configuration>
+        <Entries>
+          <KeyValue>
+            <Key>com.sysprogs.jlink.root</Key>
+            <Value>C:\Program Files (x86)\SEGGER\JLink_V614b</Value>
+          </KeyValue>
+          <KeyValue>
+            <Key>com.sysprogs.jlink.connection</Key>
+            <Value>IP=localhost</Value>
+          </KeyValue>
+          <KeyValue>
+            <Key>com.sysprogs.jlink.targetdevice</Key>
+            <Value>$$SYS:MCU_ID$$</Value>
+          </KeyValue>
+          <KeyValue>
+            <Key>com.sysprogs.jlink.targetinterface</Key>
+            <Value>SWD</Value>
+          </KeyValue>
+          <KeyValue>
+            <Key>com.sysprogs.jlink.speed</Key>
+            <Value>auto</Value>
+          </KeyValue>
+          <KeyValue>
+            <Key>com.sysprogs.jlink.resetcommand</Key>
+            <Value>mon reset</Value>
+          </KeyValue>
+          <KeyValue>
+            <Key>com.sysprogs.jlink.resetafterload</Key>
+            <Value />
+          </KeyValue>
+          <KeyValue>
+            <Key>com.sysprogs.jlink.livememoryengine</Key>
+            <Value>stub</Value>
+          </KeyValue>
+          <KeyValue>
+            <Key>com.sysprogs.jlink.program</Key>
+            <Value>load</Value>
+          </KeyValue>
+          <KeyValue>
+            <Key>com.sysprogs.jlink.autoprogram</Key>
+            <Value />
+          </KeyValue>
+          <KeyValue>
+            <Key>com.sysprogs.jlink.commands.beforeconnect</Key>
+            <Value />
+          </KeyValue>
+          <KeyValue>
+            <Key>com.sysprogs.jlink.commands.beforeload</Key>
+            <Value />
+          </KeyValue>
+          <KeyValue>
+            <Key>com.sysprogs.jlink.commands.afterload</Key>
+            <Value />
+          </KeyValue>
+        </Entries>
       </Configuration>
     </DebugMethod>
-    <AutoDetectRTOS>true</AutoDetectRTOS>
-    <SemihostingSupport>Auto</SemihostingSupport>
+    <AutoDetectRTOS>false</AutoDetectRTOS>
+    <SemihostingSupport>Disabled</SemihostingSupport>
     <SemihostingPollingDelay>0</SemihostingPollingDelay>
     <StepIntoEntryPoint>false</StepIntoEntryPoint>
-    <ReloadFirmwareOnReset>false</ReloadFirmwareOnReset>
-    <ValidateEndOfStackAddress>true</ValidateEndOfStackAddress>
+    <ReloadFirmwareOnReset>true</ReloadFirmwareOnReset>
+    <ValidateEndOfStackAddress>false</ValidateEndOfStackAddress>
     <StopAtEntryPoint>false</StopAtEntryPoint>
     <EnableVirtualHalts>false</EnableVirtualHalts>
     <DynamicAnalysisSettings />

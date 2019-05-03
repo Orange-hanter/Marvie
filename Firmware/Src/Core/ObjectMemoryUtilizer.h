@@ -1,10 +1,10 @@
 #pragma once
 
-#include "BaseDynamicThread.h"
+#include "Thread.h"
 
-using namespace chibios_rt;
+#define OBJECT_MEMORY_UTILIZER_MAILBOX_SIZE 16
 
-class ObjectMemoryUtilizer : private BaseDynamicThread
+class ObjectMemoryUtilizer : private Thread
 {
 	ObjectMemoryUtilizer();	
 	~ObjectMemoryUtilizer();
@@ -12,7 +12,7 @@ class ObjectMemoryUtilizer : private BaseDynamicThread
 public:
 	static ObjectMemoryUtilizer* instance();	
 
-	void runUtilizer( tprio_t prio );
+	bool runUtilizer( tprio_t prio );
 	void stopUtilizer();
 
 	void utilize( Object* );
@@ -23,6 +23,6 @@ private:
 private:
 	static ObjectMemoryUtilizer* inst;
 	enum class State { Stopped, Running } state;
-	msg_t mboxBuffer[8];
+	msg_t mboxBuffer[OBJECT_MEMORY_UTILIZER_MAILBOX_SIZE];
 	mailbox_t mailbox;
 };

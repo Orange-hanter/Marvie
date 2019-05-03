@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AbstractSocket.h"
+#include "Core/ThreadsQueue.h"
 #include "lwip/api.h"
 
 class LwipSocketPrivate
@@ -47,6 +48,6 @@ class LwipSocketPrivate
 	uint32_t offset;
 	mutable int32_t recvCounter;
 	SocketState prevState;
-	threads_queue_t readWaitingQueue;
-	EvtSource evtSource;
+	ThreadsQueue readWaitingQueue;
+	EventSource evtSource;
 };

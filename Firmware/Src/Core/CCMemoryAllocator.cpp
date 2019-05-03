@@ -38,7 +38,7 @@ void* CCMemoryAllocator::alloc( size_t size, unsigned align, size_t offset )
 	return p;
 }
 
-size_t CCMemoryAllocator::status( void )
+size_t CCMemoryAllocator::status()
 {
 	return ( size_t )( endMem - nextMem );
 }

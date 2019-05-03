@@ -120,11 +120,12 @@ typedef void (*evhandler_t)(eventid_t id);
 #ifdef __cplusplus
 extern "C" {
 #endif
-  void chEvtRegisterMaskWithFlags(event_source_t *esp,
-                                  event_listener_t *elp,
-                                  eventmask_t events,
-                                  eventflags_t wflags);
-  void chEvtUnregister(event_source_t *esp, event_listener_t *elp);
+  void chEvtRegisterThreadMaskWithFlagsI(event_source_t *esp,
+                                        event_listener_t *elp,
+                                        thread_t* listener_thread,
+                                        eventmask_t events,
+                                        eventflags_t wflags);
+  void chEvtUnregisterI(event_source_t *esp, event_listener_t *elp);
   eventmask_t chEvtGetAndClearEventsI(eventmask_t events);
   eventmask_t chEvtGetAndClearEvents(eventmask_t events);
   eventmask_t chEvtAddEvents(eventmask_t events);
@@ -180,6 +181,31 @@ static inline void chEvtObjectInit(event_source_t *esp) {
  * @note    Multiple Event Listeners can specify the same bits to be ORed to
  *          different threads.
  *
+ * @param[in] esp       pointer to the  @p event_source_t structure
+ * @param[in] elp       pointer to the @p event_listener_t structure
+ * @param[in] events    events to be ORed to the thread when
+ *                      the event source is broadcasted
+ * @param[in] wflags    mask of flags the listening thread is interested in
+ *
+ * @api
+ */
+static inline void chEvtRegisterMaskWithFlags(event_source_t *esp,
+                                              event_listener_t *elp,
+                                              eventmask_t events,
+                                              eventflags_t wflags) {
+
+  chSysLock();
+  chEvtRegisterThreadMaskWithFlagsI(esp, elp, currp, events, wflags);
+  chSysUnlock();
+}
+
+/**
+ * @brief   Registers an Event Listener on an Event Source.
+ * @details Once a thread has registered as listener on an event source it
+ *          will be notified of all events broadcasted there.
+ * @note    Multiple Event Listeners can specify the same bits to be ORed to
+ *          different threads.
+ *
  * @param[in] esp       pointer to the @p event_source_t structure
  * @param[out] elp      pointer to the @p event_listener_t structure
  * @param[in] events    the mask of events to be ORed to the thread when
@@ -212,6 +238,26 @@ static inline void chEvtRegister(event_source_t *esp,
                                  eventid_t event) {
 
   chEvtRegisterMask(esp, elp, EVENT_MASK(event));
+}
+
+/**
+ * @brief   Unregisters an Event Listener from its Event Source.
+ * @note    If the event listener is not registered on the specified event
+ *          source then the function does nothing.
+ * @note    For optimal performance it is better to perform the unregister
+ *          operations in inverse order of the register operations (elements
+ *          are found on top of the list).
+ *
+ * @param[in] esp       pointer to the  @p event_source_t structure
+ * @param[in] elp       pointer to the @p event_listener_t structure
+ *
+ * @api
+ */
+static inline void chEvtUnregister(event_source_t *esp, event_listener_t *elp) {
+
+  chSysLock();
+  chEvtUnregisterI(esp, elp);
+  chSysUnlock();
 }
 
 /**

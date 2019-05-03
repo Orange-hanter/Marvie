@@ -1,6 +1,8 @@
 #include "MLinkServer.h"
-#include "Crc32HW.h"
 #include "Core/Assert.h"
+#include "Core/CriticalSectionLocker.h"
+#include "Core/MutexLocker.h"
+#include "Crc32HW.h"
 #include "Support/Utility.h"
 #include <string.h>
 
@@ -18,15 +20,12 @@ MLinkServer::DataChannel::~DataChannel()
 
 bool MLinkServer::DataChannel::open( uint8_t channel, const char* name, uint32_t size )
 {
-	chMtxLock( &link->ioMutex );
+	MutexLocker locker( link->ioMutex );
 	if( link->sessionConfirmed )
 	{
 		// check if this channel is already open
 		if( link->checkOutputDataChM( channel ) )
-		{
-			chMtxUnlock( &link->ioMutex );
 			return false;
-		}
 
 		// add DataChannel object to activeOutputDataChList
 		if( ++link->idCounter == 0 )
@@ -52,11 +51,9 @@ bool MLinkServer::DataChannel::open( uint8_t channel, const char* name, uint32_t
 		link->packetData[sizeof( Header ) + sizeof( ChannelHeader ) + sizeof( uint32_t ) + len] = 0;
 		link->socketWriteM( link->packetData, sizeof( Header ) + sizeof( ChannelHeader ) + sizeof( uint32_t ) + len + sizeof( uint8_t ) );
 
-		chMtxUnlock( &link->ioMutex );
 		return true;
 	}
 
-	chMtxUnlock( &link->ioMutex );
 	return false;
 }
 
@@ -64,7 +61,7 @@ bool MLinkServer::DataChannel::sendData( const uint8_t* data, uint32_t size )
 {
 	while( size )
 	{
-		chMtxLock( &link->ioMutex );
+		MutexLocker locker( link->ioMutex );
 		if( id )
 		{
 			uint32_t partSize = size;
@@ -84,14 +81,9 @@ bool MLinkServer::DataChannel::sendData( const uint8_t* data, uint32_t size )
 
 			data += partSize;
 			size -= partSize;
-
-			chMtxUnlock( &link->ioMutex );
 		}
 		else
-		{
-			chMtxUnlock( &link->ioMutex );
 			return false;
-		}
 	}
 
 	return true;
@@ -120,7 +112,7 @@ void MLinkServer::DataChannel::cancelAndClose()
 
 void MLinkServer::DataChannel::close( bool cancelFlag )
 {
-	chMtxLock( &link->ioMutex );
+	link->ioMutex.lock();
 	if( id )
 	{
 		Header* header = reinterpret_cast< Header* >( link->packetData );
@@ -135,10 +127,10 @@ void MLinkServer::DataChannel::close( bool cancelFlag )
 		link->socketWriteM( link->packetData, sizeof( Header ) + sizeof( ChannelHeader ) + sizeof( uint8_t ) );
 		link->removeOutputDataChM( ch );
 	}
-	chMtxUnlock( &link->ioMutex );
+	link->ioMutex.unlock();
 }
 
-MLinkServer::MLinkServer() : BaseDynamicThread( MLINK_STACK_SIZE )
+MLinkServer::MLinkServer() : Thread( MLINK_STACK_SIZE )
 {
 	linkState = State::Stopped;
 	linkError = Error::NoError;
@@ -148,9 +140,6 @@ MLinkServer::MLinkServer() : BaseDynamicThread( MLINK_STACK_SIZE )
 	idCounter = 0;
 	accountId = -1;
 	sessionConfirmed = false;
-	chThdQueueObjectInit( &stateWaitingQueue );
-	chThdQueueObjectInit( &packetWaitingQueue );
-	chMtxObjectInit( &ioMutex );
 	chVTObjectInit( &timer );
 	chVTObjectInit( &pingTimer );
 	parserState = ParserState::WaitHeader;
@@ -179,30 +168,31 @@ void MLinkServer::setAuthenticationCallback( AuthenticationCallback* callback )
 	authCallback = callback;
 }
 
-void MLinkServer::startListening( tprio_t prio )
+bool MLinkServer::startListening( tprio_t prio )
 {
 	if( linkState != State::Stopped )
-		return;
+		return false;
 
 	linkError = Error::NoError;
 	linkState = State::Listening;
+	setPriority( prio );
+	if( !start() )
+	{
+		linkState = State::Stopped;
+		return false;
+	}
 	extEventSource.broadcastFlags( ( eventflags_t )Event::StateChanged );
-	start( prio );
+	return true;
 }
 
 void MLinkServer::stopListening()
 {
-	chSysLock();
+	CriticalSectionLocker locker;
 	if( linkState == State::Stopped || linkState == State::Stopping )
-	{
-		chSysUnlock();
 		return;
-	}
 	linkState = State::Stopping;
-	extEventSource.broadcastFlagsI( ( eventflags_t )Event::StateChanged );
-	chEvtSignalI( this->thread_ref, InnerEventMask::StopRequestFlag );
-	chSchRescheduleS();
-	chSysUnlock();
+	extEventSource.broadcastFlags( ( eventflags_t )Event::StateChanged );
+	signalEventsI( InnerEventMask::StopRequestFlag );
 }
 
 bool MLinkServer::waitForStateChanged( sysinterval_t timeout /*= TIME_INFINITE */ )
@@ -210,7 +200,7 @@ bool MLinkServer::waitForStateChanged( sysinterval_t timeout /*= TIME_INFINITE *
 	msg_t msg = MSG_OK;
 	chSysLock();
 	if( linkState == State::Stopping || linkState == State::Listening || linkState == State::Authenticating )
-		msg = chThdEnqueueTimeoutS( &stateWaitingQueue, timeout );
+		msg = stateWaitingQueue.enqueueSelf( timeout );
 	chSysUnlock();
 
 	return msg == MSG_OK;
@@ -249,7 +239,7 @@ bool MLinkServer::sendPacket( uint8_t type, const uint8_t* data, uint16_t size )
 		return false;
 
 	bool res = false;
-	chMtxLock( &ioMutex );
+	ioMutex.lock();
 	if( sessionConfirmed )
 	{
 		Header* header = reinterpret_cast< Header* >( packetData );
@@ -261,7 +251,7 @@ bool MLinkServer::sendPacket( uint8_t type, const uint8_t* data, uint16_t size )
 		socketWriteM( packetData, sizeof( Header ) + size );
 		res = true;
 	}
-	chMtxUnlock( &ioMutex );
+	ioMutex.unlock();
 
 	return res;
 }
@@ -269,22 +259,22 @@ bool MLinkServer::sendPacket( uint8_t type, const uint8_t* data, uint16_t size )
 bool MLinkServer::waitPacket( sysinterval_t timeout )
 {
 	msg_t msg;
-	chMtxLock( &ioMutex );
+	ioMutex.lock();
 	if( linkState != State::Connected || !sessionConfirmed )
 	{
 		bool res = linkState != State::Connected && packetBuffer.readAvailable();
-		chMtxUnlock( &ioMutex );
+		ioMutex.unlock();
 		return res;
 	}
 	chSysLock();
-	chMtxUnlockS( &ioMutex );
+	ioMutex.unlock();
 	if( packetBuffer.readAvailable() )
 	{
 		msg = MSG_OK;
 		chSchRescheduleS();
 	}
 	else
-		msg = chThdEnqueueTimeoutS( &packetWaitingQueue, timeout );
+		msg = packetWaitingQueue.enqueueSelf( timeout );
 	chSysUnlock();
 
 	return msg == MSG_OK;
@@ -292,9 +282,9 @@ bool MLinkServer::waitPacket( sysinterval_t timeout )
 
 bool MLinkServer::hasPendingPacket()
 {
-	chMtxLock( &ioMutex );
+	ioMutex.lock();
 	bool res = ( sessionConfirmed || linkState != State::Connected ) && packetBuffer.readAvailable();
-	chMtxUnlock( &ioMutex );
+	ioMutex.unlock();
 
 	return res;
 }
@@ -303,7 +293,7 @@ uint32_t MLinkServer::readPacket( uint8_t* type, uint8_t* data, uint32_t maxSize
 {
 	assert( maxSize != 0 );
 	uint32_t size;
-	chMtxLock( &ioMutex );
+	ioMutex.lock();
 	if( ( sessionConfirmed || linkState != State::Connected ) && packetBuffer.readAvailable() )
 	{
 		auto i = packetBuffer.begin();
@@ -322,12 +312,12 @@ uint32_t MLinkServer::readPacket( uint8_t* type, uint8_t* data, uint32_t maxSize
 	}
 	else
 		size = 0, *type = 255;
-	chMtxUnlock( &ioMutex );
+	ioMutex.unlock();
 
 	return size;
 }
 
-EvtSource* MLinkServer::eventSource()
+EventSourceRef MLinkServer::eventSource()
 {
 	return &extEventSource;
 }
@@ -336,24 +326,20 @@ void MLinkServer::main()
 {
 	parserState = ParserState::WaitHeader;
 
-	EvtListener serverListener;
-	server.eventSource()->registerMask( &serverListener, InnerEventMask::ServerEventFlag );
+	EventListener serverListener;
+	server.eventSource().registerMask( &serverListener, InnerEventMask::ServerEventFlag );
 	if( !server.listen( 16021 ) )
 	{
 		chSysLock();
-		extEventSource.broadcastFlagsI( ( eventflags_t )Event::Error );
+		extEventSource.broadcastFlags( ( eventflags_t )Event::Error );
 		goto End;
 	}
 
-	while( linkState != State::Stopping || socket )
+	while( linkState != State::Stopping )
 	{
 		eventmask_t em = chEvtWaitAny( ALL_EVENTS );
 		if( em & StopRequestFlag )
-		{
-			if( !socket )
-				break;
-			closeLink( Error::NoError );
-		}
+			break;
 		if( em & TimeoutEventFlag )
 			timeout();
 		if( em & PingEventFlag && socket )
@@ -371,7 +357,7 @@ void MLinkServer::main()
 				else
 				{
 					socket = newSocket;
-					socket->eventSource()->registerMaskWithFlags( &socketListener, InnerEventMask::SocketEventFlag, 
+					socket->eventSource().registerMaskWithFlags( &socketListener, InnerEventMask::SocketEventFlag, 
 																  ( eventflags_t )SocketEventFlag::Error 
 																  | ( eventflags_t )SocketEventFlag::StateChanged
 																  | ( eventflags_t )SocketEventFlag::InputAvailable );
@@ -381,8 +367,8 @@ void MLinkServer::main()
 					{
 						linkState = State::Authenticating;
 						chVTSetI( &timer, TIME_MS2I( MaxPacketTransferInterval * 2 ), timerCallback, this );
-						extEventSource.broadcastFlagsI( ( eventflags_t )Event::StateChanged );
-						chThdDequeueNextI( &stateWaitingQueue, MSG_OK );
+						extEventSource.broadcastFlags( ( eventflags_t )Event::StateChanged );
+						stateWaitingQueue.dequeueNext( MSG_OK );
 						chSchRescheduleS();
 						em |= SocketEventFlag;
 					}
@@ -398,16 +384,15 @@ void MLinkServer::main()
 					processNewBytes();
 				else
 				{
-					chMtxLock( &ioMutex );
-					closeLinkM( Error::RemoteClosedError );
-					chMtxUnlock( &ioMutex );
+					closeLink( Error::RemoteClosedError );
 					chEvtGetAndClearEvents( InnerEventMask::SocketEventFlag );
 				}
 			}
 		}
 	}
+	if( socket )
+		closeLink( Error::NoError );
 
-	server.eventSource()->unregister( &serverListener );
 	server.close();	
 	chVTReset( &timer );
 	chVTReset( &pingTimer );
@@ -415,9 +400,8 @@ void MLinkServer::main()
 	chSysLock();
 End:
 	linkState = State::Stopped;
-	extEventSource.broadcastFlagsI( ( eventflags_t )Event::StateChanged );
-	chThdDequeueNextI( &stateWaitingQueue, MSG_OK );
-	exitS( MSG_OK );
+	extEventSource.broadcastFlags( ( eventflags_t )Event::StateChanged );
+	stateWaitingQueue.dequeueNext( MSG_OK );
 }
 
 void MLinkServer::processNewBytes()
@@ -430,13 +414,13 @@ void MLinkServer::processNewBytes()
 			if( socket->readAvailable() < header.size )
 				return;
 
-			chMtxLock( &ioMutex );
+			ioMutex.lock();
 			if( header.size )
 				socket->read( packetData, header.size, TIME_INFINITE );
 			limit -= header.size;
 			parserState = ParserState::WaitHeader;
 			processNewPacketM();
-			chMtxUnlock( &ioMutex );
+			ioMutex.unlock();
 		}
 		else // parserState == ParserState::WaitHeader
 		{
@@ -476,8 +460,8 @@ void MLinkServer::processNewPacketM()
 				if( header.size )
 					packetBuffer.write( packetData, header.size );
 				chSysLock();
-				extEventSource.broadcastFlagsI( ( eventflags_t )Event::NewPacketAvailable );
-				chThdDequeueNextI( &packetWaitingQueue, MSG_OK );
+				extEventSource.broadcastFlags( ( eventflags_t )Event::NewPacketAvailable );
+				packetWaitingQueue.dequeueNext( MSG_OK );
 				chSchRescheduleS();
 				chSysUnlock();
 			}
@@ -553,8 +537,8 @@ void MLinkServer::processNewPacketM()
 				{
 					linkState = State::Connected;
 
-					extEventSource.broadcastFlagsI( ( eventflags_t )Event::StateChanged );
-					chThdDequeueNextI( &stateWaitingQueue, MSG_OK );
+					extEventSource.broadcastFlags( ( eventflags_t )Event::StateChanged );
+					stateWaitingQueue.dequeueNext( MSG_OK );
 					chSchRescheduleS();
 					chSysUnlock();
 					sendAuthAckM();
@@ -601,13 +585,13 @@ void MLinkServer::sendAuthFailM()
 
 void MLinkServer::sendIAmAlive()
 {
-	chMtxLock( &ioMutex );
+	ioMutex.lock();
 	Header* header = reinterpret_cast< Header* >( packetData );
 	header->preamble = MLINK_PREAMBLE;
 	header->size = 0;
 	header->type = PacketType::IAmAlive;
 	socketWriteM( packetData, sizeof( Header ) );
-	chMtxUnlock( &ioMutex );
+	ioMutex.unlock();
 }
 
 void MLinkServer::sendRemoteCloseChannelM( uint8_t channel, uint32_t id )
@@ -735,9 +719,9 @@ void MLinkServer::timeout()
 
 void MLinkServer::closeLink( Error err )
 {
-	chMtxLock( &ioMutex );
+	ioMutex.lock();
 	closeLinkM( err );
-	chMtxUnlock( &ioMutex );
+	ioMutex.unlock();
 }
 
 void MLinkServer::closeLinkM( Error err )
@@ -752,7 +736,6 @@ void MLinkServer::closeLinkM( Error err )
 	accountId = -1;
 	sessionConfirmed = false;
 	chSysUnlock();
-	socket->eventSource()->unregister( &socketListener );
 	socket->disconnect();
 	delete socket;
 	socket = nullptr;
@@ -770,7 +753,7 @@ void MLinkServer::closeLinkM( Error err )
 	chVTReset( &pingTimer );
 	chSysLock();
 	chEvtGetAndClearEventsI( InnerEventMask::TimeoutEventFlag | InnerEventMask::PingEventFlag );
-	chThdDequeueNextI( &packetWaitingQueue, MSG_RESET );
+	packetWaitingQueue.dequeueNext( MSG_RESET );
 	chSchRescheduleS();
 	chSysUnlock();
 	parserState = ParserState::WaitHeader;
@@ -779,13 +762,13 @@ void MLinkServer::closeLinkM( Error err )
 void MLinkServer::timerCallback( void* p )
 {
 	chSysLockFromISR();
-	chEvtSignalI( reinterpret_cast< MLinkServer* >( p )->thread_ref, InnerEventMask::TimeoutEventFlag );
+	reinterpret_cast< MLinkServer* >( p )->signalEventsI( InnerEventMask::TimeoutEventFlag );
 	chSysUnlockFromISR();
 }
 
 void MLinkServer::pingTimerCallback( void* p )
 {
 	chSysLockFromISR();
-	chEvtSignalI( reinterpret_cast< MLinkServer* >( p )->thread_ref, InnerEventMask::PingEventFlag );
+	reinterpret_cast< MLinkServer* >( p )->signalEventsI( InnerEventMask::PingEventFlag );
 	chSysUnlockFromISR();
 }

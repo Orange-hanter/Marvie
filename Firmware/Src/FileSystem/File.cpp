@@ -135,3 +135,8 @@ File::Error File::lastError()
 {
 	return _err;
 }
+
+const char* File::lastErrorString()
+{
+	return FileSystem::errorString( _err );
+}

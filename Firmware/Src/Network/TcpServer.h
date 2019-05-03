@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AbstractTcpServer.h"
+#include "Core/Semaphore.h"
 #include "TcpSocket.h"
 #include "lwip/api.h"
 
@@ -19,7 +20,7 @@ public:
 	bool waitForNewConnection( sysinterval_t timeout = TIME_INFINITE ) override;
 	void setNewConnectionsBufferSize( uint32_t inputBufferSize, uint32_t outputBufferSize ) override;
 
-	EvtSource* eventSource() override;
+	EventSourceRef eventSource() override;
 
 private:
 	void recreate();
@@ -34,7 +35,7 @@ private:
 	netconn* con, *newcon;
 	mutable int32_t recvCounter;
 	volatile bool prevState;
-	EvtSource evtSource;
+	EventSource evtSource;
 	static BinarySemaphore sem;
 	static netconn* blockCon;
 };

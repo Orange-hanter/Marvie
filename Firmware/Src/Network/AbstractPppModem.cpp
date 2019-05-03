@@ -45,7 +45,7 @@ void AbstractPppModem::setAsDefault()
 void AbstractPppModem::main()
 {
 	err_t err;
-	EvtListener ioListener;
+	EventListener ioListener;
 	mError = ModemError::NoError;
 	LowLevelError llErr;
 	attemptNumber = 0;
@@ -75,7 +75,7 @@ Start:
 	if( err != ERR_OK )
 		goto End;
 
-	usart->eventSource()->registerMaskWithFlags( &ioListener, IOEvent, CHN_INPUT_AVAILABLE );
+	usart->eventSource().registerMaskWithFlags( &ioListener, IOEvent, CHN_INPUT_AVAILABLE );
 	chVTSet( &timer, INPUT_DELAY, timerCallback, this );
 
 	while( mState != ModemState::Stopping )
@@ -93,7 +93,7 @@ Start:
 				chEvtGetAndClearEventsI( IOEvent | TimerEvent );
 				chSchRescheduleS();
 				chSysUnlock();
-				usart->eventSource()->unregister( &ioListener );
+				ioListener.unregister();
 				lowLevelStop();
 				len = 0;
 				goto Start;
@@ -141,7 +141,7 @@ Start:
 	}
 
 	chVTReset( &timer );
-	usart->eventSource()->unregister( &ioListener );
+	ioListener.unregister();
 
 	LOCK_TCPIP_CORE();
 	ppp_close( pppPcb, 1 );
@@ -161,7 +161,6 @@ End:
 			setModemErrorS( ModemError::UnknownError );
 	}
 	len = 0;
-	exitS( MSG_OK );
 }
 
 u32_t AbstractPppModem::outputCallback( ppp_pcb *pcb, u8_t *data, u32_t len, void *ctx )
@@ -176,9 +175,9 @@ void AbstractPppModem::linkStatusCallback( ppp_pcb *pcb, int err_code, void *ctx
 {
 	AbstractPppModem* modem = ( AbstractPppModem* )ctx;
 	if( err_code == PPPERR_NONE )
-		chEvtSignal( modem->thread_ref, LinkUpEvent );
+		modem->signalEvents( LinkUpEvent );
 	else
-		chEvtSignal( modem->thread_ref, LinkDownEvent );
+		modem->signalEvents( LinkDownEvent );
 }
 
 void AbstractPppModem::netifStatusCallback( netif *nif )
@@ -192,6 +191,6 @@ void AbstractPppModem::timerCallback( void* p )
 {
 	AbstractPppModem* modem = ( AbstractPppModem* )p;
 	chSysLockFromISR();
-	chEvtSignalI( modem->thread_ref, TimerEvent );
+	modem->signalEventsI( TimerEvent );
 	chSysUnlockFromISR();
 }

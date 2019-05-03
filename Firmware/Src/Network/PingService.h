@@ -1,9 +1,13 @@
-#include "lwip/api.h"
-#include "Core/BaseDynamicThread.h"
+#include "Core/Event.h"
+#include "Core/Mutex.h"
 #include "Core/NanoList.h"
+#include "Core/Semaphore.h"
+#include "Core/Thread.h"
+#include "Core/ThreadsQueue.h"
 #include "Network/IpAddress.h"
+#include "lwip/api.h"
 
-class PingService : public BaseDynamicThread
+class PingService : public Thread
 {
 	PingService();
 	~PingService();
@@ -30,7 +34,7 @@ public:
 	int ping( IpAddress addr, uint32_t count = 1, TimeMeasurement* pTM = nullptr, uint32_t delayMs = 1000 );
 	void setPongTimeout( uint32_t timeoutMs );
 
-	EvtSource* eventSource();
+	EventSourceRef eventSource();
 
 private:
 	void main() override;
@@ -44,8 +48,8 @@ private:
 	enum : uint16_t { PingID = 0xAFAF, PingLoadSize = 32, MaxPongTimeoutMs = 5000 };
 	State sState;
 	Error sError;
-	EvtSource extEventSource;
-	threads_queue_t waitingQueue;
+	EventSource extEventSource;
+	ThreadsQueue waitingQueue;
 	virtual_timer_t timer;
 	struct Request
 	{
@@ -53,7 +57,6 @@ private:
 			result( false ), processing( false ),
 			seqNum( 0 ), sendingTime( 0 ), interval( 0 )
 		{
-			chBSemObjectInit( &sem, true );
 		}
 		IpAddress addr;
 		bool result;
@@ -61,7 +64,7 @@ private:
 		uint16_t seqNum;
 		systime_t sendingTime;
 		sysinterval_t interval;
-		binary_semaphore_t sem;
+		BinarySemaphore sem;
 	};
 	Mutex mutex;
 	NanoList< Request* > reqList;

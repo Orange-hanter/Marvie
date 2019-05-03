@@ -29,7 +29,7 @@ namespace chibios_rt {
    * chibios_rt::Timer                                                      *
    *------------------------------------------------------------------------*/
 	
-	Timer::Timer()
+	_Timer::_Timer()
 	{
 		chVTObjectInit( &timer_ref );
 	}
@@ -267,12 +267,12 @@ namespace chibios_rt {
 #endif /* CH_CFG_USE_EVENTS */
 
 #if CH_CFG_USE_MUTEXES
-  void BaseThread::unlockMutex(Mutex *mp) {
+  void BaseThread::unlockMutex(_Mutex *mp) {
 
     chMtxUnlock(&mp->mutex);
   }
 
-  void BaseThread::unlockMutexS(Mutex *mp) {
+  void BaseThread::unlockMutexS(_Mutex *mp) {
 
     chMtxUnlockS(&mp->mutex);
   }
@@ -351,52 +351,52 @@ namespace chibios_rt {
   /*------------------------------------------------------------------------*
    * chibios_rt::BinarySemaphore                                            *
    *------------------------------------------------------------------------*/
-  BinarySemaphore::BinarySemaphore(bool taken) {
+  _BinarySemaphore::_BinarySemaphore(bool taken) {
 
     chBSemObjectInit(&bsem, taken);
   }
 
-  msg_t BinarySemaphore::wait(void) {
+  msg_t _BinarySemaphore::wait(void) {
 
     return chBSemWait(&bsem);
   }
 
-  msg_t BinarySemaphore::waitS(void) {
+  msg_t _BinarySemaphore::waitS(void) {
 
     return chBSemWaitS(&bsem);
   }
 
-  msg_t BinarySemaphore::wait(sysinterval_t time) {
+  msg_t _BinarySemaphore::wait(sysinterval_t time) {
 
     return chBSemWaitTimeout(&bsem, time);
   }
 
-  msg_t BinarySemaphore::waitS(sysinterval_t time) {
+  msg_t _BinarySemaphore::waitS(sysinterval_t time) {
 
     return chBSemWaitTimeoutS(&bsem, time);
   }
 
-  void BinarySemaphore::reset(bool taken) {
+  void _BinarySemaphore::reset(bool taken) {
 
     chBSemReset(&bsem, taken);
   }
 
-  void BinarySemaphore::resetI(bool taken) {
+  void _BinarySemaphore::resetI(bool taken) {
 
     chBSemResetI(&bsem, taken);
   }
 
-  void BinarySemaphore::signal(void) {
+  void _BinarySemaphore::signal(void) {
 
     chBSemSignal(&bsem);
   }
 
-  void BinarySemaphore::signalI(void) {
+  void _BinarySemaphore::signalI(void) {
 
     chBSemSignalI(&bsem);
   }
 
-  bool BinarySemaphore::getStateI(void) {
+  bool _BinarySemaphore::getStateI(void) {
 
     return (bool)chBSemGetStateI(&bsem);
   }
@@ -406,37 +406,37 @@ namespace chibios_rt {
   /*------------------------------------------------------------------------*
    * chibios_rt::Mutex                                                      *
    *------------------------------------------------------------------------*/
-  Mutex::Mutex(void) {
+  _Mutex::_Mutex(void) {
 
     chMtxObjectInit(&mutex);
   }
 
-  bool Mutex::tryLock(void) {
+  bool _Mutex::tryLock(void) {
 
     return chMtxTryLock(&mutex);
   }
 
-  bool Mutex::tryLockS(void) {
+  bool _Mutex::tryLockS(void) {
 
     return chMtxTryLockS(&mutex);
   }
 
-  void Mutex::lock(void) {
+  void _Mutex::lock(void) {
 
     chMtxLock(&mutex);
   }
 
-  void Mutex::lockS(void) {
+  void _Mutex::lockS(void) {
 
     chMtxLockS(&mutex);
   }
 
-  void Mutex::unlock(void) {
+  void _Mutex::unlock(void) {
 
     chMtxUnlock(&mutex);
   }
 
-  void Mutex::unlockS(void) {
+  void _Mutex::unlockS(void) {
 
     chMtxUnlockS(&mutex);
   }

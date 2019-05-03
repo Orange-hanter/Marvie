@@ -1,14 +1,18 @@
 #include "MarvieControl.h"
 #include <QtWidgets/QApplication>
+#include <QFontDatabase>
 #include <time.h>
 #include "MonitoringLog.h"
 
 int main( int argc, char *argv[] )
 {
- 	QApplication a( argc, argv );
- 	a.setStyle( "Fusion" );
- 	QLocale::setDefault( QLocale( QLocale::English, QLocale::UnitedKingdom ) );
- 	qsrand( time( nullptr ) );
+	QApplication a( argc, argv );
+	QFontDatabase::addApplicationFont( ":/MarvieControl/fonts/Droid Sans Mono.ttf" );
+	QFontDatabase::addApplicationFont( ":/MarvieControl/fonts/Tahoma.ttf" );
+	a.setStyle( "Fusion" );
+	QLocale::setDefault( QLocale( QLocale::English, QLocale::UnitedKingdom ) );
+	qsrand( time( nullptr ) );
+
 
 	/*MonitoringLog monitoringLog;
 	QList< MonitoringLog::SensorDesc > list;
@@ -22,7 +26,13 @@ int main( int argc, char *argv[] )
 	monitoringLog.nameGroup( "AI" ).dayGroup( QDate( 2018, 9, 21 ) ).nearestEntry( QTime::fromMSecsSinceStartOfDay( 46454279 + 1 ) );
 	monitoringLog.nameGroup( "DI" ).dayGroup( QDate( 2018, 9, 21 ) ).timestamps();*/
 
- 	MarvieControl w;
+	// build_ci.sh requires this line to have 'QString("MarvieControl")'
+	// if the name of the app needs to be changed
+	// please don't forget to update scripts as well
+	QCoreApplication::setApplicationName( QString("MarvieControl") );
+
+	MarvieControl w;
+	w.setWindowTitle( QCoreApplication::applicationName() );
  	w.show();
  	return a.exec();
 

@@ -4,27 +4,37 @@
 
 void* operator new( size_t size ) { return chHeapAlloc( nullptr, size ); }
 void* operator new[]( size_t size ) { return chHeapAlloc( nullptr, size ); }
-//void* operator new( std::size_t size, const NewCCM& ) { return CCMemoryHeap::alloc( size ); }
-//void* operator new[]( std::size_t size, const NewCCM& ) { return CCMemoryHeap::alloc( size ); }
-//void* operator new( std::size_t size, const TryNewCCM& )
-//{
-//	void* p = CCMemoryHeap::alloc( size );
-//	if( p )
-//		return p;
-//	return chHeapAlloc( nullptr, size );
-//}
-//void* operator new[]( std::size_t size, const TryNewCCM& )
-//{
-//	void* p = CCMemoryHeap::alloc( size );
-//	if( p )
-//		return p;
-//	return chHeapAlloc( nullptr, size );
-//}
+void* operator new( size_t size, MemoryAllocPolicy memPolicy )
+{
+	void* p;
+	if( memPolicy == MemoryAllocPolicy::TryCCM || memPolicy == MemoryAllocPolicy::CCM )
+	{
+		p = CCMemoryHeap::alloc( size );
+		if( p == nullptr && memPolicy == MemoryAllocPolicy::TryCCM )
+			p = chHeapAlloc( nullptr, size );
+	}
+	else //if( memPolicy == MemoryAllocPolicy::Default )
+		p = chHeapAlloc( nullptr, size );
+	return p;
+}
+void* operator new[]( size_t size, MemoryAllocPolicy memPolicy )
+{
+	void* p;
+	if( memPolicy == MemoryAllocPolicy::TryCCM || memPolicy == MemoryAllocPolicy::CCM )
+	{
+		p = CCMemoryHeap::alloc( size );
+		if( p == nullptr && memPolicy == MemoryAllocPolicy::TryCCM )
+			p = chHeapAlloc( nullptr, size );
+	}
+	else //if( memPolicy == MemoryAllocPolicy::Default )
+		p = chHeapAlloc( nullptr, size );
+	return p;
+}
 
 void operator delete( void *p ) { if( p ) chHeapFree( p ); }
 void operator delete[]( void *p ) { if( p ) chHeapFree( p ); }
-void operator delete( void *p, unsigned int ) { if( p ) chHeapFree( p ); }
-void operator delete[]( void *p, unsigned int ) { if( p ) chHeapFree( p ); }
+void operator delete( void *p, unsigned int size ) { if( p ) chHeapFree( p ); }
+void operator delete[]( void *p, unsigned int size ) { if( p ) chHeapFree( p ); }
 
 extern "C"
 {
