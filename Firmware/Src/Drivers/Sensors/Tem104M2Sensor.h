@@ -34,9 +34,10 @@ public:
 		} instant;
 		struct IntegratedValues
 		{
+			uint32_t utc;
 			uint32_t T_Rab;     // total work time
 			uint32_t T_offline;	// time since last shutdown
-
+			uint32_t reserved;
 			struct Ch
 			{
 				double intV;	    // counted volume
@@ -51,9 +52,11 @@ public:
 				uint32_t T_rev;		// system runtime with reverce in system
 				uint32_t T_pt;		//
 				uint8_t TekErr;		// byte error block 1
-				uint8_t TehErr;		// byte error block 2
+				uint8_t reserved;
+				uint16_t TehErr;	// byte error block 2
 				uint16_t tmp[3];	// temperature by chanell
 				uint16_t prs[3];	// pressure by chanell
+				uint32_t reserved2;
 			} ch[4];
 		} integrated;
 		

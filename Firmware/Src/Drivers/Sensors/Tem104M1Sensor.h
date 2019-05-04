@@ -26,6 +26,8 @@ public:
 		} instant;
 		struct IntegratedValues
 		{
+			uint32_t utc;
+			uint32_t reserved;
 			double intV;	    // ���������� ������ �� ������
 			double intM;	    // ���������� ����� �� ������
 			double intQ;	    // ���������� ������� �� ������
@@ -36,7 +38,7 @@ public:
 			uint32_t T_Dt;		// ����� � ������ dT < dTmin
 			uint32_t T_Gmax;	// ����� ���������� � ������ G > Gmax 
 			uint32_t T_Gmin;	// ����� ���������� � ������ G < Gmin
-			uint32_t reserved;
+			uint32_t reserved2;
 			uint16_t tmp[2];	// �����������
 			uint8_t prs[2];		// ��������
 			uint8_t TekErr;		// ������� ������ 1

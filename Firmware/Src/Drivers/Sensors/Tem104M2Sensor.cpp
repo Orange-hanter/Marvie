@@ -171,7 +171,9 @@ SensorData::Error Tem104M2Sensor::waitResponse( uint32_t size )
 void Tem104M2Sensor::parseTimerResponsePart1()
 {
 	data.lock();
-	io->read( nullptr, 6 + 8, TIME_IMMEDIATE );
+	io->read( nullptr, 6, TIME_IMMEDIATE );
+	io->read( (uint8_t*)&data.integrated.utc, sizeof(data.integrated.utc), TIME_IMMEDIATE );
+	io->read( nullptr, 4, TIME_IMMEDIATE );
 	{
 		struct
 		{
@@ -254,7 +256,7 @@ void Tem104M2Sensor::parseTimerResponsePart2()
 			data.integrated.ch[i].T_Dt = pack.T_Dt[i];
 		}
 	}
-	
+
 	io->read( nullptr, io->readAvailable(), TIME_IMMEDIATE );
 	data.unlock();
 }
@@ -282,7 +284,7 @@ void Tem104M2Sensor::parseTimerResponsePart22()
 		struct
 		{
 			uint8_t TekErr[4];
-			uint8_t TehErr[4];
+			uint16_t TehErr[4];
 		} pack;
 		io->read( ( uint8_t* )&pack, sizeof( pack ), TIME_IMMEDIATE );
 		for( size_t i = 0; i < 4; i++ )
@@ -299,11 +301,13 @@ void Tem104M2Sensor::parseTimerResponsePart22()
 		} pack;
 		io->read( ( uint8_t* )&pack, sizeof( pack ), TIME_IMMEDIATE );
 		for( auto i = 0; i < 4; ++i )
+		{
 			for( auto j = 0; j < 3; ++j )
 			{
 				data.integrated.ch[i].tmp[j] = pack.tmp[i][j];
-				data.integrated.ch[i].prs[j] = pack.prs[i][j];
+				data.integrated.ch[i].prs[j] = ( uint16_t )pack.prs[i][j];
 			}
+		}
 	}
 
 	io->read( nullptr, io->readAvailable(), TIME_IMMEDIATE );
