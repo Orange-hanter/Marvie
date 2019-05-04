@@ -92,6 +92,7 @@ RESOURCES += \
     MarvieControl.qrc
 
 FORMS += \
+    ComPortSharingSettingsWindow.ui \
     DeviceFirmwareInfoWidget.ui \
     AccountWindow.ui \
     MarvieControl.ui \
