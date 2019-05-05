@@ -4129,6 +4129,7 @@ void MarvieControl::resetDeviceInfo()
 	ui.modbusRtuStatusLabel->setText( "ModbusRTU: unknown" );
 	ui.modbusTcpStatusLabel->setText( "ModbusTCP: unknown" );
 	ui.modbusAsciiStatusLabel->setText( "ModbusASCII: unknown" );
+	ui.sharedComPortStatusLabel->setText( "SharedCOM: unknown" );
 }
 
 DateTime MarvieControl::toDeviceDateTime( const QDateTime& dateTime )

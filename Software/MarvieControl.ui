@@ -461,6 +461,7 @@
   <property name="font">
    <font>
     <family>Tahoma</family>
+    <pointsize>8</pointsize>
    </font>
   </property>
   <property name="windowTitle">

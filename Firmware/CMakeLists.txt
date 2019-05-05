@@ -10,7 +10,7 @@ set(MARVIE_FIRMWARE_VERSION_BASE "0.8.4.1" CACHE STRING "Marvie base firmware ve
 set(MARVIE_FIRMWARE_VERSION "${MARVIE_FIRMWARE_VERSION_BASE}${MODEM_PWRKEY_LEVEL}")
 message("Marvie firmware version: ${MARVIE_FIRMWARE_VERSION}")
 configure_file(${CMAKE_SOURCE_DIR}/Src/MarviePlatform.h.in ${CMAKE_SOURCE_DIR}/Src/MarviePlatform.h)
-message(${MODEM_PWRKEY_LEVEL})
+
 set(STM32_FLASH_ORIGIN "0x08008400")
 set(STM32_FLASH_SIZE "479K")
 set(STM32_RAM_SIZE "128K")

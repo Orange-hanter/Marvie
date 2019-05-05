@@ -29,12 +29,14 @@ public:
 		Terminal( RemoteTerminalServer* server );
 
 	public:
+		enum EventFlag : eventflags_t { TerminationRequestEventFlag = 1, InputAvailableEventFlag = 2 };
+
 		int stdOutWrite( const uint8_t* data, uint32_t size );
 		int stdErrWrite( const uint8_t* data, uint32_t size );
-		int readKeyCode();
+		int readKeyCode( sysinterval_t timeout = TIME_INFINITE );
 		int readLine( uint8_t* data, uint32_t maxSize );
 		int readBytes( uint8_t* data, uint32_t maxSize );
-		bool isTerminationRequested();
+		bool isTerminationRequested() const;
 
 		void setCursorReplaceMode( bool enabled );
 		void moveCursor( int n );
@@ -50,8 +52,11 @@ public:
 		void setBackgroundColor( uint8_t r, uint8_t g, uint8_t b );
 		void restoreColors();
 
+		EventSourceRef eventSource();
+
 	private:
 		RemoteTerminalServer* server;
+		EventSource evtSource;
 	};
 
 	RemoteTerminalServer();

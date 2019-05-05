@@ -162,6 +162,7 @@ void RemoteTerminalServer::main()
 			{
 				terminationReqReceived = true;
 				in.clear();
+				terminal.evtSource.broadcastFlags( Terminal::EventFlag::TerminationRequestEventFlag );
 				future.wait();
 				future = Future< int >();
 				removeFiles();
@@ -228,6 +229,7 @@ void RemoteTerminalServer::inputHandler()
 				{
 					terminationReqReceived = true;
 					in.clear();
+					terminal.evtSource.broadcastFlags( Terminal::EventFlag::TerminationRequestEventFlag );
 				}
 				continue;
 			}
@@ -258,15 +260,20 @@ void RemoteTerminalServer::inputHandler()
 				{
 					terminationReqReceived = true;
 					in.clear();
+					terminal.evtSource.broadcastFlags( Terminal::EventFlag::TerminationRequestEventFlag );
 				}
 				else if( *inputData >= Control::KeyEscape && *inputData <= Control::Char255 )
 				{
 					uint8_t esc[2] = { 255, *inputData };
 					in.write( esc, 2 );
+					terminal.evtSource.broadcastFlags( Terminal::EventFlag::InputAvailableEventFlag );
 				}
 			}
 			else
+			{
 				in.write( inputData, 1 );
+				terminal.evtSource.broadcastFlags( Terminal::EventFlag::InputAvailableEventFlag );
+			}
 			break;
 		}
 		case TerminalState::WaitCommand:
@@ -656,7 +663,7 @@ int RemoteTerminalServer::Terminal::stdErrWrite( const uint8_t* data, uint32_t s
 	}
 }
 
-int RemoteTerminalServer::Terminal::readKeyCode()
+int RemoteTerminalServer::Terminal::readKeyCode( sysinterval_t timeout )
 {
 	if( server->inFile )
 	{
@@ -673,7 +680,7 @@ int RemoteTerminalServer::Terminal::readKeyCode()
 		if( server->terminationReqReceived )
 			return -1;
 		uint8_t byte;
-		if( server->in.waitForReadAvailable( 1, TIME_INFINITE ) && server->in.read( &byte, 1 ) )
+		if( server->in.waitForReadAvailable( 1, timeout ) && server->in.read( &byte, 1 ) )
 		{
 			if( byte == 255 )
 			{
@@ -886,7 +893,7 @@ int RemoteTerminalServer::Terminal::readBytes( uint8_t* data, uint32_t maxSize )
 	}
 }
 
-bool RemoteTerminalServer::Terminal::isTerminationRequested()
+bool RemoteTerminalServer::Terminal::isTerminationRequested() const
 {
 	return server->terminationReqReceived;
 }
@@ -968,4 +975,9 @@ void RemoteTerminalServer::Terminal::setBackgroundColor( uint8_t r, uint8_t g, u
 void RemoteTerminalServer::Terminal::restoreColors()
 {
 	server->sendControl( RemoteTerminalServer::Control::ConsoleRestoreColors );
+}
+
+EventSourceRef RemoteTerminalServer::Terminal::eventSource()
+{
+	return &evtSource;
 }
