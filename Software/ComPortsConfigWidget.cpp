@@ -309,6 +309,7 @@ void ComPortsConfigWidget::addContent( unsigned int id, QHBoxLayout* layout, Ass
 		layout->addWidget( edit );
 
 		layout->addItem( new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum ) );
+		layout->setStretch( 4, 1 );
 		break;
 	}
 	case ComPortsConfigWidget::Assignment::Multiplexer:

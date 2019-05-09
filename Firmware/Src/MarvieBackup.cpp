@@ -25,6 +25,7 @@ void MarvieBackup::Settings::reset()
 
 	flags.ethernetDhcp = false;
 	flags.gsmEnabled = false;
+	flags.sntpClientEnabled = false;
 
 	strcpy( passwords.adminPassword, "admin" );
 	strcpy( passwords.observerPassword, "observer" );
@@ -35,6 +36,9 @@ void MarvieBackup::Settings::reset()
 
 	gsm.pinCode = 1111;
 	strcpy( gsm.apn, "vmi" );
+
+	dateTime.lastSntpSync = -1;
+	dateTime.timeZone = 0;
 
 	setValid();
 }
@@ -55,7 +59,7 @@ void MarvieBackup::init()
 void MarvieBackup::reset()
 {
 	marker = correctMarker;
-	version = 1;
+	version = 2;
 
 	settings.reset();
 	failureDesc.reset();

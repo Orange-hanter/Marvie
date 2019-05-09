@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.11)
 enable_language(ASM)
 #set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-set(MARVIE_FIRMWARE_VERSION_BASE "0.8.4.1" CACHE STRING "Marvie base firmware version" FORCE)
+set(MARVIE_FIRMWARE_VERSION_BASE "0.8.5.0" CACHE STRING "Marvie base firmware version" FORCE)
 #if(NOT MODEM_PWRKEY_LEVEL)
 #	set(MODEM_PWRKEY_LEVEL "H")
 #endif()
@@ -29,8 +29,8 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/GCC/
 	${CMAKE_SOURCE_DIR}/ChibiOS/os/various
 	${CMAKE_SOURCE_DIR}/ChibiOS/os/various/lwip_bindings/
-    ${CMAKE_SOURCE_DIR}/Config/
-    ${CMAKE_SOURCE_DIR}/Config/Firmware
+	${CMAKE_SOURCE_DIR}/Config/
+	${CMAKE_SOURCE_DIR}/Config/Firmware
 )
 
 add_subdirectory(Lib/lwip)
@@ -45,29 +45,29 @@ include_directories(
 )
 
 set(apps_SRCS
+	${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/ModbusDevice.cpp
 	${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/ModbusIODeviceStream.cpp
 	${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/ModbusServer.cpp
 	${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/RawModbusClient.cpp
 	${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/RawModbusServer.cpp
 	${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/TcpModbusServer.cpp
-    ${CMAKE_SOURCE_DIR}/Src/Apps/Modbus/ModbusDevice.cpp
 )
 
 set(core_SRCS
+	${CMAKE_SOURCE_DIR}/Src/Core/ByteRingBuffer.cpp
 	${CMAKE_SOURCE_DIR}/Src/Core/CCMemoryAllocator.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/CCMemoryHeap.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/CpuUsageMonitor.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/DateTime.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/DateTimeService.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/Event.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/IODevice.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/MemoryStatus.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/NewDelete.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/Object.cpp
+	${CMAKE_SOURCE_DIR}/Src/Core/ObjectMemoryUtilizer.cpp
 	${CMAKE_SOURCE_DIR}/Src/Core/Thread.cpp
 	${CMAKE_SOURCE_DIR}/Src/Core/Timer.cpp
-    ${CMAKE_SOURCE_DIR}/Src/Core/ByteRingBuffer.cpp
-    ${CMAKE_SOURCE_DIR}/Src/Core/CCMemoryHeap.cpp
-    ${CMAKE_SOURCE_DIR}/Src/Core/CpuUsageMonitor.cpp
-    ${CMAKE_SOURCE_DIR}/Src/Core/DateTime.cpp
-    ${CMAKE_SOURCE_DIR}/Src/Core/DateTimeService.cpp
-    ${CMAKE_SOURCE_DIR}/Src/Core/Event.cpp
-    ${CMAKE_SOURCE_DIR}/Src/Core/IODevice.cpp
-    ${CMAKE_SOURCE_DIR}/Src/Core/MemoryStatus.cpp
-    ${CMAKE_SOURCE_DIR}/Src/Core/NewDelete.cpp
-    ${CMAKE_SOURCE_DIR}/Src/Core/Object.cpp
-    ${CMAKE_SOURCE_DIR}/Src/Core/ObjectMemoryUtilizer.cpp
 )
 
 set(drivers_SRCS
@@ -75,10 +75,17 @@ set(drivers_SRCS
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Interfaces/SharedRs485.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Interfaces/Usart.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Interfaces/UsartBasedDevice.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/LogicOutput.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Network/Ethernet/EthernetThread.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Network/SimGsm/SimGsmATResponseParsers.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Network/SimGsm/SimGsmPppModem.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/AbstractSensor.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/TestSensorA.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/TestSensorB.cpp
+	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/TestSRSensorA.cpp
+)
+
+set(sensorDivers_SRCS
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/AnalogSensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Art01Sensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Ce301Sensor.cpp
@@ -90,10 +97,6 @@ set(drivers_SRCS
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Tem104USensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Term0204Sensor.cpp
 	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/Term0208Sensor.cpp
-	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/TestSensorA.cpp
-	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/TestSensorB.cpp
-	${CMAKE_SOURCE_DIR}/Src/Drivers/Sensors/TestSRSensorA.cpp
-	${CMAKE_SOURCE_DIR}/Src/Drivers/LogicOutput.cpp
 )
 
 set(fileSystem_SRCS
@@ -136,11 +139,17 @@ set(remoteTerminal_SRCS
 )
 
 set(sensorService_SRCS
+	${CMAKE_SOURCE_DIR}/Src/SensorService/SensorService.cpp
+	${CMAKE_SOURCE_DIR}/Src/SensorService/TestSensorAType.cpp
+	${CMAKE_SOURCE_DIR}/Src/SensorService/TestSensorBType.cpp
+	${CMAKE_SOURCE_DIR}/Src/SensorService/TestSRSensorAType.cpp
+)
+
+set(sensorType_SRCS
 	${CMAKE_SOURCE_DIR}/Src/SensorService/AnalogSensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Art01SensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Ce301SensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Mr01SensorType.cpp
-	${CMAKE_SOURCE_DIR}/Src/SensorService/SensorService.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem05MSensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem104M1SensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem104M2SensorType.cpp
@@ -148,9 +157,6 @@ set(sensorService_SRCS
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Tem104USensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Term0204SensorType.cpp
 	${CMAKE_SOURCE_DIR}/Src/SensorService/Term0208SensorType.cpp
-	${CMAKE_SOURCE_DIR}/Src/SensorService/TestSensorAType.cpp
-	${CMAKE_SOURCE_DIR}/Src/SensorService/TestSensorBType.cpp
-	${CMAKE_SOURCE_DIR}/Src/SensorService/TestSRSensorAType.cpp
 )
 
 set(support_SRCS
@@ -184,15 +190,15 @@ set(firmware_SRCS
 	${CMAKE_SOURCE_DIR}/Src/MarviePlatform.cpp
 	${CMAKE_SOURCE_DIR}/Src/SingleBRSensorReader.cpp
 	${CMAKE_SOURCE_DIR}/Src/stm32f4xx_flash.c
-    ${CMAKE_SOURCE_DIR}/Src/BRSensorReader.cpp
-    ${CMAKE_SOURCE_DIR}/Src/Crc32HW.cpp
-    ${CMAKE_SOURCE_DIR}/Src/FirmwareTransferService.cpp
-    ${CMAKE_SOURCE_DIR}/Src/main.cpp
-    ${CMAKE_SOURCE_DIR}/Src/MarvieDevice.cpp
-    ${CMAKE_SOURCE_DIR}/Src/MarvieXmlConfigParsers.cpp
-    ${CMAKE_SOURCE_DIR}/Src/MLinkServer.cpp
-    ${CMAKE_SOURCE_DIR}/Src/MultipleBRSensorsReader.cpp
-    ${CMAKE_SOURCE_DIR}/Src/NetworkSensorReader.cpp
+	${CMAKE_SOURCE_DIR}/Src/BRSensorReader.cpp
+	${CMAKE_SOURCE_DIR}/Src/Crc32HW.cpp
+	${CMAKE_SOURCE_DIR}/Src/FirmwareTransferService.cpp
+	${CMAKE_SOURCE_DIR}/Src/main.cpp
+	${CMAKE_SOURCE_DIR}/Src/MarvieDevice.cpp
+	${CMAKE_SOURCE_DIR}/Src/MarvieXmlConfigParsers.cpp
+	${CMAKE_SOURCE_DIR}/Src/MLinkServer.cpp
+	${CMAKE_SOURCE_DIR}/Src/MultipleBRSensorsReader.cpp
+	${CMAKE_SOURCE_DIR}/Src/NetworkSensorReader.cpp
 	#${CMAKE_SOURCE_DIR}/Src/usbcfg.c
 )
 
@@ -201,19 +207,22 @@ add_executable(${CMAKE_PROJECT_NAME}.elf
 	${apps_SRCS}
 	${core_SRCS}
 	${drivers_SRCS}
+	${sensorDivers_SRCS}
 	${fileSystem_SRCS}
 	${filters_SRCS}
 	${log_SRCS}
 	${network_SRCS}
 	${remoteTerminal_SRCS}
 	${sensorService_SRCS}
+	${sensorType_SRCS}
 	${support_SRCS}
 	${ChibiOS_SOURCES}
 	${chibios_various_SRCS}
 	${test_SRCS}
 )
 target_link_libraries(${CMAKE_PROJECT_NAME}.elf
-    lwipcore
+	lwipcore
+	lwipallapps
 	fatfs
 	modbus
 	tinyxml2

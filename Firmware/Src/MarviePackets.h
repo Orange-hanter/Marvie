@@ -64,7 +64,7 @@ namespace MarviePackets
 	{
 		uint8_t comPortsCount;
 		uint8_t reserved[3];
-	};	
+	};
 	struct CpuLoad 
 	{
 		float load;
@@ -103,10 +103,41 @@ namespace MarviePackets
 	{
 		DateTime dateTime;
 		uint32_t workingTime;
-		enum class DeviceState : uint8_t { Reconfiguration, Working, IncorrectConfiguration } state;
-		enum class ConfigError : uint8_t { NoError, NoConfiglFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorReadingConfigError, LogConfigError, SensorsConfigError } configError;
-		enum class SdCardStatus : uint8_t { NotInserted, Initialization, InitFailed, BadFileSystem, Formatting, Working } sdCardStatus;
-		enum class LogState : uint8_t { Off, Stopped, Working, Archiving, Stopping } logState;
+		enum class DeviceState : uint8_t
+		{
+			Reconfiguration,
+			Working,
+			IncorrectConfiguration
+		} state;
+		enum class ConfigError : uint8_t
+		{
+			NoError,
+			NoConfiglFile,
+			XmlStructureError,
+			ComPortsConfigError,
+			NetworkConfigError,
+			DateTimeConfigError,
+			SensorReadingConfigError,
+			LogConfigError,
+			SensorsConfigError
+		} configError;
+		enum class SdCardStatus : uint8_t
+		{
+			NotInserted,
+			Initialization,
+			InitFailed,
+			BadFileSystem,
+			Formatting,
+			Working
+		} sdCardStatus;
+		enum class LogState : uint8_t
+		{
+			Off,
+			Stopped,
+			Working,
+			Archiving,
+			Stopping
+		} logState;
 		uint8_t errorSensorId;
 	};
 	struct EthernetStatus
@@ -131,11 +162,12 @@ namespace MarviePackets
 	};
 	struct ServiceStatistics
 	{
-		int16_t rawModbusClientsCount;
-		int16_t tcpModbusRtuClientsCount;
-		int16_t tcpModbusAsciiClientsCount;
-		int16_t tcpModbusIpClientsCount;
-		int16_t sharedComPortClientsCount;
+		enum SntpState : int8_t { Off, Initializing, Working } sntpClientState;
+		int8_t rawModbusClientsCount;
+		int8_t tcpModbusRtuClientsCount;
+		int8_t tcpModbusAsciiClientsCount;
+		int8_t tcpModbusIpClientsCount;
+		int8_t sharedComPortClientsCount;
 	};
 	struct AccountNewPassword
 	{

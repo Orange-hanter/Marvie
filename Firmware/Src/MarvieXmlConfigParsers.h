@@ -27,15 +27,21 @@ namespace MarvieXmlConfigParsers
 		uint16_t port;
 	};
 
+	struct DateTimeConf
+	{
+		uint32_t timeZone;
+	};
+
 	struct NetworkConf
 	{
-		struct EthernetConf 
+		struct EthernetConf
 		{
 			volatile bool dhcpEnable;
 			IpAddress ip;
 			uint32_t netmask;
 			IpAddress gateway;
 		} ethConf;
+		bool sntpClientEnabled;
 		uint16_t modbusRtuServerPort;
 		uint16_t modbusTcpServerPort;
 		uint16_t modbusAsciiServerPort;
@@ -109,6 +115,7 @@ namespace MarvieXmlConfigParsers
 	bool parseModbusAsciiSlaveConfig( XMLElement* node, ModbusAsciiSlaveConf* conf );
 	bool parseMultiplexerConfig( XMLElement* node, MultiplexerConf* conf );
 	ComPortConf** parseComPortsConfig( XMLElement* comPortsConfigNode, const std::list< std::list< ComPortAssignment > >& comPortAssignments );
+	bool parseDateTimeConfig( XMLElement* dateTimeConfigNode, DateTimeConf* conf );
 	bool parseNetworkConfig( XMLElement* networkConfigNode, NetworkConf* conf );
 	bool parseSensorReadingConfig( XMLElement* sensorReadingConfigNode, SensorReadingConf* conf );
 	bool parseLogConfig( XMLElement* logConfigNode, LogConf* conf );

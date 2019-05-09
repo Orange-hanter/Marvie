@@ -28,6 +28,8 @@ public:
 	inline bool operator==( const Time& other ) const { return ms == other.ms && s == other.s && m == other.m && h == other.h; }
 	inline bool operator!=( const Time& other ) const { return ms != other.ms || s != other.s || m != other.m || h != other.h; }
 
+	static inline Time fromMsecsSinceStartOfDay( int32_t msec ) { return Time( ( msec / 3600000 ) % 24, ( msec / 60000 ) % 60, ( msec / 1000 ) % 60, msec % 1000 ); }
+
 private:
 	uint32_t ms : 10;
 	uint32_t s : 6;
@@ -76,6 +78,8 @@ public:
 	inline bool operator==( const Date& other ) const { return d == other.d && m == other.m && y == other.y; }
 	inline bool operator!=( const Date& other ) const { return d != other.d || m != other.m || y != other.y; }
 
+	static Date fromDaysSinceEpoch( int32_t days );
+
 private:
 	static uint32_t _daysSinceEpoch( uint32_t day, uint32_t month, uint32_t year );
 	static inline DayOfWeek _calcDayOfWeek( uint32_t day, uint32_t month, uint32_t year )
@@ -113,6 +117,8 @@ public:
 
 	inline bool operator==( const DateTime& other ) const { return d == other.d && t == other.t; }
 	inline bool operator!=( const DateTime& other ) const { return d != other.d || t != other.t; }
+
+	static inline DateTime fromMsecsSinceEpoch( int64_t msecs ) { return DateTime( Date::fromDaysSinceEpoch( msecs / 86400000 ), Time::fromMsecsSinceStartOfDay( msecs % 86400000 ) ); }
 
 private:
 	Date d;

@@ -214,6 +214,22 @@ MarvieXmlConfigParsers::ComPortConf** MarvieXmlConfigParsers::parseComPortsConfi
 	return comPortsConfig;
 }
 
+bool MarvieXmlConfigParsers::parseDateTimeConfig( XMLElement* dateTimeConfigNode, DateTimeConf* conf )
+{
+	if( !dateTimeConfigNode )
+	{
+		conf->timeZone = 0;
+		return true;
+	}
+
+	int value;
+	if( dateTimeConfigNode->QueryIntAttribute( "timeZone", &value ) == XML_NO_ATTRIBUTE )
+		return false;
+	conf->timeZone = value;
+
+	return true;
+}
+
 bool MarvieXmlConfigParsers::parseNetworkConfig( XMLElement* networkConfigNode, NetworkConf* conf )
 {
 	if( !networkConfigNode )
@@ -238,6 +254,13 @@ bool MarvieXmlConfigParsers::parseNetworkConfig( XMLElement* networkConfigNode, 
 	if( !c1 )
 		return false;
 	conf->ethConf.gateway = IpAddress( c1->GetText() );
+
+	c0 = networkConfigNode->FirstChildElement( "sntpClient" );
+	if( c0 )
+		conf->sntpClientEnabled = true;
+	else
+		conf->sntpClientEnabled = false;
+
 	c0 = networkConfigNode->FirstChildElement( "modbusRtuServer" );
 	if( c0 )
 	{

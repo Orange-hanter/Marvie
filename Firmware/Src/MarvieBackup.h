@@ -16,6 +16,7 @@ struct MarvieBackup
 		{
 			uint32_t ethernetDhcp : 1;
 			uint32_t gsmEnabled : 1;
+			uint32_t sntpClientEnabled : 1;
 		} flags;
 		struct AccountPasswords
 		{
@@ -33,6 +34,11 @@ struct MarvieBackup
 			uint16_t pinCode;
 			char apn[31 + 1];
 		} gsm;
+		struct DateTime
+		{
+			int64_t lastSntpSync;
+			uint32_t timeZone;
+		} dateTime;
 
 		bool isValid();
 		void setValid();

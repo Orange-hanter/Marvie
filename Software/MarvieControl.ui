@@ -1139,7 +1139,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
       <enum>QFrame::Raised</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="controlPage">
       <layout class="QHBoxLayout" name="horizontalLayout_26">
@@ -2786,6 +2786,30 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                       <item>
                        <layout class="QVBoxLayout" name="verticalLayout_21">
                         <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_66">
+                          <item>
+                           <widget class="QLabel" name="sntpStatusLabel">
+                            <property name="text">
+                             <string>SNTP: unknown</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_53">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>5</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
                          <layout class="QHBoxLayout" name="horizontalLayout_36">
                           <item>
                            <widget class="QLabel" name="modbusTcpStatusLabel">
@@ -3851,7 +3875,7 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
        <item>
         <widget class="QStackedWidget" name="settingsStackedWidget">
          <property name="currentIndex">
-          <number>3</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="mainSettingsPage">
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -4150,9 +4174,9 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
-                <width>366</width>
-                <height>698</height>
+                <y>-222</y>
+                <width>400</width>
+                <height>789</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -4425,6 +4449,50 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                        </item>
                        <item>
                         <spacer name="horizontalSpacer_34">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QWidget" name="gsmModbusTcpGroupWidget_3" native="true">
+                      <layout class="QHBoxLayout" name="horizontalLayout_65">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QCheckBox" name="sntpCheckBox">
+                         <property name="minimumSize">
+                          <size>
+                           <width>90</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string>SNTP</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_52">
                          <property name="orientation">
                           <enum>Qt::Horizontal</enum>
                          </property>
@@ -4775,6 +4843,222 @@ QToolButton:checked { background-color: rgb(210, 210, 215); border: none; }</str
                        </spacer>
                       </item>
                      </layout>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QWidget" name="networkConfigWidget_4" native="true">
+                 <layout class="QVBoxLayout" name="verticalLayout_40">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_31">
+                    <property name="font">
+                     <font>
+                      <pointsize>14</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Date and time config</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_41">
+                    <property name="leftMargin">
+                     <number>18</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QWidget" name="gsmModbusTcpGroupWidget_4" native="true">
+                      <layout class="QHBoxLayout" name="horizontalLayout_71">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QLabel" name="label_35">
+                         <property name="text">
+                          <string>Time zone</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="timeZoneComboBox">
+                         <property name="minimumSize">
+                          <size>
+                           <width>85</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="currentIndex">
+                          <number>12</number>
+                         </property>
+                         <item>
+                          <property name="text">
+                           <string>UTC-12:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC-11:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC-10:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC-09:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC-08:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC-07:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC-06:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC-05:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC-04:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC-03:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC-02:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC-01:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC+00:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC+01:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC+02:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC+03:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC+04:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC+05:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC+06:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC+07:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC+08:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC+09:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC+10:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC+11:00</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>UTC+12:00</string>
+                          </property>
+                         </item>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_58">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
                     </item>
                    </layout>
                   </item>

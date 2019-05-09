@@ -888,7 +888,7 @@ void MarvieControl::deviceVersionMenuButtonClicked()
 
 void MarvieControl::syncDateTimeButtonClicked()
 {
-	DateTime dateTime = toDeviceDateTime( QDateTime::currentDateTime() );
+	DateTime dateTime = toDeviceDateTime( QDateTime::currentDateTime().toUTC() );
 	mlink.sendPacket( MarviePackets::Type::SetDateTimeType, QByteArray( ( const char* )&dateTime, sizeof( dateTime ) ) );
 }
 
@@ -3265,6 +3265,8 @@ void MarvieControl::clearMainConfig()
 	ui.staticIpLineEdit->setText( "192.168.10.10" );
 	ui.netmaskLineEdit->setText( "255.255.255.0" );
 	ui.gatewayLineEdit->setText( "192.168.10.1" );
+	ui.sntpCheckBox->setCheckState( Qt::Unchecked );
+	ui.timeZoneComboBox->setCurrentIndex( QDateTime::currentDateTime().offsetFromUtc() / 3600 + 12 );
 	ui.modbusTcpCheckBox->setCheckState( Qt::Unchecked );
 	ui.modbusTcpSpinBox->setValue( 502 );
 	ui.modbusRtuCheckBox->setCheckState( Qt::Unchecked );
@@ -3439,6 +3441,12 @@ bool MarvieControl::loadConfigFromXml( QByteArray xmlData )
 		c2 = c2.nextSiblingElement();
 	}
 
+	c1 = configRoot.firstChildElement( "dateTimeConfig" );
+	if( !c1.isNull() )
+	{
+		ui.timeZoneComboBox->setCurrentIndex( c1.attribute( "timeZone" ).toInt() + 12 );
+	}
+
 	c1 = configRoot.firstChildElement( "networkConfig" );
 	c2 = c1.firstChildElement( "ethernet" );
 	if( c2.firstChildElement( "dhcp" ).text() == "enable" )
@@ -3448,6 +3456,9 @@ bool MarvieControl::loadConfigFromXml( QByteArray xmlData )
 	ui.staticIpLineEdit->setText( c2.firstChildElement( "ip" ).text() );
 	ui.netmaskLineEdit->setText( c2.firstChildElement( "netmask" ).text() );
 	ui.gatewayLineEdit->setText( c2.firstChildElement( "gateway" ).text() );
+	c2 = c1.firstChildElement( "sntpClient" );
+	if( !c2.isNull() )
+		ui.sntpCheckBox->setCheckState( Qt::Checked );
 	c2 = c1.firstChildElement( "modbusRtuServer" );
 	if( !c2.isNull() )
 	{
@@ -3652,6 +3663,13 @@ QByteArray MarvieControl::saveConfigToXml()
 	root.appendChild( doc.createComment( "==================================================================" ) );
 
 	{
+		auto c1 = doc.createElement( "dateTimeConfig" );
+		c1.setAttribute( "timeZone", ui.timeZoneComboBox->currentIndex() - 12 );
+		root.appendChild( c1 );
+	}
+	root.appendChild( doc.createComment( "==================================================================" ) );
+
+	{
 		auto c1 = doc.createElement( "networkConfig" );
 		root.appendChild( c1 );
 		auto c2 = doc.createElement( "ethernet" );
@@ -3673,6 +3691,8 @@ QByteArray MarvieControl::saveConfigToXml()
 		c2.appendChild( c3 );
 		c3.appendChild( doc.createTextNode( ui.gatewayLineEdit->text() ) );
 
+		if( ui.sntpCheckBox->checkState() == Qt::Checked )
+			c1.appendChild( doc.createElement( "sntpClient" ) );
 		if( ui.modbusRtuCheckBox->checkState() == Qt::Checked )
 		{
 			auto c2 = doc.createElement( "modbusRtuServer" );
@@ -3926,6 +3946,9 @@ void MarvieControl::updateDeviceStatus( const MarviePackets::DeviceStatus* statu
 		case MarviePackets::DeviceStatus::ConfigError::NetworkConfigError:
 			ui.deviceStateLabel->setToolTip( "Network configuration error" );
 			break;
+		case MarviePackets::DeviceStatus::ConfigError::DateTimeConfigError:
+			ui.deviceStateLabel->setToolTip( "Date and time configuration error" );
+			break;
 		case MarviePackets::DeviceStatus::ConfigError::SensorReadingConfigError:
 			ui.deviceStateLabel->setToolTip( "Sensor reading configuration error" );
 			break;
@@ -4059,6 +4082,20 @@ void MarvieControl::updateGsmStatus( const MarviePackets::GsmStatus* status )
 
 void MarvieControl::updateServiceStatistics( const MarviePackets::ServiceStatistics* stat )
 {
+	switch( stat->sntpClientState )
+	{
+	case MarviePackets::ServiceStatistics::SntpState::Off:
+		ui.sntpStatusLabel->setText( "SNTP: off" );
+		break;
+	case MarviePackets::ServiceStatistics::SntpState::Initializing:
+		ui.sntpStatusLabel->setText( "SNTP: initializing" );
+		break;
+	case MarviePackets::ServiceStatistics::SntpState::Working:
+		ui.sntpStatusLabel->setText( "SNTP: working" );
+		break;
+	default:
+		break;
+	}
 	if( stat->tcpModbusRtuClientsCount == -1 )
 		ui.modbusRtuStatusLabel->setText( "ModbusRTU: off" );
 	else
@@ -4126,6 +4163,7 @@ void MarvieControl::resetDeviceInfo()
 	ui.gsmIpLabel->setText( "IP: 0.0.0.0" );
 
 	// Service statistics
+	ui.sntpStatusLabel->setText( "SNTP: unknown" );
 	ui.modbusRtuStatusLabel->setText( "ModbusRTU: unknown" );
 	ui.modbusTcpStatusLabel->setText( "ModbusTCP: unknown" );
 	ui.modbusAsciiStatusLabel->setText( "ModbusASCII: unknown" );

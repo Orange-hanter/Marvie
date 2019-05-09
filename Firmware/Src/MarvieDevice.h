@@ -55,7 +55,7 @@ private:
 	void mLinkServerHandlerThreadMain();
 	void terminalOutputThreadMain();
 	void uiThreadMain();
-	void networkTestThreadMain();
+	void networkServiceThreadMain();
 
 	void createGsmModemObjectM();
 	void configGsmModemUsart();
@@ -81,9 +81,6 @@ private:
 	void firmwareDownloaded( const std::string& fileName ) override;
 	void bootloaderDownloaded( const std::string& fileName ) override;
 	void restartDevice() override;
-
-	enum class NetworkTestState;
-	inline void setNetworkTestState( NetworkTestState state );
 
 	void copySensorDataToModbusRegisters( AbstractSensor* sensor );
 
@@ -135,6 +132,7 @@ public:
 	static void systemHaltHook( const char* reason );
 
 private:
+	static int rtc( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] );
 	static int lgbt( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] );
 	static int qAsciiArtFunction( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] );
 
@@ -202,8 +200,6 @@ private:
 	MarvieLog* marvieLog;
 	volatile bool sensorLogEnabled;
 	AbstractPppModem* gsmModem;
-	EventListener gsmModemMainThreadListener;
-	EventListener gsmModemMLinkThreadListener;
 	RawModbusServer* rawModbusServers;
 	uint32_t rawModbusServersCount;
 	TcpModbusServer* tcpModbusRtuServer;
@@ -217,7 +213,7 @@ private:
 	int sharedComPortIndex;
 	// ======================================================================================
 
-	Thread* mainThread, *miskTasksThread, *adInputsReadThread, *mLinkServerHandlerThread, *terminalOutputThread, *uiThread, *networkTestThread;
+	Thread* mainThread, *miskTasksThread, *adInputsReadThread, *mLinkServerHandlerThread, *terminalOutputThread, *uiThread, *networkServiceThread;
 	volatile bool mLinkComPortEnable = true;  // shared resource
 	Mutex configXmlFileMutex;
 
@@ -227,11 +223,11 @@ private:
 		SdCardStatusChanged = 1 << 0, NewBootloaderDatFile = 1 << 1, NewFirmwareDatFile = 1 << 2, NewXmlConfigDatFile = 1 << 3,
 		PowerDownDetected = 1 << 4, StartSensorReaders = 1 << 5, StopSensorReaders = 1 << 6, BrSensorReaderEvent = 1 << 7,
 		SrSensorsTimerEvent = 1 << 8, EjectSdCardRequest = 1 << 9, FormatSdCardRequest = 1 << 10, CleanMonitoringLogRequestEvent = 1 << 11,
-		CleanSystemLogRequestEvent = 1 << 12, RestartRequestEvent = 1 << 13, GsmModemMainEvent = 1 << 14, RestartNetworkInterfaceEvent = 1 << 15,
+		CleanSystemLogRequestEvent = 1 << 12, RestartRequestEvent = 1 << 13, GsmModemMainEvent = 1 << 14, RestartGsmModemRequestEvent = 1 << 15,
 		StartComPortSharingEvent = 1 << 16, StopComPortSharingEvent = 1 << 17
 	};
 	enum class DeviceState { /*Initialization,*/ Reconfiguration, Working, IncorrectConfiguration } deviceState;
-	enum class ConfigError { NoError, NoConfigFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, SensorReadingConfigError, LogConfigError, SensorsConfigError } configError;
+	enum class ConfigError { NoError, NoConfigFile, XmlStructureError, ComPortsConfigError, NetworkConfigError, DateTimeConfigError, SensorReadingConfigError, LogConfigError, SensorsConfigError } configError;
 	enum class SensorsConfigError { NoError, UnknownSensor, IncorrectSettings, BingingError } sensorsConfigError;
 	const char* errorSensorTypeName;
 	uint32_t errorSensorId;
@@ -242,17 +238,19 @@ private:
 	BasicTimer< decltype( &MarvieDevice::mainTaskThreadTimersCallback ), &MarvieDevice::mainTaskThreadTimersCallback > srSensorsUpdateTimer;
 	uint32_t srSensorPeriodCounter;
 	uint64_t monitoringLogSize;
+	EventListener gsmModemMainThreadListener;
 	FirmwareTransferService firmwareTransferService;
 
 	// MLink thread resources ================================================================
 	enum MLinkThreadEvent : eventmask_t 
 	{
 		MLinkEvent = 1, CpuUsageMonitorEvent = 2, MemoryLoadEvent = 4, EthernetEvent = 8,
-		/*MLinkTcpServerEvent = 16, MLinkTcpSocketEvent = 32,*/ GsmModemEvent = 64, ConfigChangedEvent = 128,
+		/*MLinkTcpServerEvent = 16, MLinkTcpSocketEvent = 32,*/ GsmModemMLinkEvent = 64, ConfigChangedEvent = 128,
 		ConfigResetEvent = 256, SensorUpdateEvent = 512, StatusUpdateEvent = 1024, NetworkSharedComPortThreadFinishedEvent = 2048
 	};
 	MLinkServer* mLinkServer;
 	uint8_t mLinkBuffer[255];
+	EventListener gsmModemMLinkThreadListener;
 	Mutex datFilesMutex;
 	FIL* datFiles[3]; // shared resource
 	uint32_t syncConfigNum;
@@ -274,9 +272,12 @@ private:
 	MarviePackets::MemoryLoad memoryLoad;
 
 	// Network test thread resources ===================================================================
-	enum NetworkTestThreadEvent : eventmask_t { NetworkTestEvent = 1 };
+	enum NetworkServiceThreadEvent : eventmask_t
+	{ 
+		GsmModemNetworkServiceEvent = 1, CheckGsmModemEvent = 2, CheckNtpServerAddr = 4, ConfigChangedNetworkServiceEvent = 8,
+	};
 	IpAddress testIpAddr;
-	enum class NetworkTestState { On, Off } networkTestState;
+	EventListener gsmModemNetworkServiceThreadListener;
 
 	// UI thread resources ===================================================================
 };

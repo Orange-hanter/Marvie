@@ -9,6 +9,8 @@
 #include "Network/UdpSocket.h"
 #include "Q.hpp"
 #include "RemoteTerminal/CommandLineUtility.h"
+#include "lwip/apps/sntp.h"
+#include "lwip/dns.h"
 #include "lwipthread.h"
 #include "stm32f4xx_flash.h"
 
@@ -189,6 +191,10 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	memoryLoad.sdCardCapacity = 0;
 	memoryLoad.sdCardFreeSpace = 0;
 
+	ip_addr_t dnsAddr;
+	IP4_ADDR( &dnsAddr, 8, 8, 8, 8 );
+	dns_setserver( 0, &dnsAddr );
+
 	auto ethConf = EthernetThread::instance()->currentConfig();
 	ethConf.addressMode = backup->settings.flags.ethernetDhcp ? EthernetThread::AddressMode::Dhcp : EthernetThread::AddressMode::Static;
 	ethConf.ipAddress = backup->settings.eth.ip;
@@ -207,13 +213,13 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	terminalServer.registerFunction( "mv", CommandLineUtility::mv );
 	terminalServer.registerFunction( "cat", CommandLineUtility::cat );
 	terminalServer.registerFunction( "ping", CommandLineUtility::ping );
+	terminalServer.registerFunction( "rtc", rtc );
 	terminalServer.registerFunction( "lgbt", lgbt );
 	terminalServer.registerFunction( "Q", qAsciiArtFunction );
 	terminalOutputTimer.setParameter( this );
 	terminalServer.startServer();
 
 	PingService::instance()->startService();
-	networkTestState = NetworkTestState::Off;
 	testIpAddr = IpAddress( 8, 8, 8, 8 );
 
 	mainThread = nullptr;
@@ -222,7 +228,7 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	mLinkServerHandlerThread = nullptr;
 	terminalOutputThread = nullptr;
 	uiThread = nullptr;
-	networkTestThread = nullptr;
+	networkServiceThread = nullptr;
 }
 
 MarvieDevice* MarvieDevice::instance()
@@ -239,9 +245,9 @@ void MarvieDevice::exec()
 	miskTasksThread          = Thread::createAndStart( ThreadProperties( 2048, NORMALPRIO ), [this]() { miskTasksThreadMain(); } );
 	adInputsReadThread       = Thread::createAndStart( ThreadProperties( 512,  NORMALPRIO + 2 ), [this]() { adInputsReadThreadMain(); } );
 	mLinkServerHandlerThread = Thread::createAndStart( ThreadProperties( 2048, NORMALPRIO ), [this]() { mLinkServerHandlerThreadMain(); } );
-	terminalOutputThread     = Thread::createAndStart( ThreadProperties( 1024 ), [this]() { terminalOutputThreadMain(); } );
+	terminalOutputThread     = Thread::createAndStart( ThreadProperties( 1536 ), [this]() { terminalOutputThreadMain(); } );
 	uiThread                 = Thread::createAndStart( ThreadProperties( 1024, NORMALPRIO ), [this]() { uiThreadMain(); } );
-	networkTestThread        = Thread::createAndStart( ThreadProperties( 1024, NORMALPRIO ), [this]() { networkTestThreadMain(); } );
+	networkServiceThread     = Thread::createAndStart( ThreadProperties( 1536, NORMALPRIO ), [this]() { networkServiceThreadMain(); } );
 
 	Concurrent::run( ThreadProperties( 2048, NORMALPRIO, "UdpStressTestServerThread" ), []()
 	{
@@ -345,8 +351,6 @@ void MarvieDevice::mainThreadMain()
 
 		comPortCurrentAssignments[MarviePlatform::gsmModemComPort] = MarvieXmlConfigParsers::ComPortAssignment::GsmModem;
 		comPortServiceRoutines[MarviePlatform::gsmModemComPort] = gsmModem;
-		
-		setNetworkTestState( NetworkTestState::On );
 	}
 	configMutex.unlock();
 
@@ -621,11 +625,10 @@ void MarvieDevice::mainThreadMain()
 			}
 			datFilesMutex.unlock();
 		}
-		if( em & MainThreadEvent::RestartNetworkInterfaceEvent )
+		if( em & MainThreadEvent::RestartGsmModemRequestEvent )
 		{
 			if( gsmModem && !comPortBlockFlags[MarviePlatform::gsmModemComPort] )
 			{
-				fileLog.addRecorg( "Google no response" );
 				gsmModem->stopModem();
 				gsmModem->waitForStateChange();
 				gsmModem->startModem();
@@ -945,7 +948,7 @@ void MarvieDevice::mLinkServerHandlerThreadMain()
 		}
 		if( em & MLinkThreadEvent::EthernetEvent )
 			sendEthernetStatus();
-		if( em & MLinkThreadEvent::GsmModemEvent )
+		if( em & MLinkThreadEvent::GsmModemMLinkEvent )
 		{
 			configMutex.lock();
 			sendGsmModemStatusM();
@@ -1015,36 +1018,96 @@ void MarvieDevice::terminalOutputThreadMain()
 	}
 }
 
-void MarvieDevice::networkTestThreadMain()
+void MarvieDevice::networkServiceThreadMain()
 {
+	StaticTimer<> pingTimer( [this]() {
+		chSysLockFromISR();
+		networkServiceThread->signalEventsI( NetworkServiceThreadEvent::CheckGsmModemEvent );
+		chSysUnlockFromISR();
+	} );
+	pingTimer.setInterval( TIME_S2I( 60 ) );
+
+	StaticTimer<> checkNtpServerAddrTimer( [this]() {
+		chSysLockFromISR();
+		networkServiceThread->signalEventsI( NetworkServiceThreadEvent::CheckNtpServerAddr );
+		chSysUnlockFromISR();
+	} );
+	checkNtpServerAddrTimer.setInterval( TIME_S2I( 60 ) );
+
+	static constexpr char ntpServerName[] = "pool.ntp.org";
+	ip_addr_t ntpServerAddr = {};
+	if( netconn_gethostbyname( ntpServerName, &ntpServerAddr ) != ERR_OK )
+		checkNtpServerAddrTimer.start();
+
+	MarvieBackup* backup = MarvieBackup::instance();
 	volatile int n = 0;
 	while( true )
 	{
-		chEvtWaitAny( ALL_EVENTS );
-		while( networkTestState == NetworkTestState::On )
+		eventmask_t em = Thread::waitAnyEvent( ALL_EVENTS );
+		if( em & GsmModemNetworkServiceEvent )
 		{
-			systime_t t = chVTGetSystemTimeX();
+			configMutex.lock();
+			volatile bool res = gsmModem && gsmModem->state() == ModemState::Working;
+			configMutex.unlock();
+			if( res )
+				pingTimer.start();
+			else
+			{
+				pingTimer.stop();
+				em &= ~CheckGsmModemEvent;
+				Thread::getAndClearEvents( CheckGsmModemEvent );
+				n = 0;
+			}
+		}
+		if( em & CheckGsmModemEvent )
+		{
 			volatile bool ok = false;
-			for( int i = 0; i < 8 && networkTestState == NetworkTestState::On; ++i )
+			for( int i = 0; i < 8; ++i )
 			{
 				if( PingService::instance()->ping( testIpAddr ) )
 				{
 					ok = true;
 					break;
 				}
+				/*MutexLocker locker( &configMutex );
+				if( gsmModem == nullptr || gsmModem->state() != ModemState::Working )
+					break;*/
 			}
 			if( ok )
 				n = 0;
 			else
-				++n;
-			if( n == 10 )
 			{
-				n = 0;
-				mainThread->signalEvents( MainThreadEvent::RestartNetworkInterfaceEvent );
+				if( ++n == 10 )
+				{
+					n = 0;
+					fileLog.addRecorg( "Google is not responding" );
+					mainThread->signalEvents( MainThreadEvent::RestartGsmModemRequestEvent );
+				}
 			}
-			chThdSleep( TIME_S2I( 60 ) - chVTTimeElapsedSinceX( t ) );
 		}
-		n = 0;
+		if( em & CheckNtpServerAddr )
+		{
+			if( netconn_gethostbyname( ntpServerName, &ntpServerAddr ) == ERR_OK )
+			{
+				sntp_setserver( 0, &ntpServerAddr );
+				checkNtpServerAddrTimer.stop();
+				Thread::getAndClearEvents( CheckNtpServerAddr );
+
+				if( backup->settings.flags.sntpClientEnabled )
+					sntp_init();
+			}
+		}
+		if( em & ConfigChangedNetworkServiceEvent )
+		{
+			volatile bool sntpEnabled = backup->settings.flags.sntpClientEnabled;
+			if( sntpEnabled )
+			{
+				if( ntpServerAddr.addr != 0 && !sntp_enabled() )
+					sntp_init();
+			}
+			else if( sntp_enabled() )
+				sntp_stop();
+		}
 	}
 }
 
@@ -1056,8 +1119,10 @@ void MarvieDevice::createGsmModemObjectM()
 	configGsmModemUsart();
 	gsmModem->setUsart( gsmUsart );
 	gsmModem->eventSource().registerMask( &gsmModemMainThreadListener, MainThreadEvent::GsmModemMainEvent );
-	gsmModem->eventSource().registerMask( &gsmModemMLinkThreadListener, MLinkThreadEvent::GsmModemEvent );
+	gsmModem->eventSource().registerMask( &gsmModemMLinkThreadListener, MLinkThreadEvent::GsmModemMLinkEvent );
+	gsmModem->eventSource().registerMask( &gsmModemNetworkServiceThreadListener, NetworkServiceThreadEvent::GsmModemNetworkServiceEvent );
 	gsmModemMLinkThreadListener.setThread( mLinkServerHandlerThread->threadReference() );
+	gsmModemNetworkServiceThreadListener.setThread( networkServiceThread->threadReference() );
 }
 
 void MarvieDevice::configGsmModemUsart()
@@ -1269,6 +1334,7 @@ void MarvieDevice::reconfig()
 		{
 			fileLog.addRecorg( "Configuration successfully applied" );
 			mLinkServerHandlerThread->signalEvents( ( eventmask_t )MLinkThreadEvent::ConfigChangedEvent );
+			networkServiceThread->signalEvents( NetworkServiceThreadEvent::ConfigChangedNetworkServiceEvent );
 		}
 		else
 			fileLog.addRecorg( "Configuration error" );
@@ -1357,6 +1423,15 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 		delete doc;
 		return;
 	}
+	DateTimeConf dateTimeConf;
+	if( !parseDateTimeConfig( rootNode->FirstChildElement( "dateTimeConfig" ), &dateTimeConf ) )
+	{
+		deviceState = DeviceState::IncorrectConfiguration;
+		configError = ConfigError::DateTimeConfigError;
+
+		delete doc;
+		return;
+	}
 	SensorReadingConf sensorReadingConf;
 	if( !parseSensorReadingConfig( rootNode->FirstChildElement( "sensorReadingConfig" ), &sensorReadingConf ) )
 	{
@@ -1416,10 +1491,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 	{
 		auto gsmConf = static_cast< GsmModemConf* >( comPortsConf[MarviePlatform::gsmModemComPort] );
 		if( !gsmModem )
-		{
 			createGsmModemObjectM();
-			setNetworkTestState( NetworkTestState::On );
-		}
 		MarvieBackup* backup = MarvieBackup::instance();
 		if( gsmModem->pinCode() != gsmConf->pinCode || strcmp( gsmModem->apn(), gsmConf->apn ) != 0 || !backup->settings.flags.gsmEnabled )
 		{
@@ -1448,12 +1520,21 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 
 		gsmModem->stopModem();
 		gsmModem->waitForStateChange();
-		gsmModemMLinkThreadListener.unregister();
-		gsmModemMainThreadListener.unregister();
 		delete gsmModem;
 		gsmModem = nullptr;
+	}
 
-		setNetworkTestState( NetworkTestState::Off );
+	{
+		MarvieBackup* backup = MarvieBackup::instance();
+		if( backup->settings.flags.sntpClientEnabled != networkConf.sntpClientEnabled ||
+		    backup->settings.dateTime.timeZone != dateTimeConf.timeZone )
+		{
+			backup->acquire();
+			backup->settings.flags.sntpClientEnabled = networkConf.sntpClientEnabled;
+			backup->settings.dateTime.timeZone = dateTimeConf.timeZone;
+			backup->settings.setValid();
+			backup->release();
+		}
 	}
 
 	vPortsCount = 0;
@@ -1822,9 +1903,12 @@ void MarvieDevice::removeConfigRelatedObjectM()
 {
 	for( uint i = 0; i < MarviePlatform::comPortsCount; ++i )
 	{
-		comPortCurrentAssignments[i] = MarvieXmlConfigParsers::ComPortAssignment::VPort;
-		comPortServiceRoutines[i] = nullptr;
-		vPortToComPortMap[i] = -1;
+		if( comPortCurrentAssignments[i] != MarvieXmlConfigParsers::ComPortAssignment::GsmModem )
+		{
+			comPortCurrentAssignments[i] = MarvieXmlConfigParsers::ComPortAssignment::VPort;
+			comPortServiceRoutines[i] = nullptr;
+			vPortToComPortMap[i] = -1;
+		}
 	}
 	for( uint i = 0; i < vPortsCount; ++i )
 		delete brSensorReaders[i];
@@ -2076,14 +2160,6 @@ void MarvieDevice::bootloaderDownloaded( const std::string& fileName )
 void MarvieDevice::restartDevice()
 {
 	mainThread->signalEvents( MainThreadEvent::RestartRequestEvent );
-}
-
-void MarvieDevice::setNetworkTestState( NetworkTestState state )
-{
-	chSysLock();
-	networkTestState = state;
-	networkTestThread->signalEventsI( NetworkTestThreadEvent::NetworkTestEvent );
-	chSysUnlock();
 }
 
 void MarvieDevice::copySensorDataToModbusRegisters( AbstractSensor* sensor )
@@ -2339,7 +2415,14 @@ void MarvieDevice::mLinkProcessNewPacket( uint32_t type, uint8_t* data, uint32_t
 		{
 			DateTime dateTime;
 			memcpy( ( char* )&dateTime, ( const char* )data, sizeof( DateTime ) );
+			dateTime = DateTime::fromMsecsSinceEpoch( dateTime.msecsSinceEpoch() + MarvieBackup::instance()->settings.dateTime.timeZone * 3600000 );
+
+			MarvieBackup* backup = MarvieBackup::instance();
+			backup->acquire();
+			backup->settings.dateTime.lastSntpSync = -1;
+			backup->settings.setValid();
 			DateTimeService::setDateTime( dateTime );
+			backup->release();
 		}
 		else if( type == MarviePackets::Type::StartVPortsType )
 		{
@@ -2635,6 +2718,9 @@ void MarvieDevice::sendDeviceStatus()
 	case MarvieDevice::ConfigError::NetworkConfigError:
 		status.configError = MarviePackets::DeviceStatus::ConfigError::NetworkConfigError;
 		break;
+	case MarvieDevice::ConfigError::DateTimeConfigError:
+		status.configError = MarviePackets::DeviceStatus::ConfigError::DateTimeConfigError;
+		break;
 	case MarvieDevice::ConfigError::SensorReadingConfigError:
 		status.configError = MarviePackets::DeviceStatus::ConfigError::SensorReadingConfigError;
 		break;
@@ -2767,7 +2853,14 @@ void MarvieDevice::sendGsmModemStatusM()
 
 void MarvieDevice::sendServiceStatisticsM()
 {
+	MarvieBackup* backup = MarvieBackup::instance();
 	MarviePackets::ServiceStatistics status;
+	if( sntp_enabled() )
+		status.sntpClientState = MarviePackets::ServiceStatistics::SntpState::Working;
+	else if( backup->settings.flags.sntpClientEnabled )
+		status.sntpClientState = MarviePackets::ServiceStatistics::SntpState::Initializing;
+	else
+		status.sntpClientState = MarviePackets::ServiceStatistics::SntpState::Off;
 	status.rawModbusClientsCount = ( int16_t )rawModbusServersCount;
 	if( tcpModbusRtuServer )
 		status.tcpModbusRtuClientsCount = ( int16_t )tcpModbusRtuServer->currentClientsCount();
@@ -3110,6 +3203,72 @@ void MarvieDevice::systemHaltHook( const char* reason )
 	NVIC_SystemReset();
 }
 
+int MarvieDevice::rtc( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] )
+{
+	constexpr char invalidArgsError[] = "invalid arguments";
+	if( argc != 0 && argc != 2 )
+	{
+		terminal->stdErrWrite( ( uint8_t* )invalidArgsError, sizeof( invalidArgsError ) - 1 );
+		return -1;
+	}
+	if( argc == 2 )
+	{
+		if( strcmp( argv[0], "-c" ) == 0 )
+		{
+			int calibValue = atoi( argv[1] );
+			if( calibValue > 511 )
+				calibValue = 511;
+			else if( calibValue < -511 )
+				calibValue = -511;
+
+			uint32_t calr = 0;
+			if( calibValue > 0 )
+			{
+				calr |= RTC_CALR_CALP_Msk;
+				calr |= ( uint32_t )( calibValue ) << RTC_CALR_CALM_Pos;
+			}
+			else if( calibValue < 0 )
+				calr |= ( uint32_t )( -calibValue ) << RTC_CALR_CALM_Pos;
+
+			while( RTCD1.rtc->ISR & RTC_ISR_RECALPF )
+				;
+			RTCD1.rtc->CALR = calr;
+
+			return 0;
+		}
+		else
+		{
+			terminal->stdErrWrite( ( uint8_t* )invalidArgsError, sizeof( invalidArgsError ) - 1 );
+			return -1;
+		}
+	}
+
+	char s[30];
+	DateTimeService::currentDateTime().printDateTime( s )[0] = 0;
+	std::string str( "Current date: " );
+	str.append( s );
+	str.append( "\nLast SNTP update: " );
+	MarvieBackup::instance()->acquire();
+	auto lastSync = MarvieBackup::instance()->settings.dateTime.lastSntpSync;
+	MarvieBackup::instance()->release();
+	if( lastSync == -1 )
+		str.append( "unknown" );
+	else
+	{
+		DateTime::fromMsecsSinceEpoch( lastSync ).printDateTime( s )[0] = 0;
+		str.append( s );
+	}
+	str.append( "\nCalib value: " );
+	uint32_t calr = RTCD1.rtc->CALR;
+	int32_t calrm = ( int32_t )( ( calr & RTC_CALR_CALM ) >> RTC_CALR_CALM_Pos );
+	if( ( calr & RTC_CALR_CALP_Msk ) == 0 )
+		calrm = -calrm;
+	str.append( std::to_string( calrm ) );
+	terminal->stdOutWrite( ( uint8_t* )str.c_str(), str.size() );
+
+	return 0;
+}
+
 int MarvieDevice::lgbt( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] )
 {
 	const char text[] = "LGBT LGBT LGBT LGBT LGBT LGBT LGBT LGBT\n";
@@ -3156,6 +3315,50 @@ extern "C"
 	void idleLoopHook()
 	{
 		wdgReset( &WDGD1 );
+	}
+
+	void sntpSetSystemTimeCallback( int32_t sec, uint32_t us )
+	{
+		MarvieBackup* backup = MarvieBackup::instance();
+		sec += backup->settings.dateTime.timeZone * 3600;
+		DateTime syncDateTime( Date::fromDaysSinceEpoch( sec / 86400 + 719468 ), Time::fromMsecsSinceStartOfDay( ( sec % 86400 ) * 1000 + us / 1000 ) );
+		DateTime currentDateTime = DateTimeService::currentDateTime();
+		backup->acquire();
+		DateTimeService::setDateTime( syncDateTime );
+
+		int64_t syncMsecs = syncDateTime.msecsSinceEpoch();
+		int64_t currMsecs = currentDateTime.msecsSinceEpoch();
+		int64_t d = syncMsecs - backup->settings.dateTime.lastSntpSync;
+
+		if( backup->settings.dateTime.lastSntpSync != -1 && d >= SNTP_UPDATE_DELAY )
+		{
+			int64_t calib = ( syncMsecs - currMsecs ) * 32768 * 32 / d;
+			uint32_t calr = RTCD1.rtc->CALR;
+			int32_t calrm = ( int32_t )( ( calr & RTC_CALR_CALM ) >> RTC_CALR_CALM_Pos );
+			if( ( calr & RTC_CALR_CALP_Msk ) == 0 )
+				calrm = -calrm;
+			calrm += ( int32_t )calib;
+			if( calrm > 511 )
+				calrm = 511;
+			else if( calrm < -511 )
+				calrm = -511;
+
+			calr = 0;
+			if( calrm > 0 )
+			{
+				calr |= RTC_CALR_CALP_Msk;
+				calr |= ( uint32_t )( calrm ) << RTC_CALR_CALM_Pos;
+			}
+			else if( calrm < 0 )
+				calr |= ( uint32_t )( -calrm ) << RTC_CALR_CALM_Pos;
+
+			while( RTCD1.rtc->ISR & RTC_ISR_RECALPF )
+				;
+			RTCD1.rtc->CALR = calr;
+		}
+		backup->settings.dateTime.lastSntpSync = syncMsecs;
+		backup->settings.setValid();
+		backup->release();
 	}
 
 	void NMI_Handler()
