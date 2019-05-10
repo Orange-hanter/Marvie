@@ -587,11 +587,70 @@ bool RemoteTerminalServer::makePath( const char* filePath )
 
 int RemoteTerminalServer::echo( Terminal* terminal, int argc, char* argv[] )
 {
+	volatile bool parseFlag = true, nFlag = false, eFlag = false;
 	for( int i = 0; i < argc; ++i )
 	{
+		if( parseFlag )
+		{
+			if( strcmp( argv[i], "-n" ) == 0 )
+			{
+				nFlag = true;
+				continue;
+			}
+			else if( strcmp( argv[i], "-e" ) == 0 )
+			{
+				eFlag = true;
+				continue;
+			}
+			else
+				parseFlag = false;
+		}
+		if( eFlag )
+		{
+			char* p = argv[i];
+			char* q = p;
+			do
+			{
+				if( *q == '\\' )
+				{
+					char next = *( q + 1 );
+					switch( next )
+					{
+					case 'n':
+						*p++ = '\n', q += 2;
+						break;
+					case 't':
+						*p++ = '\t', q += 2;
+						break;
+					case '0':
+						*p++ = '\0', q += 2;
+						break;
+					case '\\':
+						*p++ = '\\', q += 2;
+						break;
+					case '\0':
+						++q;
+						break;
+					default:
+						*p++ = *q++;
+						break;
+					}
+				}
+				else
+					*p++ = *q++;
+			} while( *q );
+			*p = *q;
+		}
 		if( terminal->stdOutWrite( ( uint8_t* )argv[i], strlen( argv[i] ) ) == -1 )
 			return -1;
+		if( i + 1 < argc )
+		{
+			if( terminal->stdOutWrite( ( uint8_t* )" ", 1 ) == -1 )
+				return -1;
+		}
 	}
+	if( !nFlag )
+		terminal->stdOutWrite( ( uint8_t* )"\n", 1 );
 
 	return 0;
 }

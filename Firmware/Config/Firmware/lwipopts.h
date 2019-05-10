@@ -1898,7 +1898,7 @@
 /** SNTP update delay - in milliseconds
  * Default is 1 hour. Must not be beolw 60 seconds by specification (i.e. 60000)
  */
-#define SNTP_UPDATE_DELAY           3600000 * 6
+#define SNTP_UPDATE_DELAY           3600000 * 24
 
 /** SNTP macro to get system time, used with SNTP_CHECK_RESPONSE >= 2
  * to send in request and compare in response. Also used for round-trip

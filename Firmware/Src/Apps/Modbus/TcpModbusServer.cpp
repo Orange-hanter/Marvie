@@ -3,12 +3,18 @@
 TcpModbusServer::TcpModbusServer( uint32_t stackSize /*= TCP_MODBUS_SERVER_STACK_SIZE */ ) : AbstractModbusNetworkServer( stackSize )
 {
 	clients = nullptr;
+	inactivityTimeout = TIME_S2I( 60 * 10 );
 }
 
 TcpModbusServer::~TcpModbusServer()
 {
 	stopServer();
 	waitForStateChange();
+}
+
+void TcpModbusServer::setClientInactivityTimeout( sysinterval_t timeout )
+{
+	inactivityTimeout = timeout;
 }
 
 void TcpModbusServer::main()
@@ -44,7 +50,7 @@ void TcpModbusServer::main()
 		{
 			if( em & 1 && clients[i] )
 			{
-				if( !clients[i]->stream->socket->isOpen() )
+				if( !clients[i]->stream->socket->isOpen() || clients[i]->needClose )
 				{
 					delete clients[i];
 					clients[i] = nullptr;
@@ -54,9 +60,15 @@ void TcpModbusServer::main()
 				}
 				unsigned int nextInterval = clients[i]->framer->poll();
 				if( nextInterval )
-					chVTSet( &clients[i]->timer, ( sysinterval_t )nextInterval, timerCallback, clients[i] );
+				{
+					clients[i]->requestWaiting = false;
+					clients[i]->timer.start( ( sysinterval_t )nextInterval );
+				}
 				else
-					chVTReset( &clients[i]->timer );
+				{
+					clients[i]->requestWaiting = true;
+					clients[i]->timer.start( inactivityTimeout );
+				}
 			}
 		}
 	}
@@ -134,10 +146,11 @@ void TcpModbusServer::addNewClient( TcpSocket* socket )
 	}
 }
 
-void TcpModbusServer::timerCallback( void* p )
+void TcpModbusServer::timerCallback( Client* client )
 {
-	Client* client = ( Client* )p;
 	chSysLockFromISR();
+	if( client->requestWaiting )
+		client->needClose = true;
 	client->listener.thread().signalEventsI( client->listener.eventMask() );
 	chSysUnlockFromISR();
 }
@@ -149,6 +162,8 @@ TcpModbusServer::SocketStream::SocketStream( TcpSocket* socket ) : socket( socke
 
 TcpModbusServer::SocketStream::~SocketStream()
 {
+	if( socket->isOpen() )
+		socket->disconnect();
 	delete socket;
 }
 
@@ -195,7 +210,9 @@ TcpModbusServer::Client::Client()
 	stream = nullptr;
 	buffer = nullptr;
 	framer = nullptr;
-	chVTObjectInit( &timer );
+	timer.setParameter( this );
+	requestWaiting = false;
+	needClose = false;
 }
 
 TcpModbusServer::Client::~Client()
@@ -203,5 +220,4 @@ TcpModbusServer::Client::~Client()
 	delete stream;
 	delete buffer;
 	delete framer;
-	chVTReset( &timer );
 }

@@ -212,6 +212,7 @@ MarvieDevice::MarvieDevice() : configXmlDataSendingSemaphore( false )
 	terminalServer.registerFunction( "rm", CommandLineUtility::rm );
 	terminalServer.registerFunction( "mv", CommandLineUtility::mv );
 	terminalServer.registerFunction( "cat", CommandLineUtility::cat );
+	terminalServer.registerFunction( "tail", CommandLineUtility::tail );
 	terminalServer.registerFunction( "ping", CommandLineUtility::ping );
 	terminalServer.registerFunction( "rtc", rtc );
 	terminalServer.registerFunction( "lgbt", lgbt );
@@ -1451,15 +1452,15 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 		return;
 	}
 
+	MarvieBackup* backup = MarvieBackup::instance();
 	auto ethThd = EthernetThread::instance();
 	auto ethThdConf = ethThd->currentConfig();
 	if( ( networkConf.ethConf.dhcpEnable == true && ethThdConf.addressMode != EthernetThread::AddressMode::Dhcp ) ||
-		( networkConf.ethConf.dhcpEnable == false && ethThdConf.addressMode == EthernetThread::AddressMode::Dhcp ) ||
-		networkConf.ethConf.ip != ethThdConf.ipAddress ||
-		networkConf.ethConf.netmask != ethThdConf.netmask ||
-		networkConf.ethConf.gateway != ethThdConf.gateway )
+	    ( networkConf.ethConf.dhcpEnable == false && ethThdConf.addressMode == EthernetThread::AddressMode::Dhcp ) ||
+	    networkConf.ethConf.ip != ethThdConf.ipAddress ||
+	    networkConf.ethConf.netmask != ethThdConf.netmask ||
+	    networkConf.ethConf.gateway != ethThdConf.gateway )
 	{
-		MarvieBackup* backup = MarvieBackup::instance();
 		backup->acquire();
 		backup->settings.flags.ethernetDhcp = networkConf.ethConf.dhcpEnable;
 		backup->settings.eth.ip = networkConf.ethConf.ip;
@@ -1492,7 +1493,6 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 		auto gsmConf = static_cast< GsmModemConf* >( comPortsConf[MarviePlatform::gsmModemComPort] );
 		if( !gsmModem )
 			createGsmModemObjectM();
-		MarvieBackup* backup = MarvieBackup::instance();
 		if( gsmModem->pinCode() != gsmConf->pinCode || strcmp( gsmModem->apn(), gsmConf->apn ) != 0 || !backup->settings.flags.gsmEnabled )
 		{
 			backup->acquire();
@@ -1512,7 +1512,6 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 	}
 	else if( gsmModem )
 	{
-		MarvieBackup* backup = MarvieBackup::instance();
 		backup->acquire();
 		backup->settings.flags.gsmEnabled = false;
 		backup->settings.setValid();
@@ -1525,12 +1524,18 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 	}
 
 	{
-		MarvieBackup* backup = MarvieBackup::instance();
 		if( backup->settings.flags.sntpClientEnabled != networkConf.sntpClientEnabled ||
 		    backup->settings.dateTime.timeZone != dateTimeConf.timeZone )
 		{
 			backup->acquire();
 			backup->settings.flags.sntpClientEnabled = networkConf.sntpClientEnabled;
+			if( backup->settings.dateTime.timeZone != dateTimeConf.timeZone )
+			{
+				int64_t dt = ( ( int )dateTimeConf.timeZone - ( int )backup->settings.dateTime.timeZone ) * 3600000;
+				DateTimeService::setDateTime( DateTime::fromMsecsSinceEpoch( DateTimeService::currentDateTime().msecsSinceEpoch() + dt ) );
+				if( backup->settings.dateTime.lastSntpSync != -1 )
+					backup->settings.dateTime.lastSntpSync += dt;
+			}
 			backup->settings.dateTime.timeZone = dateTimeConf.timeZone;
 			backup->settings.setValid();
 			backup->release();
@@ -3332,7 +3337,7 @@ extern "C"
 
 		if( backup->settings.dateTime.lastSntpSync != -1 && d >= SNTP_UPDATE_DELAY )
 		{
-			int64_t calib = ( syncMsecs - currMsecs ) * 32768 * 32 / d;
+			int64_t calib = ( syncMsecs - currMsecs ) * STM32_LSECLK * 32 / d;
 			uint32_t calr = RTCD1.rtc->CALR;
 			int32_t calrm = ( int32_t )( ( calr & RTC_CALR_CALM ) >> RTC_CALR_CALM_Pos );
 			if( ( calr & RTC_CALR_CALP_Msk ) == 0 )

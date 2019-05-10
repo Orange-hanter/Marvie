@@ -97,7 +97,7 @@ int CommandLineUtility::rm( RemoteTerminalServer::Terminal* terminal, int argc, 
 				rOption = true;
 			else
 			{
-				std::string err( "Invalid argument " );
+				std::string err( "invalid argument " );
 				err.append( argv[i] );
 				terminal->stdErrWrite( ( uint8_t* )err.c_str(), err.size() );
 				return -1;
@@ -150,7 +150,7 @@ int CommandLineUtility::cat( RemoteTerminalServer::Terminal* terminal, int argc,
 	std::unique_ptr< Resources > resources( new Resources );
 	if( resources == nullptr )
 	{
-		const char errMsg[] = "Memory error";
+		const char errMsg[] = "memory error";
 		terminal->stdErrWrite( ( uint8_t* )errMsg, sizeof( errMsg ) - 1 );
 		return -1;
 	}
@@ -171,6 +171,99 @@ int CommandLineUtility::cat( RemoteTerminalServer::Terminal* terminal, int argc,
 				return -1;
 		}
 		resources->file.close();
+	}
+
+	return 0;
+}
+
+int CommandLineUtility::tail( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] )
+{
+	int n = 10;
+	std::string fileName;
+	if( argc == 1 )
+		fileName = argv[0];
+	else if( argc == 3 )
+	{
+		if( strcmp( argv[0], "-n" ) != 0 )
+		{
+			const char errMsg[] = "invalid arguments";
+			terminal->stdErrWrite( ( uint8_t* )errMsg, sizeof( errMsg ) - 1 );
+			return -1;
+		}
+		n = atoi( argv[1] );
+		fileName = argv[2];
+	}
+	else
+	{
+		const char errMsg[] = "invalid arguments";
+		terminal->stdErrWrite( ( uint8_t* )errMsg, sizeof( errMsg ) - 1 );
+		return -1;
+	}
+
+	struct Resources
+	{
+		uint8_t buffer[512];
+		File file;
+	};
+	std::unique_ptr< Resources > resources( new Resources );
+	if( resources == nullptr )
+	{
+		const char errMsg[] = "memory error";
+		terminal->stdErrWrite( ( uint8_t* )errMsg, sizeof( errMsg ) - 1 );
+		return -1;
+	}
+
+	resources->file.setFileName( fileName );
+	if( !resources->file.open( FileSystem::OpenModeFlag::OpenExisting | FileSystem::OpenModeFlag::Read ) )
+	{
+		const char* errMsg = resources->file.lastErrorString();
+		terminal->stdErrWrite( ( uint8_t* )errMsg, strlen( errMsg ) );
+		return -1;
+	}
+
+	if( resources->file.size() == 0 )
+		return 0;
+	if( !resources->file.seek( resources->file.size() ) )
+		return -1;
+
+	int64_t pos = ( int64_t )resources->file.pos();
+	while( true )
+	{
+		pos -= 512;
+		int size = 512;
+		if( pos < 0 )
+		{
+			size += ( int )pos;
+			pos = 0;
+		}
+		if( !resources->file.seek( pos ) || !resources->file.read( resources->buffer, size ) )
+			return -1;
+		for( int i = size - 1; i >= 0; --i )
+		{
+			if( resources->buffer[i] == '\n' )
+			{
+				if( --n == 0 )
+				{
+					if( !resources->file.seek( pos + i + 1 ) )
+						return -1;
+					goto End;
+				}
+			}
+		}
+
+		if( pos == 0 )
+		{
+			resources->file.seek( 0 );
+			break;
+		}
+	}
+
+End:
+	uint32_t size;
+	while( ( size = resources->file.read( resources->buffer, 512 ) ) )
+	{
+		if( terminal->stdOutWrite( resources->buffer, size ) == -1 )
+			return -1;
 	}
 
 	return 0;

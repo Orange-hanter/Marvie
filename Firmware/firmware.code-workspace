@@ -56,7 +56,14 @@
 			"typeinfo": "cpp",
 			"utility": "cpp",
 			"cstddef": "cpp",
-			"algorithm": "cpp"
+			"algorithm": "cpp",
+			"sntp.h": "c",
+			"sntp_opts.h": "c",
+			"httpd.h": "c",
+			"httpd_opts.h": "c",
+			"opt.h": "c",
+			"lwipopts.h": "c",
+			"time.h": "c"
 		}
 	}
 }

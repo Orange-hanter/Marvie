@@ -9,5 +9,6 @@ namespace CommandLineUtility
 	int rm( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] );
 	int mv( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] );
 	int cat( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] );
+	int tail( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] );
 	int ping( RemoteTerminalServer::Terminal* terminal, int argc, char* argv[] );
 }

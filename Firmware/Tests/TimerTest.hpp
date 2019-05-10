@@ -8,6 +8,7 @@ namespace TimerTest
 {
 	static ThreadsQueue tq;
 	static int counter = 0;
+	struct TestType {};
 
 	void f0()
 	{
@@ -30,6 +31,12 @@ namespace TimerTest
 	void basicTimerIntCallback( int a )
 	{
 		assert( a == 42 );
+		tq.dequeueNext( MSG_OK );
+	}
+
+	void basicTimerPointerCallback( TestType* p )
+	{
+		assert( p == ( TestType* )0x42004200 );
 		tq.dequeueNext( MSG_OK );
 	}
 
@@ -263,6 +270,14 @@ namespace TimerTest
 			BasicTimer< decltype( &basicTimerIntCallback ), &basicTimerIntCallback > timer;
 			auto t0 = chVTGetSystemTimeX();
 			timer.setParameter( 42 );
+			timer.start( TIME_MS2I( 5 ) );
+			tq.enqueueSelf( TIME_INFINITE );
+			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 5 ) <= 1 );
+		}
+		{
+			BasicTimer< decltype( &basicTimerPointerCallback ), &basicTimerPointerCallback > timer;
+			auto t0 = chVTGetSystemTimeX();
+			timer.setParameter( ( TestType* )0x42004200 );
 			timer.start( TIME_MS2I( 5 ) );
 			tq.enqueueSelf( TIME_INFINITE );
 			assert( std::abs( ( int )TIME_I2MS( chVTTimeElapsedSinceX( t0 ) ) - 5 ) <= 1 );

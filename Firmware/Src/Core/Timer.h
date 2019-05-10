@@ -345,13 +345,13 @@ private:
 	}
 
 	template< typename _Parameter, bool _IsVoid >
-	inline std::enable_if_t< !std::is_floating_point< _Parameter >::value && _IsVoid > _setParameter( Parameter prm )
+	inline std::enable_if_t< !std::is_floating_point< _Parameter >::value && !std::is_pointer< _Parameter >::value && _IsVoid > _setParameter( Parameter prm )
 	{
 		vt.par = reinterpret_cast< void* >( static_cast< std::intptr_t >( prm ) );
 	}
 
 	template< typename _Parameter, bool _IsVoid >
-	inline std::enable_if_t< !std::is_floating_point< _Parameter >::value && !_IsVoid > _setParameter( Parameter prm )
+	inline std::enable_if_t< !std::is_floating_point< _Parameter >::value && !_IsVoid || std::is_pointer< _Parameter >::value && _IsVoid > _setParameter( Parameter prm )
 	{
 		vt.par = reinterpret_cast< void* >( prm );
 	}
@@ -365,9 +365,15 @@ private:
 	}
 
 	template< typename _Parameter, bool _IsVoid >
-	static std::enable_if_t< _IsVoid && !std::is_floating_point< _Parameter >::value > callback( void* p )
+	static std::enable_if_t< _IsVoid && !std::is_floating_point< _Parameter >::value && !std::is_pointer< _Parameter >::value > callback( void* p )
 	{
 		Pointer( static_cast< Parameter >( reinterpret_cast< std::intptr_t >( p ) ) );
+	}
+
+	template< typename _Parameter, bool _IsVoid >
+	static std::enable_if_t< _IsVoid && std::is_pointer< _Parameter >::value > callback( void* p )
+	{
+		Pointer( reinterpret_cast< Parameter >( p ) );
 	}
 
 	template< typename _Parameter, bool _IsVoid >

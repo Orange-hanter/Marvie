@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/Timer.h"
 #include "ModbusServer.h"
 #include "Network/TcpServer.h"
 
@@ -11,10 +12,13 @@ public:
 	TcpModbusServer( uint32_t stackSize = TCP_MODBUS_SERVER_STACK_SIZE );
 	~TcpModbusServer();
 
+	void setClientInactivityTimeout( sysinterval_t timeout );
+
 private:
 	void main() final override;
 	void addNewClient( TcpSocket* socket );
-	static void timerCallback( void* p );
+	struct Client;
+	static void timerCallback( Client* client );
 
 private:
 	struct SocketStream : public ModbusPotato::IStream
@@ -37,8 +41,11 @@ private:
 		uint8_t* buffer;
 		ModbusPotato::IFramer* framer;
 		EventListener listener;
-		virtual_timer_t timer;
+		BasicTimer< void(*)( TcpModbusServer::Client* ), &timerCallback > timer;
+		bool requestWaiting;
+		bool needClose;
 	}** clients;
 	TcpServer tcpServer;
+	sysinterval_t inactivityTimeout;
 	EventListener listener;
 };
