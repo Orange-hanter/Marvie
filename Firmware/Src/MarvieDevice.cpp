@@ -3335,7 +3335,7 @@ extern "C"
 		int64_t currMsecs = currentDateTime.msecsSinceEpoch();
 		int64_t d = syncMsecs - backup->settings.dateTime.lastSntpSync;
 
-		if( backup->settings.dateTime.lastSntpSync != -1 && d >= SNTP_UPDATE_DELAY )
+		if( backup->settings.dateTime.lastSntpSync != -1 && d >= ( SNTP_UPDATE_DELAY - 600000 ) )
 		{
 			int64_t calib = ( syncMsecs - currMsecs ) * STM32_LSECLK * 32 / d;
 			uint32_t calr = RTCD1.rtc->CALR;
