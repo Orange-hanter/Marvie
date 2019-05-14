@@ -106,6 +106,14 @@ public:
 		chVTResetI( &ptr->vt );
 	}
 
+	inline bool isActive()
+	{
+		CriticalSectionLocker locker;
+		if( ptr == nullptr )
+			return false;
+		return chVTIsArmedI( &ptr->vt );
+	}
+
 	inline void setInterval( sysinterval_t interval )
 	{
 		if( ptr )
@@ -234,6 +242,12 @@ public:
 		chVTResetI( &vt );
 	}
 
+	inline bool isActive()
+	{
+		CriticalSectionLocker locker;
+		return chVTIsArmedI( &vt );
+	}
+
 	inline void setInterval( sysinterval_t interval )
 	{
 		this->intv = interval;
@@ -330,6 +344,12 @@ public:
 	{
 		CriticalSectionLocker locker;
 		chVTResetI( &vt );
+	}
+
+	inline bool isActive()
+	{
+		CriticalSectionLocker locker;
+		return chVTIsArmedI( &vt );
 	}
 
 	inline void setParameter( Parameter prm )

@@ -2947,6 +2947,7 @@ QTreeWidgetItem* MarvieControl::insertSensorSettings( int position, QString sens
 		item->setText( 0, name );
 
 		QWidget* widget = new QWidget;
+		widget->setFixedWidth( ui.sensorSettingsTreeWidget->columnWidth( 1 ) );
 		QHBoxLayout* layout = new QHBoxLayout( widget );
 		layout->setContentsMargins( QMargins( 0, 0, 2, 0 ) );
 		layout->addWidget( content );

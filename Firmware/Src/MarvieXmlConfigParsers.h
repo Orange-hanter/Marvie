@@ -29,7 +29,7 @@ namespace MarvieXmlConfigParsers
 
 	struct DateTimeConf
 	{
-		uint32_t timeZone;
+		int32_t timeZone;
 	};
 
 	struct NetworkConf
@@ -115,8 +115,8 @@ namespace MarvieXmlConfigParsers
 	bool parseModbusAsciiSlaveConfig( XMLElement* node, ModbusAsciiSlaveConf* conf );
 	bool parseMultiplexerConfig( XMLElement* node, MultiplexerConf* conf );
 	ComPortConf** parseComPortsConfig( XMLElement* comPortsConfigNode, const std::list< std::list< ComPortAssignment > >& comPortAssignments );
-	bool parseDateTimeConfig( XMLElement* dateTimeConfigNode, DateTimeConf* conf );
 	bool parseNetworkConfig( XMLElement* networkConfigNode, NetworkConf* conf );
+	bool parseDateTimeConfig( XMLElement* dateTimeConfigNode, DateTimeConf* conf );
 	bool parseSensorReadingConfig( XMLElement* sensorReadingConfigNode, SensorReadingConf* conf );
 	bool parseLogConfig( XMLElement* logConfigNode, LogConf* conf );
-}
+} // namespace MarvieXmlConfigParsers

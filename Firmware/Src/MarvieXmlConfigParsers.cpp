@@ -214,22 +214,6 @@ MarvieXmlConfigParsers::ComPortConf** MarvieXmlConfigParsers::parseComPortsConfi
 	return comPortsConfig;
 }
 
-bool MarvieXmlConfigParsers::parseDateTimeConfig( XMLElement* dateTimeConfigNode, DateTimeConf* conf )
-{
-	if( !dateTimeConfigNode )
-	{
-		conf->timeZone = 0;
-		return true;
-	}
-
-	int value;
-	if( dateTimeConfigNode->QueryIntAttribute( "timeZone", &value ) == XML_NO_ATTRIBUTE )
-		return false;
-	conf->timeZone = value;
-
-	return true;
-}
-
 bool MarvieXmlConfigParsers::parseNetworkConfig( XMLElement* networkConfigNode, NetworkConf* conf )
 {
 	if( !networkConfigNode )
@@ -292,6 +276,22 @@ bool MarvieXmlConfigParsers::parseNetworkConfig( XMLElement* networkConfigNode, 
 	c0 = networkConfigNode->FirstChildElement( "vPortOverIp" );
 	if( c0 )
 		return parseVPortOverIpGroup( c0, &conf->vPortOverIpList );
+
+	return true;
+}
+
+bool MarvieXmlConfigParsers::parseDateTimeConfig( XMLElement* dateTimeConfigNode, DateTimeConf* conf )
+{
+	if( !dateTimeConfigNode )
+	{
+		conf->timeZone = 0;
+		return true;
+	}
+
+	int value;
+	if( dateTimeConfigNode->QueryIntAttribute( "timeZone", &value ) == XML_NO_ATTRIBUTE )
+		return false;
+	conf->timeZone = value;
 
 	return true;
 }

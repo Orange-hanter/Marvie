@@ -37,7 +37,7 @@ struct MarvieBackup
 		struct DateTime
 		{
 			int64_t lastSntpSync;
-			uint32_t timeZone;
+			int32_t timeZone;
 		} dateTime;
 
 		bool isValid();

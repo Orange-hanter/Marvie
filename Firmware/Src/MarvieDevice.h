@@ -274,7 +274,7 @@ private:
 	// Network test thread resources ===================================================================
 	enum NetworkServiceThreadEvent : eventmask_t
 	{ 
-		GsmModemNetworkServiceEvent = 1, CheckGsmModemEvent = 2, CheckNtpServerAddr = 4, ConfigChangedNetworkServiceEvent = 8,
+		GsmModemNetworkServiceEvent = 1, CheckGsmModemEvent = 2, CheckNtpServerAddrEvent = 4, ConfigChangedNetworkServiceEvent = 8,
 	};
 	IpAddress testIpAddr;
 	EventListener gsmModemNetworkServiceThreadListener;

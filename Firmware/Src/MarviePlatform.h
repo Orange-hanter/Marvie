@@ -11,7 +11,7 @@ enum class ComPortType { Rs232, Rs485 };
 class MarviePlatform
 {
 public:
-	static constexpr const char* coreVersion = "0.8.5.2L";
+	static constexpr const char* coreVersion = "0.8.5.3L";
 	static constexpr const char* platformType = "VX";
 	static constexpr const char* configXmlRootTagName = "vxConfig";
 

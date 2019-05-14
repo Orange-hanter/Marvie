@@ -1030,7 +1030,7 @@ void MarvieDevice::networkServiceThreadMain()
 
 	StaticTimer<> checkNtpServerAddrTimer( [this]() {
 		chSysLockFromISR();
-		networkServiceThread->signalEventsI( NetworkServiceThreadEvent::CheckNtpServerAddr );
+		networkServiceThread->signalEventsI( NetworkServiceThreadEvent::CheckNtpServerAddrEvent );
 		chSysUnlockFromISR();
 	} );
 	checkNtpServerAddrTimer.setInterval( TIME_S2I( 60 ) );
@@ -1051,7 +1051,11 @@ void MarvieDevice::networkServiceThreadMain()
 			volatile bool res = gsmModem && gsmModem->state() == ModemState::Working;
 			configMutex.unlock();
 			if( res )
+			{
 				pingTimer.start();
+				if( checkNtpServerAddrTimer.isActive() )
+					em |= CheckNtpServerAddrEvent;
+			}
 			else
 			{
 				pingTimer.stop();
@@ -1086,13 +1090,13 @@ void MarvieDevice::networkServiceThreadMain()
 				}
 			}
 		}
-		if( em & CheckNtpServerAddr )
+		if( em & CheckNtpServerAddrEvent )
 		{
 			if( netconn_gethostbyname( ntpServerName, &ntpServerAddr ) == ERR_OK )
 			{
 				sntp_setserver( 0, &ntpServerAddr );
 				checkNtpServerAddrTimer.stop();
-				Thread::getAndClearEvents( CheckNtpServerAddr );
+				Thread::getAndClearEvents( CheckNtpServerAddrEvent );
 
 				if( backup->settings.flags.sntpClientEnabled )
 					sntp_init();
@@ -1531,7 +1535,7 @@ void MarvieDevice::applyConfigM( char* xmlData, uint32_t len )
 			backup->settings.flags.sntpClientEnabled = networkConf.sntpClientEnabled;
 			if( backup->settings.dateTime.timeZone != dateTimeConf.timeZone )
 			{
-				int64_t dt = ( ( int )dateTimeConf.timeZone - ( int )backup->settings.dateTime.timeZone ) * 3600000;
+				int64_t dt = ( dateTimeConf.timeZone - backup->settings.dateTime.timeZone ) * 3600000;
 				DateTimeService::setDateTime( DateTime::fromMsecsSinceEpoch( DateTimeService::currentDateTime().msecsSinceEpoch() + dt ) );
 				if( backup->settings.dateTime.lastSntpSync != -1 )
 					backup->settings.dateTime.lastSntpSync += dt;
