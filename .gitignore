@@ -22,3 +22,5 @@ Software/Tests/SdDataDownloader/SdDataDownloader/x64/
 Software/Tests/SdDataDownloader/x64/
 Software/Win32/
 Software/x64/
+Software/FirmwareUpdater/
+Software/Tests/RemoteTerminalTest/

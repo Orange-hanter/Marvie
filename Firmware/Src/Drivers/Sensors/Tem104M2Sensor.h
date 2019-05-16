@@ -21,39 +21,42 @@ public:
 		{
 			struct Ch
 			{
-				float tmp[4];	    // ������� �������� ����������� �� �������
-				float prs[4];	    // ������� �������� �������� �� �������
-				float ro[4];
-				float hent[4];
-				float rshv[4];		    // ������� �������� ��������� �������
-				float rshm[4];		    // ������� �������� ��������� �������
-				float pwr[4];
+				float tmp[4];	    // current values of temperatures, t C
+				float prs[4];	    // current values of pressure		MPa
+				float ro[4];		// current values of density heat currier
+				float hent[4];		// current values of enthalpy
+				float rshv[4];		// current values of volume rate	m^3/h
+				float rshm[4];		// current values of mass rate		Tonn/h
+				float pwr[4];		// current values of power values	Gigacaloria/h
 				
 			} ch[4];
 			
 		} instant;
 		struct IntegratedValues
 		{
-			uint32_t T_Rab;     // ����� ����� ������
-			uint32_t T_offline;	// ����� ��������� ��� ������
-
+			uint32_t utc;
+			uint32_t T_Rab;     // total work time
+			uint32_t T_offline;	// time since last shutdown
+			uint32_t reserved;
 			struct Ch
 			{
-				double intV;	    // ���������� ������ �� ������
-				double intM;	    // ���������� ����� �� ������
-				double intQ;	    // ���������� ������� �� ������
-				double intQerr;
-				uint32_t T_Nar;
-				uint32_t T_Max;	// ����� ���������� � ������ G > Gmax 
-				uint32_t T_Min;	// ����� ���������� � ������ G < Gmin
-				uint32_t T_Dt;		// ����� � ������ dT < dTmin
-				uint32_t T_tn;
-				uint32_t T_rev;
-				uint32_t T_pt;
-				uint8_t TekErr;		// ������� ������ 1
-				uint8_t TehErr;		// ������� ������ 2
-				uint16_t tmp[3];	// �����������
-				uint16_t prs[3];		// ��������
+				double intV;	    // counted volume
+				double intM;	    // counted mass
+				double intQ;	    // counted energy
+				double intQerr;		// counted energy with error
+				uint32_t T_Nar;		// system runtime without errors
+				uint32_t T_Max;		// system runtime with error G > Gmax 
+				uint32_t T_Min;		// system runtime with error G < Gmin
+				uint32_t T_Dt;		// system runtime with error dT < dTmin
+				uint32_t T_tn;		//
+				uint32_t T_rev;		// system runtime with reverce in system
+				uint32_t T_pt;		//
+				uint8_t TekErr;		// byte error block 1
+				uint8_t reserved;
+				uint16_t TehErr;	// byte error block 2
+				uint16_t tmp[3];	// temperature by chanell
+				uint16_t prs[3];	// pressure by chanell
+				uint32_t reserved2;
 			} ch[4];
 		} integrated;
 		

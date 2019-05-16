@@ -52,9 +52,10 @@ Tem104M2Sensor::Data* Tem104M2Sensor::readData()
 		serialDevice->setStopBits( UsartBasedDevice::S1 );
 		serialDevice->setBaudRate( baudrate );
 	}
+	//*******************************************INTEGRATED VALUES******************************************************
 	io->read( nullptr, io->readAvailable() );
 	{
-		// read integrated values
+		// read integrated values from 0x00 - 0x48
 		//                                SIG    ADDR          !ADDR         CGPR   CMD   LEN  ADDRH ADDRL TLEN   CS
 		uint8_t readTimerRequest[10] = { 0x55, address, uint8_t( ~address ), 0x0F, 0x01, 0x03, 0x08, 0x00, 0x48, 0x42 };
 		readTimerRequest[9] = checksum( readTimerRequest, readTimerRequest + 9 );
@@ -64,7 +65,7 @@ Tem104M2Sensor::Data* Tem104M2Sensor::readData()
 		parseTimerResponsePart1();
 	}
 	{
-		// read integrated values
+		// read integrated values from 0x48 - 0x88
 		//                                SIG    ADDR          !ADDR         CGPR   CMD   LEN  ADDRH ADDRL TLEN   CS
 		uint8_t readTimerRequest[10] = { 0x55, address, uint8_t( ~address ), 0x0F, 0x01, 0x03, 0x08, 0x48, 0x40, 0x42 };
 		readTimerRequest[9] = checksum( readTimerRequest, readTimerRequest + 9 );
@@ -74,7 +75,7 @@ Tem104M2Sensor::Data* Tem104M2Sensor::readData()
 		parseTimerResponsePart11();
 	}
 	{
-		// read integrated values
+		// read integrated values from 0x98 - 0xE0
 		//                                SIG    ADDR          !ADDR         CGPR   CMD   LEN  ADDRH ADDRL TLEN   CS
 		uint8_t readTimerRequest[10] = { 0x55, address, uint8_t( ~address ), 0x0F, 0x01, 0x03, 0x08, 0x98, 0x48, 0x42 };
 		readTimerRequest[9] = checksum( readTimerRequest, readTimerRequest + 9 );
@@ -84,7 +85,7 @@ Tem104M2Sensor::Data* Tem104M2Sensor::readData()
 		parseTimerResponsePart2();
 	}
 	{
-		// read integrated values
+		// read integrated values from 0xE0 - 0x140
 		//                                SIG    ADDR          !ADDR         CGPR   CMD   LEN  ADDRH ADDRL TLEN   CS
 		uint8_t readTimerRequest[10] = { 0x55, address, uint8_t( ~address ), 0x0F, 0x01, 0x03, 0x08, 0xE0, 0x60, 0x42 };
 		readTimerRequest[9] = checksum( readTimerRequest, readTimerRequest + 9 );
@@ -93,6 +94,7 @@ Tem104M2Sensor::Data* Tem104M2Sensor::readData()
 		returnIfError( err, 22 );
 		parseTimerResponsePart22();
 	}
+	//*******************************************INSTANT VALUES**********************************************************
 	{
 		// read instant values
 		uint8_t readRAMRequestCh[10] = { 0x55, address, uint8_t( ~address ), 0x0C, 0x01, 0x03, 0x00, 0x00, 0x73, 0x42 };
@@ -169,7 +171,9 @@ SensorData::Error Tem104M2Sensor::waitResponse( uint32_t size )
 void Tem104M2Sensor::parseTimerResponsePart1()
 {
 	data.lock();
-	io->read( nullptr, 6 + 8, TIME_IMMEDIATE );
+	io->read( nullptr, 6, TIME_IMMEDIATE );
+	io->read( (uint8_t*)&data.integrated.utc, sizeof(data.integrated.utc), TIME_IMMEDIATE );
+	io->read( nullptr, 4, TIME_IMMEDIATE );
 	{
 		struct
 		{
@@ -232,10 +236,10 @@ void Tem104M2Sensor::parseTimerResponsePart2()
 			uint32_t T_Max[4];
 		} pack;
 		io->read( ( uint8_t* )&pack, sizeof( pack ), TIME_IMMEDIATE );
+		data.integrated.T_Rab = pack.T_Rab;
+		data.integrated.T_offline = pack.T_offline;
 		for( size_t i = 0; i < 4; i++ )
 		{
-			data.integrated.T_Rab = pack.T_Rab;
-			data.integrated.T_offline = pack.T_offline;
 			data.integrated.ch[i].T_Nar = pack.T_Nar[i];
 			data.integrated.ch[i].T_Min = pack.T_Min[i];
 			data.integrated.ch[i].T_Max = pack.T_Max[i];
@@ -252,7 +256,7 @@ void Tem104M2Sensor::parseTimerResponsePart2()
 			data.integrated.ch[i].T_Dt = pack.T_Dt[i];
 		}
 	}
-	
+
 	io->read( nullptr, io->readAvailable(), TIME_IMMEDIATE );
 	data.unlock();
 }
@@ -280,7 +284,7 @@ void Tem104M2Sensor::parseTimerResponsePart22()
 		struct
 		{
 			uint8_t TekErr[4];
-			uint8_t TehErr[4];
+			uint16_t TehErr[4];
 		} pack;
 		io->read( ( uint8_t* )&pack, sizeof( pack ), TIME_IMMEDIATE );
 		for( size_t i = 0; i < 4; i++ )
@@ -297,11 +301,13 @@ void Tem104M2Sensor::parseTimerResponsePart22()
 		} pack;
 		io->read( ( uint8_t* )&pack, sizeof( pack ), TIME_IMMEDIATE );
 		for( auto i = 0; i < 4; ++i )
-			for( auto j = 0; j < 4; ++j )
+		{
+			for( auto j = 0; j < 3; ++j )
 			{
-				data.integrated.ch[i].tmp[i] = pack.tmp[i][j];
-				data.integrated.ch[i].prs[i] = pack.prs[i][j];
+				data.integrated.ch[i].tmp[j] = pack.tmp[i][j];
+				data.integrated.ch[i].prs[j] = ( uint16_t )pack.prs[i][j];
 			}
+		}
 	}
 
 	io->read( nullptr, io->readAvailable(), TIME_IMMEDIATE );

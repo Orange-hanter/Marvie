@@ -111,7 +111,9 @@ SensorData::Error Tem104M1Sensor::waitResponse( uint32_t size )
 void Tem104M1Sensor::parseTimerResponse()
 {
 	data.lock();
-	io->read( nullptr, 6 + 8, TIME_IMMEDIATE );
+	io->read( nullptr, 6, TIME_IMMEDIATE );
+	io->read( (uint8_t*)&data.integrated.utc, sizeof(data.integrated.utc), TIME_IMMEDIATE );
+	io->read( nullptr, 4, TIME_IMMEDIATE );
 	{
 		struct
 		{
